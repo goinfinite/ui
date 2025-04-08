@@ -1,0 +1,7 @@
+tmp/
+bin/
+logs/
+.env
+TODO.md
+*.db
+*_templ.go
