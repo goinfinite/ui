@@ -1,0 +1,83 @@
+package uiForm
+
+const (
+	RadioInputSizeXs string = "xs"
+	RadioInputSizeSm string = "sm"
+	RadioInputSizeMd string = "md"
+	RadioInputSizeLg string = "lg"
+	RadioInputSizeXl string = "xl"
+)
+
+type RadioInputSettings struct {
+	Label           string
+	StateValue      string
+	TwoWayStatePath string
+
+	// OptionalFields
+	InputId   string
+	InputName string
+	Size      string
+}
+
+templ RadioInput(inputSettings RadioInputSettings) {
+	<!-- RadioInput HTML -->
+	<div
+		class="hover:text-secondary-500 inline-flex items-center text-neutral-100"
+		@click={ inputSettings.TwoWayStatePath + ` = "` + inputSettings.StateValue + `"` }
+	>
+		{{ labelTextSize := "text-sm" }}
+		switch inputSettings.Size {
+			case RadioInputSizeXs:
+				{{ labelTextSize = "text-xs" }}
+			case RadioInputSizeSm:
+				{{ labelTextSize = "text-sm" }}
+			case RadioInputSizeMd:
+				{{ labelTextSize = "text-base" }}
+			case RadioInputSizeLg:
+				{{ labelTextSize = "text-lg" }}
+			case RadioInputSizeXl:
+				{{ labelTextSize = "text-xl" }}
+		}
+		<label
+			class={ "flex flex-row gap-1 cursor-pointer items-center " + labelTextSize }
+			:class={ `String(` + inputSettings.TwoWayStatePath + `) == "` + inputSettings.StateValue + `" && "text-secondary-500 font-bold"` }
+		>
+			if inputSettings.InputId != "" && inputSettings.InputName != "" {
+				<input
+					type="radio"
+					if inputSettings.InputId != "" {
+						id={ inputSettings.InputId }
+					}
+					if inputSettings.InputName != "" {
+						name={ inputSettings.InputName }
+					}
+					if inputSettings.StateValue != "" {
+						value={ inputSettings.StateValue }
+					}
+					if inputSettings.TwoWayStatePath != "" {
+						x-model={ inputSettings.TwoWayStatePath }
+					}
+					class="hidden"
+				/>
+			}
+			{{ iconSize := "text-xl" }}
+			switch inputSettings.Size {
+				case RadioInputSizeXs:
+					{{ iconSize = "text-lg" }}
+				case RadioInputSizeSm:
+					{{ iconSize = "text-xl" }}
+				case RadioInputSizeMd:
+					{{ iconSize = "text-2xl" }}
+				case RadioInputSizeLg:
+					{{ iconSize = "text-3xl" }}
+				case RadioInputSizeXl:
+					{{ iconSize = "text-4xl" }}
+			}
+			<i
+				class={ "ph-duotone " + iconSize }
+				:class={ `String(` + inputSettings.TwoWayStatePath + `) == "` + inputSettings.StateValue + `" ? "ph-check-circle" : "ph-circle"` }
+			></i>
+			{ inputSettings.Label }
+		</label>
+	</div>
+}
