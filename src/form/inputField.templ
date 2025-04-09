@@ -1,0 +1,81 @@
+package uiForm
+
+const (
+	InputTypeColor    string = "color"
+	InputTypeDate     string = "date"
+	InputTypeEmail    string = "email"
+	InputTypeHidden   string = "hidden"
+	InputTypeMonth    string = "month"
+	InputTypeNumber   string = "number"
+	InputTypePassword string = "password"
+	InputTypeTel      string = "tel"
+	InputTypeText     string = "text"
+	InputTypeTime     string = "time"
+	InputTypeUrl      string = "url"
+)
+
+type InputFieldSettings struct {
+	InputType string
+	InputName string
+	Label     string
+
+	// OptionalFields
+	InputId         string
+	TwoWayStatePath string
+	IsRequired      bool
+	IsReadOnly      bool
+}
+
+templ InputField(inputSettings InputFieldSettings) {
+	<!-- InputField HTML -->
+	<fieldset class="relative w-full rounded-md border border-neutral-50/10 bg-neutral-50/5 transition-all autofill:bg-neutral-50/20 focus-within:border-neutral-50/40 hover:border-neutral-50/40">
+		if inputSettings.Label != "" {
+			<legend
+				class="ml-1.5 px-1 text-xs font-bold text-neutral-50/80 transition-opacity"
+				if inputSettings.TwoWayStatePath != "" {
+					:class={ `!` + inputSettings.TwoWayStatePath + ` && 'opacity-0 !p-0 w-0 h-3.5'` }
+				}
+			>
+				{ inputSettings.Label }
+				if inputSettings.IsRequired {
+					<span class="text-red-700">*</span>
+				}
+			</legend>
+		}
+		{{ inputClasses := "w-full bg-transparent text-neutral-100 placeholder-text-neutral-50 placeholder-text-opacity-80 outline-none px-2 pb-2 text-sm transition-all peer" }}
+		if inputSettings.IsReadOnly {
+			{{ inputClasses += " text-neutral-400 cursor-not-allowed" }}
+		}
+		<input
+			type={ inputSettings.InputType }
+			if inputSettings.InputId != "" {
+				id={ inputSettings.InputId }
+			}
+			if inputSettings.InputName != "" {
+				name={ inputSettings.InputName }
+			}
+			if inputSettings.TwoWayStatePath != "" {
+				x-model:value={ inputSettings.TwoWayStatePath }
+			}
+			autocomplete="off"
+			if inputSettings.Label != "" {
+				placeholder={ inputSettings.Label }
+			}
+			if inputSettings.IsRequired {
+				required
+			}
+			class={ inputClasses }
+			if inputSettings.IsReadOnly {
+				readonly
+			}
+		/>
+		if inputSettings.IsReadOnly && inputSettings.TwoWayStatePath != "" {
+			<div class="text-md absolute right-2 top-0 hidden flex-col gap-1 transition-all hover:flex active:flex peer-hover:flex">
+				<i
+					class="ph-bold ph-clipboard-text border-1 active:bg-secondary-500 cursor-pointer rounded-md border-neutral-50/10 bg-neutral-50/5 p-1 text-neutral-100 hover:border-neutral-50/40 hover:bg-neutral-50/20"
+					@click.prevent={ "navigator.clipboard.writeText(" + inputSettings.TwoWayStatePath + ")" }
+				></i>
+			</div>
+		}
+	</fieldset>
+}
