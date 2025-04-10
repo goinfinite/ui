@@ -11,7 +11,7 @@ type InlineRadioGroupSettings struct {
 }
 
 templ InlineRadioGroup(componentSettings InlineRadioGroupSettings) {
-	<div class="border-neutral-50/10 border-1 bg-neutral-500/10 mt-2 flex h-10 flex-col rounded-md px-2">
+	<div class="border-1 bg-neutral-50/7.5 mt-2 flex h-10 flex-col rounded border-neutral-50/5 px-2">
 		if componentSettings.InputId != "" && componentSettings.TwoWayStatePath != "" {
 			<input
 				type="hidden"
@@ -26,10 +26,10 @@ templ InlineRadioGroup(componentSettings InlineRadioGroupSettings) {
 				}
 			/>
 		}
-		<p class="from-neutral-500/10 via-neutral-500/10 -mt-2.5 mb-1 w-fit cursor-text bg-gradient-to-t via-50% to-transparent to-50% px-1.5 text-xs font-bold text-neutral-50/80">
+		<p class="-mt-2.5 mb-1 w-fit cursor-text text-xs font-bold text-neutral-50/80">
 			{ componentSettings.Label }
 		</p>
-		<div class="flex flex-row gap-1.5">
+		<div class="flex flex-row gap-2">
 			for _, componentSettings := range componentSettings.InputSettings {
 				@RadioInput(componentSettings)
 			}
