@@ -1,6 +1,8 @@
 # [Infinite UI](https://github.com/goinfinite/ui) &middot; [![/r/goinfinite](https://img.shields.io/badge/%2Fr%2Fgoinfinite-FF4500?logo=reddit&logoColor=ffffff)](https://www.reddit.com/r/goinfinite/) [![Discussions](https://img.shields.io/badge/discussions-751A3D?logo=github)](https://github.com/orgs/goinfinite/discussions) [![Report Card](https://img.shields.io/badge/report-A%2B-brightgreen)](https://goreportcard.com/report/github.com/goinfinite/ui) [![License](https://img.shields.io/badge/license-MIT-teal.svg)](https://github.com/goinfinite/ui/blob/main/LICENSE.md)
 
-Infinite UI is a collection of reusable components for building user interfaces in Go with [a-h/templ](https://github.com/a-h/templ), [Alpine.js](https://github.com/alpinejs/alpine), [Tailwind CSS](https://github.com/tailwindlabs/tailwindcss) and the occasional use of other JavaScript libraries. It is designed to be easy to use and slightly customizable, allowing developers to speed up their development process and create beautiful, responsive UIs with minimal effort.
+Infinite UI is a collection of reusable components for building elegant user interfaces in Go with [a-h/templ](https://github.com/a-h/templ), [Alpine.js](https://github.com/alpinejs/alpine), [Tailwind CSS](https://github.com/tailwindlabs/tailwindcss), [Phosphor Icons](https://phosphoricons.com/) and the occasional additional JavaScript libraries when necessary.
+
+The library is engineered for developer efficiency and ease of implementation, offering a balance between standardization and customization to accelerate development workflows while maintaining high-quality, responsive interfaces.
 
 ## Features
 
@@ -14,6 +16,14 @@ To use Infinite UI in your project, you can install it using Go modules. Run the
 
 ```bash
 go get github.com/goinfinite/ui
+```
+
+After installing Infinite UI, make sure your `<head>` component is including [Alpine.js](https://alpinejs.dev/essentials/installation), [Tailwind CSS](https://unocss.dev/integrations/runtime) and [Phosphor Icons](https://github.com/phosphor-icons/homepage?tab=readme-ov-file#vanilla-web). Please refer to each component's documentation for installations and usage instructions.
+
+If you haven't yet installed the template engine `a-h/templ`, you can do so by running the following command:
+
+```bash
+go get github.com/a-h/templ
 ```
 
 ## Usage
