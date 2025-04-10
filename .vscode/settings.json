@@ -1,5 +1,11 @@
 {
-  "cSpell.words": ["fieldset", "templ"],
+  "cSpell.words": [
+    "fieldset",
+    "github",
+    "Htmx",
+    "stylesheet",
+    "templ"
+  ],
   "tailwindCSS.includeLanguages": {
     "templ": "html"
   },
