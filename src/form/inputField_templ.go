@@ -34,7 +34,7 @@ type InputFieldSettings struct {
 	IsReadOnly      bool
 }
 
-func InputField(inputSettings InputFieldSettings) templ.Component {
+func InputField(componentSettings InputFieldSettings) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -59,20 +59,20 @@ func InputField(inputSettings InputFieldSettings) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if inputSettings.Label != "" {
+		if componentSettings.Label != "" {
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<legend class=\"ml-1.5 px-1 text-xs font-bold text-neutral-50/80 transition-opacity\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if inputSettings.TwoWayStatePath != "" {
+			if componentSettings.TwoWayStatePath != "" {
 				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, " :class=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var2 string
-				templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(`!` + inputSettings.TwoWayStatePath + ` && 'opacity-0 !p-0 w-0 h-3.5'`)
+				templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(`!` + componentSettings.TwoWayStatePath + ` && 'opacity-0 !p-0 w-0 h-3.5'`)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputField.templ`, Line: 36, Col: 84}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputField.templ`, Line: 36, Col: 88}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 				if templ_7745c5c3_Err != nil {
@@ -88,9 +88,9 @@ func InputField(inputSettings InputFieldSettings) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(inputSettings.Label)
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.Label)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputField.templ`, Line: 39, Col: 25}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputField.templ`, Line: 39, Col: 29}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -100,7 +100,7 @@ func InputField(inputSettings InputFieldSettings) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if inputSettings.IsRequired {
+			if componentSettings.IsRequired {
 				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<span class=\"text-red-700\">*</span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -112,7 +112,7 @@ func InputField(inputSettings InputFieldSettings) templ.Component {
 			}
 		}
 		inputClasses := "w-full bg-transparent text-neutral-100 placeholder-text-neutral-50 placeholder-text-opacity-80 outline-none px-2 pb-2 text-sm transition-all peer"
-		if inputSettings.IsReadOnly {
+		if componentSettings.IsReadOnly {
 			inputClasses += " text-neutral-400 cursor-not-allowed"
 		}
 		var templ_7745c5c3_Var4 = []any{inputClasses}
@@ -125,9 +125,9 @@ func InputField(inputSettings InputFieldSettings) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
-		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(inputSettings.InputType)
+		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.InputType)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputField.templ`, Line: 50, Col: 33}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputField.templ`, Line: 50, Col: 37}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -137,15 +137,15 @@ func InputField(inputSettings InputFieldSettings) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if inputSettings.InputId != "" {
+		if componentSettings.InputId != "" {
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, " id=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var6 string
-			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(inputSettings.InputId)
+			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.InputId)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputField.templ`, Line: 52, Col: 30}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputField.templ`, Line: 52, Col: 34}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -156,15 +156,15 @@ func InputField(inputSettings InputFieldSettings) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		if inputSettings.InputName != "" {
+		if componentSettings.InputName != "" {
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, " name=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var7 string
-			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(inputSettings.InputName)
+			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.InputName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputField.templ`, Line: 55, Col: 34}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputField.templ`, Line: 55, Col: 38}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -175,15 +175,15 @@ func InputField(inputSettings InputFieldSettings) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		if inputSettings.TwoWayStatePath != "" {
+		if componentSettings.TwoWayStatePath != "" {
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, " x-model:value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var8 string
-			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(inputSettings.TwoWayStatePath)
+			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.TwoWayStatePath)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputField.templ`, Line: 58, Col: 49}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputField.templ`, Line: 58, Col: 53}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -198,15 +198,15 @@ func InputField(inputSettings InputFieldSettings) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if inputSettings.Label != "" {
+		if componentSettings.Label != "" {
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, " placeholder=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var9 string
-			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(inputSettings.Label)
+			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.Label)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputField.templ`, Line: 62, Col: 37}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputField.templ`, Line: 62, Col: 41}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -217,7 +217,7 @@ func InputField(inputSettings InputFieldSettings) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		if inputSettings.IsRequired {
+		if componentSettings.IsRequired {
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, " required")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -240,7 +240,7 @@ func InputField(inputSettings InputFieldSettings) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if inputSettings.IsReadOnly {
+		if componentSettings.IsReadOnly {
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, " readonly")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -250,15 +250,15 @@ func InputField(inputSettings InputFieldSettings) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if inputSettings.IsReadOnly && inputSettings.TwoWayStatePath != "" {
+		if componentSettings.IsReadOnly && componentSettings.TwoWayStatePath != "" {
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "<div class=\"text-md absolute right-2 top-0 hidden flex-col gap-1 transition-all hover:flex active:flex peer-hover:flex\"><i class=\"ph-bold ph-clipboard-text border-1 active:bg-secondary-500 cursor-pointer rounded-md border-neutral-50/10 bg-neutral-50/5 p-1 text-neutral-100 hover:border-neutral-50/40 hover:bg-neutral-50/20\" @click.prevent=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var11 string
-			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs("navigator.clipboard.writeText(" + inputSettings.TwoWayStatePath + ")")
+			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs("navigator.clipboard.writeText(" + componentSettings.TwoWayStatePath + ")")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputField.templ`, Line: 76, Col: 92}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputField.templ`, Line: 76, Col: 96}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {

@@ -26,54 +26,54 @@ type InputFieldSettings struct {
 	IsReadOnly      bool
 }
 
-templ InputField(inputSettings InputFieldSettings) {
+templ InputField(componentSettings InputFieldSettings) {
 	<!-- InputField HTML -->
 	<fieldset class="relative w-full rounded-md border border-neutral-50/10 bg-neutral-50/5 transition-all autofill:bg-neutral-50/20 focus-within:border-neutral-50/40 hover:border-neutral-50/40">
-		if inputSettings.Label != "" {
+		if componentSettings.Label != "" {
 			<legend
 				class="ml-1.5 px-1 text-xs font-bold text-neutral-50/80 transition-opacity"
-				if inputSettings.TwoWayStatePath != "" {
-					:class={ `!` + inputSettings.TwoWayStatePath + ` && 'opacity-0 !p-0 w-0 h-3.5'` }
+				if componentSettings.TwoWayStatePath != "" {
+					:class={ `!` + componentSettings.TwoWayStatePath + ` && 'opacity-0 !p-0 w-0 h-3.5'` }
 				}
 			>
-				{ inputSettings.Label }
-				if inputSettings.IsRequired {
+				{ componentSettings.Label }
+				if componentSettings.IsRequired {
 					<span class="text-red-700">*</span>
 				}
 			</legend>
 		}
 		{{ inputClasses := "w-full bg-transparent text-neutral-100 placeholder-text-neutral-50 placeholder-text-opacity-80 outline-none px-2 pb-2 text-sm transition-all peer" }}
-		if inputSettings.IsReadOnly {
+		if componentSettings.IsReadOnly {
 			{{ inputClasses += " text-neutral-400 cursor-not-allowed" }}
 		}
 		<input
-			type={ inputSettings.InputType }
-			if inputSettings.InputId != "" {
-				id={ inputSettings.InputId }
+			type={ componentSettings.InputType }
+			if componentSettings.InputId != "" {
+				id={ componentSettings.InputId }
 			}
-			if inputSettings.InputName != "" {
-				name={ inputSettings.InputName }
+			if componentSettings.InputName != "" {
+				name={ componentSettings.InputName }
 			}
-			if inputSettings.TwoWayStatePath != "" {
-				x-model:value={ inputSettings.TwoWayStatePath }
+			if componentSettings.TwoWayStatePath != "" {
+				x-model:value={ componentSettings.TwoWayStatePath }
 			}
 			autocomplete="off"
-			if inputSettings.Label != "" {
-				placeholder={ inputSettings.Label }
+			if componentSettings.Label != "" {
+				placeholder={ componentSettings.Label }
 			}
-			if inputSettings.IsRequired {
+			if componentSettings.IsRequired {
 				required
 			}
 			class={ inputClasses }
-			if inputSettings.IsReadOnly {
+			if componentSettings.IsReadOnly {
 				readonly
 			}
 		/>
-		if inputSettings.IsReadOnly && inputSettings.TwoWayStatePath != "" {
+		if componentSettings.IsReadOnly && componentSettings.TwoWayStatePath != "" {
 			<div class="text-md absolute right-2 top-0 hidden flex-col gap-1 transition-all hover:flex active:flex peer-hover:flex">
 				<i
 					class="ph-bold ph-clipboard-text border-1 active:bg-secondary-500 cursor-pointer rounded-md border-neutral-50/10 bg-neutral-50/5 p-1 text-neutral-100 hover:border-neutral-50/40 hover:bg-neutral-50/20"
-					@click.prevent={ "navigator.clipboard.writeText(" + inputSettings.TwoWayStatePath + ")" }
+					@click.prevent={ "navigator.clipboard.writeText(" + componentSettings.TwoWayStatePath + ")" }
 				></i>
 			</div>
 		}

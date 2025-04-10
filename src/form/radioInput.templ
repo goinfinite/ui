@@ -19,14 +19,14 @@ type RadioInputSettings struct {
 	Size      string
 }
 
-templ RadioInput(inputSettings RadioInputSettings) {
+templ RadioInput(componentSettings RadioInputSettings) {
 	<!-- RadioInput HTML -->
 	<div
 		class="hover:text-secondary-500 inline-flex items-center text-neutral-100"
-		@click={ inputSettings.TwoWayStatePath + ` = "` + inputSettings.StateValue + `"` }
+		@click={ componentSettings.TwoWayStatePath + ` = "` + componentSettings.StateValue + `"` }
 	>
 		{{ labelTextSize := "text-sm" }}
-		switch inputSettings.Size {
+		switch componentSettings.Size {
 			case RadioInputSizeXs:
 				{{ labelTextSize = "text-xs" }}
 			case RadioInputSizeSm:
@@ -40,28 +40,28 @@ templ RadioInput(inputSettings RadioInputSettings) {
 		}
 		<label
 			class={ "flex flex-row gap-1 cursor-pointer items-center " + labelTextSize }
-			:class={ `String(` + inputSettings.TwoWayStatePath + `) == "` + inputSettings.StateValue + `" && "text-secondary-500 font-bold"` }
+			:class={ `String(` + componentSettings.TwoWayStatePath + `) == "` + componentSettings.StateValue + `" && "text-secondary-500 font-bold"` }
 		>
-			if inputSettings.InputId != "" && inputSettings.InputName != "" {
+			if componentSettings.InputId != "" && componentSettings.InputName != "" {
 				<input
 					type="radio"
-					if inputSettings.InputId != "" {
-						id={ inputSettings.InputId }
+					if componentSettings.InputId != "" {
+						id={ componentSettings.InputId }
 					}
-					if inputSettings.InputName != "" {
-						name={ inputSettings.InputName }
+					if componentSettings.InputName != "" {
+						name={ componentSettings.InputName }
 					}
-					if inputSettings.StateValue != "" {
-						value={ inputSettings.StateValue }
+					if componentSettings.StateValue != "" {
+						value={ componentSettings.StateValue }
 					}
-					if inputSettings.TwoWayStatePath != "" {
-						x-model={ inputSettings.TwoWayStatePath }
+					if componentSettings.TwoWayStatePath != "" {
+						x-model={ componentSettings.TwoWayStatePath }
 					}
 					class="hidden"
 				/>
 			}
 			{{ iconSize := "text-xl" }}
-			switch inputSettings.Size {
+			switch componentSettings.Size {
 				case RadioInputSizeXs:
 					{{ iconSize = "text-lg" }}
 				case RadioInputSizeSm:
@@ -75,9 +75,9 @@ templ RadioInput(inputSettings RadioInputSettings) {
 			}
 			<i
 				class={ "ph-duotone " + iconSize }
-				:class={ `String(` + inputSettings.TwoWayStatePath + `) == "` + inputSettings.StateValue + `" ? "ph-check-circle" : "ph-circle"` }
+				:class={ `String(` + componentSettings.TwoWayStatePath + `) == "` + componentSettings.StateValue + `" ? "ph-check-circle" : "ph-circle"` }
 			></i>
-			{ inputSettings.Label }
+			{ componentSettings.Label }
 		</label>
 	</div>
 }
