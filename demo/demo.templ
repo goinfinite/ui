@@ -1,0 +1,83 @@
+package main
+
+import (
+	"github.com/goinfinite/ui/src/form"
+	"github.com/goinfinite/ui/src/toolkit"
+)
+
+templ DemoIndex() {
+	<!DOCTYPE html>
+	<html class="dark">
+		<head>
+			<title>Infinite UI Demo</title>
+			@uiToolkit.HeadTagsFull()
+		</head>
+		<body class="bg-neutral-900 text-neutral-50">
+			<h1 class="my-10 text-center text-5xl font-bold">Infinite UI Demo</h1>
+			<section class="container mx-auto flex flex-col">
+				<div class="flex flex-col gap-10">
+					<!-- uiForm -->
+					<div class="flex flex-col gap-2">
+						<h2 class="text-3xl font-bold">
+							{ `@uiForm` }
+						</h2>
+						<p class="text-sm text-neutral-400">
+							uiForm is a collection of components that make it easy to create forms.
+						</p>
+					</div>
+					<div class="*:border-t *:border-neutral-800 *:pt-10 flex flex-col gap-10">
+						@InputFieldDemo()
+					</div>
+				</div>
+				<!-- uiDisplay -->
+			</section>
+		</body>
+	</html>
+}
+
+templ InputFieldDemo() {
+	<div class="flex flex-col gap-4">
+		<div class="flex flex-col gap-2">
+			<h3 class="text-xl font-bold">.InputField</h3>
+			<p class="text-sm text-neutral-400">
+				An input field is a basic form element that allows users to enter text.
+			</p>
+		</div>
+		<div class="grid grid-cols-2 gap-10">
+			<div class="flex flex-col gap-4">
+				<div class="flex flex-col gap-2">
+					<h4 class="text-lg font-bold">Usage</h4>
+					<pre class="rounded-md bg-neutral-800 p-4 text-xs">
+						<code>
+							{ `@uiForm.InputField(uiForm.InputFieldSettings{
+	InputType: uiForm.InputTypeText,
+	InputName: "name",
+	Label:     "Name",
+
+	// Optional Fields
+	TwoWayStatePath: "name",
+	IsRequired:      false,
+	IsReadOnly:      false,
+})` }
+						</code>
+					</pre>
+				</div>
+				<div class="flex flex-col gap-2">
+					<h5 class="text-sm font-bold">Alpine.js Parent State <i>(x-data)</i></h5>
+					<pre class="rounded-md bg-neutral-800 p-4 text-xs">
+						<code>{ `<div x-data="{name: ''}"></div>` }</code>
+					</pre>
+				</div>
+			</div>
+			<div x-data="{name: ''}" class="flex flex-col">
+				<h4 class="text-lg font-bold">Live Example</h4>
+				@uiForm.InputField(uiForm.InputFieldSettings{
+					InputType:       uiForm.InputTypeText,
+					InputName:       "name",
+					Label:           "Name",
+					TwoWayStatePath: "name",
+				})
+			</div>
+		</div>
+	</div>
+}
