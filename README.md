@@ -18,7 +18,9 @@ To use Infinite UI in your project, you can install it using Go modules. Run the
 go get github.com/goinfinite/ui
 ```
 
-After installing Infinite UI, make sure your `<head>` component is including [Alpine.js](https://alpinejs.dev/essentials/installation), [Tailwind CSS](https://unocss.dev/integrations/runtime) and [Phosphor Icons](https://github.com/phosphor-icons/homepage?tab=readme-ov-file#vanilla-web). Please refer to each component's documentation for installations and usage instructions.
+After installing Infinite UI, make sure your `<head>` component is including [Alpine.js](https://alpinejs.dev/essentials/installation), [Tailwind CSS](https://unocss.dev/integrations/runtime) and [Phosphor Icons](https://github.com/phosphor-icons/homepage?tab=readme-ov-file#vanilla-web).
+
+One way to install the necessary scripts and styles is to use the `@uiToolkit.HeadTagsMinimal()` or `@uiToolkit.HeadTagsFull()` components. The only difference between the two is that `HeadTagsFull()` also includes [Google Fonts](https://fonts.google.com/) and [HTMX](https://htmx.org/).
 
 If you haven't yet installed the template engine `a-h/templ`, you can do so by running the following command:
 
@@ -88,3 +90,11 @@ Two patterns are available for function invocation, depending on component requi
 - Refer to component documentation for parameter requirements.
 
 The `On` prefix (e.g., `OnClick`, `OnChange`) indicates event-driven execution, though function calling is not limited to events in all components.
+
+## Demo
+
+An online demo of the library will be available soon. In the meantime, you can run the following command to generate a partially completed `demo.html` file that you can open in your browser:
+
+```bash
+templ generate && go run demo/*.go
+```
