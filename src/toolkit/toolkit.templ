@@ -1,0 +1,56 @@
+package uiToolkit
+
+templ HeadTagsAtomicCssEngine() {
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@unocss/reset@66.0.0/tailwind-compat.css" integrity="sha256-YmuJOpwODv9JhZSXl17QoPLeBbIhkqZpNt39S++mkdk=" crossorigin="anonymous"/>
+	<script src="https://cdn.jsdelivr.net/npm/@unocss/runtime@66.0.0/uno.global.min.js" integrity="sha256-blhgsQv0/ztGg+RPOT4x4o8o0G85scS6EQKcOsVBJl0=" crossorigin="anonymous"></script>
+}
+
+templ HeadTagsPhosphorIcons() {
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" integrity="sha256-yKMt9n+L1X9wxjceFewjLfJd3ro+uQYNeqpoEBps4kA=" crossorigin="anonymous"/>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/duotone/style.css" integrity="sha256-/G039/D3/9zfcUxUGB/dJ5EZaeRzfTFRuXLUuAblrl0=" crossorigin="anonymous"/>
+}
+
+templ HeadTagsGoogleFonts() {
+	<link rel="preconnect" href="https://fonts.googleapis.com"/>
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+	<link href="https://fonts.googleapis.com/css?family=Lato:700,regular,italic,700italic,|Space+Grotesk:700,regular,italic,700italic,&display=swap" rel="stylesheet"/>
+}
+
+templ HeadTagsAlpineJs() {
+	<script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.14.9/dist/cdn.min.js" integrity="sha256-jFBwr6faTqqhp3sVi4/VTxJ0FpaF9YGZN1ZGLl/5QYM=" crossorigin="anonymous"></script>
+	<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js" integrity="sha256-PtHu0lJIiSHfZeNj1nFd6wTX+Squ255SGZ/fc8seCtM=" crossorigin="anonymous"></script>
+}
+
+templ HeadTagsHtmx() {
+	<script defer src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.4/dist/htmx.min.js" integrity="sha256-4gndpcgjVHnzFm3vx3UOHbzVpcGAi3eS/C5nM3aPtEc=" crossorigin="anonymous"></script>
+}
+
+templ HeadTagsMinimalCss() {
+	@HeadTagsAtomicCssEngine()
+	@HeadTagsPhosphorIcons()
+}
+
+templ HeadTagsFullCss() {
+	@HeadTagsMinimalCss()
+	@HeadTagsGoogleFonts()
+}
+
+templ HeadTagsMinimalJs() {
+	@HeadTagsAlpineJs()
+}
+
+templ HeadTagsFullJs() {
+	@HeadTagsMinimalJs()
+	@HeadTagsHtmx()
+}
+
+templ HeadTagsMinimal() {
+	@HeadTagsMinimalCss()
+	@HeadTagsMinimalJs()
+}
+
+templ HeadTagsFull() {
+	@HeadTagsFullCss()
+	@HeadTagsFullJs()
+}
