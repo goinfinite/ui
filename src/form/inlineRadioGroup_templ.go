@@ -43,7 +43,7 @@ func InlineRadioGroup(componentSettings InlineRadioGroupSettings) templ.Componen
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if componentSettings.InputId != "" && componentSettings.TwoWayStatePath != "" {
+		if componentSettings.InputName != "" && componentSettings.TwoWayStatePath != "" {
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<input type=\"hidden\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err

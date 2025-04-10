@@ -12,7 +12,7 @@ type InlineRadioGroupSettings struct {
 
 templ InlineRadioGroup(componentSettings InlineRadioGroupSettings) {
 	<div class="border-1 bg-neutral-50/7.5 mt-2 flex h-10 flex-col rounded border-neutral-50/5 px-2">
-		if componentSettings.InputId != "" && componentSettings.TwoWayStatePath != "" {
+		if componentSettings.InputName != "" && componentSettings.TwoWayStatePath != "" {
 			<input
 				type="hidden"
 				if componentSettings.InputId != "" {
