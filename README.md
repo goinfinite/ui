@@ -20,7 +20,7 @@ go get github.com/goinfinite/ui
 
 After installing Infinite UI, make sure your `<head>` component is including [Alpine.js](https://alpinejs.dev/essentials/installation), [Tailwind CSS](https://unocss.dev/integrations/runtime) and [Phosphor Icons](https://github.com/phosphor-icons/homepage?tab=readme-ov-file#vanilla-web).
 
-One way to install the necessary scripts and styles is to use the `@uiToolkit.HeadTagsMinimal()` or `@uiToolkit.HeadTagsFull()` components. The only difference between the two is that `HeadTagsFull()` also includes [Google Fonts](https://fonts.google.com/) and [HTMX](https://htmx.org/).
+One way to install the necessary scripts and styles is to use the `@uiImport.HeadTagsMinimal()` or `@uiImport.HeadTagsFull()` components. The only difference between the two is that `HeadTagsFull()` also includes [Google Fonts](https://fonts.google.com/) and [HTMX](https://htmx.org/).
 
 If you haven't yet installed the template engine `a-h/templ`, you can do so by running the following command:
 
