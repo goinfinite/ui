@@ -52,6 +52,10 @@ templ SelectInput(componentSettings SelectInputSettings) {
 				}
 			/>
 		}
+		{{ labelValueOptionsScriptId := componentSettings.InputName + "LabelValueOptions" }}
+		if len(componentSettings.LabelValueOptions) > 0 {
+			@templ.JSONScript(labelValueOptionsScriptId, componentSettings.LabelValueOptions)
+		}
 		<fieldset
 			class="relative w-full rounded-md border border-neutral-50/10 bg-neutral-50/5 transition-all focus-within:border-neutral-50/40 hover:border-neutral-50/40"
 		>
@@ -72,6 +76,9 @@ templ SelectInput(componentSettings SelectInputSettings) {
 				@click="isOpen = !isOpen"
 			>
 				<div
+					if len(componentSettings.LabelValueOptions) > 0 {
+						x-init={ `JSON.parse(document.getElementById('` + labelValueOptionsScriptId + `').textContent).forEach(option => {if (Object.values(option)[0] == selectedValue){selectedLabel = Object.keys(option)[0]}})` }
+					}
 					x-text="selectedLabel || selectedValue || ''"
 					class="w-full overflow-hidden text-ellipsis"
 					:class="!selectedLabel && 'text-neutral-50/80'"
