@@ -14,7 +14,7 @@ type SelectInputSettings struct {
 
 	// OptionalFields
 	FlatOptions              []string
-	KeyValueOptions          []map[string]string
+	LabelValueOptions        []map[string]string
 	TwoWayStatePath          string
 	OnChangeFunc             string
 	Size                     string
@@ -25,33 +25,40 @@ type SelectInputSettings struct {
 
 templ SelectInput(componentSettings SelectInputSettings) {
 	<!-- SelectInput -->
-	<div>
-		<input
-			type="hidden"
-			if componentSettings.InputId != "" {
-				id={ componentSettings.InputId }
-			}
-			if componentSettings.InputName != "" {
-				name={ componentSettings.InputName }
-			}
-			if componentSettings.TwoWayStatePath != "" {
-				x-model:value={ componentSettings.TwoWayStatePath }
-			}
-			if componentSettings.OnChangeFunc != "" {
-				@change={ componentSettings.OnChangeFunc }
-			}
-		/>
+	<div
+		if componentSettings.TwoWayStatePath != "" {
+			x-data={ "{isOpen: false, selectedValue: " + componentSettings.TwoWayStatePath + ", selectedLabel: " + componentSettings.TwoWayStatePath + " || '--'}" }
+		} else {
+			x-data="{isOpen: false, selectedValue: '', selectedLabel: ''}"
+		}
+		if componentSettings.TwoWayStatePath != "" {
+			x-init.debounce.300ms={ "$watch('selectedValue', (newValue, prevValue) => { if (newValue !== prevValue) { " + componentSettings.TwoWayStatePath + " = newValue; } })" }
+		}
+	>
+		if componentSettings.InputName != "" && componentSettings.TwoWayStatePath != "" {
+			<input
+				type="hidden"
+				if componentSettings.InputId != "" {
+					id={ componentSettings.InputId }
+				}
+				if componentSettings.InputName != "" {
+					name={ componentSettings.InputName }
+				}
+				if componentSettings.TwoWayStatePath != "" {
+					x-model:value={ componentSettings.TwoWayStatePath }
+				}
+				if componentSettings.OnChangeFunc != "" {
+					@change={ componentSettings.OnChangeFunc }
+				}
+			/>
+		}
 		<fieldset
 			class="relative w-full rounded-md border border-neutral-50/10 bg-neutral-50/5 transition-all focus-within:border-neutral-50/40 hover:border-neutral-50/40"
-			x-data="{isOpen: false, selectedValue: '', selectedLabel: ''}"
-			if componentSettings.TwoWayStatePath != "" {
-				x-init.debounce.300ms={ "$watch('selectedValue', (newValue, prevValue) => { if (newValue !== prevValue) { " + componentSettings.TwoWayStatePath + " = newValue; } })" }
-			}
 		>
 			<legend
 				class="ml-1.5 px-1 text-xs font-bold text-neutral-50/80 transition-opacity"
 				if componentSettings.TwoWayStatePath != "" {
-					:class="!selectedValue ? 'opacity-0 !p-0 w-0 h-3.5' : ''"
+					:class="(!selectedLabel && !selectedValue) && 'opacity-0 !p-0 w-0 h-3.5'"
 				}
 			>
 				{ componentSettings.Label }
@@ -59,6 +66,7 @@ templ SelectInput(componentSettings SelectInputSettings) {
 					<span class="text-red-700">*</span>
 				}
 			</legend>
+			<!-- SelectField -->
 			<div
 				class="flex w-full cursor-pointer items-center justify-between px-2 pb-2 text-sm text-neutral-100"
 				@click="isOpen = !isOpen"
@@ -66,10 +74,11 @@ templ SelectInput(componentSettings SelectInputSettings) {
 				<div
 					x-text="selectedLabel || selectedValue || ''"
 					class="w-full overflow-hidden text-ellipsis"
-					:class="!selectedValue && !selectedLabel ? 'text-neutral-50/80' : ''"
+					:class="!selectedLabel && 'text-neutral-50/80'"
 				>
 					{ componentSettings.Label }
 				</div>
+				<!-- SelectDropdownIcon -->
 				<i class="ph-bold ph-caret-down text-sm transition-transform" :class="isOpen ? 'rotate-180' : ''"></i>
 			</div>
 			<!-- SelectDropdown -->
@@ -82,7 +91,7 @@ templ SelectInput(componentSettings SelectInputSettings) {
 				if componentSettings.ShouldIncludeBlankOption {
 					<div
 						class="cursor-pointer px-3 py-2 transition-colors hover:bg-neutral-50/10"
-						@click="selectedValue = ''; selectedLabel = ''; isOpen = false"
+						@click="selectedValue = ''; selectedLabel = '--'; isOpen = false"
 					>
 						--
 					</div>
@@ -96,7 +105,7 @@ templ SelectInput(componentSettings SelectInputSettings) {
 						{ option }
 					</div>
 				}
-				for _, option := range componentSettings.KeyValueOptions {
+				for _, option := range componentSettings.LabelValueOptions {
 					for label, value := range option {
 						<div
 							class="cursor-pointer px-3 py-2 transition-colors hover:bg-neutral-50/10"
