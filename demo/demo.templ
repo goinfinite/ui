@@ -1,6 +1,7 @@
 package main
 
 import (
+	uiDisplay "github.com/goinfinite/ui/src/display"
 	"github.com/goinfinite/ui/src/form"
 	uiImport "github.com/goinfinite/ui/src/import"
 )
@@ -27,9 +28,25 @@ templ DemoIndex() {
 					</div>
 					<div class="*:border-t *:border-neutral-800 *:pt-10 flex flex-col gap-10">
 						@InputFieldDemo()
+						@RadioInputDemo()
+						@InlineRadioGroupDemo()
+						@SelectInputDemo()
 					</div>
 				</div>
 				<!-- uiDisplay -->
+				<div class="mt-20 flex flex-col gap-10">
+					<div class="flex flex-col gap-2">
+						<h2 class="text-3xl font-bold">
+							{ `@uiDisplay` }
+						</h2>
+						<p class="text-sm text-neutral-400">
+							uiDisplay is a collection of components for displaying content.
+						</p>
+					</div>
+					<div class="*:border-t *:border-neutral-800 *:pt-10 flex flex-col gap-10">
+						@AccordionDemo()
+					</div>
+				</div>
 			</section>
 		</body>
 	</html>
@@ -54,7 +71,7 @@ templ InputFieldDemo() {
 	InputName: "name",
 	Label:     "Name",
 
-	// Optional Fields
+	// OptionalFields
 	TwoWayStatePath: "name",
 	IsRequired:      false,
 	IsReadOnly:      false,
@@ -76,6 +93,257 @@ templ InputFieldDemo() {
 					InputName:       "name",
 					Label:           "Name",
 					TwoWayStatePath: "name",
+				})
+			</div>
+		</div>
+	</div>
+}
+
+templ RadioInputDemo() {
+	<div class="flex flex-col gap-4">
+		<div class="flex flex-col gap-2">
+			<h3 class="text-xl font-bold">.RadioInput</h3>
+			<p class="text-sm text-neutral-400">
+				A radio input allows users to select one option from a set of options.
+			</p>
+		</div>
+		<div class="grid grid-cols-2 gap-10">
+			<div class="flex flex-col gap-4">
+				<div class="flex flex-col gap-2">
+					<h4 class="text-lg font-bold">Usage</h4>
+					<pre class="rounded-md bg-neutral-800 p-4 text-xs">
+						<code>
+							{ `@uiForm.RadioInput(uiForm.RadioInputSettings{
+	Label:           "Option 1",
+	StateValue:      "option1",
+	TwoWayStatePath: "selectedOption",
+})
+@uiForm.RadioInput(uiForm.RadioInputSettings{
+	Label:           "Option 2",
+	StateValue:      "option2",
+	TwoWayStatePath: "selectedOption",
+})` }
+						</code>
+					</pre>
+				</div>
+				<div class="flex flex-col gap-2">
+					<h5 class="text-sm font-bold">Alpine.js Parent State <i>(x-data)</i></h5>
+					<pre class="rounded-md bg-neutral-800 p-4 text-xs">
+						<code>{ `<div x-data="{selectedOption: 'option2'}"></div>` }</code>
+					</pre>
+				</div>
+			</div>
+			<div x-data="{selectedOption: 'option2'}" class="flex flex-col gap-4">
+				<h4 class="text-lg font-bold">Live Example</h4>
+				<div class="flex flex-col gap-2">
+					@uiForm.RadioInput(uiForm.RadioInputSettings{
+						Label:           "Option 1",
+						StateValue:      "option1",
+						TwoWayStatePath: "selectedOption",
+						InputId:         "option1",
+						InputName:       "options",
+					})
+					@uiForm.RadioInput(uiForm.RadioInputSettings{
+						Label:           "Option 2",
+						StateValue:      "option2",
+						TwoWayStatePath: "selectedOption",
+						InputId:         "option2",
+						InputName:       "options",
+					})
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+templ InlineRadioGroupDemo() {
+	<div class="flex flex-col gap-4">
+		<div class="flex flex-col gap-2">
+			<h3 class="text-xl font-bold">.InlineRadioGroup</h3>
+			<p class="text-sm text-neutral-400">
+				An inline radio group displays a set of radio options in a horizontal layout.
+			</p>
+		</div>
+		<div class="grid grid-cols-2 gap-10">
+			<div class="flex flex-col gap-4">
+				<div class="flex flex-col gap-2">
+					<h4 class="text-lg font-bold">Usage</h4>
+					<pre class="rounded-md bg-neutral-800 p-4 text-xs">
+						<code>
+							{ `@uiForm.InlineRadioGroup(uiForm.InlineRadioGroupSettings{
+	Label: "Select an option",
+	InputSettings: []uiForm.RadioInputSettings{
+		{
+			Label:           "Option 1",
+			StateValue:      "option1",
+			TwoWayStatePath: "groupSelection",
+		},
+		{
+			Label:           "Option 2",
+			StateValue:      "option2",
+			TwoWayStatePath: "groupSelection",
+		},
+	},
+
+	// OptionalFields
+	TwoWayStatePath: "groupSelection",
+	InputId:         "group1",
+	InputName:       "group1",
+})` }
+						</code>
+					</pre>
+				</div>
+				<div class="flex flex-col gap-2">
+					<h5 class="text-sm font-bold">Alpine.js Parent State <i>(x-data)</i></h5>
+					<pre class="rounded-md bg-neutral-800 p-4 text-xs">
+						<code>{ `<div x-data="{groupSelection: 'option2'}"></div>` }</code>
+					</pre>
+				</div>
+			</div>
+			<div x-data="{groupSelection: 'option2'}" class="flex flex-col">
+				<h4 class="text-lg font-bold">Live Example</h4>
+				@uiForm.InlineRadioGroup(uiForm.InlineRadioGroupSettings{
+					Label: "Select an option",
+					InputSettings: []uiForm.RadioInputSettings{
+						{
+							Label:           "Option 1",
+							StateValue:      "option1",
+							TwoWayStatePath: "groupSelection",
+						},
+						{
+							Label:           "Option 2",
+							StateValue:      "option2",
+							TwoWayStatePath: "groupSelection",
+						},
+					},
+					TwoWayStatePath: "groupSelection",
+					InputId:         "group1",
+					InputName:       "group1",
+				})
+			</div>
+		</div>
+	</div>
+}
+
+templ SelectInputDemo() {
+	<div class="flex flex-col gap-4">
+		<div class="flex flex-col gap-2">
+			<h3 class="text-xl font-bold">.SelectInput</h3>
+			<p class="text-sm text-neutral-400">
+				A select input allows users to select one option from a dropdown list.
+			</p>
+		</div>
+		<div class="grid grid-cols-2 gap-10">
+			<div class="flex flex-col gap-4">
+				<div class="flex flex-col gap-2">
+					<h4 class="text-lg font-bold">Usage</h4>
+					<pre class="rounded-md bg-neutral-800 p-4 text-xs">
+						<code>
+							{ `@uiForm.SelectInput(uiForm.SelectInputSettings{
+	InputName: "country",
+	Label:     "Country",
+
+	// OptionalFields
+	FlatOptions:     []string{"USA", "Canada", "Mexico"},
+	KeyValueOptions: []map[string]string{{"United States": "US"},{"Canada": "CA"}},
+	TwoWayStatePath:          "country",
+	OnChangeFunc:             "updateCountry()",
+	Size:                     uiForm.SelectInputSizeMd,
+	InputId:                  "country",
+	IsRequired:               false,
+	ShouldIncludeBlankOption: true,
+})` }
+						</code>
+					</pre>
+				</div>
+				<div class="flex flex-col gap-2">
+					<h5 class="text-sm font-bold">Alpine.js Parent State <i>(x-data)</i></h5>
+					<pre class="rounded-md bg-neutral-800 p-4 text-xs">
+						<code>{ `<div x-data="{country: 'Brazil'}"></div>` }</code>
+					</pre>
+				</div>
+			</div>
+			<div x-data="{country: 'Brazil'}" class="flex flex-col">
+				<h4 class="text-lg font-bold">Live Example</h4>
+				@uiForm.SelectInput(uiForm.SelectInputSettings{
+					InputName:                "country",
+					Label:                    "Country",
+					FlatOptions:              []string{"USA", "Canada", "Mexico", "Brazil", "Argentina"},
+					TwoWayStatePath:          "country",
+					ShouldIncludeBlankOption: true,
+				})
+			</div>
+		</div>
+	</div>
+}
+
+templ AccordionDemoSection1() {
+	<p class="text-sm text-neutral-400">This is the content for section 1. You can put any content here.</p>
+}
+
+templ AccordionDemoSection2() {
+	<p class="text-sm text-neutral-400">This is the content for section 2. You can put any content here.</p>
+}
+
+templ AccordionDemoSection3() {
+	<p class="text-sm text-neutral-400">This is the content for section 3. You can put any content here.</p>
+}
+
+templ AccordionDemo() {
+	<div class="flex flex-col gap-4">
+		<div class="flex flex-col gap-2">
+			<h3 class="text-xl font-bold">.Accordion</h3>
+			<p class="text-sm text-neutral-400">
+				An accordion is a vertically stacked list of items that can be expanded or collapsed to reveal content.
+			</p>
+		</div>
+		<div class="grid grid-cols-2 gap-10">
+			<div class="flex flex-col gap-4">
+				<div class="flex flex-col gap-2">
+					<h4 class="text-lg font-bold">Usage</h4>
+					<pre class="rounded-md bg-neutral-800 p-4 text-xs">
+						<code>
+							{ `@uiDisplay.Accordion(uiDisplay.AccordionSettings{
+	Items: []uiDisplay.AccordionItemSettings{
+		{
+			Title: "Section 1",
+			Content: AccordionDemoSection1(),
+			Icon: "ph-info",
+		},
+		{
+			Title: "Section 2",
+			Content: AccordionDemoSection2(),
+		},
+		{
+			Title: "Section 3",
+			Content: AccordionDemoSection3(),
+		},
+	},
+})` }
+						</code>
+					</pre>
+				</div>
+			</div>
+			<div class="flex flex-col">
+				<h4 class="text-lg font-bold">Live Example</h4>
+				@uiDisplay.Accordion(uiDisplay.AccordionSettings{
+					Items: []uiDisplay.AccordionItemSettings{
+						{
+							Title:   "Section 1",
+							Content: AccordionDemoSection1(),
+							Icon:    "ph-info",
+						},
+						{
+							Title:   "Section 2",
+							Content: AccordionDemoSection2(),
+							Icon:    "ph-warning",
+						},
+						{
+							Title:   "Section 3",
+							Content: AccordionDemoSection3(),
+							Icon:    "ph-check",
+						},
+					},
 				})
 			</div>
 		</div>
