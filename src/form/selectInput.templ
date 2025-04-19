@@ -1,0 +1,113 @@
+package uiForm
+
+const (
+	SelectInputSizeXs string = "xs"
+	SelectInputSizeSm string = "sm"
+	SelectInputSizeMd string = "md"
+	SelectInputSizeLg string = "lg"
+	SelectInputSizeXl string = "xl"
+)
+
+type SelectInputSettings struct {
+	InputName string
+	Label     string
+
+	// OptionalFields
+	FlatOptions              []string
+	KeyValueOptions          []map[string]string
+	TwoWayStatePath          string
+	OnChangeFunc             string
+	Size                     string
+	InputId                  string
+	IsRequired               bool
+	ShouldIncludeBlankOption bool
+}
+
+templ SelectInput(componentSettings SelectInputSettings) {
+	<!-- SelectInput -->
+	<div>
+		<input
+			type="hidden"
+			if componentSettings.InputId != "" {
+				id={ componentSettings.InputId }
+			}
+			if componentSettings.InputName != "" {
+				name={ componentSettings.InputName }
+			}
+			if componentSettings.TwoWayStatePath != "" {
+				x-model:value={ componentSettings.TwoWayStatePath }
+			}
+			if componentSettings.OnChangeFunc != "" {
+				@change={ componentSettings.OnChangeFunc }
+			}
+		/>
+		<fieldset
+			class="relative w-full rounded-md border border-neutral-50/10 bg-neutral-50/5 transition-all focus-within:border-neutral-50/40 hover:border-neutral-50/40"
+			x-data="{isOpen: false, selectedValue: '', selectedLabel: ''}"
+			if componentSettings.TwoWayStatePath != "" {
+				x-init.debounce.300ms={ "$watch('selectedValue', (newValue, prevValue) => { if (newValue !== prevValue) { " + componentSettings.TwoWayStatePath + " = newValue; } })" }
+			}
+		>
+			<legend
+				class="ml-1.5 px-1 text-xs font-bold text-neutral-50/80 transition-opacity"
+				if componentSettings.TwoWayStatePath != "" {
+					:class="!selectedValue ? 'opacity-0 !p-0 w-0 h-3.5' : ''"
+				}
+			>
+				{ componentSettings.Label }
+				if componentSettings.IsRequired {
+					<span class="text-red-700">*</span>
+				}
+			</legend>
+			<div
+				class="flex w-full cursor-pointer items-center justify-between px-2 pb-2 text-sm text-neutral-100"
+				@click="isOpen = !isOpen"
+			>
+				<div
+					x-text="selectedLabel || selectedValue || ''"
+					class="w-full overflow-hidden text-ellipsis"
+					:class="!selectedValue && !selectedLabel ? 'text-neutral-50/80' : ''"
+				>
+					{ componentSettings.Label }
+				</div>
+				<i class="ph-bold ph-caret-down text-sm transition-transform" :class="isOpen ? 'rotate-180' : ''"></i>
+			</div>
+			<!-- SelectDropdown -->
+			<div
+				class="absolute left-0 z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border border-neutral-50/10 bg-neutral-900 shadow-lg"
+				x-show="isOpen"
+				@click.away="isOpen = false"
+				x-transition
+			>
+				if componentSettings.ShouldIncludeBlankOption {
+					<div
+						class="cursor-pointer px-3 py-2 transition-colors hover:bg-neutral-50/10"
+						@click="selectedValue = ''; selectedLabel = ''; isOpen = false"
+					>
+						--
+					</div>
+				}
+				for _, option := range componentSettings.FlatOptions {
+					<div
+						class="cursor-pointer px-3 py-2 transition-colors hover:bg-neutral-50/10"
+						@click={ "selectedValue = '" + option + "'; selectedLabel = '" + option + "'; isOpen = false" }
+						:class={ "selectedValue === '" + option + "' ? 'bg-neutral-50/20' : ''" }
+					>
+						{ option }
+					</div>
+				}
+				for _, option := range componentSettings.KeyValueOptions {
+					for label, value := range option {
+						<div
+							class="cursor-pointer px-3 py-2 transition-colors hover:bg-neutral-50/10"
+							@click={ "selectedValue = '" + value + "'; selectedLabel = '" + label + "'; isOpen = false" }
+							:class={ "selectedValue === '" + value + "' ? 'bg-neutral-50/20' : ''" }
+						>
+							{ label }
+						</div>
+					}
+				}
+			</div>
+		</fieldset>
+	</div>
+}
