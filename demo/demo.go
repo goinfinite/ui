@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	f, err := os.Create("demo.html")
+	f, err := os.Create("index.html")
 	if err != nil {
 		log.Fatalf("CreateHtmlFileFailed: %v", err)
 	}
