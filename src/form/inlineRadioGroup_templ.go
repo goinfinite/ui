@@ -110,7 +110,7 @@ func InlineRadioGroup(componentSettings InlineRadioGroupSettings) templ.Componen
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<p class=\"-mt-2.5 mb-1 w-fit cursor-text text-xs font-bold text-neutral-50/80\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<p class=\"-mt-2 mb-1 w-fit cursor-text text-xs font-bold text-neutral-50/80\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

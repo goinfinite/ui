@@ -28,9 +28,9 @@ type InputFieldSettings struct {
 
 templ InputField(componentSettings InputFieldSettings) {
 	<!-- InputField HTML -->
-	<fieldset class="relative w-full rounded-md border border-neutral-50/10 bg-neutral-50/5 transition-all autofill:bg-neutral-50/20 focus-within:border-neutral-50/40 hover:border-neutral-50/40">
+	<fieldset class="bg-neutral-50/7.5 relative w-full rounded border border-neutral-50/5 transition-all autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30">
 		<legend
-			class="ml-1.5 px-1 text-xs font-bold text-neutral-50/80 transition-opacity"
+			class="ml-1 px-1 text-xs font-bold text-neutral-50/80 transition-opacity"
 			if componentSettings.TwoWayStatePath != "" {
 				:class={ `!` + componentSettings.TwoWayStatePath + ` && 'opacity-0 !p-0 w-0 h-3.5'` }
 			}
@@ -70,7 +70,7 @@ templ InputField(componentSettings InputFieldSettings) {
 		if componentSettings.IsReadOnly && componentSettings.TwoWayStatePath != "" {
 			<div class="text-md absolute right-2 top-0 hidden flex-col gap-1 transition-all hover:flex active:flex peer-hover:flex">
 				<i
-					class="ph-bold ph-clipboard-text border-1 active:bg-secondary-500 cursor-pointer rounded-md border-neutral-50/10 bg-neutral-50/5 p-1 text-neutral-100 hover:border-neutral-50/40 hover:bg-neutral-50/20"
+					class="ph-bold ph-clipboard-text border-1 active:bg-secondary-500 cursor-pointer rounded border-neutral-50/5 bg-neutral-50/5 p-1 text-neutral-100 hover:border-neutral-50/30 hover:bg-neutral-50/20"
 					@click.prevent={ "navigator.clipboard.writeText(" + componentSettings.TwoWayStatePath + ")" }
 				></i>
 			</div>

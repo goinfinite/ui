@@ -202,7 +202,7 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<fieldset class=\"relative w-full rounded-md border border-neutral-50/10 bg-neutral-50/5 transition-all focus-within:border-neutral-50/40 hover:border-neutral-50/40\"><legend class=\"ml-1.5 px-1 text-xs font-bold text-neutral-50/80 transition-opacity\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<fieldset class=\"bg-neutral-50/7.5 relative w-full rounded border border-neutral-50/5 transition-all focus-within:border-neutral-50/30 hover:border-neutral-50/30\"><legend class=\"ml-1 px-1 text-xs font-bold text-neutral-50/80 transition-opacity\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -235,7 +235,7 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "</legend><!-- SelectField --><div class=\"flex w-full cursor-pointer items-center justify-between px-2 pb-2 text-sm text-neutral-100\" @click=\"isOpen = !isOpen\"><div")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "</legend><!-- SelectField --><div class=\"group flex w-full cursor-pointer items-center justify-between px-2 pb-2 text-sm text-neutral-100\" @click=\"isOpen = !isOpen\"><div")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -271,7 +271,7 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "</div><div class=\"flex items-center gap-2\"><!-- SelectDropdownIcon --><i class=\"ph-bold ph-caret-down text-sm transition-transform\" :class=\"isOpen ? &#39;rotate-180&#39; : &#39;&#39;\"></i><!-- SelectClearIcon --><i x-show=\"selectedValue !== &#39;&#39;\" @click.prevent=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "</div><div class=\"flex items-center gap-1.5 text-neutral-100/60\"><!-- SelectDropdownIcon --><i class=\"ph-bold ph-caret-down pt-0.5 text-sm transition-transform hover:text-neutral-300 group-focus-within:text-neutral-300 group-hover:text-neutral-300\" :class=\"isOpen ? &#39;rotate-180&#39; : &#39;&#39;\"></i><!-- SelectClearIcon --><i x-show=\"selectedValue !== &#39;&#39;\" @click.prevent=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -284,12 +284,12 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "\" class=\"ph-bold ph-x-circle text-lg\"></i></div></div><!-- SelectDropdown --><ul class=\"absolute left-0 z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border border-neutral-50/10 bg-neutral-800/95 shadow-lg hover:border-neutral-50/40\" x-show=\"isOpen\" @click.away=\"isOpen = false\" x-transition>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "\" class=\"ph-bold ph-x-circle text-lg hover:text-neutral-300\"></i></div></div><!-- SelectDropdown --><ul class=\"absolute left-0 z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border border-neutral-50/5 bg-neutral-800/95 shadow-lg hover:border-neutral-50/30\" x-show=\"isOpen\" @click.away=\"isOpen = false\" x-transition>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		dropdownClasses := "cursor-pointer px-3 py-2 transition-colors hover:bg-neutral-50/10 border-neutral-50/5 border-t first:border-t-0"
-		dropdownSelectedClasses := "bg-neutral-50/5 border-y !border-neutral-50/10"
+		dropdownClasses := "cursor-pointer px-3 py-2 transition-colors hover:bg-secondary-500/20 border-neutral-50/5 border-t first:border-t-0"
+		dropdownSelectedClasses := "bg-secondary-500/10 border-y !border-neutral-50/10"
 		if componentSettings.ShouldIncludeBlankOption {
 			var templ_7745c5c3_Var12 = []any{dropdownClasses}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var12...)

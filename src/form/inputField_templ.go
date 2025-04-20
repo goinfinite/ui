@@ -55,7 +55,7 @@ func InputField(componentSettings InputFieldSettings) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!-- InputField HTML --><fieldset class=\"relative w-full rounded-md border border-neutral-50/10 bg-neutral-50/5 transition-all autofill:bg-neutral-50/20 focus-within:border-neutral-50/40 hover:border-neutral-50/40\"><legend class=\"ml-1.5 px-1 text-xs font-bold text-neutral-50/80 transition-opacity\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!-- InputField HTML --><fieldset class=\"bg-neutral-50/7.5 relative w-full rounded border border-neutral-50/5 transition-all autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30\"><legend class=\"ml-1 px-1 text-xs font-bold text-neutral-50/80 transition-opacity\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -245,7 +245,7 @@ func InputField(componentSettings InputFieldSettings) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if componentSettings.IsReadOnly && componentSettings.TwoWayStatePath != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<div class=\"text-md absolute right-2 top-0 hidden flex-col gap-1 transition-all hover:flex active:flex peer-hover:flex\"><i class=\"ph-bold ph-clipboard-text border-1 active:bg-secondary-500 cursor-pointer rounded-md border-neutral-50/10 bg-neutral-50/5 p-1 text-neutral-100 hover:border-neutral-50/40 hover:bg-neutral-50/20\" @click.prevent=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<div class=\"text-md absolute right-2 top-0 hidden flex-col gap-1 transition-all hover:flex active:flex peer-hover:flex\"><i class=\"ph-bold ph-clipboard-text border-1 active:bg-secondary-500 cursor-pointer rounded border-neutral-50/5 bg-neutral-50/5 p-1 text-neutral-100 hover:border-neutral-50/30 hover:bg-neutral-50/20\" @click.prevent=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
