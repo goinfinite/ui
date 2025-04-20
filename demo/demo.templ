@@ -15,7 +15,7 @@ templ DemoIndex() {
 		</head>
 		<body class="bg-neutral-900 text-neutral-50">
 			<h1 class="my-10 text-center text-5xl font-bold">Infinite UI Demo</h1>
-			<section class="container mx-auto flex flex-col">
+			<section class="container mx-auto flex flex-col px-4">
 				<div class="flex flex-col gap-10">
 					<!-- uiForm -->
 					<div class="flex flex-col gap-2">
@@ -60,7 +60,7 @@ templ InputFieldDemo() {
 				An input field is a basic form element that allows users to enter text.
 			</p>
 		</div>
-		<div class="grid grid-cols-2 gap-10">
+		<div class="grid gap-10 md:grid-cols-2">
 			<div class="flex flex-col gap-4">
 				<div class="flex flex-col gap-2">
 					<h4 class="text-lg font-bold">Usage</h4>
@@ -107,7 +107,7 @@ templ RadioInputDemo() {
 				A radio input allows users to select one option from a set of options.
 			</p>
 		</div>
-		<div class="grid grid-cols-2 gap-10">
+		<div class="grid gap-10 md:grid-cols-2">
 			<div class="flex flex-col gap-4">
 				<div class="flex flex-col gap-2">
 					<h4 class="text-lg font-bold">Usage</h4>
@@ -162,7 +162,7 @@ templ InlineRadioGroupDemo() {
 				An inline radio group displays a set of radio options in a horizontal layout.
 			</p>
 		</div>
-		<div class="grid grid-cols-2 gap-10">
+		<div class="grid gap-10 md:grid-cols-2">
 			<div class="flex flex-col gap-4">
 				<div class="flex flex-col gap-2">
 					<h4 class="text-lg font-bold">Usage</h4>
@@ -221,6 +221,27 @@ templ InlineRadioGroupDemo() {
 	</div>
 }
 
+templ SelectInputDemoOption1() {
+	<div class="flex flex-col">
+		<h4 class="text-md font-bold">🇦🇷 Argentina</h4>
+		<p class="text-sm text-neutral-400">Known for its dance and wine.</p>
+	</div>
+}
+
+templ SelectInputDemoOption2() {
+	<div class="flex flex-col">
+		<h4 class="text-md font-bold">🇧🇷 Brazil</h4>
+		<p class="text-sm text-neutral-400">Known for its music and natural beauty.</p>
+	</div>
+}
+
+templ SelectInputDemoOption3() {
+	<div class="flex flex-col">
+		<h4 class="text-md font-bold">🇨🇱 Chile</h4>
+		<p class="text-sm text-neutral-400">Known for its deserts and mysterious islands.</p>
+	</div>
+}
+
 templ SelectInputDemo() {
 	<div class="flex flex-col gap-4">
 		<div class="flex flex-col gap-2">
@@ -229,10 +250,12 @@ templ SelectInputDemo() {
 				A select input allows users to select one option from a dropdown list.
 			</p>
 		</div>
-		<div class="grid grid-cols-2 gap-10" x-data="{country: 'Brazil'}">
+		<div class="grid gap-10 md:grid-cols-2" x-data="{country: 'Brazil'}">
 			<div class="flex flex-col gap-4">
 				<div class="flex flex-col gap-2">
-					<h4 class="text-lg font-bold">Usage (w/FlatOptions)</h4>
+					<h4 class="text-lg font-bold">
+						Usage <span class="text-sm text-neutral-500">(w/FlatOptions)</span>
+					</h4>
 					<pre class="rounded-md bg-neutral-800 p-4 text-xs">
 						<code>
 							{ `@uiForm.SelectInput(uiForm.SelectInputSettings{
@@ -265,10 +288,12 @@ templ SelectInputDemo() {
 				})
 			</div>
 		</div>
-		<div class="grid grid-cols-2 gap-10" x-data="{country: 'BR'}">
+		<div class="my-10 grid gap-10 md:grid-cols-2" x-data="{country: 'BR'}">
 			<div class="flex flex-col gap-4">
 				<div class="flex flex-col gap-2">
-					<h4 class="text-lg font-bold">Usage (w/LabelValueOptions)</h4>
+					<h4 class="text-lg font-bold">
+						Usage <span class="text-sm text-neutral-500">(w/LabelValueOptions)</span>
+					</h4>
 					<pre class="rounded-md bg-neutral-800 p-4 text-xs">
 						<code>
 							{ `@uiForm.SelectInput(uiForm.SelectInputSettings{
@@ -276,8 +301,19 @@ templ SelectInputDemo() {
 	Label:     "Country",
 
 	// OptionalFields
-	LabelValueOptions: []map[string]string{
-		{"Argentina": "AR"}, {"Brazil": "BR"}, {"Chile": "CL"},
+	LabelValueOptions: []uiForm.SelectLabelValueOption{
+		{
+			Label: "Argentina",
+			Value: "AR",
+		},
+		{
+			Label: "Brazil",
+			Value: "BR",
+		},
+		{
+			Label: "Chile",
+			Value: "CL",
+		},
 	},
 	TwoWayStatePath:          "country",
 	ShouldIncludeBlankOption: true,
@@ -297,8 +333,90 @@ templ SelectInputDemo() {
 				@uiForm.SelectInput(uiForm.SelectInputSettings{
 					InputName: "country",
 					Label:     "Country",
-					LabelValueOptions: []map[string]string{
-						{"Argentina": "AR"}, {"Brazil": "BR"}, {"Chile": "CL"},
+					LabelValueOptions: []uiForm.SelectLabelValueOption{
+						{
+							Label: "Argentina",
+							Value: "AR",
+						},
+						{
+							Label: "Brazil",
+							Value: "BR",
+						},
+						{
+							Label: "Chile",
+							Value: "CL",
+						},
+					},
+					TwoWayStatePath:          "country",
+					ShouldIncludeBlankOption: true,
+				})
+			</div>
+		</div>
+		<div class="grid gap-10 md:grid-cols-2" x-data="{country: 'BR'}">
+			<div class="flex flex-col gap-4">
+				<div class="flex flex-col gap-2">
+					<h4 class="text-lg font-bold">
+						Usage <span class="text-sm text-neutral-500">(w/LabelValueOptions and LabelHtml)</span>
+					</h4>
+					<pre class="rounded-md bg-neutral-800 p-4 text-xs">
+						<code>
+							{ `@uiForm.SelectInput(uiForm.SelectInputSettings{
+	InputName: "country",
+	Label:     "Country",
+
+	// OptionalFields
+	LabelValueOptions: []uiForm.SelectLabelValueOption{
+		{
+			Label:     "Argentina",
+			LabelHtml: SelectInputDemoOption1(),
+			Value:     "AR",
+		},
+		{
+			Label:     "Brazil",
+			LabelHtml: SelectInputDemoOption2(),
+			Value:     "BR",
+		},
+		{
+			Label:     "Chile",
+			LabelHtml: SelectInputDemoOption3(),
+			Value:     "CL",
+		},
+	},
+	TwoWayStatePath:          "country",
+	ShouldIncludeBlankOption: true,
+})` }
+						</code>
+					</pre>
+				</div>
+				<div class="flex flex-col gap-2">
+					<h5 class="text-sm font-bold">Alpine.js Parent State <i>(x-data)</i></h5>
+					<pre class="rounded-md bg-neutral-800 p-4 text-xs">
+						<code>{ `<div x-data="{country: '` }<span x-text="country"></span>{ `'}"></div>` }</code>
+					</pre>
+				</div>
+			</div>
+			<div class="flex flex-col gap-3">
+				<h4 class="text-lg font-bold">Live Example</h4>
+				<p class="text-sm text-neutral-400">Click the dropdown to see the HTML labels.</p>
+				@uiForm.SelectInput(uiForm.SelectInputSettings{
+					InputName: "country",
+					Label:     "Country",
+					LabelValueOptions: []uiForm.SelectLabelValueOption{
+						{
+							Label:     "Argentina",
+							LabelHtml: SelectInputDemoOption1(),
+							Value:     "AR",
+						},
+						{
+							Label:     "Brazil",
+							LabelHtml: SelectInputDemoOption2(),
+							Value:     "BR",
+						},
+						{
+							Label:     "Chile",
+							LabelHtml: SelectInputDemoOption3(),
+							Value:     "CL",
+						},
 					},
 					TwoWayStatePath:          "country",
 					ShouldIncludeBlankOption: true,
@@ -328,7 +446,7 @@ templ AccordionDemo() {
 				An accordion is a vertically stacked list of items that can be expanded or collapsed to reveal content.
 			</p>
 		</div>
-		<div class="grid grid-cols-2 gap-10">
+		<div class="grid gap-10 md:grid-cols-2">
 			<div class="flex flex-col gap-4">
 				<div class="flex flex-col gap-2">
 					<h4 class="text-lg font-bold">Usage</h4>

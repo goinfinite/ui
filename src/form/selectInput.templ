@@ -8,13 +8,19 @@ const (
 	SelectInputSizeXl string = "xl"
 )
 
+type SelectLabelValueOption struct {
+	Label     string          `json:"label"`
+	LabelHtml templ.Component `json:"-"`
+	Value     string          `json:"value"`
+}
+
 type SelectInputSettings struct {
 	InputName string
 	Label     string
 
 	// OptionalFields
 	FlatOptions              []string
-	LabelValueOptions        []map[string]string
+	LabelValueOptions        []SelectLabelValueOption
 	TwoWayStatePath          string
 	OnChangeFunc             string
 	Size                     string
@@ -29,7 +35,7 @@ templ SelectInput(componentSettings SelectInputSettings) {
 		if componentSettings.TwoWayStatePath != "" {
 			x-data={ "{isOpen: false, selectedValue: " + componentSettings.TwoWayStatePath + ", selectedLabel: " + componentSettings.TwoWayStatePath + " || '--'}" }
 		} else {
-			x-data="{isOpen: false, selectedValue: '', selectedLabel: ''}"
+			x-data="{isOpen: false, selectedValue: '', selectedLabel: '--'}"
 		}
 		if componentSettings.TwoWayStatePath != "" {
 			x-init.debounce.300ms={ "$watch('selectedValue', (newValue, prevValue) => { if (newValue !== prevValue) { " + componentSettings.TwoWayStatePath + " = newValue; } })" }
@@ -77,53 +83,65 @@ templ SelectInput(componentSettings SelectInputSettings) {
 			>
 				<div
 					if len(componentSettings.LabelValueOptions) > 0 {
-						x-init={ `JSON.parse(document.getElementById('` + labelValueOptionsScriptId + `').textContent).forEach(option => {if (Object.values(option)[0] == selectedValue){selectedLabel = Object.keys(option)[0]}})` }
+						x-init={ `JSON.parse(document.getElementById('` + labelValueOptionsScriptId + `').textContent).forEach(option => {if (option.value == selectedValue){selectedLabel = option.label}})` }
 					}
-					x-text="selectedLabel || selectedValue || ''"
+					x-text="selectedLabel || selectedValue || '--'"
 					class="w-full overflow-hidden text-ellipsis"
 					:class="!selectedLabel && 'text-neutral-50/80'"
 				>
 					{ componentSettings.Label }
 				</div>
-				<!-- SelectDropdownIcon -->
-				<i class="ph-bold ph-caret-down text-sm transition-transform" :class="isOpen ? 'rotate-180' : ''"></i>
+				<div class="flex items-center gap-2">
+					<!-- SelectDropdownIcon -->
+					<i class="ph-bold ph-caret-down text-sm transition-transform" :class="isOpen ? 'rotate-180' : ''"></i>
+					<!-- SelectClearIcon -->
+					<i
+						x-show="selectedValue !== ''"
+						@click.prevent={ "selectedValue = ''; selectedLabel = '--'; isOpen = false" }
+						class="ph-bold ph-x-circle text-lg"
+					></i>
+				</div>
 			</div>
 			<!-- SelectDropdown -->
-			<div
-				class="absolute left-0 z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border border-neutral-50/10 bg-neutral-900 shadow-lg"
+			<ul
+				class="absolute left-0 z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border border-neutral-50/10 bg-neutral-800/95 shadow-lg hover:border-neutral-50/40"
 				x-show="isOpen"
 				@click.away="isOpen = false"
 				x-transition
 			>
+				{{ dropdownClasses := "cursor-pointer px-3 py-2 transition-colors hover:bg-neutral-50/10 border-neutral-50/5 border-t first:border-t-0" }}
+				{{ dropdownSelectedClasses := "bg-neutral-50/5 border-y !border-neutral-50/10" }}
 				if componentSettings.ShouldIncludeBlankOption {
-					<div
-						class="cursor-pointer px-3 py-2 transition-colors hover:bg-neutral-50/10"
+					<li
+						class={ dropdownClasses }
 						@click="selectedValue = ''; selectedLabel = '--'; isOpen = false"
 					>
 						--
-					</div>
+					</li>
 				}
 				for _, option := range componentSettings.FlatOptions {
-					<div
-						class="cursor-pointer px-3 py-2 transition-colors hover:bg-neutral-50/10"
+					<li
+						class={ dropdownClasses }
 						@click={ "selectedValue = '" + option + "'; selectedLabel = '" + option + "'; isOpen = false" }
-						:class={ "selectedValue === '" + option + "' ? 'bg-neutral-50/20' : ''" }
+						:class={ "selectedValue === '" + option + "' ? '" + dropdownSelectedClasses + "' : ''" }
 					>
 						{ option }
-					</div>
+					</li>
 				}
 				for _, option := range componentSettings.LabelValueOptions {
-					for label, value := range option {
-						<div
-							class="cursor-pointer px-3 py-2 transition-colors hover:bg-neutral-50/10"
-							@click={ "selectedValue = '" + value + "'; selectedLabel = '" + label + "'; isOpen = false" }
-							:class={ "selectedValue === '" + value + "' ? 'bg-neutral-50/20' : ''" }
-						>
-							{ label }
-						</div>
-					}
+					<li
+						class={ dropdownClasses }
+						@click={ "selectedValue = '" + option.Value + "'; selectedLabel = '" + option.Label + "'; isOpen = false" }
+						:class={ "selectedValue === '" + option.Value + "' ? '" + dropdownSelectedClasses + "' : ''" }
+					>
+						if option.LabelHtml != nil {
+							@option.LabelHtml
+						} else {
+							{ option.Label }
+						}
+					</li>
 				}
-			</div>
+			</ul>
 		</fieldset>
 	</div>
 }
