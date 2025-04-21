@@ -18,26 +18,29 @@ const (
 
 type TagSettings struct {
 	// OptionalFields
-	Size                  string
-	OuterBackgroundColor  string
-	OuterTextColor        string
-	OuterLeftIcon         string
-	OuterLeftOnClickFunc  string
-	OuterLeftLabel        string
-	OuterRightIcon        string
-	OuterRightLabel       string
-	OuterRightOnClickFunc string
-	OuterRadius           string
-	InnerIcon             string
-	InnerLabel            string
-	InnerBackgroundColor  string
-	InnerTextColor        string
-	InnerRadius           string
+	Size                           string
+	OuterBackgroundColor           string
+	OuterTextColor                 string
+	OuterLeftIcon                  string
+	OuterLeftLabel                 string
+	OuterLeftLabelOneWayStatePath  string
+	OuterLeftOnClickFunc           string
+	OuterRightIcon                 string
+	OuterRightLabel                string
+	OuterRightLabelOneWayStatePath string
+	OuterRightOnClickFunc          string
+	OuterRadius                    string
+	InnerIcon                      string
+	InnerLabel                     string
+	InnerLabelOneWayStatePath      string
+	InnerBackgroundColor           string
+	InnerTextColor                 string
+	InnerRadius                    string
 }
 
 templ Tag(componentSettings TagSettings) {
 	<!-- Tag -->
-	{{ initialOuterSizeClasses := "ring-1 text-base px-2 py-1 gap-1" }}
+	{{ initialOuterSizeClasses := "ring-1 text-base px-2 py-1 gap-1.5" }}
 	switch componentSettings.Size {
 		case TagSizeXs:
 			{{ initialOuterSizeClasses = "ring-0.25 text-xs px-2 py-1 gap-1" }}
@@ -81,33 +84,69 @@ templ Tag(componentSettings TagSettings) {
 		" text-" + initialOuterTextColor +
 		" " + initialOuterRadius
 	}}
-	{{ initialInnerSizeClasses := "text-base px-2 py-1" }}
+	{{ initialInnerSizeClasses := "text-base px-2 py-1 gap-1.5" }}
 	switch componentSettings.Size {
 		case TagSizeXs:
-			{{ initialInnerSizeClasses = "text-xs px-2 py-1" }}
+			{{ initialInnerSizeClasses = "text-xs px-2 py-1 gap-1" }}
 		case TagSizeSm:
-			{{ initialInnerSizeClasses = "text-sm px-2 py-1" }}
+			{{ initialInnerSizeClasses = "text-sm px-2 py-1 gap-1.5" }}
 		case TagSizeMd:
-			{{ initialInnerSizeClasses = "text-base px-2 py-1" }}
+			{{ initialInnerSizeClasses = "text-base px-2 py-1 gap-1.5" }}
 		case TagSizeLg:
-			{{ initialInnerSizeClasses = "text-lg px-3 py-1.5" }}
+			{{ initialInnerSizeClasses = "text-lg px-3 py-1.5 gap-2" }}
 		case TagSizeXl:
-			{{ initialInnerSizeClasses = "text-xl px-3 py-1.5" }}
+			{{ initialInnerSizeClasses = "text-xl px-3 py-1.5 gap-2" }}
 	}
 	{{ initialInnerBackgroundColor := "neutral-50/10" }}
 	if componentSettings.InnerBackgroundColor != "" {
 		{{ initialInnerBackgroundColor = componentSettings.InnerBackgroundColor }}
 	}
+	{{ initialInnerTextColor := "neutral-50" }}
+	if componentSettings.InnerTextColor != "" {
+		{{ initialInnerTextColor = componentSettings.InnerTextColor }}
+	}
+	{{ initialInnerRadius := "rounded" }}
+	switch componentSettings.InnerRadius {
+		case TagRadiusNone:
+			{{ initialInnerRadius = "rounded-none" }}
+		case TagRadiusXs:
+			{{ initialInnerRadius = "rounded-xs" }}
+		case TagRadiusSm:
+			{{ initialInnerRadius = "rounded-sm" }}
+		case TagRadiusMd:
+			{{ initialInnerRadius = "rounded-md" }}
+		case TagRadiusLg:
+			{{ initialInnerRadius = "rounded-lg" }}
+		case TagRadiusXl:
+			{{ initialInnerRadius = "rounded-xl" }}
+		case TagRadiusFull:
+			{{ initialInnerRadius = "rounded-full" }}
+	}
 	{{
-	initialInnerClasses := initialInnerSizeClasses + " " + "bg-" + initialInnerBackgroundColor
+	initialInnerClasses := initialInnerSizeClasses + " " +
+		"bg-" + initialInnerBackgroundColor +
+		" text-" + initialInnerTextColor +
+		" " + initialInnerRadius
 	}}
 	<div class={ "flex items-center w-fit " + initialOuterClasses }>
-		<div class="flex items-center gap-1">
+		{{ outerLeftItemsClasses := "flex items-center gap-1" }}
+		if componentSettings.OuterLeftOnClickFunc != "" {
+			{{ outerLeftItemsClasses += " cursor-pointer" }}
+		}
+		<div
+			class={ outerLeftItemsClasses }
+			if componentSettings.OuterLeftOnClickFunc != "" {
+				@click={ componentSettings.OuterLeftOnClickFunc }
+			}
+		>
 			if componentSettings.OuterLeftIcon != "" {
 				<i class={ "ph-bold " + componentSettings.OuterLeftIcon + " text-lg" }></i>
 			}
 			if componentSettings.OuterLeftLabel != "" {
 				{ componentSettings.OuterLeftLabel }
+			}
+			if componentSettings.OuterLeftLabelOneWayStatePath != "" {
+				<span x-text={ componentSettings.OuterLeftLabelOneWayStatePath }></span>
 			}
 		</div>
 		<div class={ "flex items-center w-fit " + initialInnerClasses }>
@@ -117,6 +156,31 @@ templ Tag(componentSettings TagSettings) {
 			if componentSettings.InnerLabel != "" {
 				{ componentSettings.InnerLabel }
 			}
+			if componentSettings.InnerLabelOneWayStatePath != "" {
+				<span x-text={ componentSettings.InnerLabelOneWayStatePath }></span>
+			}
 		</div>
+		if componentSettings.OuterRightIcon != "" || componentSettings.OuterRightLabel != "" || componentSettings.OuterRightLabelOneWayStatePath != "" {
+			{{ outerRightItemsClasses := "flex items-center gap-1" }}
+			if componentSettings.OuterRightOnClickFunc != "" {
+				{{ outerRightItemsClasses += " cursor-pointer" }}
+			}
+			<div
+				class={ outerRightItemsClasses }
+				if componentSettings.OuterRightOnClickFunc != "" {
+					@click={ componentSettings.OuterRightOnClickFunc }
+				}
+			>
+				if componentSettings.OuterRightIcon != "" {
+					<i class={ "ph-bold " + componentSettings.OuterRightIcon + " text-lg" }></i>
+				}
+				if componentSettings.OuterRightLabel != "" {
+					{ componentSettings.OuterRightLabel }
+				}
+				if componentSettings.OuterRightLabelOneWayStatePath != "" {
+					<span x-text={ componentSettings.OuterRightLabelOneWayStatePath }></span>
+				}
+			</div>
+		}
 	</div>
 }

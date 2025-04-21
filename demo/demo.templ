@@ -80,7 +80,7 @@ templ UsageTitle(componentPath string) {
 		target="_blank"
 	>
 		<h4 class="text-lg font-bold text-neutral-50 transition-all hover:opacity-80">
-			Usage 
+			Usage
 			<i class="ph-bold ph-arrow-square-out text-sm text-neutral-400"></i>
 		</h4>
 	</a>
@@ -560,7 +560,7 @@ templ TagDemo() {
 		</div>
 		<div class="flex flex-col gap-4">
 			<h4 class="mb-2 text-lg font-bold">Live Example</h4>
-			<div class="gap-x-15 flex flex-row flex-wrap items-center gap-y-10">
+			<div class="flex flex-row flex-wrap items-center gap-10">
 				<div class="flex flex-col gap-2">
 					<p class="text-sm text-neutral-400">TagSizeXs to TagSizeXl</p>
 					for _, tagSize := range []string{"xs", "sm", "md", "lg", "xl"} {
@@ -597,6 +597,33 @@ templ TagDemo() {
 							InnerLabel:           "Warning",
 						})
 					}
+				</div>
+				<div class="flex flex-col gap-2">
+					<p class="text-sm text-neutral-400">InnerBackgroundColor</p>
+					for _, innerColor := range []string{"red-500", "amber-500", "emerald-500", "cyan-500", "violet-500", "gray-500"} {
+						@uiDisplay.Tag(uiDisplay.TagSettings{
+							OuterLeftIcon:        "ph-info",
+							OuterLeftLabel:       "Info",
+							InnerIcon:            "ph-warning",
+							InnerLabel:           "Warning",
+							InnerBackgroundColor: innerColor,
+						})
+					}
+				</div>
+				<div x-data="{clickCount: 0}" class="flex flex-col gap-2">
+					<p class="text-sm text-neutral-400">Side Elements OnClickFunc</p>
+					<div class="flex flex-col gap-2">
+						@uiDisplay.Tag(uiDisplay.TagSettings{
+							OuterLeftIcon:             "ph-plus",
+							OuterLeftLabel:            "Add",
+							OuterLeftOnClickFunc:      "clickCount++",
+							OuterRightIcon:            "ph-minus",
+							OuterRightLabel:           "Remove",
+							OuterRightOnClickFunc:     "if(clickCount > 0) clickCount--",
+							InnerIcon:                 "ph-hash",
+							InnerLabelOneWayStatePath: "clickCount",
+						})
+					</div>
 				</div>
 			</div>
 		</div>
