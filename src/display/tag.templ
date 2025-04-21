@@ -131,7 +131,7 @@ templ Tag(componentSettings TagSettings) {
 	<div class={ "flex items-center w-fit " + initialOuterClasses }>
 		{{ outerLeftItemsClasses := "flex items-center gap-1" }}
 		if componentSettings.OuterLeftOnClickFunc != "" {
-			{{ outerLeftItemsClasses += " cursor-pointer" }}
+			{{ outerLeftItemsClasses += " cursor-pointer hover:opacity-80 transition-opacity" }}
 		}
 		<div
 			class={ outerLeftItemsClasses }
@@ -163,7 +163,7 @@ templ Tag(componentSettings TagSettings) {
 		if componentSettings.OuterRightIcon != "" || componentSettings.OuterRightLabel != "" || componentSettings.OuterRightLabelOneWayStatePath != "" {
 			{{ outerRightItemsClasses := "flex items-center gap-1" }}
 			if componentSettings.OuterRightOnClickFunc != "" {
-				{{ outerRightItemsClasses += " cursor-pointer" }}
+				{{ outerRightItemsClasses += " cursor-pointer hover:opacity-80 transition-opacity" }}
 			}
 			<div
 				class={ outerRightItemsClasses }

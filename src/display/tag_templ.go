@@ -181,7 +181,7 @@ func Tag(componentSettings TagSettings) templ.Component {
 		}
 		outerLeftItemsClasses := "flex items-center gap-1"
 		if componentSettings.OuterLeftOnClickFunc != "" {
-			outerLeftItemsClasses += " cursor-pointer"
+			outerLeftItemsClasses += " cursor-pointer hover:opacity-80 transition-opacity"
 		}
 		var templ_7745c5c3_Var4 = []any{outerLeftItemsClasses}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var4...)
@@ -377,7 +377,7 @@ func Tag(componentSettings TagSettings) templ.Component {
 		if componentSettings.OuterRightIcon != "" || componentSettings.OuterRightLabel != "" || componentSettings.OuterRightLabelOneWayStatePath != "" {
 			outerRightItemsClasses := "flex items-center gap-1"
 			if componentSettings.OuterRightOnClickFunc != "" {
-				outerRightItemsClasses += " cursor-pointer"
+				outerRightItemsClasses += " cursor-pointer hover:opacity-80 transition-opacity"
 			}
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, " ")
 			if templ_7745c5c3_Err != nil {
