@@ -1,0 +1,122 @@
+package uiDisplay
+
+const (
+	TagSizeXs string = "xs"
+	TagSizeSm string = "sm"
+	TagSizeMd string = "md"
+	TagSizeLg string = "lg"
+	TagSizeXl string = "xl"
+
+	TagRadiusNone string = "none"
+	TagRadiusXs   string = "xs"
+	TagRadiusSm   string = "sm"
+	TagRadiusMd   string = "md"
+	TagRadiusLg   string = "lg"
+	TagRadiusXl   string = "xl"
+	TagRadiusFull string = "full"
+)
+
+type TagSettings struct {
+	// OptionalFields
+	Size                  string
+	OuterBackgroundColor  string
+	OuterTextColor        string
+	OuterLeftIcon         string
+	OuterLeftOnClickFunc  string
+	OuterLeftLabel        string
+	OuterRightIcon        string
+	OuterRightLabel       string
+	OuterRightOnClickFunc string
+	OuterRadius           string
+	InnerIcon             string
+	InnerLabel            string
+	InnerBackgroundColor  string
+	InnerTextColor        string
+	InnerRadius           string
+}
+
+templ Tag(componentSettings TagSettings) {
+	<!-- Tag -->
+	{{ initialOuterSizeClasses := "ring-1 text-base px-2 py-1 gap-1" }}
+	switch componentSettings.Size {
+		case TagSizeXs:
+			{{ initialOuterSizeClasses = "ring-0.25 text-xs px-2 py-1 gap-1" }}
+		case TagSizeSm:
+			{{ initialOuterSizeClasses = "ring-0.5 text-sm px-2 py-1 gap-1.5" }}
+		case TagSizeMd:
+			{{ initialOuterSizeClasses = "ring-1 text-base px-2 py-1 gap-1.5" }}
+		case TagSizeLg:
+			{{ initialOuterSizeClasses = "ring-1.5 text-lg px-3 py-1.5 gap-2" }}
+		case TagSizeXl:
+			{{ initialOuterSizeClasses = "ring-2 text-xl px-3 py-1.5 gap-2" }}
+	}
+	{{ initialOuterBackgroundColor := "secondary-500" }}
+	if componentSettings.OuterBackgroundColor != "" {
+		{{ initialOuterBackgroundColor = componentSettings.OuterBackgroundColor }}
+	}
+	{{ initialOuterTextColor := "neutral-50" }}
+	if componentSettings.OuterTextColor != "" {
+		{{ initialOuterTextColor = componentSettings.OuterTextColor }}
+	}
+	{{ initialOuterRadius := "rounded" }}
+	switch componentSettings.OuterRadius {
+		case TagRadiusNone:
+			{{ initialOuterRadius = "rounded-none" }}
+		case TagRadiusXs:
+			{{ initialOuterRadius = "rounded-xs" }}
+		case TagRadiusSm:
+			{{ initialOuterRadius = "rounded-sm" }}
+		case TagRadiusMd:
+			{{ initialOuterRadius = "rounded-md" }}
+		case TagRadiusLg:
+			{{ initialOuterRadius = "rounded-lg" }}
+		case TagRadiusXl:
+			{{ initialOuterRadius = "rounded-xl" }}
+		case TagRadiusFull:
+			{{ initialOuterRadius = "rounded-full" }}
+	}
+	{{
+	initialOuterClasses := initialOuterSizeClasses + " " +
+		" ring-" + initialOuterBackgroundColor + " bg-" + initialOuterBackgroundColor +
+		" text-" + initialOuterTextColor +
+		" " + initialOuterRadius
+	}}
+	{{ initialInnerSizeClasses := "text-base px-2 py-1" }}
+	switch componentSettings.Size {
+		case TagSizeXs:
+			{{ initialInnerSizeClasses = "text-xs px-2 py-1" }}
+		case TagSizeSm:
+			{{ initialInnerSizeClasses = "text-sm px-2 py-1" }}
+		case TagSizeMd:
+			{{ initialInnerSizeClasses = "text-base px-2 py-1" }}
+		case TagSizeLg:
+			{{ initialInnerSizeClasses = "text-lg px-3 py-1.5" }}
+		case TagSizeXl:
+			{{ initialInnerSizeClasses = "text-xl px-3 py-1.5" }}
+	}
+	{{ initialInnerBackgroundColor := "neutral-50/10" }}
+	if componentSettings.InnerBackgroundColor != "" {
+		{{ initialInnerBackgroundColor = componentSettings.InnerBackgroundColor }}
+	}
+	{{
+	initialInnerClasses := initialInnerSizeClasses + " " + "bg-" + initialInnerBackgroundColor
+	}}
+	<div class={ "flex items-center w-fit " + initialOuterClasses }>
+		<div class="flex items-center gap-1">
+			if componentSettings.OuterLeftIcon != "" {
+				<i class={ "ph-bold " + componentSettings.OuterLeftIcon + " text-lg" }></i>
+			}
+			if componentSettings.OuterLeftLabel != "" {
+				{ componentSettings.OuterLeftLabel }
+			}
+		</div>
+		<div class={ "flex items-center w-fit " + initialInnerClasses }>
+			if componentSettings.InnerIcon != "" {
+				<i class={ "ph-bold " + componentSettings.InnerIcon + " text-lg" }></i>
+			}
+			if componentSettings.InnerLabel != "" {
+				{ componentSettings.InnerLabel }
+			}
+		</div>
+	</div>
+}

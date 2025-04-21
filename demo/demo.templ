@@ -36,7 +36,7 @@ window.__unocss = {
 		</head>
 		<body class="bg-neutral-900 text-neutral-50">
 			<h1 class="my-10 text-center text-5xl font-bold">Infinite UI Demo</h1>
-			<section class="container mx-auto flex flex-col px-4">
+			<section class="container mx-auto flex flex-col overflow-x-auto p-4">
 				<div class="flex flex-col gap-10">
 					<!-- uiForm -->
 					<div class="flex flex-col gap-2">
@@ -66,11 +66,24 @@ window.__unocss = {
 					</div>
 					<div class="*:border-t *:border-neutral-800 *:pt-10 flex flex-col gap-10">
 						@AccordionDemo()
+						@TagDemo()
 					</div>
 				</div>
 			</section>
 		</body>
 	</html>
+}
+
+templ UsageTitle(componentPath string) {
+	<a
+		href={ "https://github.com/goinfinite/ui/blob/main/src" + templ.SafeURL(componentPath) }
+		target="_blank"
+	>
+		<h4 class="text-lg font-bold text-neutral-50 transition-all hover:opacity-80">
+			Usage 
+			<i class="ph-bold ph-arrow-square-out text-sm text-neutral-400"></i>
+		</h4>
+	</a>
 }
 
 templ InputFieldDemo() {
@@ -84,7 +97,7 @@ templ InputFieldDemo() {
 		<div class="grid gap-10 md:grid-cols-2">
 			<div class="flex flex-col gap-4">
 				<div class="flex flex-col gap-2">
-					<h4 class="text-lg font-bold">Usage</h4>
+					@UsageTitle("/form/inputField.templ")
 					<pre class="rounded-md bg-neutral-800 p-4 text-xs">
 						<code>
 							{ `@uiForm.InputField(uiForm.InputFieldSettings{
@@ -131,7 +144,7 @@ templ RadioInputDemo() {
 		<div class="grid gap-10 md:grid-cols-2">
 			<div class="flex flex-col gap-4">
 				<div class="flex flex-col gap-2">
-					<h4 class="text-lg font-bold">Usage</h4>
+					@UsageTitle("/form/radioInput.templ")
 					<pre class="rounded-md bg-neutral-800 p-4 text-xs">
 						<code>
 							{ `@uiForm.RadioInput(uiForm.RadioInputSettings{
@@ -186,7 +199,7 @@ templ InlineRadioGroupDemo() {
 		<div class="grid gap-10 md:grid-cols-2">
 			<div class="flex flex-col gap-4">
 				<div class="flex flex-col gap-2">
-					<h4 class="text-lg font-bold">Usage</h4>
+					@UsageTitle("/form/inlineRadioGroup.templ")
 					<pre class="rounded-md bg-neutral-800 p-4 text-xs">
 						<code>
 							{ `@uiForm.InlineRadioGroup(uiForm.InlineRadioGroupSettings{
@@ -470,7 +483,7 @@ templ AccordionDemo() {
 		<div class="grid gap-10 md:grid-cols-2">
 			<div class="flex flex-col gap-4">
 				<div class="flex flex-col gap-2">
-					<h4 class="text-lg font-bold">Usage</h4>
+					@UsageTitle("/display/accordion.templ")
 					<pre class="rounded-md bg-neutral-800 p-4 text-xs">
 						<code>
 							{ `@uiDisplay.Accordion(uiDisplay.AccordionSettings{
@@ -515,6 +528,76 @@ templ AccordionDemo() {
 						},
 					},
 				})
+			</div>
+		</div>
+	</div>
+}
+
+templ TagDemo() {
+	<div class="flex flex-col gap-4">
+		<div class="flex flex-row flex-wrap items-center gap-x-20 gap-y-10">
+			<div class="flex flex-col gap-2">
+				<h3 class="text-xl font-bold">.Tag</h3>
+				<p class="text-sm text-neutral-400">
+					A tag is a small label that can be used to categorize or identify content.
+				</p>
+			</div>
+			<div class="flex flex-col gap-2">
+				@UsageTitle("/display/tag.templ")
+				<pre class="rounded-md bg-neutral-800 p-4 text-xs">
+					<code>
+						{ `@uiDisplay.Tag(uiDisplay.TagSettings{
+	OuterLeftIcon: "ph-info",
+	OuterLeftLabel: "Info",
+	OuterRadius: uiDisplay.TagRadiusMd,
+	InnerIcon: "ph-warning",
+	InnerLabel: "Warning",
+	Size: uiDisplay.TagSizeXs,
+})` }
+					</code>
+				</pre>
+			</div>
+		</div>
+		<div class="flex flex-col gap-4">
+			<h4 class="mb-2 text-lg font-bold">Live Example</h4>
+			<div class="gap-x-15 flex flex-row flex-wrap items-center gap-y-10">
+				<div class="flex flex-col gap-2">
+					<p class="text-sm text-neutral-400">TagSizeXs to TagSizeXl</p>
+					for _, tagSize := range []string{"xs", "sm", "md", "lg", "xl"} {
+						@uiDisplay.Tag(uiDisplay.TagSettings{
+							OuterLeftIcon:  "ph-info",
+							OuterLeftLabel: "Info",
+							InnerIcon:      "ph-warning",
+							InnerLabel:     "Warning",
+							Size:           tagSize,
+						})
+					}
+				</div>
+				<div class="flex flex-col gap-2">
+					<p class="text-sm text-neutral-400">TagRadiusNone to TagRadiusFull</p>
+					for _, tagRadius := range []string{"none", "xs", "sm", "md", "lg", "xl", "full"} {
+						@uiDisplay.Tag(uiDisplay.TagSettings{
+							OuterLeftIcon:  "ph-info",
+							OuterLeftLabel: "Info",
+							OuterRadius:    tagRadius,
+							InnerIcon:      "ph-warning",
+							InnerLabel:     "Warning",
+						})
+					}
+				</div>
+				<div class="flex flex-col gap-2">
+					<p class="text-sm text-neutral-400">OuterBackgroundColor</p>
+					for _, tagBackgroundColor := range []string{"red-500", "amber-500", "emerald-500", "cyan-500", "violet-500", "gray-500"} {
+						@uiDisplay.Tag(uiDisplay.TagSettings{
+							OuterLeftIcon:        "ph-info",
+							OuterLeftLabel:       "Info",
+							OuterBackgroundColor: tagBackgroundColor,
+							OuterTextColor:       "neutral-50",
+							InnerIcon:            "ph-warning",
+							InnerLabel:           "Warning",
+						})
+					}
+				</div>
 			</div>
 		</div>
 	</div>
