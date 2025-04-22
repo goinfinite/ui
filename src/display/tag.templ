@@ -48,18 +48,18 @@ type TagSettings struct {
 
 templ Tag(componentSettings TagSettings) {
 	<!-- Tag -->
-	{{ initialOuterSizeClasses := "text-base p-1 gap-1" }}
+	{{ initialOuterSizeClasses := "text-base py-1 px-1.5 gap-1" }}
 	switch componentSettings.Size {
 		case TagSizeXs:
-			{{ initialOuterSizeClasses = "text-xs p-0.5 gap-0.5" }}
+			{{ initialOuterSizeClasses = "text-xs py-0.5 px-1 gap-0.5" }}
 		case TagSizeSm:
-			{{ initialOuterSizeClasses = "text-sm p-0.75 gap-0.75" }}
+			{{ initialOuterSizeClasses = "text-sm py-0.75 px-1.25 gap-0.75" }}
 		case TagSizeMd:
-			{{ initialOuterSizeClasses = "text-base p-1 gap-1" }}
+			{{ initialOuterSizeClasses = "text-base py-1 px-1.25 gap-1" }}
 		case TagSizeLg:
-			{{ initialOuterSizeClasses = "text-lg p-1.25 gap-1.25" }}
+			{{ initialOuterSizeClasses = "text-lg py-1.25 px-1.5 gap-1.25" }}
 		case TagSizeXl:
-			{{ initialOuterSizeClasses = "text-xl p-1.5 gap-1.5" }}
+			{{ initialOuterSizeClasses = "text-xl p-2 gap-1.5" }}
 	}
 	{{ initialOuterRingThickness := "ring-2" }}
 	if componentSettings.OuterRingThickness != "" {
