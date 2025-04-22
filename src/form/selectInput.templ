@@ -24,6 +24,7 @@ type SelectInputSettings struct {
 	TwoWayStatePath          string
 	OnChangeFunc             string
 	Size                     string
+	DropdownBackgroundColor  string
 	InputId                  string
 	IsRequired               bool
 	ShouldIncludeBlankOption bool
@@ -66,7 +67,7 @@ templ SelectInput(componentSettings SelectInputSettings) {
 			class="bg-neutral-50/7.5 relative w-full rounded border border-neutral-50/5 transition-all focus-within:border-neutral-50/30 hover:border-neutral-50/30"
 		>
 			<legend
-				class="ml-1 px-1 text-xs font-bold text-neutral-50/80 transition-opacity"
+				class="ml-1 select-none px-1 text-xs font-bold text-neutral-50/80 transition-opacity"
 				if componentSettings.TwoWayStatePath != "" {
 					:class="(!selectedLabel && !selectedValue) && 'opacity-0 !p-0 w-0 h-3.5'"
 				}
@@ -103,8 +104,12 @@ templ SelectInput(componentSettings SelectInputSettings) {
 				</div>
 			</div>
 			<!-- SelectDropdown -->
+			{{ initialDropdownBackgroundColor := "neutral-800/95" }}
+			if componentSettings.DropdownBackgroundColor != "" {
+				{{ initialDropdownBackgroundColor = componentSettings.DropdownBackgroundColor }}
+			}
 			<ul
-				class="absolute left-0 z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border border-neutral-50/5 bg-neutral-800/95 shadow-lg hover:border-neutral-50/30"
+				class={ "absolute left-0 z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border border-neutral-50/5 bg-" + initialDropdownBackgroundColor + " shadow-lg hover:border-neutral-50/30" }
 				x-show="isOpen"
 				@click.away="isOpen = false"
 				x-transition
