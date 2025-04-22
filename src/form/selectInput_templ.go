@@ -315,8 +315,8 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		dropdownClasses := "cursor-pointer px-3 py-2 transition-colors hover:bg-secondary-500/20 border-neutral-50/5 border-t first:border-t-0"
-		dropdownSelectedClasses := "bg-secondary-500/10 border-y !border-neutral-50/10"
+		dropdownClasses := "cursor-pointer px-3 py-2 transition-colors hover:bg-neutral-50/5 border-neutral-50/5 border-t first:border-t-0"
+		dropdownSelectedClasses := "bg-neutral-50/10 border-y !border-neutral-50/10"
 		if componentSettings.ShouldIncludeBlankOption {
 			var templ_7745c5c3_Var14 = []any{dropdownClasses}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var14...)
