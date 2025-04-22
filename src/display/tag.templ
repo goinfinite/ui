@@ -7,6 +7,12 @@ const (
 	TagSizeLg string = "lg"
 	TagSizeXl string = "xl"
 
+	TagRingThicknessXs string = "xs"
+	TagRingThicknessSm string = "sm"
+	TagRingThicknessMd string = "md"
+	TagRingThicknessLg string = "lg"
+	TagRingThicknessXl string = "xl"
+
 	TagRadiusNone string = "none"
 	TagRadiusXs   string = "xs"
 	TagRadiusSm   string = "sm"
@@ -19,6 +25,8 @@ const (
 type TagSettings struct {
 	// OptionalFields
 	Size                           string
+	OuterRingThickness             string
+	OuterRingColor                 string
 	OuterBackgroundColor           string
 	OuterTextColor                 string
 	OuterLeftIcon                  string
@@ -40,22 +48,58 @@ type TagSettings struct {
 
 templ Tag(componentSettings TagSettings) {
 	<!-- Tag -->
-	{{ initialOuterSizeClasses := "ring-1 text-base px-2 py-1 gap-1.5" }}
+	{{ initialOuterSizeClasses := "text-base p-1 gap-1" }}
 	switch componentSettings.Size {
 		case TagSizeXs:
-			{{ initialOuterSizeClasses = "ring-0.25 text-xs px-2 py-1 gap-1" }}
+			{{ initialOuterSizeClasses = "text-xs p-0.5 gap-0.5" }}
 		case TagSizeSm:
-			{{ initialOuterSizeClasses = "ring-0.5 text-sm px-2 py-1 gap-1.5" }}
+			{{ initialOuterSizeClasses = "text-sm p-0.75 gap-0.75" }}
 		case TagSizeMd:
-			{{ initialOuterSizeClasses = "ring-1 text-base px-2 py-1 gap-1.5" }}
+			{{ initialOuterSizeClasses = "text-base p-1 gap-1" }}
 		case TagSizeLg:
-			{{ initialOuterSizeClasses = "ring-1.5 text-lg px-3 py-1.5 gap-2" }}
+			{{ initialOuterSizeClasses = "text-lg p-1.25 gap-1.25" }}
 		case TagSizeXl:
-			{{ initialOuterSizeClasses = "ring-2 text-xl px-3 py-1.5 gap-2" }}
+			{{ initialOuterSizeClasses = "text-xl p-1.5 gap-1.5" }}
 	}
+	{{ initialOuterRingThickness := "ring-2" }}
+	if componentSettings.OuterRingThickness != "" {
+		switch componentSettings.OuterRingThickness {
+			case TagRingThicknessXs:
+				{{ initialOuterRingThickness = "ring-1" }}
+			case TagRingThicknessSm:
+				{{ initialOuterRingThickness = "ring-1.5" }}
+			case TagRingThicknessMd:
+				{{ initialOuterRingThickness = "ring-2" }}
+			case TagRingThicknessLg:
+				{{ initialOuterRingThickness = "ring-2.5" }}
+			case TagRingThicknessXl:
+				{{ initialOuterRingThickness = "ring-3" }}
+		}
+	} else {
+		switch componentSettings.Size {
+			case TagSizeXs:
+				{{ initialOuterRingThickness = "ring-1" }}
+			case TagSizeSm:
+				{{ initialOuterRingThickness = "ring-1.5" }}
+			case TagSizeMd:
+				{{ initialOuterRingThickness = "ring-2" }}
+			case TagSizeLg:
+				{{ initialOuterRingThickness = "ring-2.5" }}
+			case TagSizeXl:
+				{{ initialOuterRingThickness = "ring-3" }}
+		}
+	}
+	{{ initialOuterSizeClasses += " " + initialOuterRingThickness }}
+	{{ initialOuterRingColor := "secondary-500" }}
 	{{ initialOuterBackgroundColor := "secondary-500" }}
+	if componentSettings.OuterRingColor != "" {
+		{{ initialOuterRingColor = componentSettings.OuterRingColor }}
+	}
 	if componentSettings.OuterBackgroundColor != "" {
 		{{ initialOuterBackgroundColor = componentSettings.OuterBackgroundColor }}
+		if componentSettings.OuterRingColor == "" {
+			{{ initialOuterRingColor = componentSettings.OuterBackgroundColor }}
+		}
 	}
 	{{ initialOuterTextColor := "neutral-50" }}
 	if componentSettings.OuterTextColor != "" {
@@ -80,7 +124,7 @@ templ Tag(componentSettings TagSettings) {
 	}
 	{{
 	initialOuterClasses := initialOuterSizeClasses + " " +
-		" ring-" + initialOuterBackgroundColor + " bg-" + initialOuterBackgroundColor +
+		" ring-" + initialOuterRingColor + " bg-" + initialOuterBackgroundColor +
 		" text-" + initialOuterTextColor +
 		" " + initialOuterRadius
 	}}
@@ -129,9 +173,9 @@ templ Tag(componentSettings TagSettings) {
 		" " + initialInnerRadius
 	}}
 	<div class={ "flex items-center w-fit " + initialOuterClasses }>
-		{{ outerLeftItemsClasses := "flex items-center gap-1" }}
+		{{ outerLeftItemsClasses := "flex items-center gap-0.75" }}
 		if componentSettings.OuterLeftOnClickFunc != "" {
-			{{ outerLeftItemsClasses += " cursor-pointer hover:opacity-80 transition-opacity" }}
+			{{ outerLeftItemsClasses += " select-none cursor-pointer hover:opacity-80 transition-opacity" }}
 		}
 		<div
 			class={ outerLeftItemsClasses }
@@ -161,9 +205,9 @@ templ Tag(componentSettings TagSettings) {
 			}
 		</div>
 		if componentSettings.OuterRightIcon != "" || componentSettings.OuterRightLabel != "" || componentSettings.OuterRightLabelOneWayStatePath != "" {
-			{{ outerRightItemsClasses := "flex items-center gap-1" }}
+			{{ outerRightItemsClasses := "flex items-center gap-0.75" }}
 			if componentSettings.OuterRightOnClickFunc != "" {
-				{{ outerRightItemsClasses += " cursor-pointer hover:opacity-80 transition-opacity" }}
+				{{ outerRightItemsClasses += " select-none cursor-pointer hover:opacity-80 transition-opacity" }}
 			}
 			<div
 				class={ outerRightItemsClasses }

@@ -15,6 +15,12 @@ const (
 	TagSizeLg string = "lg"
 	TagSizeXl string = "xl"
 
+	TagRingThicknessXs string = "xs"
+	TagRingThicknessSm string = "sm"
+	TagRingThicknessMd string = "md"
+	TagRingThicknessLg string = "lg"
+	TagRingThicknessXl string = "xl"
+
 	TagRadiusNone string = "none"
 	TagRadiusXs   string = "xs"
 	TagRadiusSm   string = "sm"
@@ -27,6 +33,8 @@ const (
 type TagSettings struct {
 	// OptionalFields
 	Size                           string
+	OuterRingThickness             string
+	OuterRingColor                 string
 	OuterBackgroundColor           string
 	OuterTextColor                 string
 	OuterLeftIcon                  string
@@ -71,22 +79,58 @@ func Tag(componentSettings TagSettings) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		initialOuterSizeClasses := "ring-1 text-base px-2 py-1 gap-1.5"
+		initialOuterSizeClasses := "text-base p-1 gap-1"
 		switch componentSettings.Size {
 		case TagSizeXs:
-			initialOuterSizeClasses = "ring-0.25 text-xs px-2 py-1 gap-1"
+			initialOuterSizeClasses = "text-xs p-0.5 gap-0.5"
 		case TagSizeSm:
-			initialOuterSizeClasses = "ring-0.5 text-sm px-2 py-1 gap-1.5"
+			initialOuterSizeClasses = "text-sm p-0.75 gap-0.75"
 		case TagSizeMd:
-			initialOuterSizeClasses = "ring-1 text-base px-2 py-1 gap-1.5"
+			initialOuterSizeClasses = "text-base p-1 gap-1"
 		case TagSizeLg:
-			initialOuterSizeClasses = "ring-1.5 text-lg px-3 py-1.5 gap-2"
+			initialOuterSizeClasses = "text-lg p-1.25 gap-1.25"
 		case TagSizeXl:
-			initialOuterSizeClasses = "ring-2 text-xl px-3 py-1.5 gap-2"
+			initialOuterSizeClasses = "text-xl p-1.5 gap-1.5"
 		}
+		initialOuterRingThickness := "ring-2"
+		if componentSettings.OuterRingThickness != "" {
+			switch componentSettings.OuterRingThickness {
+			case TagRingThicknessXs:
+				initialOuterRingThickness = "ring-1"
+			case TagRingThicknessSm:
+				initialOuterRingThickness = "ring-1.5"
+			case TagRingThicknessMd:
+				initialOuterRingThickness = "ring-2"
+			case TagRingThicknessLg:
+				initialOuterRingThickness = "ring-2.5"
+			case TagRingThicknessXl:
+				initialOuterRingThickness = "ring-3"
+			}
+		} else {
+			switch componentSettings.Size {
+			case TagSizeXs:
+				initialOuterRingThickness = "ring-1"
+			case TagSizeSm:
+				initialOuterRingThickness = "ring-1.5"
+			case TagSizeMd:
+				initialOuterRingThickness = "ring-2"
+			case TagSizeLg:
+				initialOuterRingThickness = "ring-2.5"
+			case TagSizeXl:
+				initialOuterRingThickness = "ring-3"
+			}
+		}
+		initialOuterSizeClasses += " " + initialOuterRingThickness
+		initialOuterRingColor := "secondary-500"
 		initialOuterBackgroundColor := "secondary-500"
+		if componentSettings.OuterRingColor != "" {
+			initialOuterRingColor = componentSettings.OuterRingColor
+		}
 		if componentSettings.OuterBackgroundColor != "" {
 			initialOuterBackgroundColor = componentSettings.OuterBackgroundColor
+			if componentSettings.OuterRingColor == "" {
+				initialOuterRingColor = componentSettings.OuterBackgroundColor
+			}
 		}
 		initialOuterTextColor := "neutral-50"
 		if componentSettings.OuterTextColor != "" {
@@ -111,7 +155,7 @@ func Tag(componentSettings TagSettings) templ.Component {
 		}
 
 		initialOuterClasses := initialOuterSizeClasses + " " +
-			" ring-" + initialOuterBackgroundColor + " bg-" + initialOuterBackgroundColor +
+			" ring-" + initialOuterRingColor + " bg-" + initialOuterBackgroundColor +
 			" text-" + initialOuterTextColor +
 			" " + initialOuterRadius
 		initialInnerSizeClasses := "text-base px-2 py-1 gap-1.5"
@@ -179,9 +223,9 @@ func Tag(componentSettings TagSettings) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		outerLeftItemsClasses := "flex items-center gap-1"
+		outerLeftItemsClasses := "flex items-center gap-0.75"
 		if componentSettings.OuterLeftOnClickFunc != "" {
-			outerLeftItemsClasses += " cursor-pointer hover:opacity-80 transition-opacity"
+			outerLeftItemsClasses += " select-none cursor-pointer hover:opacity-80 transition-opacity"
 		}
 		var templ_7745c5c3_Var4 = []any{outerLeftItemsClasses}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var4...)
@@ -213,7 +257,7 @@ func Tag(componentSettings TagSettings) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.OuterLeftOnClickFunc)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/tag.templ`, Line: 139, Col: 51}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/tag.templ`, Line: 183, Col: 51}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -256,7 +300,7 @@ func Tag(componentSettings TagSettings) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.OuterLeftLabel)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/tag.templ`, Line: 146, Col: 38}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/tag.templ`, Line: 190, Col: 38}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -275,7 +319,7 @@ func Tag(componentSettings TagSettings) templ.Component {
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.OuterLeftLabelOneWayStatePath)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/tag.templ`, Line: 149, Col: 66}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/tag.templ`, Line: 193, Col: 66}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
@@ -340,7 +384,7 @@ func Tag(componentSettings TagSettings) templ.Component {
 			var templ_7745c5c3_Var15 string
 			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.InnerLabel)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/tag.templ`, Line: 157, Col: 34}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/tag.templ`, Line: 201, Col: 34}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 			if templ_7745c5c3_Err != nil {
@@ -359,7 +403,7 @@ func Tag(componentSettings TagSettings) templ.Component {
 			var templ_7745c5c3_Var16 string
 			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.InnerLabelOneWayStatePath)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/tag.templ`, Line: 160, Col: 62}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/tag.templ`, Line: 204, Col: 62}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 			if templ_7745c5c3_Err != nil {
@@ -375,9 +419,9 @@ func Tag(componentSettings TagSettings) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if componentSettings.OuterRightIcon != "" || componentSettings.OuterRightLabel != "" || componentSettings.OuterRightLabelOneWayStatePath != "" {
-			outerRightItemsClasses := "flex items-center gap-1"
+			outerRightItemsClasses := "flex items-center gap-0.75"
 			if componentSettings.OuterRightOnClickFunc != "" {
-				outerRightItemsClasses += " cursor-pointer hover:opacity-80 transition-opacity"
+				outerRightItemsClasses += " select-none cursor-pointer hover:opacity-80 transition-opacity"
 			}
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, " ")
 			if templ_7745c5c3_Err != nil {
@@ -413,7 +457,7 @@ func Tag(componentSettings TagSettings) templ.Component {
 				var templ_7745c5c3_Var19 string
 				templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.OuterRightOnClickFunc)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/tag.templ`, Line: 171, Col: 53}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/tag.templ`, Line: 215, Col: 53}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 				if templ_7745c5c3_Err != nil {
@@ -456,7 +500,7 @@ func Tag(componentSettings TagSettings) templ.Component {
 				var templ_7745c5c3_Var22 string
 				templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.OuterRightLabel)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/tag.templ`, Line: 178, Col: 40}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/tag.templ`, Line: 222, Col: 40}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 				if templ_7745c5c3_Err != nil {
@@ -475,7 +519,7 @@ func Tag(componentSettings TagSettings) templ.Component {
 				var templ_7745c5c3_Var23 string
 				templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.OuterRightLabelOneWayStatePath)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/tag.templ`, Line: 181, Col: 68}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/tag.templ`, Line: 225, Col: 68}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 				if templ_7745c5c3_Err != nil {

@@ -77,7 +77,9 @@ window.__unocss = {
 templ UsageTitle(componentPath string) {
 	<a
 		href={ "https://github.com/goinfinite/ui/blob/main/src" + templ.SafeURL(componentPath) }
+		rel="help"
 		target="_blank"
+		title="View Complete Component Settings"
 	>
 		<h4 class="text-lg font-bold text-neutral-50 transition-all hover:opacity-80">
 			Usage
@@ -574,7 +576,11 @@ templ TagDemo() {
 					}
 				</div>
 				<div class="flex flex-col gap-2">
-					<p class="text-sm text-neutral-400">TagRadiusNone to TagRadiusFull</p>
+					<p class="text-sm text-neutral-400">
+						TagRadiusNone to TagRadiusFull
+						<br/>
+						<small>(OuterRadius & InnerRadius)</small>
+					</p>
 					for _, tagRadius := range []string{"none", "xs", "sm", "md", "lg", "xl", "full"} {
 						@uiDisplay.Tag(uiDisplay.TagSettings{
 							OuterLeftIcon:  "ph-info",
@@ -582,11 +588,34 @@ templ TagDemo() {
 							OuterRadius:    tagRadius,
 							InnerIcon:      "ph-warning",
 							InnerLabel:     "Warning",
+							InnerRadius:    tagRadius,
 						})
 					}
 				</div>
 				<div class="flex flex-col gap-2">
-					<p class="text-sm text-neutral-400">OuterBackgroundColor</p>
+					<p class="text-sm text-neutral-400">
+						OuterRingColor
+						<br/>
+						<small>(w/ OuterBackgroundColor "transparent")</small>
+					</p>
+					for _, tagRingColor := range []string{"red-500", "amber-500", "emerald-500", "cyan-500", "violet-500", "gray-500"} {
+						@uiDisplay.Tag(uiDisplay.TagSettings{
+							OuterLeftIcon:        "ph-info",
+							OuterLeftLabel:       "Info",
+							OuterRingColor:       tagRingColor,
+							OuterBackgroundColor: "transparent",
+							OuterTextColor:       "neutral-50",
+							InnerIcon:            "ph-warning",
+							InnerLabel:           "Warning",
+						})
+					}
+				</div>
+				<div class="flex flex-col gap-2">
+					<p class="text-sm text-neutral-400">
+						OuterBackgroundColor
+						<br/>
+						<small>(w/o OuterRingColor)</small>
+					</p>
 					for _, tagBackgroundColor := range []string{"red-500", "amber-500", "emerald-500", "cyan-500", "violet-500", "gray-500"} {
 						@uiDisplay.Tag(uiDisplay.TagSettings{
 							OuterLeftIcon:        "ph-info",
