@@ -30,7 +30,7 @@ templ InputField(componentSettings InputFieldSettings) {
 	<!-- InputField HTML -->
 	<fieldset class="bg-neutral-50/7.5 relative w-full rounded border border-neutral-50/5 transition-all autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30">
 		<legend
-			class="ml-1 px-1 text-xs font-bold text-neutral-50/80 transition-opacity"
+			class="ml-1 select-none px-1 text-xs font-bold text-neutral-50/80 transition-opacity"
 			if componentSettings.TwoWayStatePath != "" {
 				:class={ `!` + componentSettings.TwoWayStatePath + ` && 'opacity-0 !p-0 w-0 h-3.5'` }
 			}

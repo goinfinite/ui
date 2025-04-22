@@ -39,7 +39,7 @@ templ RadioInput(componentSettings RadioInputSettings) {
 				{{ labelTextSize = "text-xl" }}
 		}
 		<label
-			class={ "flex flex-row gap-1 cursor-pointer items-center " + labelTextSize }
+			class={ "flex flex-row select-none gap-1 cursor-pointer items-center " + labelTextSize }
 			:class={ `String(` + componentSettings.TwoWayStatePath + `) == "` + componentSettings.StateValue + `" && "text-secondary-500 font-bold"` }
 		>
 			if componentSettings.InputId != "" && componentSettings.InputName != "" {

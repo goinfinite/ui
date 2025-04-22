@@ -78,7 +78,7 @@ func RadioInput(componentSettings RadioInputSettings) templ.Component {
 		case RadioInputSizeXl:
 			labelTextSize = "text-xl"
 		}
-		var templ_7745c5c3_Var3 = []any{"flex flex-row gap-1 cursor-pointer items-center " + labelTextSize}
+		var templ_7745c5c3_Var3 = []any{"flex flex-row select-none gap-1 cursor-pointer items-center " + labelTextSize}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var3...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
