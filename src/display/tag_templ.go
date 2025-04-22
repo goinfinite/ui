@@ -79,18 +79,18 @@ func Tag(componentSettings TagSettings) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		initialOuterSizeClasses := "text-base py-1 px-1.5 gap-1"
+		initialOuterSizeClasses := "text-base p-1.25 gap-1.25"
 		switch componentSettings.Size {
 		case TagSizeXs:
-			initialOuterSizeClasses = "text-xs py-0.5 px-1 gap-0.5"
+			initialOuterSizeClasses = "text-xs p-0.75 gap-0.75"
 		case TagSizeSm:
-			initialOuterSizeClasses = "text-sm py-0.75 px-1.25 gap-0.75"
+			initialOuterSizeClasses = "text-sm p-1 gap-1"
 		case TagSizeMd:
-			initialOuterSizeClasses = "text-base py-1 px-1.25 gap-1"
+			initialOuterSizeClasses = "text-base p-1 gap-1"
 		case TagSizeLg:
-			initialOuterSizeClasses = "text-lg py-1.25 px-1.5 gap-1.25"
+			initialOuterSizeClasses = "text-lg p-1.25 gap-1.25"
 		case TagSizeXl:
-			initialOuterSizeClasses = "text-xl p-2 gap-1.5"
+			initialOuterSizeClasses = "text-xl p-1.25 gap-1.25"
 		}
 		initialOuterRingThickness := "ring-2"
 		if componentSettings.OuterRingThickness != "" {
@@ -158,18 +158,18 @@ func Tag(componentSettings TagSettings) templ.Component {
 			" ring-" + initialOuterRingColor + " bg-" + initialOuterBackgroundColor +
 			" text-" + initialOuterTextColor +
 			" " + initialOuterRadius
-		initialInnerSizeClasses := "text-base px-2 py-1 gap-1.5"
+		initialInnerSizeClasses := "text-base p-1.5 gap-1.5"
 		switch componentSettings.Size {
 		case TagSizeXs:
-			initialInnerSizeClasses = "text-xs px-2 py-1 gap-1"
+			initialInnerSizeClasses = "text-xs p-1 gap-1"
 		case TagSizeSm:
-			initialInnerSizeClasses = "text-sm px-2 py-1 gap-1.5"
+			initialInnerSizeClasses = "text-sm p-1.25 gap-1.25"
 		case TagSizeMd:
-			initialInnerSizeClasses = "text-base px-2 py-1 gap-1.5"
+			initialInnerSizeClasses = "text-base p-1.25 gap-1.25"
 		case TagSizeLg:
-			initialInnerSizeClasses = "text-lg px-3 py-1.5 gap-2"
+			initialInnerSizeClasses = "text-lg p-1.5 gap-1.5"
 		case TagSizeXl:
-			initialInnerSizeClasses = "text-xl px-3 py-1.5 gap-2"
+			initialInnerSizeClasses = "text-xl p-1.5 gap-1.5"
 		}
 		initialInnerBackgroundColor := "neutral-50/10"
 		if componentSettings.InnerBackgroundColor != "" {
