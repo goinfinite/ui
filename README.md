@@ -9,6 +9,7 @@ The library is engineered for developer efficiency and ease of implementation, o
 - **Reusable Components**: A set of pre-built components that can be easily integrated into your projects.
 - **Responsive Design**: Components are designed to be responsive and work well on various screen sizes.
 - **Lightweight**: Built with performance in mind, ensuring fast load times and smooth interactions.
+- **HTMX Ready**: Although not required, Infinite UI is designed to work well with HTMX.
 
 ## Installation
 
@@ -90,3 +91,9 @@ Two patterns are available for function invocation, depending on component requi
 - Refer to component documentation for parameter requirements.
 
 The `On` prefix (e.g., `OnClick`, `OnChange`) indicates event-driven execution, though function calling is not limited to events in all components.
+
+### HTMX Ready
+
+Infinite UI does not require HTMX to function, but it is designed to work well with it. HTMX is a JavaScript library that allows you to make AJAX requests and update parts of your page without reloading the entire page.
+
+Form submissions done with HTMX usually utilize the `FormData` object to send form data to the server. Infinite UI allows you to set the `InputName` field to specify the keys of the `FormData` object. There is also `InputId` but `id` attributes are not required for form submissions, it's for locating the element in the DOM if necessary.
