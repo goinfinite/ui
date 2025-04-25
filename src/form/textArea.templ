@@ -1,0 +1,125 @@
+package uiForm
+
+const (
+	TextAreaSizeXs = "xs"
+	TextAreaSizeSm = "sm"
+	TextAreaSizeMd = "md"
+	TextAreaSizeLg = "lg"
+	TextAreaSizeXl = "xl"
+)
+
+type TextAreaSettings struct {
+	Label string
+
+	// OptionalFields
+	InputId         string
+	InputName       string
+	Size            string
+	TwoWayStatePath string
+	Value           string
+	IsCode          bool
+	IsReadOnly      bool
+	IsRequired      bool
+}
+
+templ TextArea(componentSettings TextAreaSettings) {
+	<!-- TextArea -->
+	<fieldset
+		class="bg-neutral-50/7.5 relative w-full rounded border border-neutral-50/5 transition-all autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30"
+		x-data="{ isTextAreaExpanded: false }"
+		@click.away="isTextAreaExpanded = false"
+	>
+		<legend
+			class="ml-1 select-none px-1 text-xs font-bold text-neutral-50/80 transition-opacity"
+			if componentSettings.TwoWayStatePath != "" {
+				:class={ `!` + componentSettings.TwoWayStatePath + ` && 'opacity-0 !p-0 w-0 h-3.5'` }
+			}
+		>
+			{ componentSettings.Label }
+			if componentSettings.IsRequired {
+				<span class="text-red-700">*</span>
+			}
+		</legend>
+		{{ textAreaClasses := "placeholder-text-opacity-80" }}
+		if componentSettings.TwoWayStatePath == "" && componentSettings.Value == "" {
+			{{ textAreaClasses = "placeholder-text-opacity-0" }}
+		}
+		{{ textAreaSizeClasses := "h-24 text-base" }}
+		{{ isExpandedClasses := "h-72" }}
+		switch componentSettings.Size {
+			case TextAreaSizeXs:
+				{{ textAreaSizeClasses = "h-12 text-xs" }}
+				{{ isExpandedClasses = "h-36" }}
+			case TextAreaSizeSm:
+				{{ textAreaSizeClasses = "h-18 text-sm" }}
+				{{ isExpandedClasses = "h-54" }}
+			case TextAreaSizeMd:
+				{{ textAreaSizeClasses = "h-24 text-base" }}
+				{{ isExpandedClasses = "h-72" }}
+			case TextAreaSizeLg:
+				{{ textAreaSizeClasses = "h-30 text-lg" }}
+				{{ isExpandedClasses = "h-90" }}
+			case TextAreaSizeXl:
+				{{ textAreaSizeClasses = "h-36 text-xl" }}
+				{{ isExpandedClasses = "h-108" }}
+		}
+		{{ textAreaClasses += " " + textAreaSizeClasses + " placeholder-text-neutral-50 peer w-full resize-none overflow-y-scroll bg-transparent pl-2 pr-9 text-sm text-neutral-100 outline-none transition-all" }}
+		{{ textAreaClasses += " [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-neutral-50/10 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-neutral-50/30 [&::-webkit-scrollbar-thumb]:hover:bg-neutral-50/50" }}
+		if componentSettings.IsReadOnly {
+			{{ textAreaClasses += " text-neutral-400 cursor-not-allowed" }}
+		}
+		if componentSettings.IsCode {
+			{{ textAreaClasses += " font-mono" }}
+		}
+		<textarea
+			if componentSettings.InputId != "" {
+				id={ componentSettings.InputId }
+				x-ref={ componentSettings.InputId }
+			}
+			if componentSettings.InputName != "" {
+				name={ componentSettings.InputName }
+			}
+			else
+			if componentSettings.InputId != "" {
+				name={ componentSettings.InputId }
+			}
+			if componentSettings.TwoWayStatePath != "" {
+				x-model:value={ componentSettings.TwoWayStatePath }
+			}
+			placeholder={ componentSettings.Label }
+			class={ textAreaClasses }
+			:class={ "isTextAreaExpanded && '" + isExpandedClasses + "'" }
+			if componentSettings.IsReadOnly {
+				readonly
+			}
+		>
+			{ componentSettings.Value }
+		</textarea>
+		<div class="text-md absolute right-4 top-0 hidden flex-col gap-1 transition-all hover:flex active:flex peer-hover:flex">
+			{{ floatingIconsClasses := "ph-bold border-1 active:bg-secondary-500 cursor-pointer rounded border-neutral-50/5 bg-neutral-50/5 p-1 text-neutral-100 hover:border-neutral-50/30 hover:bg-neutral-50/20" }}
+			<i
+				class={ floatingIconsClasses + " ph-arrows-out" }
+				:class="isTextAreaExpanded ? 'ph-arrows-in' : 'ph-arrows-out'"
+				@click.prevent="isTextAreaExpanded = !isTextAreaExpanded"
+			></i>
+			if componentSettings.IsReadOnly || componentSettings.TwoWayStatePath != "" {
+				<i
+					class={ floatingIconsClasses + " ph-clipboard-text" }
+					if componentSettings.TwoWayStatePath != "" {
+						@click.prevent={ "navigator.clipboard.writeText(" + componentSettings.TwoWayStatePath + ")" }
+					} else {
+						if componentSettings.InputId != "" {
+							@click.prevent={ "$refs." + componentSettings.InputId + ".select(); document.execCommand('copy')" }
+						}
+					}
+				></i>
+			}
+			if componentSettings.TwoWayStatePath != "" {
+				<i
+					class={ floatingIconsClasses + " ph-x-circle" }
+					@click.prevent={ componentSettings.TwoWayStatePath + " = ''" }
+				></i>
+			}
+		</div>
+	</fieldset>
+}
