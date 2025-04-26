@@ -12,6 +12,9 @@ const (
 	InputTypeText     string = "text"
 	InputTypeTime     string = "time"
 	InputTypeUrl      string = "url"
+
+	InputTypeHintDisplayTooltip     string = "tooltip"
+	InputTypeHintDisplayDescription string = "description"
 )
 
 type InputFieldSettings struct {
@@ -20,60 +23,123 @@ type InputFieldSettings struct {
 	Label     string
 
 	// OptionalFields
-	InputId         string
-	TwoWayStatePath string
-	IsRequired      bool
-	IsReadOnly      bool
+	Value                             string
+	InputId                           string
+	TwoWayStatePath                   string
+	AffixLeftValue                    string
+	AffixLeftStatePath                string
+	AffixRightValue                   string
+	AffixRightStatePath               string
+	HintValue                         string
+	HintStatePath                     string
+	HintDisplay                       string
+	HintDisplayTooltipBackgroundColor string
+	IsRequired                        bool
+	IsReadOnly                        bool
 }
 
 templ InputField(componentSettings InputFieldSettings) {
 	<!-- InputField HTML -->
-	<fieldset class="bg-neutral-50/7.5 relative w-full rounded border border-neutral-50/5 transition-all autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30">
-		<legend
-			class="ml-1 select-none px-1 text-xs font-bold text-neutral-50/80 transition-opacity"
-			if componentSettings.TwoWayStatePath != "" {
-				:class={ `!` + componentSettings.TwoWayStatePath + ` && 'opacity-0 !p-0 w-0 h-3.5'` }
-			}
-		>
-			{ componentSettings.Label }
-			if componentSettings.IsRequired {
-				<span class="text-red-700">*</span>
-			}
-		</legend>
-		{{ inputClasses := "w-full bg-transparent text-neutral-100 placeholder-text-neutral-50 placeholder-text-opacity-80 outline-none px-2 pb-2 text-sm transition-all peer" }}
-		if componentSettings.IsReadOnly {
-			{{ inputClasses += " text-neutral-400 cursor-not-allowed" }}
-		}
-		<input
-			type={ componentSettings.InputType }
-			if componentSettings.InputId != "" {
-				id={ componentSettings.InputId }
-			}
-			if componentSettings.InputName != "" {
-				name={ componentSettings.InputName }
-			}
-			if componentSettings.TwoWayStatePath != "" {
-				x-model:value={ componentSettings.TwoWayStatePath }
-			}
-			autocomplete="off"
-			if componentSettings.Label != "" {
-				placeholder={ componentSettings.Label }
-			}
-			if componentSettings.IsRequired {
-				required
-			}
-			class={ inputClasses }
-			if componentSettings.IsReadOnly {
-				readonly
-			}
-		/>
-		if componentSettings.IsReadOnly && componentSettings.TwoWayStatePath != "" {
-			<div class="text-md absolute right-2 top-0 hidden flex-col gap-1 transition-all hover:flex active:flex peer-hover:flex">
-				<i
-					class="ph-bold ph-clipboard-text border-1 active:bg-secondary-500 cursor-pointer rounded border-neutral-50/5 bg-neutral-50/5 p-1 text-neutral-100 hover:border-neutral-50/30 hover:bg-neutral-50/20"
-					@click.prevent={ "navigator.clipboard.writeText(" + componentSettings.TwoWayStatePath + ")" }
-				></i>
+	<div class="flex w-full flex-col">
+		<fieldset class="bg-neutral-50/7.5 relative w-full rounded border border-neutral-50/5 transition-all autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30">
+			<legend
+				class="ml-1 select-none px-1 text-xs font-bold text-neutral-50/80 transition-opacity"
+				if componentSettings.TwoWayStatePath != "" {
+					:class={ `!` + componentSettings.TwoWayStatePath + ` && 'opacity-0 !p-0 w-0 h-3.5'` }
+				}
+			>
+				{ componentSettings.Label }
+				if componentSettings.IsRequired {
+					<span class="text-red-700">*</span>
+				}
+			</legend>
+			<div class="flex w-full items-center">
+				<!-- LeftAffix -->
+				if componentSettings.AffixLeftValue != "" || componentSettings.AffixLeftStatePath != "" {
+					<div
+						class="-mt-2 flex-shrink-0 rounded-l border-r border-neutral-50/5 bg-neutral-50/5 p-2 text-sm text-neutral-400"
+						if componentSettings.AffixLeftStatePath != "" {
+							x-text={ componentSettings.AffixLeftStatePath }
+						}
+					>
+						if componentSettings.AffixLeftValue != "" {
+							{ componentSettings.AffixLeftValue }
+						}
+					</div>
+				}
+				{{ inputClasses := "flex-grow bg-transparent text-neutral-100 placeholder-text-neutral-50 placeholder-text-opacity-80 outline-none px-2 pb-2 text-sm transition-all peer" }}
+				if componentSettings.IsReadOnly {
+					{{ inputClasses += " text-neutral-400 cursor-not-allowed" }}
+				}
+				<input
+					type={ componentSettings.InputType }
+					if componentSettings.InputId != "" {
+						id={ componentSettings.InputId }
+					}
+					if componentSettings.InputName != "" {
+						name={ componentSettings.InputName }
+					}
+					if componentSettings.TwoWayStatePath != "" {
+						x-model:value={ componentSettings.TwoWayStatePath }
+					}
+					if componentSettings.Value != "" {
+						value={ componentSettings.Value }
+					}
+					autocomplete="off"
+					if componentSettings.Label != "" {
+						placeholder={ componentSettings.Label }
+					}
+					if componentSettings.IsRequired {
+						required
+					}
+					class={ inputClasses }
+					if componentSettings.IsReadOnly {
+						readonly
+					}
+				/>
+				<!-- RightAffix -->
+				if componentSettings.AffixRightValue != "" || componentSettings.AffixRightStatePath != "" {
+					<div class="-mt-2 flex-shrink-0 rounded-r border-l border-neutral-50/5 bg-neutral-50/5 p-2 text-sm text-neutral-400">
+						if componentSettings.AffixRightValue != "" {
+							{ componentSettings.AffixRightValue }
+						}
+						if componentSettings.AffixRightStatePath != "" {
+							<span x-text={ componentSettings.AffixRightStatePath }></span>
+						}
+					</div>
+				}
+				<!-- HintDisplayTooltip -->
+				if componentSettings.HintDisplay == InputTypeHintDisplayTooltip && (componentSettings.HintValue != "" || componentSettings.HintStatePath != "") {
+					<div class="group relative -mt-1 flex-shrink-0 px-2">
+						<i class="ph-bold ph-info text-neutral-400 transition-colors hover:text-neutral-100"></i>
+						{{ initialTooltipBackgroundColor := "neutral-800/95" }}
+						if componentSettings.HintDisplayTooltipBackgroundColor != "" {
+							{{ initialTooltipBackgroundColor = componentSettings.HintDisplayTooltipBackgroundColor }}
+						}
+						<div
+							class={ "invisible absolute flex right-0 z-10 mt-1.5 min-w-32 max-w-128 rounded border border-neutral-50/10 bg-" + initialTooltipBackgroundColor + " p-2 text-xs text-neutral-100 opacity-0 shadow-md transition-all group-hover:visible group-hover:opacity-100 select-none" }
+							if componentSettings.HintStatePath != "" {
+								x-text={ componentSettings.HintStatePath }
+							}
+						>
+							if componentSettings.HintValue != "" {
+								{ componentSettings.HintValue }
+							}
+						</div>
+					</div>
+				}
+			</div>
+		</fieldset>
+		<!-- HintDisplayDescription -->
+		if componentSettings.HintDisplay == InputTypeHintDisplayDescription {
+			<div class="my-1 px-1 text-xs text-neutral-400">
+				if componentSettings.HintValue != "" {
+					{ componentSettings.HintValue }
+				}
+				if componentSettings.HintStatePath != "" {
+					<span x-text={ componentSettings.HintStatePath }></span>
+				}
 			</div>
 		}
-	</fieldset>
+	</div>
 }

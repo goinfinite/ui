@@ -2,7 +2,7 @@ package main
 
 import (
 	uiDisplay "github.com/goinfinite/ui/src/display"
-	"github.com/goinfinite/ui/src/form"
+	uiForm "github.com/goinfinite/ui/src/form"
 	uiImport "github.com/goinfinite/ui/src/import"
 )
 
@@ -111,8 +111,6 @@ templ InputFieldDemo() {
 
 	// OptionalFields
 	TwoWayStatePath: "name",
-	IsRequired:      false,
-	IsReadOnly:      false,
 })` }
 						</code>
 					</pre>
@@ -132,6 +130,52 @@ templ InputFieldDemo() {
 					Label:           "Name",
 					TwoWayStatePath: "name",
 				})
+				<div class="mt-4 flex flex-col gap-1">
+					<p class="text-sm text-neutral-400">Value & IsReadOnly: true</p>
+					@uiForm.InputField(uiForm.InputFieldSettings{
+						InputType:  uiForm.InputTypeText,
+						InputName:  "name",
+						Label:      "Name",
+						Value:      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+						IsReadOnly: true,
+					})
+				</div>
+				<div class="mt-4 flex flex-col gap-1">
+					<p class="text-sm text-neutral-400">AffixLeftValue & AffixRightValue</p>
+					@uiForm.InputField(uiForm.InputFieldSettings{
+						InputType:       uiForm.InputTypeText,
+						InputName:       "name",
+						Label:           "Name",
+						TwoWayStatePath: "name",
+						AffixLeftValue:  "goinfinite.dev/",
+					})
+					@uiForm.InputField(uiForm.InputFieldSettings{
+						InputType:       uiForm.InputTypeText,
+						InputName:       "name",
+						Label:           "Name",
+						TwoWayStatePath: "name",
+						AffixRightValue: ".jpg",
+					})
+				</div>
+				<div class="mt-4 flex flex-col gap-1">
+					<p class="text-sm text-neutral-400">HintValue & HintDisplay (Description & Tooltip)</p>
+					@uiForm.InputField(uiForm.InputFieldSettings{
+						InputType:       uiForm.InputTypeText,
+						InputName:       "name",
+						Label:           "Name",
+						TwoWayStatePath: "name",
+						HintValue:       "This is a helpful hit displayed as a description below the input.",
+						HintDisplay:     uiForm.InputTypeHintDisplayDescription,
+					})
+					@uiForm.InputField(uiForm.InputFieldSettings{
+						InputType:       uiForm.InputTypeText,
+						InputName:       "name",
+						Label:           "Name",
+						TwoWayStatePath: "name",
+						HintValue:       "This is a helpful hint displayed as a tooltip.",
+						HintDisplay:     uiForm.InputTypeHintDisplayTooltip,
+					})
+				</div>
 			</div>
 		</div>
 	</div>
