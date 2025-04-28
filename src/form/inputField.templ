@@ -23,25 +23,28 @@ type InputFieldSettings struct {
 	Label     string
 
 	// OptionalFields
-	Value                             string
-	InputId                           string
 	TwoWayStatePath                   string
+	Value                             string
 	AffixLeftValue                    string
 	AffixLeftStatePath                string
 	AffixRightValue                   string
 	AffixRightStatePath               string
+	InputId                           string
+	InputNumberMin                    string
+	InputNumberMax                    string
+	InputNumberStep                   string
+	IsRequired                        bool
+	IsReadOnly                        bool
 	HintValue                         string
 	HintStatePath                     string
 	HintDisplay                       string
 	HintDisplayTooltipBackgroundColor string
-	IsRequired                        bool
-	IsReadOnly                        bool
 }
 
 templ InputField(componentSettings InputFieldSettings) {
 	<!-- InputField HTML -->
 	<div class="flex w-full flex-col">
-		<fieldset class="bg-neutral-50/7.5 relative w-full rounded border border-neutral-50/5 transition-all autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30">
+		<fieldset class="bg-neutral-50/7.5 relative rounded border border-neutral-50/5 transition-all autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30">
 			<legend
 				class="ml-1 select-none px-1 text-xs font-bold text-neutral-50/80 transition-opacity"
 				if componentSettings.TwoWayStatePath != "" {
@@ -53,11 +56,11 @@ templ InputField(componentSettings InputFieldSettings) {
 					<span class="text-red-700">*</span>
 				}
 			</legend>
-			<div class="flex w-full items-center">
-				<!-- LeftAffix -->
+			<div class="flex items-center">
 				if componentSettings.AffixLeftValue != "" || componentSettings.AffixLeftStatePath != "" {
+					<!-- LeftAffix -->
 					<div
-						class="-mt-2 flex-shrink-0 rounded-l border-r border-neutral-50/5 bg-neutral-50/5 p-2 text-sm text-neutral-400"
+						class="-mt-2 shrink-0 rounded-l border-r border-neutral-50/5 bg-neutral-50/5 p-2 text-sm text-neutral-400"
 						if componentSettings.AffixLeftStatePath != "" {
 							x-text={ componentSettings.AffixLeftStatePath }
 						}
@@ -67,12 +70,21 @@ templ InputField(componentSettings InputFieldSettings) {
 						}
 					</div>
 				}
-				{{ inputClasses := "flex-grow bg-transparent text-neutral-100 placeholder-text-neutral-50 placeholder-text-opacity-80 outline-none px-2 pb-2 text-sm transition-all peer" }}
+				{{ inputClasses := "w-full bg-transparent text-neutral-100 placeholder-text-neutral-50 placeholder-text-opacity-80 outline-none px-2 pb-2 text-sm transition-all peer" }}
 				if componentSettings.IsReadOnly {
 					{{ inputClasses += " text-neutral-400 cursor-not-allowed" }}
 				}
 				<input
 					type={ componentSettings.InputType }
+					if componentSettings.InputNumberMin != "" {
+						min={ componentSettings.InputNumberMin }
+					}
+					if componentSettings.InputNumberMax != "" {
+						max={ componentSettings.InputNumberMax }
+					}
+					if componentSettings.InputNumberStep != "" {
+						step={ componentSettings.InputNumberStep }
+					}
 					if componentSettings.InputId != "" {
 						id={ componentSettings.InputId }
 					}
@@ -97,9 +109,9 @@ templ InputField(componentSettings InputFieldSettings) {
 						readonly
 					}
 				/>
-				<!-- RightAffix -->
 				if componentSettings.AffixRightValue != "" || componentSettings.AffixRightStatePath != "" {
-					<div class="-mt-2 flex-shrink-0 rounded-r border-l border-neutral-50/5 bg-neutral-50/5 p-2 text-sm text-neutral-400">
+					<!-- RightAffix -->
+					<div class="-mt-2 shrink-0 rounded-r border-l border-neutral-50/5 bg-neutral-50/5 p-2 text-sm text-neutral-400">
 						if componentSettings.AffixRightValue != "" {
 							{ componentSettings.AffixRightValue }
 						}
@@ -108,9 +120,9 @@ templ InputField(componentSettings InputFieldSettings) {
 						}
 					</div>
 				}
-				<!-- HintDisplayTooltip -->
 				if componentSettings.HintDisplay == InputTypeHintDisplayTooltip && (componentSettings.HintValue != "" || componentSettings.HintStatePath != "") {
-					<div class="group relative -mt-1 flex-shrink-0 px-2">
+					<!-- HintDisplayTooltip -->
+					<div class="group relative -mt-1 shrink-0 px-2">
 						<i class="ph-bold ph-info text-neutral-400 transition-colors hover:text-neutral-100"></i>
 						{{ initialTooltipBackgroundColor := "neutral-800/95" }}
 						if componentSettings.HintDisplayTooltipBackgroundColor != "" {
@@ -130,8 +142,8 @@ templ InputField(componentSettings InputFieldSettings) {
 				}
 			</div>
 		</fieldset>
-		<!-- HintDisplayDescription -->
 		if componentSettings.HintDisplay == InputTypeHintDisplayDescription {
+			<!-- HintDisplayDescription -->
 			<div class="my-1 px-1 text-xs text-neutral-400">
 				if componentSettings.HintValue != "" {
 					{ componentSettings.HintValue }
