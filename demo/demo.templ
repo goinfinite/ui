@@ -1,6 +1,7 @@
 package main
 
 import (
+	uiControl "github.com/goinfinite/ui/src/control"
 	uiDisplay "github.com/goinfinite/ui/src/display"
 	uiForm "github.com/goinfinite/ui/src/form"
 	uiImport "github.com/goinfinite/ui/src/import"
@@ -37,7 +38,7 @@ window.__unocss = {
 		</head>
 		<body class="bg-neutral-900 text-neutral-50">
 			<h1 class="my-10 text-center text-5xl font-bold">Infinite UI Demo</h1>
-			<section class="container mx-auto flex flex-col overflow-x-auto p-4">
+			<section class="gap-30 container mx-auto flex flex-col overflow-x-auto p-4">
 				<div class="flex flex-col gap-10">
 					<!-- uiForm -->
 					<div class="flex flex-col gap-2">
@@ -57,7 +58,7 @@ window.__unocss = {
 					</div>
 				</div>
 				<!-- uiDisplay -->
-				<div class="mt-20 flex flex-col gap-10">
+				<div class="flex flex-col gap-10">
 					<div class="flex flex-col gap-2">
 						<h2 class="text-3xl font-bold">
 							{ `@uiDisplay` }
@@ -69,6 +70,20 @@ window.__unocss = {
 					<div class="*:border-t *:border-neutral-800 *:pt-10 flex flex-col gap-10">
 						@AccordionDemo()
 						@TagDemo()
+					</div>
+				</div>
+				<!-- uiControl -->
+				<div class="flex flex-col gap-10">
+					<div class="flex flex-col gap-2">
+						<h2 class="text-3xl font-bold">
+							{ `@uiControl` }
+						</h2>
+						<p class="text-sm text-neutral-400">
+							uiControl is a collection of components for controlling content.
+						</p>
+					</div>
+					<div class="*:border-t *:border-neutral-800 *:pt-10 flex flex-col gap-10">
+						@ButtonDemo()
 					</div>
 				</div>
 			</section>
@@ -769,6 +784,39 @@ templ TagDemo() {
 						})
 					</div>
 				</div>
+			</div>
+		</div>
+	</div>
+}
+
+templ ButtonDemo() {
+	<div class="flex flex-col gap-4">
+		<div class="flex flex-col gap-2">
+			<h3 class="text-xl font-bold">.Button</h3>
+			<p class="text-sm text-neutral-400">
+				A button is a clickable element that can be used to trigger an action.
+			</p>
+		</div>
+		<div class="grid gap-10 md:grid-cols-2">
+			<div class="flex flex-col gap-4">
+				<div class="flex flex-col gap-2">
+					@UsageTitle("/control/button.templ")
+					<pre class="rounded-md bg-neutral-800 p-4 text-xs">
+						<code>
+							{ `@uiControl.Button(uiControl.ButtonSettings{
+	Label: "Click me",
+	Icon:  "ph-info",
+})` }
+						</code>
+					</pre>
+				</div>
+			</div>
+			<div class="flex flex-col">
+				<h4 class="mb-2 text-lg font-bold">Live Example</h4>
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label: "Click me",
+					Icon:  "ph-info",
+				})
 			</div>
 		</div>
 	</div>

@@ -1,0 +1,224 @@
+package uiControl
+
+import "strconv"
+
+const (
+	ButtonSizeXs string = "xs"
+	ButtonSizeSm string = "sm"
+	ButtonSizeMd string = "md"
+	ButtonSizeLg string = "lg"
+	ButtonSizeXl string = "xl"
+
+	ButtonShapeCircular string = "circular"
+	ButtonShapeRounded  string = "rounded"
+	ButtonShapeSquare   string = "square"
+
+	ButtonTooltipPositionTop    string = "top"
+	ButtonTooltipPositionBottom string = "bottom"
+	ButtonTooltipPositionLeft   string = "left"
+	ButtonTooltipPositionRight  string = "right"
+
+	ButtonRingThicknessXs string = "xs"
+	ButtonRingThicknessSm string = "sm"
+	ButtonRingThicknessMd string = "md"
+	ButtonRingThicknessLg string = "lg"
+	ButtonRingThicknessXl string = "xl"
+)
+
+type ButtonSettings struct {
+	Label string
+
+	// OptionalFields
+	BackgroundColor               string
+	BackgroundColorHover          string
+	Icon                          string
+	Id                            string
+	IsDisabled                    bool
+	IsDisabledOneWayStatePath     bool
+	IsFullWidth                   bool
+	IsSubmit                      bool
+	OnClickFunc                   string
+	Shape                         string
+	Size                          string
+	TextColor                     string
+	TextColorHover                string
+	TooltipContent                string
+	TooltipContentHtml            templ.Component
+	TooltipContentOneWayStatePath string
+	TooltipBackgroundColor        string
+	TooltipPosition               string
+	TooltipRingColor              string
+	TooltipRingThickness          string
+	TooltipTextColor              string
+	RingColor                     string
+	RingThickness                 string
+}
+
+templ Button(componentSettings ButtonSettings) {
+	<!-- Button -->
+	<div class="flex w-full flex-col">
+		{{ buttonWidth := "w-fit" }}
+		if componentSettings.IsFullWidth {
+			{{ buttonWidth = "w-full" }}
+		}
+		<div class={ "group relative " + buttonWidth }>
+			{{ backgroundColor := "bg-neutral-50/7.5" }}
+			if componentSettings.BackgroundColor != "" {
+				{{ backgroundColor = "bg-" + componentSettings.BackgroundColor }}
+			}
+			{{ backgroundHoverColor := "hover:bg-neutral-50/10" }}
+			if componentSettings.BackgroundColorHover != "" {
+				{{ backgroundHoverColor = "hover:bg-" + componentSettings.BackgroundColorHover }}
+			}
+			{{ backgroundSize := "p-2 text-base gap-2" }}
+			switch componentSettings.Size {
+				case ButtonSizeXs:
+					{{ backgroundSize = "p-1 text-xs gap-1" }}
+				case ButtonSizeSm:
+					{{ backgroundSize = "p-1.5 text-sm gap-1.5" }}
+				case ButtonSizeMd:
+					{{ backgroundSize = "p-2 text-base gap-2" }}
+				case ButtonSizeLg:
+					{{ backgroundSize = "p-2.5 text-lg gap-2.5" }}
+				case ButtonSizeXl:
+					{{ backgroundSize = "p-3 text-xl gap-3" }}
+			}
+			{{ backgroundClasses := backgroundColor + " " + backgroundHoverColor + " " + backgroundSize }}
+			{{ textColor := "text-neutral-50" }}
+			if componentSettings.TextColor != "" {
+				{{ textColor = "text-" + componentSettings.TextColor }}
+			}
+			{{ textColorHover := "hover:text-neutral-50" }}
+			if componentSettings.TextColorHover != "" {
+				{{ textColorHover = "hover:text-" + componentSettings.TextColorHover }}
+			}
+			{{ ringClasses := "" }}
+			{{ ringThickness := "ring-2" }}
+			if componentSettings.RingThickness != "" {
+				switch componentSettings.RingThickness {
+					case ButtonRingThicknessXs:
+						{{ ringThickness = "ring-1" }}
+					case ButtonRingThicknessSm:
+						{{ ringThickness = "ring-1.5" }}
+					case ButtonRingThicknessMd:
+						{{ ringThickness = "ring-2" }}
+					case ButtonRingThicknessLg:
+						{{ ringThickness = "ring-2.5" }}
+					case ButtonRingThicknessXl:
+						{{ ringThickness = "ring-3" }}
+				}
+			}
+			if componentSettings.RingColor != "" {
+				{{ ringClasses = ringThickness + " ring-" + componentSettings.RingColor }}
+			}
+			{{ radiusRoundness := "rounded-md" }}
+			switch componentSettings.Shape {
+				case ButtonShapeCircular:
+					{{ radiusRoundness = "rounded-full" }}
+				case ButtonShapeRounded:
+					{{ radiusRoundness = "rounded-md" }}
+				case ButtonShapeSquare:
+					{{ radiusRoundness = "rounded-none" }}
+			}
+			{{ iconSize := "text-xl" }}
+			switch componentSettings.Size {
+				case ButtonSizeXs:
+					{{ iconSize = "text-md" }}
+				case ButtonSizeSm:
+					{{ iconSize = "text-lg" }}
+				case ButtonSizeMd:
+					{{ iconSize = "text-xl" }}
+				case ButtonSizeLg:
+					{{ iconSize = "text-2xl" }}
+				case ButtonSizeXl:
+					{{ iconSize = "text-3xl" }}
+			}
+			{{ disabledClasses := "" }}
+			if componentSettings.IsDisabled || componentSettings.IsDisabledOneWayStatePath {
+				{{ disabledClasses = " opacity-50 cursor-not-allowed pointer-events-none" }}
+			}
+			<button
+				if componentSettings.Id != "" {
+					id={ componentSettings.Id }
+				}
+				if componentSettings.IsSubmit {
+					type="submit"
+				}
+				if componentSettings.OnClickFunc != "" && !componentSettings.IsDisabled {
+					@click={ componentSettings.OnClickFunc }
+				}
+				if componentSettings.IsDisabled {
+					disabled
+				}
+				if componentSettings.IsDisabledOneWayStatePath {
+					:disabled={ strconv.FormatBool(componentSettings.IsDisabledOneWayStatePath) }
+				}
+				class={ backgroundClasses + " " + textColor + " " + textColorHover + " " + radiusRoundness + " " + ringClasses + " justify-center text-center font-bold flex flex-row items-center leading-none transition-all" + disabledClasses }
+			>
+				if componentSettings.Icon != "" {
+					<i class={ "ph-bold " + componentSettings.Icon + " " + iconSize }></i>
+				}
+				if componentSettings.Label != "" {
+					{ componentSettings.Label }
+				}
+			</button>
+			if componentSettings.TooltipContent != "" || componentSettings.TooltipContentHtml != nil || componentSettings.TooltipContentOneWayStatePath != "" {
+				{{ tooltipBackgroundColor := "neutral-800/95" }}
+				if componentSettings.TooltipBackgroundColor != "" {
+					{{ tooltipBackgroundColor = componentSettings.TooltipBackgroundColor }}
+				}
+				{{ tooltipTextColor := "neutral-50" }}
+				if componentSettings.TooltipTextColor != "" {
+					{{ tooltipTextColor = componentSettings.TooltipTextColor }}
+				}
+				{{ tooltipRingClasses := "" }}
+				if componentSettings.TooltipRingColor != "" {
+					{{ tooltipRingThickness := "ring-1" }}
+					if componentSettings.TooltipRingThickness != "" {
+						switch componentSettings.TooltipRingThickness {
+							case ButtonRingThicknessXs:
+								{{ tooltipRingThickness = "ring-0.5" }}
+							case ButtonRingThicknessSm:
+								{{ tooltipRingThickness = "ring-1" }}
+							case ButtonRingThicknessMd:
+								{{ tooltipRingThickness = "ring-1.5" }}
+							case ButtonRingThicknessLg:
+								{{ tooltipRingThickness = "ring-2" }}
+							case ButtonRingThicknessXl:
+								{{ tooltipRingThickness = "ring-2.5" }}
+						}
+					}
+					{{ tooltipRingClasses = tooltipRingThickness + " ring-" + componentSettings.TooltipRingColor }}
+				}
+				{{ tooltipBaseClass := "absolute invisible z-10 transition-all duration-300 group-hover:visible opacity-0 group-hover:opacity-100 transform w-fit p-1.5 bg-" + tooltipBackgroundColor + " text-" + tooltipTextColor + " text-xs rounded-md shadow-md " + tooltipRingClasses }}
+				{{ tooltipPosition := ButtonTooltipPositionTop }}
+				if componentSettings.TooltipPosition != "" {
+					{{ tooltipPosition = componentSettings.TooltipPosition }}
+				}
+				switch tooltipPosition {
+					case ButtonTooltipPositionTop:
+						{{ tooltipBaseClass += " bottom-full mb-1.5 group-hover:-translate-y-0.5 left-1/2 -translate-x-1/2" }}
+					case ButtonTooltipPositionBottom:
+						{{ tooltipBaseClass += " top-full mt-1.5 group-hover:translate-y-0.5 left-1/2 -translate-x-1/2" }}
+					case ButtonTooltipPositionLeft:
+						{{ tooltipBaseClass += " right-full mr-1.5 group-hover:-translate-x-0.5 top-1/2 -translate-y-1/2" }}
+					case ButtonTooltipPositionRight:
+						{{ tooltipBaseClass += " left-full ml-1.5 group-hover:translate-x-0.5 top-1/2 -translate-y-1/2" }}
+				}
+				<div
+					class={ tooltipBaseClass }
+					if componentSettings.TooltipContentOneWayStatePath != "" {
+						x-text={ componentSettings.TooltipContentOneWayStatePath }
+					}
+				>
+					if componentSettings.TooltipContent != "" {
+						{ componentSettings.TooltipContent }
+					}
+					if componentSettings.TooltipContentHtml != nil {
+						@componentSettings.TooltipContentHtml
+					}
+				</div>
+			}
+		</div>
+	</div>
+}
