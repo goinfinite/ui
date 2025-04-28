@@ -31,6 +31,8 @@ type InputFieldSettings struct {
 	Label     string
 
 	// OptionalFields
+	TwoWayStatePath                   string
+	Value                             string
 	AffixLeftValue                    string
 	AffixLeftStatePath                string
 	AffixRightValue                   string
@@ -45,8 +47,6 @@ type InputFieldSettings struct {
 	HintStatePath                     string
 	HintDisplay                       string
 	HintDisplayTooltipBackgroundColor string
-	TwoWayStatePath                   string
-	Value                             string
 }
 
 func InputField(componentSettings InputFieldSettings) templ.Component {
