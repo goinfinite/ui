@@ -791,32 +791,196 @@ templ TagDemo() {
 
 templ ButtonDemo() {
 	<div class="flex flex-col gap-4">
-		<div class="flex flex-col gap-2">
-			<h3 class="text-xl font-bold">.Button</h3>
-			<p class="text-sm text-neutral-400">
-				A button is a clickable element that can be used to trigger an action.
-			</p>
-		</div>
-		<div class="grid gap-10 md:grid-cols-2">
-			<div class="flex flex-col gap-4">
-				<div class="flex flex-col gap-2">
-					@UsageTitle("/control/button.templ")
-					<pre class="rounded-md bg-neutral-800 p-4 text-xs">
-						<code>
-							{ `@uiControl.Button(uiControl.ButtonSettings{
-	Label: "Click me",
-	Icon:  "ph-info",
-})` }
-						</code>
-					</pre>
-				</div>
+		<div class="flex flex-row flex-wrap items-center gap-x-20 gap-y-10">
+			<div class="flex flex-col gap-2">
+				<h3 class="text-xl font-bold">.Button</h3>
+				<p class="text-sm text-neutral-400">
+					A button is a clickable element that can be used to trigger an action.
+				</p>
 			</div>
-			<div class="flex flex-col">
-				<h4 class="mb-2 text-lg font-bold">Live Example</h4>
-				@uiControl.Button(uiControl.ButtonSettings{
-					Label: "Click me",
-					Icon:  "ph-info",
-				})
+			<div class="flex flex-col gap-2">
+				@UsageTitle("/control/button.templ")
+				<pre class="rounded-md bg-neutral-800 p-4 text-xs">
+					<code>
+						{ `@uiControl.Button(uiControl.ButtonSettings{
+	Label:       "Click me",
+	IconLeft:    "ph-info",
+	OnClickFunc: "alert('Button clicked!')",
+})` }
+					</code>
+				</pre>
+			</div>
+		</div>
+		<div class="flex flex-col gap-4">
+			<h4 class="mb-2 text-lg font-bold">Live Example</h4>
+			<div class="flex flex-row flex-wrap items-start gap-10">
+				<div class="flex flex-col gap-2">
+					<p class="text-sm text-neutral-400">ButtonSizeXs to ButtonSizeXl</p>
+					<div class="flex flex-col gap-2">
+						@uiControl.Button(uiControl.ButtonSettings{
+							Label:    "Button",
+							IconLeft: "ph-info",
+							Size:     uiControl.ButtonSizeXs,
+						})
+						@uiControl.Button(uiControl.ButtonSettings{
+							Label:    "Button",
+							IconLeft: "ph-info",
+							Size:     uiControl.ButtonSizeSm,
+						})
+						@uiControl.Button(uiControl.ButtonSettings{
+							Label:    "Button",
+							IconLeft: "ph-info",
+							Size:     uiControl.ButtonSizeMd,
+						})
+						@uiControl.Button(uiControl.ButtonSettings{
+							Label:    "Button",
+							IconLeft: "ph-info",
+							Size:     uiControl.ButtonSizeLg,
+						})
+						@uiControl.Button(uiControl.ButtonSettings{
+							Label:    "Button",
+							IconLeft: "ph-info",
+							Size:     uiControl.ButtonSizeXl,
+						})
+					</div>
+				</div>
+				<div class="flex flex-col gap-2">
+					<p class="text-sm text-neutral-400">Button Shapes</p>
+					<div class="flex flex-col gap-2">
+						@uiControl.Button(uiControl.ButtonSettings{
+							Label: "Square",
+							Shape: uiControl.ButtonShapeSquare,
+						})
+						@uiControl.Button(uiControl.ButtonSettings{
+							Label: "Rounded",
+							Shape: uiControl.ButtonShapeRounded,
+						})
+						@uiControl.Button(uiControl.ButtonSettings{
+							Label: "Circular",
+							Shape: uiControl.ButtonShapeCircular,
+						})
+					</div>
+				</div>
+				<div class="flex flex-col gap-2">
+					<p class="text-sm text-neutral-400">IconLeft & IconRight</p>
+					<div class="flex flex-col gap-2">
+						@uiControl.Button(uiControl.ButtonSettings{
+							Label:    "Info",
+							IconLeft: "ph-info",
+						})
+						@uiControl.Button(uiControl.ButtonSettings{
+							Label:     "Warning",
+							IconRight: "ph-warning",
+						})
+					</div>
+				</div>
+				<div class="flex flex-col gap-2">
+					<p class="text-sm text-neutral-400">Button Colors</p>
+					<div class="flex flex-col gap-2">
+						@uiControl.Button(uiControl.ButtonSettings{
+							Label:    "Default",
+							IconLeft: "ph-info",
+						})
+						@uiControl.Button(uiControl.ButtonSettings{
+							Label:           "Red",
+							IconLeft:        "ph-warning",
+							BackgroundColor: "red-500",
+						})
+						@uiControl.Button(uiControl.ButtonSettings{
+							Label:           "Green",
+							IconRight:       "ph-check",
+							BackgroundColor: "emerald-500",
+						})
+						@uiControl.Button(uiControl.ButtonSettings{
+							Label:           "Secondary",
+							IconLeft:        "ph-star",
+							BackgroundColor: "secondary-500",
+						})
+					</div>
+				</div>
+				<div class="flex flex-col gap-2">
+					<p class="text-sm text-neutral-400">Button with Ring</p>
+					<div class="flex flex-col gap-2">
+						@uiControl.Button(uiControl.ButtonSettings{
+							Label:           "Red Ring",
+							BackgroundColor: "red-500/10",
+							RingColor:       "red-500",
+							RingThickness:   uiControl.ButtonRingThicknessMd,
+						})
+						@uiControl.Button(uiControl.ButtonSettings{
+							Label:                "Green Hover",
+							BackgroundColor:      "yellow-500/10",
+							BackgroundColorHover: "green-500/10",
+							RingColor:            "yellow-500",
+							RingColorHover:       "green-500",
+							RingThickness:        uiControl.ButtonRingThicknessMd,
+						})
+						@uiControl.Button(uiControl.ButtonSettings{
+							Label:         "ThicknessXs",
+							RingColor:     "blue-500",
+							RingThickness: uiControl.ButtonRingThicknessXs,
+						})
+						@uiControl.Button(uiControl.ButtonSettings{
+							Label:         "ThicknessXl",
+							RingColor:     "violet-500",
+							RingThickness: uiControl.ButtonRingThicknessXl,
+						})
+					</div>
+				</div>
+				<div class="flex flex-col gap-2">
+					<p class="text-sm text-neutral-400">Button with Tooltip</p>
+					<div class="flex flex-col gap-2">
+						@uiControl.Button(uiControl.ButtonSettings{
+							Label:           "Top Tooltip",
+							IconLeft:        "ph-arrow-up",
+							TooltipContent:  "This tooltip appears on top",
+							TooltipPosition: uiControl.ButtonTooltipPositionTop,
+						})
+						@uiControl.Button(uiControl.ButtonSettings{
+							Label:           "Bottom Tooltip",
+							IconLeft:        "ph-arrow-down",
+							TooltipContent:  "This tooltip appears on bottom",
+							TooltipPosition: uiControl.ButtonTooltipPositionBottom,
+						})
+						@uiControl.Button(uiControl.ButtonSettings{
+							Label:           "Left Tooltip",
+							IconLeft:        "ph-arrow-left",
+							TooltipContent:  "This tooltip appears on left",
+							TooltipPosition: uiControl.ButtonTooltipPositionLeft,
+						})
+						@uiControl.Button(uiControl.ButtonSettings{
+							Label:           "Right Tooltip",
+							IconLeft:        "ph-arrow-right",
+							TooltipContent:  "This tooltip appears on right",
+							TooltipPosition: uiControl.ButtonTooltipPositionRight,
+						})
+					</div>
+				</div>
+				<div
+					x-data="{clickCount: 0, get shouldDisable() { return this.clickCount > 0 }}"
+					class="flex flex-col gap-2"
+				>
+					<p class="text-sm text-neutral-400">IsDisabledOneWayStatePath</p>
+					<div class="flex flex-col gap-2">
+						@uiControl.Button(uiControl.ButtonSettings{
+							Label:                     "Click Me",
+							IconLeft:                  "ph-plus",
+							OnClickFunc:               "clickCount++",
+							IsDisabledOneWayStatePath: "shouldDisable",
+						})
+						<div class="flex flex-row items-center gap-2">
+							<p class="flex gap-1 text-sm text-neutral-400">
+								Count: <span x-text="clickCount"></span>
+							</p>
+							@uiControl.Button(uiControl.ButtonSettings{
+								IconLeft:    "ph-arrow-counter-clockwise",
+								OnClickFunc: "clickCount = 0",
+								Size:        uiControl.ButtonSizeSm,
+								Shape:       uiControl.ButtonShapeCircular,
+							})
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>

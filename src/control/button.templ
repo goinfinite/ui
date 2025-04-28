@@ -1,7 +1,5 @@
 package uiControl
 
-import "strconv"
-
 const (
 	ButtonSizeXs string = "xs"
 	ButtonSizeSm string = "sm"
@@ -26,15 +24,15 @@ const (
 )
 
 type ButtonSettings struct {
-	Label string
-
 	// OptionalFields
+	Label                         string
 	BackgroundColor               string
 	BackgroundColorHover          string
-	Icon                          string
+	IconLeft                      string
+	IconRight                     string
 	Id                            string
 	IsDisabled                    bool
-	IsDisabledOneWayStatePath     bool
+	IsDisabledOneWayStatePath     string
 	IsFullWidth                   bool
 	IsSubmit                      bool
 	OnClickFunc                   string
@@ -51,17 +49,14 @@ type ButtonSettings struct {
 	TooltipRingThickness          string
 	TooltipTextColor              string
 	RingColor                     string
+	RingColorHover                string
 	RingThickness                 string
 }
 
 templ Button(componentSettings ButtonSettings) {
 	<!-- Button -->
 	<div class="flex w-full flex-col">
-		{{ buttonWidth := "w-fit" }}
-		if componentSettings.IsFullWidth {
-			{{ buttonWidth = "w-full" }}
-		}
-		<div class={ "group relative " + buttonWidth }>
+		<div class="group relative w-full">
 			{{ backgroundColor := "bg-neutral-50/7.5" }}
 			if componentSettings.BackgroundColor != "" {
 				{{ backgroundColor = "bg-" + componentSettings.BackgroundColor }}
@@ -70,18 +65,18 @@ templ Button(componentSettings ButtonSettings) {
 			if componentSettings.BackgroundColorHover != "" {
 				{{ backgroundHoverColor = "hover:bg-" + componentSettings.BackgroundColorHover }}
 			}
-			{{ backgroundSize := "p-2 text-base gap-2" }}
+			{{ backgroundSize := "p-2 text-base gap-1" }}
 			switch componentSettings.Size {
 				case ButtonSizeXs:
-					{{ backgroundSize = "p-1 text-xs gap-1" }}
+					{{ backgroundSize = "p-1 text-xs gap-0.5" }}
 				case ButtonSizeSm:
-					{{ backgroundSize = "p-1.5 text-sm gap-1.5" }}
+					{{ backgroundSize = "p-1.5 text-sm gap-0.75" }}
 				case ButtonSizeMd:
-					{{ backgroundSize = "p-2 text-base gap-2" }}
+					{{ backgroundSize = "p-2 text-base gap-1" }}
 				case ButtonSizeLg:
-					{{ backgroundSize = "p-2.5 text-lg gap-2.5" }}
+					{{ backgroundSize = "p-2.5 text-lg gap-1.25" }}
 				case ButtonSizeXl:
-					{{ backgroundSize = "p-3 text-xl gap-3" }}
+					{{ backgroundSize = "p-3 text-xl gap-1.5" }}
 			}
 			{{ backgroundClasses := backgroundColor + " " + backgroundHoverColor + " " + backgroundSize }}
 			{{ textColor := "text-neutral-50" }}
@@ -93,7 +88,7 @@ templ Button(componentSettings ButtonSettings) {
 				{{ textColorHover = "hover:text-" + componentSettings.TextColorHover }}
 			}
 			{{ ringClasses := "" }}
-			{{ ringThickness := "ring-2" }}
+			{{ ringThickness := "ring-1.5" }}
 			if componentSettings.RingThickness != "" {
 				switch componentSettings.RingThickness {
 					case ButtonRingThicknessXs:
@@ -111,12 +106,15 @@ templ Button(componentSettings ButtonSettings) {
 			if componentSettings.RingColor != "" {
 				{{ ringClasses = ringThickness + " ring-" + componentSettings.RingColor }}
 			}
-			{{ radiusRoundness := "rounded-md" }}
+			if componentSettings.RingColorHover != "" {
+				{{ ringClasses += " hover:ring-" + componentSettings.RingColorHover }}
+			}
+			{{ radiusRoundness := "rounded" }}
 			switch componentSettings.Shape {
 				case ButtonShapeCircular:
 					{{ radiusRoundness = "rounded-full" }}
 				case ButtonShapeRounded:
-					{{ radiusRoundness = "rounded-md" }}
+					{{ radiusRoundness = "rounded" }}
 				case ButtonShapeSquare:
 					{{ radiusRoundness = "rounded-none" }}
 			}
@@ -133,9 +131,15 @@ templ Button(componentSettings ButtonSettings) {
 				case ButtonSizeXl:
 					{{ iconSize = "text-3xl" }}
 			}
-			{{ disabledClasses := "" }}
-			if componentSettings.IsDisabled || componentSettings.IsDisabledOneWayStatePath {
-				{{ disabledClasses = " opacity-50 cursor-not-allowed pointer-events-none" }}
+			{{ buttonClasses := backgroundClasses + " " + textColor + " " + textColorHover + " " + radiusRoundness + " " + ringClasses + " justify-center text-center font-bold flex flex-row items-center leading-none transition-all" }}
+			{{ buttonWidth := "w-fit" }}
+			if componentSettings.IsFullWidth {
+				{{ buttonWidth = "w-full" }}
+			}
+			{{ buttonClasses += " " + buttonWidth }}
+			{{ disabledClasses := "opacity-50 cursor-not-allowed pointer-events-none" }}
+			if componentSettings.IsDisabled {
+				{{ buttonClasses += " " + disabledClasses }}
 			}
 			<button
 				if componentSettings.Id != "" {
@@ -150,16 +154,22 @@ templ Button(componentSettings ButtonSettings) {
 				if componentSettings.IsDisabled {
 					disabled
 				}
-				if componentSettings.IsDisabledOneWayStatePath {
-					:disabled={ strconv.FormatBool(componentSettings.IsDisabledOneWayStatePath) }
+				if componentSettings.IsDisabledOneWayStatePath != "" {
+					:disabled={ componentSettings.IsDisabledOneWayStatePath }
 				}
-				class={ backgroundClasses + " " + textColor + " " + textColorHover + " " + radiusRoundness + " " + ringClasses + " justify-center text-center font-bold flex flex-row items-center leading-none transition-all" + disabledClasses }
+				class={ buttonClasses }
+				if componentSettings.IsDisabledOneWayStatePath != "" {
+					:class={ componentSettings.IsDisabledOneWayStatePath + " && '" + disabledClasses + "'" }
+				}
 			>
-				if componentSettings.Icon != "" {
-					<i class={ "ph-bold " + componentSettings.Icon + " " + iconSize }></i>
+				if componentSettings.IconLeft != "" {
+					<i class={ "ph-bold " + componentSettings.IconLeft + " " + iconSize }></i>
 				}
 				if componentSettings.Label != "" {
 					{ componentSettings.Label }
+				}
+				if componentSettings.IconRight != "" {
+					<i class={ "ph-bold " + componentSettings.IconRight + " " + iconSize }></i>
 				}
 			</button>
 			if componentSettings.TooltipContent != "" || componentSettings.TooltipContentHtml != nil || componentSettings.TooltipContentOneWayStatePath != "" {
