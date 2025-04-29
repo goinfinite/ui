@@ -353,18 +353,14 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 						></div>
 					}
 				</div>
-				<!-- RangeInput (Hidden but functional) -->
+				<!-- RangeInput -->
 				<input
 					type="range"
 					class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
 					:min="startValue"
 					:max="endValue"
 					:step="steps"
-					if componentSettings.ThumbValueTwoWayStatePath != "" {
-						x-model={ componentSettings.ThumbValueTwoWayStatePath }
-					} else {
-						x-model="sliderValue"
-					}
+					x-model:value="sliderValue"
 				/>
 			</div>
 			<!-- TrackEndValue -->
