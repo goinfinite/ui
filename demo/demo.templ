@@ -84,6 +84,7 @@ window.__unocss = {
 					</div>
 					<div class="*:border-t *:border-neutral-800 *:pt-10 flex flex-col gap-10">
 						@ButtonDemo()
+						@RangeSliderDemo()
 					</div>
 				</div>
 			</section>
@@ -979,6 +980,248 @@ templ ButtonDemo() {
 								Shape:       uiControl.ButtonShapeCircular,
 							})
 						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+templ RangeSliderDemo() {
+	<div class="flex flex-col gap-4">
+		<div class="flex flex-row items-center gap-10">
+			<div class="flex flex-col gap-2">
+				<h3 class="text-xl font-bold">.RangeSlider</h3>
+				<p class="text-sm text-neutral-400">
+					A range slider allows users to select a value from a range by dragging a thumb along a track.
+				</p>
+			</div>
+			<div class="flex flex-row items-center gap-10">
+				<div class="flex flex-col gap-2">
+					@UsageTitle("/control/rangeSlider.templ")
+					<pre class="rounded-md bg-neutral-800 p-4 text-xs">
+						<code>
+							{ `@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+	ThumbValueTwoWayStatePath: "sliderValue",
+	TrackStartValue:           "0",
+	TrackEndValue:             "100",
+	TrackSteps:                "1",
+})` }
+						</code>
+					</pre>
+				</div>
+				<div class="flex flex-col gap-2">
+					<h5 class="text-sm font-bold">Alpine.js Parent State <i>(x-data)</i></h5>
+					<pre class="rounded-md bg-neutral-800 p-4 text-xs">
+						<code>{ `<div x-data="{sliderValue: 50}"></div>` }</code>
+					</pre>
+				</div>
+			</div>
+		</div>
+		<div class="flex flex-col gap-4">
+			<h4 class="mb-2 text-lg font-bold">Live Example</h4>
+			<div
+				x-data="{sliderValue: 50}"
+				class="lg:*:max-w-64 flex flex-row flex-wrap items-start justify-between gap-10"
+			>
+				<div class="flex w-full flex-col gap-2">
+					<p class="text-sm text-neutral-400">Basic Slider</p>
+					@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+						ThumbValueTwoWayStatePath: "sliderValue",
+					})
+					<p class="text-sm text-neutral-400">Value: <span x-text="sliderValue"></span></p>
+				</div>
+				<div class="flex w-full flex-col gap-2">
+					<p class="text-sm text-neutral-400">RangeSliderSizeXs to RangeSliderSizeXl</p>
+					<div class="flex flex-col gap-8">
+						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+							ThumbValueTwoWayStatePath: "sliderValue",
+							Size:                      uiControl.RangeSliderSizeXs,
+						})
+						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+							ThumbValueTwoWayStatePath: "sliderValue",
+							Size:                      uiControl.RangeSliderSizeSm,
+						})
+						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+							ThumbValueTwoWayStatePath: "sliderValue",
+							Size:                      uiControl.RangeSliderSizeMd,
+						})
+						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+							ThumbValueTwoWayStatePath: "sliderValue",
+							Size:                      uiControl.RangeSliderSizeLg,
+						})
+						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+							ThumbValueTwoWayStatePath: "sliderValue",
+							Size:                      uiControl.RangeSliderSizeXl,
+						})
+					</div>
+				</div>
+				<div class="flex w-full flex-col gap-2">
+					<p class="text-sm text-neutral-400">Thumb Shapes</p>
+					<div class="flex flex-col gap-8">
+						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+							ThumbValueTwoWayStatePath: "sliderValue",
+							ThumbShape:                uiControl.RangeSliderThumbShapeCircular,
+						})
+						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+							ThumbValueTwoWayStatePath: "sliderValue",
+							ThumbShape:                uiControl.RangeSliderThumbShapeRounded,
+						})
+						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+							ThumbValueTwoWayStatePath: "sliderValue",
+							ThumbShape:                uiControl.RangeSliderThumbShapeSquare,
+						})
+					</div>
+				</div>
+				<div class="flex w-full flex-col gap-2">
+					<p class="text-sm text-neutral-400">Thumb Colors & Icons</p>
+					<div class="flex flex-col gap-8">
+						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+							ThumbValueTwoWayStatePath: "sliderValue",
+							ThumbBackgroundColor:      "red-500",
+						})
+						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+							ThumbValueTwoWayStatePath: "sliderValue",
+							ThumbBackgroundColor:      "emerald-500",
+							ThumbLabelIcon:            "ph-check",
+						})
+						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+							ThumbValueTwoWayStatePath: "sliderValue",
+							ThumbBackgroundColor:      "secondary-500",
+							ThumbTextColor:            "neutral-800",
+							ThumbLabelIcon:            "ph-star",
+						})
+						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+							ThumbValueTwoWayStatePath: "sliderValue",
+							ThumbBackgroundColor:      "secondary-500",
+							ThumbTextColor:            "neutral-50",
+							ThumbLabelOneWayStatePath: "sliderValue",
+						})
+					</div>
+				</div>
+				<div class="flex w-full flex-col gap-8">
+					<p class="text-sm text-neutral-400">ThumbValueBubble</p>
+					<div class="flex flex-col gap-8">
+						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+							ThumbValueTwoWayStatePath:       "sliderValue",
+							ThumbValueBubbleEnabled:         true,
+							ThumbValueBubblePosition:        uiControl.RangeSliderThumbValueBubblePositionTop,
+							ThumbValueBubbleBackgroundColor: "red-500",
+							ThumbValueBubbleTextColor:       "neutral-50",
+						})
+						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+							ThumbValueTwoWayStatePath:       "sliderValue",
+							ThumbValueBubbleEnabled:         true,
+							ThumbValueBubblePosition:        uiControl.RangeSliderThumbValueBubblePositionBottom,
+							ThumbValueBubbleBackgroundColor: "emerald-500",
+							ThumbValueBubbleTextColor:       "neutral-50",
+						})
+						<div class="mt-18">
+							@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+								ThumbValueTwoWayStatePath:       "sliderValue",
+								ThumbValueBubbleEnabled:         true,
+								ThumbValueBubblePosition:        uiControl.RangeSliderThumbValueBubblePositionTop,
+								ThumbValueBubbleBackgroundColor: "transparent",
+								ThumbValueBubbleTextColor:       "neutral-50",
+								ThumbValueBubbleSize:            uiControl.RangeSliderThumbValueBubbleSizeLg,
+								ThumbValueBubbleShape:           uiControl.RangeSliderThumbValueBubbleShapeRounded,
+								ThumbValueBubbleRingColor:       "violet-500",
+								ThumbValueBubbleRingThickness:   uiControl.RangeSliderThumbValueBubbleRingThicknessXl,
+							})
+						</div>
+					</div>
+				</div>
+				<div class="flex w-full flex-col gap-2">
+					<p class="text-sm text-neutral-400">Track Labels Positions</p>
+					<div class="flex flex-col gap-8">
+						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+							ThumbValueTwoWayStatePath:   "sliderValue",
+							TrackStartValue:             "0",
+							TrackEndValue:               "100",
+							TrackStartValueLabelEnabled: true,
+							TrackEndValueLabelEnabled:   true,
+						})
+						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+							ThumbValueTwoWayStatePath:    "sliderValue",
+							TrackStartValue:              "0",
+							TrackEndValue:                "100",
+							TrackStartValueLabelEnabled:  true,
+							TrackStartValueLabelPosition: uiControl.RangeSliderTrackValueLabelPositionTop,
+							TrackEndValueLabelEnabled:    true,
+							TrackEndValueLabelPosition:   uiControl.RangeSliderTrackValueLabelPositionTop,
+						})
+						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+							ThumbValueTwoWayStatePath:    "sliderValue",
+							TrackStartValue:              "0",
+							TrackEndValue:                "100",
+							TrackStartValueLabelEnabled:  true,
+							TrackStartValueLabelPosition: uiControl.RangeSliderTrackValueLabelPositionBottom,
+							TrackEndValueLabelEnabled:    true,
+							TrackEndValueLabelPosition:   uiControl.RangeSliderTrackValueLabelPositionBottom,
+						})
+					</div>
+				</div>
+				<div class="flex w-full flex-col gap-2">
+					<p class="text-sm text-neutral-400">Track Labels Styles</p>
+					<div class="flex flex-col gap-8">
+						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+							ThumbValueTwoWayStatePath:     "sliderValue",
+							TrackStartValue:               "0",
+							TrackEndValue:                 "100",
+							TrackStartValueLabelEnabled:   true,
+							TrackStartValueLabelTextColor: "red-500",
+							TrackEndValueLabelEnabled:     true,
+							TrackEndValueLabelTextColor:   "emerald-500",
+						})
+						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+							ThumbValueTwoWayStatePath:   "sliderValue",
+							TrackStartValue:             "0",
+							TrackEndValue:               "100",
+							TrackStartValueLabelEnabled: true,
+							TrackStartValueLabelIcon:    "ph-thermometer",
+							TrackEndValueLabelEnabled:   true,
+							TrackEndValueLabelIcon:      "ph-thermometer",
+						})
+						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+							ThumbValueTwoWayStatePath:   "sliderValue",
+							TrackStartValue:             "0",
+							TrackEndValue:               "100",
+							TrackStartValueLabelEnabled: false,
+							TrackStartValueLabelIcon:    "ph-moon-stars",
+							TrackEndValueLabelEnabled:   false,
+							TrackEndValueLabelIcon:      "ph-sun",
+						})
+						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+							Size:                          uiControl.RangeSliderSizeLg,
+							ThumbValueTwoWayStatePath:     "sliderValue",
+							TrackStartValue:               "0",
+							TrackEndValue:                 "100",
+							TrackStartValueLabelEnabled:   false,
+							TrackStartValueLabelIcon:      "ph-moon-stars",
+							TrackStartValueLabelTextColor: "cyan-500",
+							TrackEndValueLabelEnabled:     false,
+							TrackEndValueLabelIcon:        "ph-sun",
+							TrackEndValueLabelTextColor:   "amber-500",
+						})
+					</div>
+				</div>
+				<div class="flex w-full flex-col gap-2">
+					<p class="text-sm text-neutral-400">Custom Range Example (Temperature)</p>
+					<div class="flex flex-col gap-8">
+						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+							ThumbValueTwoWayStatePath:   "sliderValue",
+							TrackStartValue:             "0",
+							TrackEndValue:               "100",
+							TrackSteps:                  "0.5",
+							TrackStartValueLabelEnabled: true,
+							TrackEndValueLabelEnabled:   true,
+							ThumbValueBubbleEnabled:     true,
+							ThumbBackgroundColor:        "blue-500",
+							ThumbLabelIcon:              "ph-thermometer",
+						})
+						<p class="text-sm text-neutral-400">
+							Temperature: <span x-text="sliderValue"></span>°C
+						</p>
 					</div>
 				</div>
 			</div>
