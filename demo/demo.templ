@@ -1033,7 +1033,7 @@ templ RangeSliderDemo() {
 				</div>
 				<div class="flex w-full flex-col gap-2">
 					<p class="text-sm text-neutral-400">RangeSliderSizeXs to RangeSliderSizeXl</p>
-					<div class="flex flex-col gap-8">
+					<div class="flex flex-col gap-7">
 						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
 							ThumbValueTwoWayStatePath: "sliderValue",
 							Size:                      uiControl.RangeSliderSizeXs,
@@ -1058,7 +1058,7 @@ templ RangeSliderDemo() {
 				</div>
 				<div class="flex w-full flex-col gap-2">
 					<p class="text-sm text-neutral-400">Thumb Shapes</p>
-					<div class="flex flex-col gap-8">
+					<div class="flex flex-col gap-7">
 						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
 							ThumbValueTwoWayStatePath: "sliderValue",
 							ThumbShape:                uiControl.RangeSliderThumbShapeCircular,
@@ -1075,7 +1075,7 @@ templ RangeSliderDemo() {
 				</div>
 				<div class="flex w-full flex-col gap-2">
 					<p class="text-sm text-neutral-400">Thumb Colors & Icons</p>
-					<div class="flex flex-col gap-8">
+					<div class="flex flex-col gap-7">
 						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
 							ThumbValueTwoWayStatePath: "sliderValue",
 							ThumbBackgroundColor:      "red-500",
@@ -1099,9 +1099,9 @@ templ RangeSliderDemo() {
 						})
 					</div>
 				</div>
-				<div class="flex w-full flex-col gap-8">
+				<div class="flex w-full flex-col gap-7">
 					<p class="text-sm text-neutral-400">ThumbValueBubble</p>
-					<div class="flex flex-col gap-8">
+					<div class="flex flex-col gap-7">
 						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
 							ThumbValueTwoWayStatePath:       "sliderValue",
 							ThumbValueBubbleEnabled:         true,
@@ -1162,8 +1162,8 @@ templ RangeSliderDemo() {
 					</div>
 				</div>
 				<div class="flex w-full flex-col gap-2">
-					<p class="text-sm text-neutral-400">Track Labels Styles</p>
-					<div class="flex flex-col gap-8">
+					<p class="text-sm text-neutral-400">Track Colors & Icons</p>
+					<div class="flex flex-col gap-6">
 						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
 							ThumbValueTwoWayStatePath:     "sliderValue",
 							TrackStartValue:               "0",
@@ -1171,57 +1171,34 @@ templ RangeSliderDemo() {
 							TrackStartValueLabelEnabled:   true,
 							TrackStartValueLabelTextColor: "red-500",
 							TrackEndValueLabelEnabled:     true,
-							TrackEndValueLabelTextColor:   "emerald-500",
+							TrackEndValueLabelTextColor:   "cyan-500",
 						})
 						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
-							ThumbValueTwoWayStatePath:   "sliderValue",
-							TrackStartValue:             "0",
-							TrackEndValue:               "100",
-							TrackStartValueLabelEnabled: true,
-							TrackStartValueLabelIcon:    "ph-thermometer",
-							TrackEndValueLabelEnabled:   true,
-							TrackEndValueLabelIcon:      "ph-thermometer",
-						})
-						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
-							ThumbValueTwoWayStatePath:   "sliderValue",
-							TrackStartValue:             "0",
-							TrackEndValue:               "100",
-							TrackStartValueLabelEnabled: false,
-							TrackStartValueLabelIcon:    "ph-moon-stars",
-							TrackEndValueLabelEnabled:   false,
-							TrackEndValueLabelIcon:      "ph-sun",
+							ThumbValueTwoWayStatePath:     "sliderValue",
+							TrackStartValue:               "0",
+							TrackEndValue:                 "100",
+							TrackBackgroundColorFrom:      "red-500",
+							TrackBackgroundColorVia:       "emerald-500",
+							TrackBackgroundColorTo:        "cyan-500",
+							TrackStartValueLabelEnabled:   true,
+							TrackStartValueLabelTextColor: "red-500",
+							TrackEndValueLabelEnabled:     true,
+							TrackEndValueLabelTextColor:   "cyan-500",
 						})
 						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
 							Size:                          uiControl.RangeSliderSizeLg,
 							ThumbValueTwoWayStatePath:     "sliderValue",
 							TrackStartValue:               "0",
 							TrackEndValue:                 "100",
+							TrackBackgroundColorFrom:      "amber-500",
+							TrackBackgroundColorTo:        "sky-700",
 							TrackStartValueLabelEnabled:   false,
-							TrackStartValueLabelIcon:      "ph-moon-stars",
-							TrackStartValueLabelTextColor: "cyan-500",
+							TrackStartValueLabelIcon:      "ph-sun",
+							TrackStartValueLabelTextColor: "amber-500",
 							TrackEndValueLabelEnabled:     false,
-							TrackEndValueLabelIcon:        "ph-sun",
-							TrackEndValueLabelTextColor:   "amber-500",
+							TrackEndValueLabelIcon:        "ph-moon-stars",
+							TrackEndValueLabelTextColor:   "sky-700",
 						})
-					</div>
-				</div>
-				<div class="flex w-full flex-col gap-2">
-					<p class="text-sm text-neutral-400">Custom Range Example (Temperature)</p>
-					<div class="flex flex-col gap-8">
-						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
-							ThumbValueTwoWayStatePath:   "sliderValue",
-							TrackStartValue:             "0",
-							TrackEndValue:               "100",
-							TrackSteps:                  "0.5",
-							TrackStartValueLabelEnabled: true,
-							TrackEndValueLabelEnabled:   true,
-							ThumbValueBubbleEnabled:     true,
-							ThumbBackgroundColor:        "blue-500",
-							ThumbLabelIcon:              "ph-thermometer",
-						})
-						<p class="text-sm text-neutral-400">
-							Temperature: <span x-text="sliderValue"></span>°C
-						</p>
 					</div>
 				</div>
 			</div>

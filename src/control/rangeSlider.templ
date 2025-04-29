@@ -36,37 +36,44 @@ const (
 
 type RangeSliderSettings struct {
 	// OptionalFields
-	Size                            string
-	ThumbLabel                      string
-	ThumbLabelOneWayStatePath       string
-	ThumbLabelIcon                  string
-	ThumbBackgroundColor            string
-	ThumbTextColor                  string
-	ThumbShape                      string
-	ThumbValue                      string
-	ThumbValueTwoWayStatePath       string
-	ThumbValueBubbleEnabled         bool
-	ThumbValueBubbleBackgroundColor string
-	ThumbValueBubbleTextColor       string
-	ThumbValueBubbleRingColor       string
-	ThumbValueBubbleRingThickness   string
-	ThumbValueBubbleSize            string
-	ThumbValueBubbleShape           string
-	ThumbValueBubblePosition        string
-	ThumbDualValueModeEnabled       bool
-	TrackSteps                      string
-	TrackStartValue                 string
-	TrackStartValueOneWayStatePath  string
-	TrackStartValueLabelEnabled     bool
-	TrackStartValueLabelTextColor   string
-	TrackStartValueLabelPosition    string
-	TrackStartValueLabelIcon        string
-	TrackEndValue                   string
-	TrackEndValueOneWayStatePath    string
-	TrackEndValueLabelEnabled       bool
-	TrackEndValueLabelTextColor     string
-	TrackEndValueLabelPosition      string
-	TrackEndValueLabelIcon          string
+	Size                                    string
+	ThumbLabel                              string
+	ThumbLabelOneWayStatePath               string
+	ThumbLabelIcon                          string
+	ThumbBackgroundColor                    string
+	ThumbTextColor                          string
+	ThumbShape                              string
+	ThumbValue                              string
+	ThumbValueTwoWayStatePath               string
+	ThumbValueBubbleEnabled                 bool
+	ThumbValueBubbleBackgroundColor         string
+	ThumbValueBubbleTextColor               string
+	ThumbValueBubbleRingColor               string
+	ThumbValueBubbleRingThickness           string
+	ThumbValueBubbleSize                    string
+	ThumbValueBubbleShape                   string
+	ThumbValueBubblePosition                string
+	ThumbDualValueModeEnabled               bool
+	TrackBackgroundColor                    string
+	TrackBackgroundColorFrom                string
+	TrackBackgroundColorFromOneWayStatePath string
+	TrackBackgroundColorVia                 string
+	TrackBackgroundColorViaOneWayStatePath  string
+	TrackBackgroundColorTo                  string
+	TrackBackgroundColorToOneWayStatePath   string
+	TrackSteps                              string
+	TrackStartValue                         string
+	TrackStartValueOneWayStatePath          string
+	TrackStartValueLabelEnabled             bool
+	TrackStartValueLabelTextColor           string
+	TrackStartValueLabelPosition            string
+	TrackStartValueLabelIcon                string
+	TrackEndValue                           string
+	TrackEndValueOneWayStatePath            string
+	TrackEndValueLabelEnabled               bool
+	TrackEndValueLabelTextColor             string
+	TrackEndValueLabelPosition              string
+	TrackEndValueLabelIcon                  string
 }
 
 templ RangeSlider(componentSettings RangeSliderSettings) {
@@ -164,7 +171,23 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 			<!-- Track&Thumb -->
 			<div class="group/thumb relative flex w-full flex-row gap-2">
 				<!-- TrackBackground -->
-				<div class={ "bg-neutral-50/5 rounded-full w-full " + trackHeight }>
+				{{ trackBackgroundColor := "bg-neutral-50/5" }}
+				if componentSettings.TrackBackgroundColor != "" {
+					{{ trackBackgroundColor = "bg-" + componentSettings.TrackBackgroundColor }}
+				}
+				if componentSettings.TrackBackgroundColorFrom != "" || componentSettings.TrackBackgroundColorVia != "" || componentSettings.TrackBackgroundColorTo != "" {
+					{{ trackBackgroundColor = "bg-gradient-to-r" }}
+					if componentSettings.TrackBackgroundColorFrom != "" {
+						{{ trackBackgroundColor = trackBackgroundColor + " from-" + componentSettings.TrackBackgroundColorFrom }}
+					}
+					if componentSettings.TrackBackgroundColorVia != "" {
+						{{ trackBackgroundColor = trackBackgroundColor + " via-" + componentSettings.TrackBackgroundColorVia }}
+					}
+					if componentSettings.TrackBackgroundColorTo != "" {
+						{{ trackBackgroundColor = trackBackgroundColor + " to-" + componentSettings.TrackBackgroundColorTo }}
+					}
+				}
+				<div class={ trackBackgroundColor + " rounded-full w-full " + trackHeight }>
 					<!-- TrackFill -->
 					<div
 						class={ "bg-neutral-50/30 rounded-full h-full" }
