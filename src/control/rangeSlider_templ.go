@@ -227,7 +227,11 @@ func Thumb(componentSettings RangeSliderSettings, isUpper bool) templ.Component 
 			percentValue = "upperValuePercent"
 			bubbleValue = "sliderUpperValue"
 		}
-		var templ_7745c5c3_Var2 = []any{"absolute flex justify-center items-center " + thumbPosition + " " + thumbSize + " " + thumbShape + " " + thumbBackgroundColor + " " + thumbTextColor + " cursor-pointer shadow-md transition-transform " + zIndex}
+		hoverState := "hoverLower"
+		if isUpper {
+			hoverState = "hoverUpper"
+		}
+		var templ_7745c5c3_Var2 = []any{"absolute flex justify-center items-center " + thumbPosition + " " + thumbSize + " " + thumbShape + " " + thumbBackgroundColor + " " + thumbTextColor + " cursor-pointer shadow-md transition-transform duration-200" + " " + zIndex}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var2...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -250,9 +254,9 @@ func Thumb(componentSettings RangeSliderSettings, isUpper bool) templ.Component 
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
-		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs("'left: calc(' + " + percentValue + " + '% - " + thumbLeftNegativeOffset + ")'")
+		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs("'left: calc(' + " + percentValue + " + '% - " + thumbLeftNegativeOffset + "); transform: scale(' + (" + hoverState + " ? 1.1 : 1) + ')'")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 177, Col: 96}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 181, Col: 154}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -359,7 +363,7 @@ func Thumb(componentSettings RangeSliderSettings, isUpper bool) templ.Component 
 				var templ_7745c5c3_Var9 string
 				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(thumbLabelPath)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 214, Col: 28}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 218, Col: 28}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 				if templ_7745c5c3_Err != nil {
@@ -377,7 +381,7 @@ func Thumb(componentSettings RangeSliderSettings, isUpper bool) templ.Component 
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(thumbLabel)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 217, Col: 16}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 221, Col: 16}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
@@ -530,7 +534,7 @@ func Thumb(componentSettings RangeSliderSettings, isUpper bool) templ.Component 
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(bubbleValue)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 300, Col: 24}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 304, Col: 24}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
@@ -606,9 +610,9 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 		if componentSettings.TrackSteps != "" {
 			trackSteps = componentSettings.TrackSteps
 		}
-		alpineData := "{sliderValue: " + thumbValue + ", startValue: " + trackStartValue + ", endValue: " + trackEndValue + ", steps: " + trackSteps + ", get sliderValuePercent() { return ((this.sliderValue - this.startValue) / (this.endValue - this.startValue)) * 100; }}"
+		alpineData := "{sliderValue: " + thumbValue + ", startValue: " + trackStartValue + ", endValue: " + trackEndValue + ", steps: " + trackSteps + ", hoverLower: false, get sliderValuePercent() { return ((this.sliderValue - this.startValue) / (this.endValue - this.startValue)) * 100; }}"
 		if componentSettings.ThumbDualValueModeEnabled {
-			alpineData = "{sliderValue: " + thumbValue + ", sliderUpperValue: " + thumbUpperValue + ", startValue: " + trackStartValue + ", endValue: " + trackEndValue + ", steps: " + trackSteps + ", get sliderValuePercent() { return ((this.sliderValue - this.startValue) / (this.endValue - this.startValue)) * 100; }, get upperValuePercent() { return ((this.sliderUpperValue - this.startValue) / (this.endValue - this.startValue)) * 100; }}"
+			alpineData = "{sliderValue: " + thumbValue + ", sliderUpperValue: " + thumbUpperValue + ", startValue: " + trackStartValue + ", endValue: " + trackEndValue + ", steps: " + trackSteps + ", hoverLower: false, hoverUpper: false, get sliderValuePercent() { return ((this.sliderValue - this.startValue) / (this.endValue - this.startValue)) * 100; }, get upperValuePercent() { return ((this.sliderUpperValue - this.startValue) / (this.endValue - this.startValue)) * 100; }}"
 		}
 		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "<div class=\"flex w-full flex-col\" x-data=\"")
 		if templ_7745c5c3_Err != nil {
@@ -617,7 +621,7 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 		var templ_7745c5c3_Var15 string
 		templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(alpineData)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 346, Col: 21}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 350, Col: 21}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 		if templ_7745c5c3_Err != nil {
@@ -815,7 +819,7 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 		var templ_7745c5c3_Var24 string
 		templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(trackFillStyle)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 426, Col: 35}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 430, Col: 35}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 		if templ_7745c5c3_Err != nil {
@@ -869,7 +873,7 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, "\" :min=\"startValue\" :max=\"endValue\" :step=\"steps\" x-model.number=\"sliderValue\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, "\" :min=\"startValue\" :max=\"endValue\" :step=\"steps\" x-model.number=\"sliderValue\" @mouseenter=\"hoverLower = true\" @mouseleave=\"hoverLower = false\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -884,7 +888,7 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if componentSettings.ThumbDualValueModeEnabled {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, "<!-- RangeInputUpper --> <input type=\"range\" class=\"absolute inset-y-0 right-0 z-20 w-1/2 cursor-pointer opacity-0\" :min=\"startValue\" :max=\"endValue\" :step=\"steps\" x-model.number=\"sliderUpperValue\" x-on:input=\"if (sliderUpperValue &lt;= sliderValue) sliderUpperValue = sliderValue + steps\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, "<!-- RangeInputUpper --> <input type=\"range\" class=\"absolute inset-y-0 right-0 z-20 w-1/2 cursor-pointer opacity-0\" :min=\"startValue\" :max=\"endValue\" :step=\"steps\" x-model.number=\"sliderUpperValue\" @mouseenter=\"hoverUpper = true\" @mouseleave=\"hoverUpper = false\" x-on:input=\"if (sliderUpperValue &lt;= sliderValue) sliderUpperValue = sliderValue + steps\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -172,9 +172,13 @@ templ Thumb(componentSettings RangeSliderSettings, isUpper bool) {
 		{{ percentValue = "upperValuePercent" }}
 		{{ bubbleValue = "sliderUpperValue" }}
 	}
+	{{ hoverState := "hoverLower" }}
+	if isUpper {
+		{{ hoverState = "hoverUpper" }}
+	}
 	<div
-		class={ "absolute flex justify-center items-center " + thumbPosition + " " + thumbSize + " " + thumbShape + " " + thumbBackgroundColor + " " + thumbTextColor + " cursor-pointer shadow-md transition-transform " + zIndex }
-		x-bind:style={ "'left: calc(' + " + percentValue + " + '% - " + thumbLeftNegativeOffset + ")'" }
+		class={ "absolute flex justify-center items-center " + thumbPosition + " " + thumbSize + " " + thumbShape + " " + thumbBackgroundColor + " " + thumbTextColor + " cursor-pointer shadow-md transition-transform duration-200" + " " + zIndex }
+		x-bind:style={ "'left: calc(' + " + percentValue + " + '% - " + thumbLeftNegativeOffset + "); transform: scale(' + (" + hoverState + " ? 1.1 : 1) + ')'" }
 	>
 		if thumbIcon != "" {
 			<!-- ThumbLabelIcon -->
@@ -337,9 +341,9 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 	if componentSettings.TrackSteps != "" {
 		{{ trackSteps = componentSettings.TrackSteps }}
 	}
-	{{ alpineData := "{sliderValue: " + thumbValue + ", startValue: " + trackStartValue + ", endValue: " + trackEndValue + ", steps: " + trackSteps + ", get sliderValuePercent() { return ((this.sliderValue - this.startValue) / (this.endValue - this.startValue)) * 100; }}" }}
+	{{ alpineData := "{sliderValue: " + thumbValue + ", startValue: " + trackStartValue + ", endValue: " + trackEndValue + ", steps: " + trackSteps + ", hoverLower: false, get sliderValuePercent() { return ((this.sliderValue - this.startValue) / (this.endValue - this.startValue)) * 100; }}" }}
 	if componentSettings.ThumbDualValueModeEnabled {
-		{{ alpineData = "{sliderValue: " + thumbValue + ", sliderUpperValue: " + thumbUpperValue + ", startValue: " + trackStartValue + ", endValue: " + trackEndValue + ", steps: " + trackSteps + ", get sliderValuePercent() { return ((this.sliderValue - this.startValue) / (this.endValue - this.startValue)) * 100; }, get upperValuePercent() { return ((this.sliderUpperValue - this.startValue) / (this.endValue - this.startValue)) * 100; }}" }}
+		{{ alpineData = "{sliderValue: " + thumbValue + ", sliderUpperValue: " + thumbUpperValue + ", startValue: " + trackStartValue + ", endValue: " + trackEndValue + ", steps: " + trackSteps + ", hoverLower: false, hoverUpper: false, get sliderValuePercent() { return ((this.sliderValue - this.startValue) / (this.endValue - this.startValue)) * 100; }, get upperValuePercent() { return ((this.sliderUpperValue - this.startValue) / (this.endValue - this.startValue)) * 100; }}" }}
 	}
 	<div
 		class="flex w-full flex-col"
@@ -444,6 +448,8 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 						:max="endValue"
 						:step="steps"
 						x-model.number="sliderValue"
+						@mouseenter="hoverLower = true"
+						@mouseleave="hoverLower = false"
 						if componentSettings.ThumbDualValueModeEnabled {
 							x-on:input="if (sliderValue >= sliderUpperValue) sliderValue = sliderUpperValue - steps"
 						}
@@ -457,6 +463,8 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 							:max="endValue"
 							:step="steps"
 							x-model.number="sliderUpperValue"
+							@mouseenter="hoverUpper = true"
+							@mouseleave="hoverUpper = false"
 							x-on:input="if (sliderUpperValue <= sliderValue) sliderUpperValue = sliderValue + steps"
 						/>
 					}
