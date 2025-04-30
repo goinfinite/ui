@@ -432,14 +432,18 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 					@Thumb(componentSettings, true)
 				}
 				<!-- RangeInputs -->
+				{{ lowerThumbWidth := "w-full" }}
+				if componentSettings.ThumbDualValueModeEnabled {
+					{{ lowerThumbWidth = "w-1/2" }}
+				}
 				<div class="absolute inset-0 h-full w-full">
 					<input
 						type="range"
-						class="absolute inset-y-0 left-0 z-20 w-1/2 cursor-pointer opacity-0"
+						class={ "absolute inset-y-0 left-0 z-20 " + lowerThumbWidth + " cursor-pointer opacity-0" }
 						:min="startValue"
 						:max="endValue"
 						:step="steps"
-						x-model:value="sliderValue"
+						x-model.number="sliderValue"
 						if componentSettings.ThumbDualValueModeEnabled {
 							x-on:input="if (sliderValue >= sliderUpperValue) sliderValue = sliderUpperValue - steps"
 						}
@@ -452,7 +456,7 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 							:min="startValue"
 							:max="endValue"
 							:step="steps"
-							x-model:value="sliderUpperValue"
+							x-model.number="sliderUpperValue"
 							x-on:input="if (sliderUpperValue <= sliderValue) sliderUpperValue = sliderValue + steps"
 						/>
 					}
