@@ -54,6 +54,14 @@ type RangeSliderSettings struct {
 	ThumbValueBubbleShape                   string
 	ThumbValueBubblePosition                string
 	ThumbDualValueModeEnabled               bool
+	ThumbUpperValue                         string
+	ThumbUpperValueTwoWayStatePath          string
+	ThumbUpperBackgroundColor               string
+	ThumbUpperTextColor                     string
+	ThumbUpperLabel                         string
+	ThumbUpperLabelOneWayStatePath          string
+	ThumbUpperLabelIcon                     string
+	ThumbUpperValueBubbleEnabled            bool
 	TrackBackgroundColor                    string
 	TrackBackgroundColorFrom                string
 	TrackBackgroundColorFromOneWayStatePath string
@@ -76,9 +84,229 @@ type RangeSliderSettings struct {
 	TrackEndValueLabelIcon                  string
 }
 
+templ Thumb(componentSettings RangeSliderSettings, isUpper bool) {
+	{{ thumbSize := "w-4.5 h-4.5" }}
+	{{ thumbPosition := "-top-1.25" }}
+	switch componentSettings.Size {
+		case RangeSliderSizeXs:
+			{{ thumbSize = "w-2.5 h-2.5" }}
+			{{ thumbPosition = "-top-0.75" }}
+		case RangeSliderSizeSm:
+			{{ thumbSize = "w-3.5 h-3.5" }}
+			{{ thumbPosition = "-top-1.25" }}
+		case RangeSliderSizeMd:
+			{{ thumbSize = "w-4.5 h-4.5" }}
+			{{ thumbPosition = "-top-1.5" }}
+		case RangeSliderSizeLg:
+			{{ thumbSize = "w-5.5 h-5.5" }}
+			{{ thumbPosition = "-top-1.75" }}
+		case RangeSliderSizeXl:
+			{{ thumbSize = "w-6.5 h-6.5" }}
+			{{ thumbPosition = "-top-2" }}
+	}
+	<!-- Thumb -->
+	{{ thumbShape := "rounded-full" }}
+	switch componentSettings.ThumbShape {
+		case RangeSliderThumbShapeCircular:
+			{{ thumbShape = "rounded-full" }}
+		case RangeSliderThumbShapeRounded:
+			{{ thumbShape = "rounded" }}
+		case RangeSliderThumbShapeSquare:
+			{{ thumbShape = "rounded-none" }}
+	}
+	{{ thumbBackgroundColor := "bg-neutral-50" }}
+	{{ thumbTextColor := "text-neutral-800" }}
+	{{ thumbIcon := componentSettings.ThumbLabelIcon }}
+	{{ thumbLabel := componentSettings.ThumbLabel }}
+	{{ thumbLabelPath := componentSettings.ThumbLabelOneWayStatePath }}
+	{{ thumbValueBubbleEnabled := componentSettings.ThumbValueBubbleEnabled }}
+	if isUpper {
+		if componentSettings.ThumbUpperBackgroundColor != "" {
+			{{ thumbBackgroundColor = "bg-" + componentSettings.ThumbUpperBackgroundColor }}
+		} else if componentSettings.ThumbBackgroundColor != "" {
+			{{ thumbBackgroundColor = "bg-" + componentSettings.ThumbBackgroundColor }}
+		}
+		if componentSettings.ThumbUpperTextColor != "" {
+			{{ thumbTextColor = "text-" + componentSettings.ThumbUpperTextColor }}
+		} else if componentSettings.ThumbTextColor != "" {
+			{{ thumbTextColor = "text-" + componentSettings.ThumbTextColor }}
+		}
+		if componentSettings.ThumbUpperLabelIcon != "" {
+			{{ thumbIcon = componentSettings.ThumbUpperLabelIcon }}
+		}
+		if componentSettings.ThumbUpperLabel != "" {
+			{{ thumbLabel = componentSettings.ThumbUpperLabel }}
+		}
+		if componentSettings.ThumbUpperLabelOneWayStatePath != "" {
+			{{ thumbLabelPath = componentSettings.ThumbUpperLabelOneWayStatePath }}
+		}
+		if componentSettings.ThumbUpperValueBubbleEnabled {
+			{{ thumbValueBubbleEnabled = true }}
+		}
+	} else {
+		if componentSettings.ThumbBackgroundColor != "" {
+			{{ thumbBackgroundColor = "bg-" + componentSettings.ThumbBackgroundColor }}
+		}
+		if componentSettings.ThumbTextColor != "" {
+			{{ thumbTextColor = "text-" + componentSettings.ThumbTextColor }}
+		}
+	}
+	{{ thumbLeftNegativeOffset := ".5rem" }}
+	switch componentSettings.Size {
+		case RangeSliderSizeXs:
+			{{ thumbLeftNegativeOffset = ".25rem" }}
+		case RangeSliderSizeSm:
+			{{ thumbLeftNegativeOffset = ".375rem" }}
+		case RangeSliderSizeMd:
+			{{ thumbLeftNegativeOffset = ".5rem" }}
+		case RangeSliderSizeLg:
+			{{ thumbLeftNegativeOffset = ".625rem" }}
+		case RangeSliderSizeXl:
+			{{ thumbLeftNegativeOffset = ".75rem" }}
+	}
+	{{ zIndex := "" }}
+	{{ percentValue := "sliderValuePercent" }}
+	{{ bubbleValue := "sliderValue" }}
+	if isUpper {
+		{{ zIndex = "z-10" }}
+		{{ percentValue = "upperValuePercent" }}
+		{{ bubbleValue = "sliderUpperValue" }}
+	}
+	<div
+		class={ "absolute flex justify-center items-center " + thumbPosition + " " + thumbSize + " " + thumbShape + " " + thumbBackgroundColor + " " + thumbTextColor + " cursor-pointer shadow-md transition-transform " + zIndex }
+		x-bind:style={ "'left: calc(' + " + percentValue + " + '% - " + thumbLeftNegativeOffset + ")'" }
+	>
+		if thumbIcon != "" {
+			<!-- ThumbLabelIcon -->
+			{{ thumbIconSize := "text-sm" }}
+			switch componentSettings.Size {
+				case RangeSliderSizeXs:
+					{{ thumbIconSize = "text-[0.5rem]" }}
+				case RangeSliderSizeSm:
+					{{ thumbIconSize = "text-xs" }}
+				case RangeSliderSizeMd:
+					{{ thumbIconSize = "text-sm" }}
+				case RangeSliderSizeLg:
+					{{ thumbIconSize = "text-md" }}
+				case RangeSliderSizeXl:
+					{{ thumbIconSize = "text-lg" }}
+			}
+			<i class={ "ph-bold " + thumbIcon + " flex h-full w-full items-center justify-center " + thumbIconSize }></i>
+		}
+		if thumbLabel != "" || thumbLabelPath != "" {
+			<!-- ThumbLabel -->
+			{{ thumbLabelSize := "text-xs" }}
+			switch componentSettings.Size {
+				case RangeSliderSizeXs:
+					{{ thumbLabelSize = "text-[0.5rem]" }}
+				case RangeSliderSizeSm:
+					{{ thumbLabelSize = "text-xs" }}
+				case RangeSliderSizeMd:
+					{{ thumbLabelSize = "text-sm" }}
+				case RangeSliderSizeLg:
+					{{ thumbLabelSize = "text-md" }}
+				case RangeSliderSizeXl:
+					{{ thumbLabelSize = "text-lg" }}
+			}
+			<span
+				class={ "flex h-full w-full items-center justify-center " + thumbLabelSize }
+				if thumbLabelPath != "" {
+					x-text={ thumbLabelPath }
+				}
+			>
+				{ thumbLabel }
+			</span>
+		}
+		<!-- ThumbValueBubble -->
+		if thumbValueBubbleEnabled {
+			{{ bubblePositionOffset := "7.5" }}
+			switch componentSettings.Size {
+				case RangeSliderSizeXs:
+					{{ bubblePositionOffset = "5.5" }}
+				case RangeSliderSizeSm:
+					{{ bubblePositionOffset = "6.5" }}
+				case RangeSliderSizeMd:
+					{{ bubblePositionOffset = "7.5" }}
+				case RangeSliderSizeLg:
+					{{ bubblePositionOffset = "8.5" }}
+				case RangeSliderSizeXl:
+					{{ bubblePositionOffset = "9.5" }}
+			}
+			switch componentSettings.ThumbValueBubbleSize {
+				case RangeSliderThumbValueBubbleSizeXs:
+					{{ bubblePositionOffset = "5.5" }}
+				case RangeSliderThumbValueBubbleSizeSm:
+					{{ bubblePositionOffset = "6.5" }}
+				case RangeSliderThumbValueBubbleSizeMd:
+					{{ bubblePositionOffset = "7.5" }}
+				case RangeSliderThumbValueBubbleSizeLg:
+					{{ bubblePositionOffset = "8.5" }}
+				case RangeSliderThumbValueBubbleSizeXl:
+					{{ bubblePositionOffset = "9.5" }}
+			}
+			{{ bubblePosition := "-top-" + bubblePositionOffset }}
+			if componentSettings.ThumbValueBubblePosition == RangeSliderThumbValueBubblePositionBottom {
+				{{ bubblePosition = "-bottom-" + bubblePositionOffset }}
+			}
+			{{ bubbleSize := "min-w-8 p-1 text-base" }}
+			switch componentSettings.ThumbValueBubbleSize {
+				case RangeSliderThumbValueBubbleSizeXs:
+					{{ bubbleSize = "min-w-6 p-0.5 text-xs" }}
+				case RangeSliderThumbValueBubbleSizeSm:
+					{{ bubbleSize = "min-w-7 p-0.75 text-sm" }}
+				case RangeSliderThumbValueBubbleSizeMd:
+					{{ bubbleSize = "min-w-8 p-1 text-base" }}
+				case RangeSliderThumbValueBubbleSizeLg:
+					{{ bubbleSize = "min-w-10 p-1.5 text-lg" }}
+				case RangeSliderThumbValueBubbleSizeXl:
+					{{ bubbleSize = "min-w-12 p-2 text-xl" }}
+			}
+			{{ bubbleShape := "rounded-full" }}
+			switch componentSettings.ThumbValueBubbleShape {
+				case RangeSliderThumbValueBubbleShapeCircular:
+					{{ bubbleShape = "rounded-full" }}
+				case RangeSliderThumbValueBubbleShapeRounded:
+					{{ bubbleShape = "rounded" }}
+				case RangeSliderThumbValueBubbleShapeSquare:
+					{{ bubbleShape = "rounded-none" }}
+			}
+			{{ bubbleBackgroundColor := "bg-neutral-800" }}
+			if componentSettings.ThumbValueBubbleBackgroundColor != "" {
+				{{ bubbleBackgroundColor = "bg-" + componentSettings.ThumbValueBubbleBackgroundColor }}
+			}
+			{{ bubbleTextColor := "text-neutral-50" }}
+			if componentSettings.ThumbValueBubbleTextColor != "" {
+				{{ bubbleTextColor = "text-" + componentSettings.ThumbValueBubbleTextColor }}
+			}
+			{{ bubbleRingClasses := "" }}
+			if componentSettings.ThumbValueBubbleRingColor != "" {
+				{{ bubbleRingThickness := "ring-1" }}
+				switch componentSettings.ThumbValueBubbleRingThickness {
+					case RangeSliderThumbValueBubbleRingThicknessXs:
+						{{ bubbleRingThickness = "ring-0.5" }}
+					case RangeSliderThumbValueBubbleRingThicknessSm:
+						{{ bubbleRingThickness = "ring-1" }}
+					case RangeSliderThumbValueBubbleRingThicknessMd:
+						{{ bubbleRingThickness = "ring-1.5" }}
+					case RangeSliderThumbValueBubbleRingThicknessLg:
+						{{ bubbleRingThickness = "ring-2" }}
+					case RangeSliderThumbValueBubbleRingThicknessXl:
+						{{ bubbleRingThickness = "ring-2.5" }}
+				}
+				{{ bubbleRingClasses = bubbleRingThickness + " ring-" + componentSettings.ThumbValueBubbleRingColor }}
+			}
+			<div
+				class={ "absolute " + bubblePosition + " select-none flex items-center justify-center " + bubbleSize + " " + bubbleShape + " " + bubbleBackgroundColor + " " + bubbleTextColor + " " + bubbleRingClasses }
+				x-text={ bubbleValue }
+			></div>
+		}
+	</div>
+}
+
 templ RangeSlider(componentSettings RangeSliderSettings) {
 	<!-- RangeSlider -->
 	{{ thumbValue := "0" }}
+	{{ thumbUpperValue := "75" }}
 	{{ trackStartValue := "0" }}
 	{{ trackEndValue := "100" }}
 	{{ trackSteps := "1" }}
@@ -88,50 +316,48 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 	if componentSettings.ThumbValueTwoWayStatePath != "" {
 		{{ thumbValue = componentSettings.ThumbValueTwoWayStatePath }}
 	}
+	if componentSettings.ThumbUpperValue != "" {
+		{{ thumbUpperValue = componentSettings.ThumbUpperValue }}
+	}
+	if componentSettings.ThumbUpperValueTwoWayStatePath != "" {
+		{{ thumbUpperValue = componentSettings.ThumbUpperValueTwoWayStatePath }}
+	}
 	if componentSettings.TrackStartValue != "" {
 		{{ trackStartValue = componentSettings.TrackStartValue }}
-	}
-	if componentSettings.TrackEndValueOneWayStatePath != "" {
-		{{ trackEndValue = componentSettings.TrackEndValueOneWayStatePath }}
-	}
-	if componentSettings.TrackEndValue != "" {
-		{{ trackEndValue = componentSettings.TrackEndValue }}
 	}
 	if componentSettings.TrackStartValueOneWayStatePath != "" {
 		{{ trackStartValue = componentSettings.TrackStartValueOneWayStatePath }}
 	}
+	if componentSettings.TrackEndValue != "" {
+		{{ trackEndValue = componentSettings.TrackEndValue }}
+	}
+	if componentSettings.TrackEndValueOneWayStatePath != "" {
+		{{ trackEndValue = componentSettings.TrackEndValueOneWayStatePath }}
+	}
 	if componentSettings.TrackSteps != "" {
 		{{ trackSteps = componentSettings.TrackSteps }}
 	}
+	{{ alpineData := "{sliderValue: " + thumbValue + ", startValue: " + trackStartValue + ", endValue: " + trackEndValue + ", steps: " + trackSteps + ", get sliderValuePercent() { return ((this.sliderValue - this.startValue) / (this.endValue - this.startValue)) * 100; }}" }}
+	if componentSettings.ThumbDualValueModeEnabled {
+		{{ alpineData = "{sliderValue: " + thumbValue + ", sliderUpperValue: " + thumbUpperValue + ", startValue: " + trackStartValue + ", endValue: " + trackEndValue + ", steps: " + trackSteps + ", get sliderValuePercent() { return ((this.sliderValue - this.startValue) / (this.endValue - this.startValue)) * 100; }, get upperValuePercent() { return ((this.sliderUpperValue - this.startValue) / (this.endValue - this.startValue)) * 100; }}" }}
+	}
 	<div
 		class="flex w-full flex-col"
-		x-data={ "{sliderValue: " + thumbValue + ", startValue: " + trackStartValue + ", endValue: " + trackEndValue + ", steps: " + trackSteps + ", get sliderValuePercent() { return ((this.sliderValue - this.startValue) / (this.endValue - this.startValue)) * 100; }}" }
+		x-data={ alpineData }
 	>
 		<div class="relative flex w-full flex-row items-center gap-2">
 			{{ trackHeight := "h-1.5" }}
-			{{ thumbSize := "w-4.5 h-4.5" }}
-			{{ thumbPosition := "-top-1.25" }}
 			switch componentSettings.Size {
 				case RangeSliderSizeXs:
 					{{ trackHeight = "h-1" }}
-					{{ thumbSize = "w-2.5 h-2.5" }}
-					{{ thumbPosition = "-top-0.75" }}
 				case RangeSliderSizeSm:
 					{{ trackHeight = "h-1.25" }}
-					{{ thumbSize = "w-3.5 h-3.5" }}
-					{{ thumbPosition = "-top-1.25" }}
 				case RangeSliderSizeMd:
 					{{ trackHeight = "h-1.5" }}
-					{{ thumbSize = "w-4.5 h-4.5" }}
-					{{ thumbPosition = "-top-1.5" }}
 				case RangeSliderSizeLg:
 					{{ trackHeight = "h-1.75" }}
-					{{ thumbSize = "w-5.5 h-5.5" }}
-					{{ thumbPosition = "-top-1.75" }}
 				case RangeSliderSizeXl:
 					{{ trackHeight = "h-2" }}
-					{{ thumbSize = "w-6.5 h-6.5" }}
-					{{ thumbPosition = "-top-2" }}
 			}
 			<!-- TrackStartValue -->
 			if componentSettings.TrackStartValueLabelEnabled || componentSettings.TrackStartValueLabelIcon != "" {
@@ -169,7 +395,7 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 				</div>
 			}
 			<!-- Track&Thumb -->
-			<div class="group/thumb relative flex w-full flex-row gap-2">
+			<div class="relative flex w-full flex-row gap-2">
 				<!-- TrackBackground -->
 				{{ trackBackgroundColor := "bg-neutral-50/5" }}
 				if componentSettings.TrackBackgroundColor != "" {
@@ -189,179 +415,48 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 				}
 				<div class={ trackBackgroundColor + " rounded-full w-full " + trackHeight }>
 					<!-- TrackFill -->
+					{{ trackFillClass := "h-full rounded-full bg-neutral-50/30" }}
+					{{ trackFillStyle := "'width: ' + sliderValuePercent + '%'" }}
+					if componentSettings.ThumbDualValueModeEnabled {
+						{{ trackFillClass = "absolute h-full rounded-full bg-neutral-50/30" }}
+						{{ trackFillStyle = "'left: ' + sliderValuePercent + '%; right: ' + (100 - upperValuePercent) + '%'" }}
+					}
 					<div
-						class={ "bg-neutral-50/30 rounded-full h-full" }
-						x-bind:style="'width: ' + ({{ if componentSettings.ThumbDualValueModeEnabled }}0{{ else }}sliderValuePercent{{ end }}) + '%'"
+						class={ trackFillClass }
+						x-bind:style={ trackFillStyle }
 					></div>
 				</div>
-				<!-- Thumb -->
-				{{ thumbShape := "rounded-full" }}
-				switch componentSettings.ThumbShape {
-					case RangeSliderThumbShapeCircular:
-						{{ thumbShape = "rounded-full" }}
-					case RangeSliderThumbShapeRounded:
-						{{ thumbShape = "rounded" }}
-					case RangeSliderThumbShapeSquare:
-						{{ thumbShape = "rounded-none" }}
+				@Thumb(componentSettings, false)
+				if componentSettings.ThumbDualValueModeEnabled {
+					<!-- ThumbUpper -->
+					@Thumb(componentSettings, true)
 				}
-				{{ thumbBackgroundColor := "bg-neutral-50" }}
-				if componentSettings.ThumbBackgroundColor != "" {
-					{{ thumbBackgroundColor = "bg-" + componentSettings.ThumbBackgroundColor }}
-				}
-				{{ thumbTextColor := "text-neutral-800" }}
-				if componentSettings.ThumbTextColor != "" {
-					{{ thumbTextColor = "text-" + componentSettings.ThumbTextColor }}
-				}
-				{{ thumbLeftNegativeOffset := ".5rem" }}
-				switch componentSettings.Size {
-					case RangeSliderSizeXs:
-						{{ thumbLeftNegativeOffset = ".25rem" }}
-					case RangeSliderSizeSm:
-						{{ thumbLeftNegativeOffset = ".375rem" }}
-					case RangeSliderSizeMd:
-						{{ thumbLeftNegativeOffset = ".5rem" }}
-					case RangeSliderSizeLg:
-						{{ thumbLeftNegativeOffset = ".625rem" }}
-					case RangeSliderSizeXl:
-						{{ thumbLeftNegativeOffset = ".75rem" }}
-				}
-				<div
-					class={ "absolute flex justify-center items-center " + thumbPosition + " " + thumbSize + " " + thumbShape + " " + thumbBackgroundColor + " " + thumbTextColor + " cursor-pointer shadow-md transition-transform group-hover/thumb:scale-115 group-hover/thumb:shadow-lg" }
-					x-bind:style={ "'left: calc(' + sliderValuePercent + '% - " + thumbLeftNegativeOffset + ")'" }
-				>
-					if componentSettings.ThumbLabelIcon != "" {
-						<!-- ThumbLabelIcon -->
-						{{ thumbIconSize := "text-sm" }}
-						switch componentSettings.Size {
-							case RangeSliderSizeXs:
-								{{ thumbIconSize = "text-[0.5rem]" }}
-							case RangeSliderSizeSm:
-								{{ thumbIconSize = "text-xs" }}
-							case RangeSliderSizeMd:
-								{{ thumbIconSize = "text-sm" }}
-							case RangeSliderSizeLg:
-								{{ thumbIconSize = "text-md" }}
-							case RangeSliderSizeXl:
-								{{ thumbIconSize = "text-lg" }}
+				<!-- RangeInputs -->
+				<div class="absolute inset-0 h-full w-full">
+					<input
+						type="range"
+						class="absolute inset-y-0 left-0 z-20 w-1/2 cursor-pointer opacity-0"
+						:min="startValue"
+						:max="endValue"
+						:step="steps"
+						x-model:value="sliderValue"
+						if componentSettings.ThumbDualValueModeEnabled {
+							x-on:input="if (sliderValue >= sliderUpperValue) sliderValue = sliderUpperValue - steps"
 						}
-						<i class={ "ph-bold " + componentSettings.ThumbLabelIcon + " flex h-full w-full items-center justify-center " + thumbIconSize }></i>
-					}
-					if componentSettings.ThumbLabel != "" || componentSettings.ThumbLabelOneWayStatePath != "" {
-						<!-- ThumbLabel -->
-						{{ thumbLabelSize := "text-xs" }}
-						switch componentSettings.Size {
-							case RangeSliderSizeXs:
-								{{ thumbLabelSize = "text-[0.5rem]" }}
-							case RangeSliderSizeSm:
-								{{ thumbLabelSize = "text-xs" }}
-							case RangeSliderSizeMd:
-								{{ thumbLabelSize = "text-sm" }}
-							case RangeSliderSizeLg:
-								{{ thumbLabelSize = "text-md" }}
-							case RangeSliderSizeXl:
-								{{ thumbLabelSize = "text-lg" }}
-						}
-						<span class={ "flex h-full w-full items-center justify-center " + thumbLabelSize }>
-							if componentSettings.ThumbLabelOneWayStatePath != "" {
-								<span x-text={ componentSettings.ThumbLabelOneWayStatePath }></span>
-							} else {
-								{ componentSettings.ThumbLabel }
-							}
-						</span>
-					}
-					<!-- ThumbValueBubble -->
-					if componentSettings.ThumbValueBubbleEnabled {
-						{{ bubblePositionOffset := "7.5" }}
-						switch componentSettings.Size {
-							case RangeSliderSizeXs:
-								{{ bubblePositionOffset = "5.5" }}
-							case RangeSliderSizeSm:
-								{{ bubblePositionOffset = "6.5" }}
-							case RangeSliderSizeMd:
-								{{ bubblePositionOffset = "7.5" }}
-							case RangeSliderSizeLg:
-								{{ bubblePositionOffset = "8.5" }}
-							case RangeSliderSizeXl:
-								{{ bubblePositionOffset = "9.5" }}
-						}
-						switch componentSettings.ThumbValueBubbleSize {
-							case RangeSliderThumbValueBubbleSizeXs:
-								{{ bubblePositionOffset = "5.5" }}
-							case RangeSliderThumbValueBubbleSizeSm:
-								{{ bubblePositionOffset = "6.5" }}
-							case RangeSliderThumbValueBubbleSizeMd:
-								{{ bubblePositionOffset = "7.5" }}
-							case RangeSliderThumbValueBubbleSizeLg:
-								{{ bubblePositionOffset = "8.5" }}
-							case RangeSliderThumbValueBubbleSizeXl:
-								{{ bubblePositionOffset = "9.5" }}
-						}
-						{{ bubblePosition := "-top-" + bubblePositionOffset }}
-						if componentSettings.ThumbValueBubblePosition == RangeSliderThumbValueBubblePositionBottom {
-							{{ bubblePosition = "-bottom-" + bubblePositionOffset }}
-						}
-						{{ bubbleSize := "min-w-8 p-1 text-base" }}
-						switch componentSettings.ThumbValueBubbleSize {
-							case RangeSliderThumbValueBubbleSizeXs:
-								{{ bubbleSize = "min-w-6 p-0.5 text-xs" }}
-							case RangeSliderThumbValueBubbleSizeSm:
-								{{ bubbleSize = "min-w-7 p-0.75 text-sm" }}
-							case RangeSliderThumbValueBubbleSizeMd:
-								{{ bubbleSize = "min-w-8 p-1 text-base" }}
-							case RangeSliderThumbValueBubbleSizeLg:
-								{{ bubbleSize = "min-w-10 p-1.5 text-lg" }}
-							case RangeSliderThumbValueBubbleSizeXl:
-								{{ bubbleSize = "min-w-12 p-2 text-xl" }}
-						}
-						{{ bubbleShape := "rounded-full" }}
-						switch componentSettings.ThumbValueBubbleShape {
-							case RangeSliderThumbValueBubbleShapeCircular:
-								{{ bubbleShape = "rounded-full" }}
-							case RangeSliderThumbValueBubbleShapeRounded:
-								{{ bubbleShape = "rounded" }}
-							case RangeSliderThumbValueBubbleShapeSquare:
-								{{ bubbleShape = "rounded-none" }}
-						}
-						{{ bubbleBackgroundColor := "bg-neutral-800" }}
-						if componentSettings.ThumbValueBubbleBackgroundColor != "" {
-							{{ bubbleBackgroundColor = "bg-" + componentSettings.ThumbValueBubbleBackgroundColor }}
-						}
-						{{ bubbleTextColor := "text-neutral-50" }}
-						if componentSettings.ThumbValueBubbleTextColor != "" {
-							{{ bubbleTextColor = "text-" + componentSettings.ThumbValueBubbleTextColor }}
-						}
-						{{ bubbleRingClasses := "" }}
-						if componentSettings.ThumbValueBubbleRingColor != "" {
-							{{ bubbleRingThickness := "ring-1" }}
-							switch componentSettings.ThumbValueBubbleRingThickness {
-								case RangeSliderThumbValueBubbleRingThicknessXs:
-									{{ bubbleRingThickness = "ring-0.5" }}
-								case RangeSliderThumbValueBubbleRingThicknessSm:
-									{{ bubbleRingThickness = "ring-1" }}
-								case RangeSliderThumbValueBubbleRingThicknessMd:
-									{{ bubbleRingThickness = "ring-1.5" }}
-								case RangeSliderThumbValueBubbleRingThicknessLg:
-									{{ bubbleRingThickness = "ring-2" }}
-								case RangeSliderThumbValueBubbleRingThicknessXl:
-									{{ bubbleRingThickness = "ring-2.5" }}
-							}
-							{{ bubbleRingClasses = bubbleRingThickness + " ring-" + componentSettings.ThumbValueBubbleRingColor }}
-						}
-						<div
-							class={ "absolute " + bubblePosition + " select-none flex items-center justify-center " + bubbleSize + " " + bubbleShape + " " + bubbleBackgroundColor + " " + bubbleTextColor + " " + bubbleRingClasses }
-							x-text="sliderValue"
-						></div>
+					/>
+					if componentSettings.ThumbDualValueModeEnabled {
+						<!-- RangeInputUpper -->
+						<input
+							type="range"
+							class="absolute inset-y-0 right-0 z-20 w-1/2 cursor-pointer opacity-0"
+							:min="startValue"
+							:max="endValue"
+							:step="steps"
+							x-model:value="sliderUpperValue"
+							x-on:input="if (sliderUpperValue <= sliderValue) sliderUpperValue = sliderValue + steps"
+						/>
 					}
 				</div>
-				<!-- RangeInput -->
-				<input
-					type="range"
-					class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-					:min="startValue"
-					:max="endValue"
-					:step="steps"
-					x-model:value="sliderValue"
-				/>
 			</div>
 			<!-- TrackEndValue -->
 			if componentSettings.TrackEndValueLabelEnabled || componentSettings.TrackEndValueLabelIcon != "" {
