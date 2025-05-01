@@ -263,7 +263,11 @@ templ Thumb(componentSettings RangeSliderSettings, isUpper bool) {
 				case RangeSliderSizeXl:
 					{{ bubblePositionOffset = "9.5" }}
 			}
-			switch componentSettings.ThumbValueBubbleSize {
+			{{ customBubbleSize := componentSettings.ThumbValueBubbleSize }}
+			if isUpper && componentSettings.ThumbUpperValueBubbleSize != "" {
+				{{ customBubbleSize = componentSettings.ThumbUpperValueBubbleSize }}
+			}
+			switch customBubbleSize {
 				case RangeSliderThumbValueBubbleSizeXs:
 					{{ bubblePositionOffset = "5.5" }}
 				case RangeSliderThumbValueBubbleSizeSm:
@@ -279,8 +283,17 @@ templ Thumb(componentSettings RangeSliderSettings, isUpper bool) {
 			if componentSettings.ThumbValueBubblePosition == RangeSliderThumbValueBubblePositionBottom {
 				{{ bubblePosition = "-bottom-" + bubblePositionOffset }}
 			}
+			if isUpper && componentSettings.ThumbUpperValueBubblePosition != "" {
+				{{ bubblePosition = "-top-" + bubblePositionOffset }}
+				if componentSettings.ThumbUpperValueBubblePosition == RangeSliderThumbValueBubblePositionBottom {
+					{{ bubblePosition = "-bottom-" + bubblePositionOffset }}
+				}
+			}
 			{{ bubbleSize := "min-w-8 p-1 text-base" }}
-			switch componentSettings.ThumbValueBubbleSize {
+			if isUpper && componentSettings.ThumbUpperValueBubbleSize != "" {
+				{{ customBubbleSize = componentSettings.ThumbUpperValueBubbleSize }}
+			}
+			switch customBubbleSize {
 				case RangeSliderThumbValueBubbleSizeXs:
 					{{ bubbleSize = "min-w-6 p-0.5 text-xs" }}
 				case RangeSliderThumbValueBubbleSizeSm:
@@ -293,7 +306,11 @@ templ Thumb(componentSettings RangeSliderSettings, isUpper bool) {
 					{{ bubbleSize = "min-w-12 p-2 text-xl" }}
 			}
 			{{ bubbleShape := "rounded-full" }}
-			switch componentSettings.ThumbValueBubbleShape {
+			{{ customBubbleShape := componentSettings.ThumbValueBubbleShape }}
+			if isUpper && componentSettings.ThumbUpperValueBubbleShape != "" {
+				{{ customBubbleShape = componentSettings.ThumbUpperValueBubbleShape }}
+			}
+			switch customBubbleShape {
 				case RangeSliderThumbValueBubbleShapeCircular:
 					{{ bubbleShape = "rounded-full" }}
 				case RangeSliderThumbValueBubbleShapeRounded:
@@ -305,14 +322,28 @@ templ Thumb(componentSettings RangeSliderSettings, isUpper bool) {
 			if componentSettings.ThumbValueBubbleBackgroundColor != "" {
 				{{ bubbleBackgroundColor = "bg-" + componentSettings.ThumbValueBubbleBackgroundColor }}
 			}
+			if isUpper && componentSettings.ThumbUpperValueBubbleBackgroundColor != "" {
+				{{ bubbleBackgroundColor = "bg-" + componentSettings.ThumbUpperValueBubbleBackgroundColor }}
+			}
 			{{ bubbleTextColor := "text-neutral-50" }}
 			if componentSettings.ThumbValueBubbleTextColor != "" {
 				{{ bubbleTextColor = "text-" + componentSettings.ThumbValueBubbleTextColor }}
 			}
+			if isUpper && componentSettings.ThumbUpperValueBubbleTextColor != "" {
+				{{ bubbleTextColor = "text-" + componentSettings.ThumbUpperValueBubbleTextColor }}
+			}
 			{{ bubbleRingClasses := "" }}
 			if componentSettings.ThumbValueBubbleRingColor != "" {
+				{{ bubbleRingClasses = "ring-" + componentSettings.ThumbValueBubbleRingColor }}
+				if isUpper && componentSettings.ThumbUpperValueBubbleRingColor != "" {
+					{{ bubbleRingClasses = "ring-" + componentSettings.ThumbUpperValueBubbleRingColor }}
+				}
 				{{ bubbleRingThickness := "ring-1" }}
-				switch componentSettings.ThumbValueBubbleRingThickness {
+				{{ customBubbleRingThickness := componentSettings.ThumbValueBubbleRingThickness }}
+				if isUpper && componentSettings.ThumbUpperValueBubbleRingThickness != "" {
+					{{ customBubbleRingThickness = componentSettings.ThumbUpperValueBubbleRingThickness }}
+				}
+				switch customBubbleRingThickness {
 					case RangeSliderThumbValueBubbleRingThicknessXs:
 						{{ bubbleRingThickness = "ring-0.5" }}
 					case RangeSliderThumbValueBubbleRingThicknessSm:
@@ -324,7 +355,7 @@ templ Thumb(componentSettings RangeSliderSettings, isUpper bool) {
 					case RangeSliderThumbValueBubbleRingThicknessXl:
 						{{ bubbleRingThickness = "ring-2.5" }}
 				}
-				{{ bubbleRingClasses = bubbleRingThickness + " ring-" + componentSettings.ThumbValueBubbleRingColor }}
+				{{ bubbleRingClasses += " " + bubbleRingThickness }}
 			}
 			<div
 				class={ "absolute " + bubblePosition + " select-none flex items-center justify-center " + bubbleSize + " " + bubbleShape + " " + bubbleBackgroundColor + " " + bubbleTextColor + " " + bubbleRingClasses }
