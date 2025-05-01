@@ -1206,17 +1206,15 @@ templ RangeSliderDemo() {
 					<div x-data="{lowerValue: 25, upperValue: 75}" class="flex flex-col gap-7">
 						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
 							ThumbDualValueModeEnabled:      true,
+							ThumbBackgroundColor:           "emerald-500",
 							ThumbValueTwoWayStatePath:      "lowerValue",
 							ThumbUpperValueTwoWayStatePath: "upperValue",
-							ThumbValue:                     "25",
-							ThumbUpperValue:                "75",
+							ThumbValueBubbleEnabled:        true,
 							TrackStartValue:                "0",
 							TrackEndValue:                  "100",
 							TrackSteps:                     "1",
 							TrackStartValueLabelEnabled:    true,
 							TrackEndValueLabelEnabled:      true,
-							ThumbValueBubbleEnabled:        true,
-							ThumbBackgroundColor:           "emerald-500",
 						})
 						<p class="text-sm text-neutral-400">Price Range: $<span x-text="lowerValue"></span> - $<span x-text="upperValue"></span></p>
 					</div>
