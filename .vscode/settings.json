@@ -3,6 +3,8 @@
     "fieldset",
     "github",
     "Htmx",
+    "Itoa",
+    "strconv",
     "stylesheet",
     "templ"
   ],
