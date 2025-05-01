@@ -341,16 +341,17 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 	if componentSettings.TrackSteps != "" {
 		{{ trackSteps = componentSettings.TrackSteps }}
 	}
-	{{ alpineData := "{thumbValue: " + thumbValue + ", trackStartValue: " + trackStartValue + ", trackEndValue: " + trackEndValue + ", trackSteps: " + trackSteps + ", thumbHover: false, get thumbValuePercent() { return ((this.thumbValue - this.trackStartValue) / (this.trackEndValue - this.trackStartValue)) * 100; }}" }}
+	{{ alpineData := "{thumbValue: " + thumbValue + ", trackStartValue: " + trackStartValue + ", trackEndValue: " + trackEndValue + ", trackSteps: " + trackSteps + ", thumbHover: false, clampPercent(percent) { return Math.min(Math.max(percent, 0), 100); }, get thumbValuePercent() { return this.clampPercent((this.thumbValue - this.trackStartValue) / (this.trackEndValue - this.trackStartValue) * 100); }" }}
 	if componentSettings.ThumbDualValueModeEnabled {
-		{{ alpineData = "{thumbValue: " + thumbValue + ", thumbUpperValue: " + thumbUpperValue + ", trackStartValue: " + trackStartValue + ", trackEndValue: " + trackEndValue + ", trackSteps: " + trackSteps + ", thumbHover: false, thumbUpperHover: false, get thumbValuePercent() { return ((this.thumbValue - this.trackStartValue) / (this.trackEndValue - this.trackStartValue)) * 100; }, get thumbUpperValuePercent() { return ((this.thumbUpperValue - this.trackStartValue) / (this.trackEndValue - this.trackStartValue)) * 100; }}" }}
+		{{ alpineData += ", thumbUpperValue: " + thumbUpperValue + ", thumbUpperHover: false, get thumbUpperValuePercent() { return this.clampPercent((this.thumbUpperValue - this.trackStartValue) / (this.trackEndValue - this.trackStartValue) * 100); }" }}
 	}
+	{{ alpineData += "}" }}
 	{{ alpineWatch := "" }}
 	if componentSettings.ThumbValueTwoWayStatePath != "" {
-		{{ alpineWatch = "$watch('" + componentSettings.ThumbValueTwoWayStatePath + "', (newValue, oldValue) => { if (oldValue == newValue) return; if (thumbValue != newValue) thumbValue = newValue; });" }}
+		{{ alpineWatch = "$watch('" + componentSettings.ThumbValueTwoWayStatePath + "', (newValue, oldValue) => { if (oldValue == newValue) return; if (newValue < trackStartValue) newValue = trackStartValue; if (newValue > trackEndValue) newValue = trackEndValue; if (thumbValue != newValue) thumbValue = newValue; });" }}
 	}
 	if componentSettings.ThumbUpperValueTwoWayStatePath != "" {
-		{{ alpineWatch += "$watch('" + componentSettings.ThumbUpperValueTwoWayStatePath + "', (newValue, oldValue) => { if (oldValue == newValue) return; if (thumbUpperValue != newValue) thumbUpperValue = newValue; });" }}
+		{{ alpineWatch += "$watch('" + componentSettings.ThumbUpperValueTwoWayStatePath + "', (newValue, oldValue) => { if (oldValue == newValue) return; if (newValue < trackStartValue) newValue = trackStartValue; if (newValue > trackEndValue) newValue = trackEndValue; if (thumbUpperValue != newValue) thumbUpperValue = newValue; });" }}
 	}
 	<div
 		class="flex w-full flex-col"
@@ -426,6 +427,14 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 					}
 				}
 				<div class={ trackBackgroundColor + " relative rounded-full w-full " + trackHeight }>
+					<!-- RangeInputs -->
+					{{ inputEvent := "if (thumbValue <= trackStartValue) thumbValue = trackStartValue; if (thumbValue >= trackEndValue) thumbValue = trackEndValue;" }}
+					if componentSettings.ThumbDualValueModeEnabled {
+						{{ inputEvent += "if (thumbUpperValue <= thumbValue) thumbUpperValue = Number(thumbValue) + Number(trackSteps);" }}
+					}
+					if componentSettings.ThumbValueTwoWayStatePath != "" {
+						{{ inputEvent += componentSettings.ThumbValueTwoWayStatePath + " = thumbValue" }}
+					}
 					<input
 						type="range"
 						class="absolute z-20 w-full cursor-pointer appearance-none opacity-0"
@@ -435,16 +444,17 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 						x-model.number:value="thumbValue"
 						@mouseenter="thumbHover = true"
 						@mouseleave="thumbHover = false"
+						@input.debounce.100ms={ inputEvent }
 						if componentSettings.ThumbDualValueModeEnabled {
-							@input="if (thumbValue >= thumbUpperValue) thumbValue = thumbUpperValue - trackSteps"
 							x-bind:style="'pointer-events: ' + (thumbHover ? 'auto' : 'none')"
-						}
-						if componentSettings.ThumbValueTwoWayStatePath != "" {
-							@input.debounce.100ms={ componentSettings.ThumbValueTwoWayStatePath + " = thumbValue" }
 						}
 					/>
 					if componentSettings.ThumbDualValueModeEnabled {
 						<!-- RangeInputUpper -->
+						{{ inputEvent := "if (thumbUpperValue <= trackStartValue) thumbUpperValue = trackStartValue; if (thumbUpperValue >= trackEndValue) thumbUpperValue = trackEndValue; if (thumbUpperValue <= thumbValue) thumbUpperValue = Number(thumbValue) + Number(trackSteps);" }}
+						if componentSettings.ThumbUpperValueTwoWayStatePath != "" {
+							{{ inputEvent += componentSettings.ThumbUpperValueTwoWayStatePath + " = thumbUpperValue" }}
+						}
 						<input
 							type="range"
 							class="absolute z-20 w-full cursor-pointer appearance-none opacity-0"
@@ -454,11 +464,8 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 							x-model.number:value="thumbUpperValue"
 							@mouseenter="thumbUpperHover = true"
 							@mouseleave="thumbUpperHover = false"
-							@input="if (thumbUpperValue <= thumbValue) thumbUpperValue = thumbValue + trackSteps"
+							@input.debounce.100ms={ inputEvent }
 							x-bind:style="'pointer-events: ' + (thumbUpperHover ? 'auto' : 'none')"
-							if componentSettings.ThumbUpperValueTwoWayStatePath != "" {
-								@input.debounce.100ms={ componentSettings.ThumbUpperValueTwoWayStatePath + " = thumbUpperValue" }
-							}
 						/>
 					}
 					<!-- TrackFill -->
