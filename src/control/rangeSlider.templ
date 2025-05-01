@@ -10,6 +10,7 @@ const (
 	RangeSliderThumbShapeCircular string = "circular"
 	RangeSliderThumbShapeRounded  string = "rounded"
 	RangeSliderThumbShapeSquare   string = "square"
+	RangeSliderThumbShapePipe     string = "pipe"
 
 	RangeSliderThumbValueBubblePositionTop    string = "top"
 	RangeSliderThumbValueBubblePositionBottom string = "bottom"
@@ -62,6 +63,13 @@ type RangeSliderSettings struct {
 	ThumbUpperLabelOneWayStatePath          string
 	ThumbUpperLabelIcon                     string
 	ThumbUpperValueBubbleEnabled            bool
+	ThumbUpperValueBubbleBackgroundColor    string
+	ThumbUpperValueBubbleTextColor          string
+	ThumbUpperValueBubbleRingColor          string
+	ThumbUpperValueBubbleRingThickness      string
+	ThumbUpperValueBubbleSize               string
+	ThumbUpperValueBubbleShape              string
+	ThumbUpperValueBubblePosition           string
 	TrackBackgroundColor                    string
 	TrackBackgroundColorFrom                string
 	TrackBackgroundColorFromOneWayStatePath string
@@ -113,6 +121,22 @@ templ Thumb(componentSettings RangeSliderSettings, isUpper bool) {
 			{{ thumbShape = "rounded" }}
 		case RangeSliderThumbShapeSquare:
 			{{ thumbShape = "rounded-none" }}
+		case RangeSliderThumbShapePipe:
+			{{ thumbShape = "rounded-none" }}
+			switch componentSettings.Size {
+				case RangeSliderSizeXs:
+					{{ thumbShape += " !w-1" }}
+				case RangeSliderSizeSm:
+					{{ thumbShape += " !w-1" }}
+				case RangeSliderSizeMd:
+					{{ thumbShape += " !w-1" }}
+				case RangeSliderSizeLg:
+					{{ thumbShape += " !w-1.5" }}
+				case RangeSliderSizeXl:
+					{{ thumbShape += " !w-1.5" }}
+				default:
+					{{ thumbShape += " !w-1" }}
+			}
 	}
 	{{ thumbBackgroundColor := "bg-neutral-50" }}
 	{{ thumbTextColor := "text-neutral-800" }}
@@ -163,6 +187,9 @@ templ Thumb(componentSettings RangeSliderSettings, isUpper bool) {
 			{{ thumbLeftNegativeOffset = ".625rem" }}
 		case RangeSliderSizeXl:
 			{{ thumbLeftNegativeOffset = ".75rem" }}
+	}
+	if componentSettings.ThumbShape == RangeSliderThumbShapePipe {
+		{{ thumbLeftNegativeOffset = "0%" }}
 	}
 	{{ percentValue := "thumbValuePercent" }}
 	{{ bubbleValue := "thumbValue" }}

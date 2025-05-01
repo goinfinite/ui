@@ -1071,6 +1071,10 @@ templ RangeSliderDemo() {
 							ThumbValueTwoWayStatePath: "sliderValue",
 							ThumbShape:                uiControl.RangeSliderThumbShapeSquare,
 						})
+						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+							ThumbValueTwoWayStatePath: "sliderValue",
+							ThumbShape:                uiControl.RangeSliderThumbShapePipe,
+						})
 					</div>
 				</div>
 				<div class="flex w-full flex-col gap-2">
@@ -1217,6 +1221,21 @@ templ RangeSliderDemo() {
 							TrackEndValueLabelEnabled:      true,
 						})
 						<p class="text-sm text-neutral-400">Price Range: $<span x-text="lowerValue"></span> - $<span x-text="upperValue"></span></p>
+						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+							ThumbShape:                           uiControl.RangeSliderThumbShapePipe,
+							ThumbDualValueModeEnabled:            true,
+							ThumbBackgroundColor:                 "emerald-500",
+							ThumbValueTwoWayStatePath:            "lowerValue",
+							ThumbUpperBackgroundColor:            "red-500",
+							ThumbUpperValueTwoWayStatePath:       "upperValue",
+							ThumbUpperValueBubbleBackgroundColor: "red-500",
+							ThumbValueBubbleEnabled:              true,
+							TrackStartValue:                      "0",
+							TrackEndValue:                        "100",
+							TrackSteps:                           "1",
+							TrackStartValueLabelEnabled:          true,
+							TrackEndValueLabelEnabled:            true,
+						})
 					</div>
 				</div>
 			</div>
