@@ -1,5 +1,7 @@
 package uiControl
 
+import "strconv"
+
 const (
 	RangeSliderSizeXs string = "xs"
 	RangeSliderSizeSm string = "sm"
@@ -467,7 +469,7 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 			}
 			<!-- Track&Thumb -->
 			<div class="relative flex w-full flex-row gap-2">
-				<!-- TrackBackground -->
+				<!-- Track -->
 				{{ trackBackgroundColor := "bg-neutral-50/5" }}
 				if componentSettings.TrackBackgroundColor != "" {
 					{{ trackBackgroundColor = "bg-" + componentSettings.TrackBackgroundColor }}
@@ -484,8 +486,25 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 						{{ trackBackgroundColor = trackBackgroundColor + " to-" + componentSettings.TrackBackgroundColorTo }}
 					}
 				}
-				<div class={ trackBackgroundColor + " relative rounded-full w-full " + trackHeight }>
+				<div class={ trackBackgroundColor + " flex items-center relative rounded-full w-full " + trackHeight }>
 					<!-- RangeInputs -->
+					{{ rangeInputHeight := 7 }}
+					switch componentSettings.Size {
+						case RangeSliderSizeXs:
+							{{ rangeInputHeight = 3 }}
+						case RangeSliderSizeSm:
+							{{ rangeInputHeight = 5 }}
+						case RangeSliderSizeMd:
+							{{ rangeInputHeight = 7 }}
+						case RangeSliderSizeLg:
+							{{ rangeInputHeight = 9 }}
+						case RangeSliderSizeXl:
+							{{ rangeInputHeight = 11 }}
+					}
+					if componentSettings.ThumbValueBubbleEnabled {
+						{{ rangeInputHeight = rangeInputHeight * 2 }}
+					}
+					{{ rangeInputClasses := "absolute z-20 h-" + strconv.Itoa(rangeInputHeight) + " w-full cursor-pointer appearance-none opacity-0" }}
 					{{ inputEvent := "if (thumbValue <= trackStartValue) thumbValue = trackStartValue; if (thumbValue >= trackEndValue) thumbValue = trackEndValue;" }}
 					if componentSettings.ThumbDualValueModeEnabled {
 						{{ inputEvent += "if (thumbUpperValue <= thumbValue) thumbUpperValue = Number(thumbValue) + Number(trackSteps);" }}
@@ -495,7 +514,7 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 					}
 					<input
 						type="range"
-						class="absolute z-20 w-full cursor-pointer appearance-none opacity-0"
+						class={ rangeInputClasses }
 						:min="trackStartValue"
 						:max="trackEndValue"
 						:step="trackSteps"
@@ -515,7 +534,7 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 						}
 						<input
 							type="range"
-							class="absolute z-20 w-full cursor-pointer appearance-none opacity-0"
+							class={ rangeInputClasses }
 							:min="trackStartValue"
 							:max="trackEndValue"
 							:step="trackSteps"
@@ -527,7 +546,7 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 						/>
 					}
 					<!-- TrackFill -->
-					{{ trackFillClass := "h-full rounded-full bg-neutral-50/30" }}
+					{{ trackFillClass := "absolute inset-0 h-full rounded-full bg-neutral-50/30" }}
 					{{ trackFillStyle := "'width: ' + thumbValuePercent + '%'" }}
 					if componentSettings.ThumbDualValueModeEnabled {
 						{{ trackFillClass = "absolute inset-0 h-full rounded-full bg-neutral-50/30" }}
