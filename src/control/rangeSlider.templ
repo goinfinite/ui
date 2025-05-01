@@ -164,11 +164,9 @@ templ Thumb(componentSettings RangeSliderSettings, isUpper bool) {
 		case RangeSliderSizeXl:
 			{{ thumbLeftNegativeOffset = ".75rem" }}
 	}
-	{{ zIndex := "" }}
 	{{ percentValue := "thumbValuePercent" }}
 	{{ bubbleValue := "thumbValue" }}
 	if isUpper {
-		{{ zIndex = "z-10" }}
 		{{ percentValue = "thumbUpperValuePercent" }}
 		{{ bubbleValue = "thumbUpperValue" }}
 	}
@@ -177,8 +175,10 @@ templ Thumb(componentSettings RangeSliderSettings, isUpper bool) {
 		{{ hoverState = "thumbUpperHover" }}
 	}
 	<div
-		class={ "absolute select-none flex justify-center items-center " + thumbPosition + " " + thumbSize + " " + thumbShape + " " + thumbBackgroundColor + " " + thumbTextColor + " cursor-pointer shadow-md transition-transform duration-200" + " " + zIndex }
-		x-bind:style={ "'left: calc(' + " + percentValue + " + '% - " + thumbLeftNegativeOffset + "); transform: scale(' + (" + hoverState + " ? 1.1 : 1) + ')'" }
+		class={ "absolute select-none flex justify-center items-center " + thumbPosition + " " + thumbSize + " " + thumbShape + " " + thumbBackgroundColor + " " + thumbTextColor + " cursor-pointer shadow-md transition-transform duration-200 z-10" }
+		x-bind:style={ "'left: calc(' + " + percentValue + " + '% - " + thumbLeftNegativeOffset + "); transform: translateX(-50%) scale(' + (" + hoverState + " ? 1.1 : 1) + ');'" }
+		@mouseenter={ hoverState + " = true" }
+		@mouseleave={ hoverState + " = false" }
 	>
 		if thumbIcon != "" {
 			<!-- ThumbLabelIcon -->
@@ -425,33 +425,10 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 						{{ trackBackgroundColor = trackBackgroundColor + " to-" + componentSettings.TrackBackgroundColorTo }}
 					}
 				}
-				<div class={ trackBackgroundColor + " rounded-full w-full " + trackHeight }>
-					<!-- TrackFill -->
-					{{ trackFillClass := "h-full rounded-full bg-neutral-50/30" }}
-					{{ trackFillStyle := "'width: ' + thumbValuePercent + '%'" }}
-					if componentSettings.ThumbDualValueModeEnabled {
-						{{ trackFillClass = "absolute h-full rounded-full bg-neutral-50/30" }}
-						{{ trackFillStyle = "'left: ' + thumbValuePercent + '%; right: ' + (100 - thumbUpperValuePercent) + '%'" }}
-					}
-					<div
-						class={ trackFillClass }
-						x-bind:style={ trackFillStyle }
-					></div>
-				</div>
-				@Thumb(componentSettings, false)
-				if componentSettings.ThumbDualValueModeEnabled {
-					<!-- ThumbUpper -->
-					@Thumb(componentSettings, true)
-				}
-				<!-- RangeInputs -->
-				{{ lowerThumbWidth := "w-full" }}
-				if componentSettings.ThumbDualValueModeEnabled {
-					{{ lowerThumbWidth = "w-1/2" }}
-				}
-				<div class="absolute inset-0 h-full w-full">
+				<div class={ trackBackgroundColor + " relative rounded-full w-full " + trackHeight }>
 					<input
 						type="range"
-						class={ "absolute inset-y-0 left-0 z-20 " + lowerThumbWidth + " cursor-pointer opacity-0" }
+						class="absolute z-20 w-full cursor-pointer appearance-none opacity-0"
 						:min="trackStartValue"
 						:max="trackEndValue"
 						:step="trackSteps"
@@ -460,6 +437,7 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 						@mouseleave="thumbHover = false"
 						if componentSettings.ThumbDualValueModeEnabled {
 							@input="if (thumbValue >= thumbUpperValue) thumbValue = thumbUpperValue - trackSteps"
+							x-bind:style="'pointer-events: ' + (thumbHover ? 'auto' : 'none')"
 						}
 						if componentSettings.ThumbValueTwoWayStatePath != "" {
 							@input.debounce.100ms={ componentSettings.ThumbValueTwoWayStatePath + " = thumbValue" }
@@ -469,7 +447,7 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 						<!-- RangeInputUpper -->
 						<input
 							type="range"
-							class="absolute inset-y-0 right-0 z-20 w-1/2 cursor-pointer opacity-0"
+							class="absolute z-20 w-full cursor-pointer appearance-none opacity-0"
 							:min="trackStartValue"
 							:max="trackEndValue"
 							:step="trackSteps"
@@ -477,10 +455,24 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 							@mouseenter="thumbUpperHover = true"
 							@mouseleave="thumbUpperHover = false"
 							@input="if (thumbUpperValue <= thumbValue) thumbUpperValue = thumbValue + trackSteps"
+							x-bind:style="'pointer-events: ' + (thumbUpperHover ? 'auto' : 'none')"
 							if componentSettings.ThumbUpperValueTwoWayStatePath != "" {
 								@input.debounce.100ms={ componentSettings.ThumbUpperValueTwoWayStatePath + " = thumbUpperValue" }
 							}
 						/>
+					}
+					<!-- TrackFill -->
+					{{ trackFillClass := "h-full rounded-full bg-neutral-50/30" }}
+					{{ trackFillStyle := "'width: ' + thumbValuePercent + '%'" }}
+					if componentSettings.ThumbDualValueModeEnabled {
+						{{ trackFillClass = "absolute inset-0 h-full rounded-full bg-neutral-50/30" }}
+						{{ trackFillStyle = "'left: ' + thumbValuePercent + '%; right: ' + (100 - thumbUpperValuePercent) + '%'" }}
+					}
+					<div class={ trackFillClass } x-bind:style={ trackFillStyle }></div>
+					@Thumb(componentSettings, false)
+					if componentSettings.ThumbDualValueModeEnabled {
+						<!-- ThumbUpper -->
+						@Thumb(componentSettings, true)
 					}
 				</div>
 			</div>
