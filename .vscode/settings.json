@@ -4,6 +4,8 @@
     "github",
     "Htmx",
     "Itoa",
+    "mouseenter",
+    "mouseleave",
     "strconv",
     "stylesheet",
     "templ"
