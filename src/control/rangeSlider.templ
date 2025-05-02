@@ -39,59 +39,60 @@ const (
 
 type RangeSliderSettings struct {
 	// OptionalFields
-	Size                                    string
-	ThumbLabel                              string
-	ThumbLabelOneWayStatePath               string
-	ThumbLabelIcon                          string
-	ThumbBackgroundColor                    string
-	ThumbTextColor                          string
-	ThumbShape                              string
-	ThumbValue                              string
-	ThumbValueTwoWayStatePath               string
-	ThumbValueBubbleEnabled                 bool
-	ThumbValueBubbleBackgroundColor         string
-	ThumbValueBubbleTextColor               string
-	ThumbValueBubbleRingColor               string
-	ThumbValueBubbleRingThickness           string
-	ThumbValueBubbleSize                    string
-	ThumbValueBubbleShape                   string
-	ThumbValueBubblePosition                string
-	ThumbDualValueModeEnabled               bool
-	ThumbUpperValue                         string
-	ThumbUpperValueTwoWayStatePath          string
-	ThumbUpperBackgroundColor               string
-	ThumbUpperTextColor                     string
-	ThumbUpperLabel                         string
-	ThumbUpperLabelOneWayStatePath          string
-	ThumbUpperLabelIcon                     string
-	ThumbUpperValueBubbleEnabled            bool
-	ThumbUpperValueBubbleBackgroundColor    string
-	ThumbUpperValueBubbleTextColor          string
-	ThumbUpperValueBubbleRingColor          string
-	ThumbUpperValueBubbleRingThickness      string
-	ThumbUpperValueBubbleSize               string
-	ThumbUpperValueBubbleShape              string
-	ThumbUpperValueBubblePosition           string
-	TrackBackgroundColor                    string
-	TrackBackgroundColorFrom                string
-	TrackBackgroundColorFromOneWayStatePath string
-	TrackBackgroundColorVia                 string
-	TrackBackgroundColorViaOneWayStatePath  string
-	TrackBackgroundColorTo                  string
-	TrackBackgroundColorToOneWayStatePath   string
-	TrackSteps                              string
-	TrackStartValue                         string
-	TrackStartValueOneWayStatePath          string
-	TrackStartValueLabelEnabled             bool
-	TrackStartValueLabelTextColor           string
-	TrackStartValueLabelPosition            string
-	TrackStartValueLabelIcon                string
-	TrackEndValue                           string
-	TrackEndValueOneWayStatePath            string
-	TrackEndValueLabelEnabled               bool
-	TrackEndValueLabelTextColor             string
-	TrackEndValueLabelPosition              string
-	TrackEndValueLabelIcon                  string
+	Size                                 string
+	ThumbLabel                           string
+	ThumbLabelOneWayStatePath            string
+	ThumbLabelIcon                       string
+	ThumbBackgroundColor                 string
+	ThumbTextColor                       string
+	ThumbShape                           string
+	ThumbValue                           string
+	ThumbValueTwoWayStatePath            string
+	ThumbValueBubbleEnabled              bool
+	ThumbValueBubbleBackgroundColor      string
+	ThumbValueBubbleTextColor            string
+	ThumbValueBubbleRingColor            string
+	ThumbValueBubbleRingThickness        string
+	ThumbValueBubbleSize                 string
+	ThumbValueBubbleShape                string
+	ThumbValueBubblePosition             string
+	ThumbDualValueModeEnabled            bool
+	ThumbUpperValue                      string
+	ThumbUpperValueTwoWayStatePath       string
+	ThumbUpperBackgroundColor            string
+	ThumbUpperTextColor                  string
+	ThumbUpperLabel                      string
+	ThumbUpperLabelOneWayStatePath       string
+	ThumbUpperLabelIcon                  string
+	ThumbUpperValueBubbleEnabled         bool
+	ThumbUpperValueBubbleBackgroundColor string
+	ThumbUpperValueBubbleTextColor       string
+	ThumbUpperValueBubbleRingColor       string
+	ThumbUpperValueBubbleRingThickness   string
+	ThumbUpperValueBubbleSize            string
+	ThumbUpperValueBubbleShape           string
+	ThumbUpperValueBubblePosition        string
+	TrackBackgroundColor                 string
+	TrackBackgroundColorFrom             string
+	TrackBackgroundColorVia              string
+	TrackBackgroundColorTo               string
+	TrackSteps                           string
+	TrackFillColor                       string
+	TrackFillColorFrom                   string
+	TrackFillColorVia                    string
+	TrackFillColorTo                     string
+	TrackStartValue                      string
+	TrackStartValueOneWayStatePath       string
+	TrackStartValueLabelEnabled          bool
+	TrackStartValueLabelTextColor        string
+	TrackStartValueLabelPosition         string
+	TrackStartValueLabelIcon             string
+	TrackEndValue                        string
+	TrackEndValueOneWayStatePath         string
+	TrackEndValueLabelEnabled            bool
+	TrackEndValueLabelTextColor          string
+	TrackEndValueLabelPosition           string
+	TrackEndValueLabelIcon               string
 }
 
 templ Thumb(componentSettings RangeSliderSettings, isUpper bool) {
@@ -398,8 +399,24 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 	if componentSettings.ThumbUpperValueTwoWayStatePath != "" {
 		{{ alpineWatch += "$watch('" + componentSettings.ThumbUpperValueTwoWayStatePath + "', (newValue, oldValue) => { if (oldValue == newValue) return; if (newValue < trackStartValue) newValue = trackStartValue; if (newValue > trackEndValue) newValue = trackEndValue; if (thumbUpperValue != newValue) thumbUpperValue = newValue; });" }}
 	}
+	{{ mainDivMinHeight := 6 }}
+	switch componentSettings.Size {
+		case RangeSliderSizeXs:
+			{{ mainDivMinHeight = 4 }}
+		case RangeSliderSizeSm:
+			{{ mainDivMinHeight = 5 }}
+		case RangeSliderSizeMd:
+			{{ mainDivMinHeight = 6 }}
+		case RangeSliderSizeLg:
+			{{ mainDivMinHeight = 7 }}
+		case RangeSliderSizeXl:
+			{{ mainDivMinHeight = 8 }}
+	}
+	if componentSettings.ThumbValueBubbleEnabled {
+		{{ mainDivMinHeight = mainDivMinHeight * 3 }}
+	}
 	<div
-		class="flex w-full flex-col"
+		class={ "flex w-full flex-col items-center justify-center" + " min-h-" + strconv.Itoa(mainDivMinHeight) }
 		x-data={ alpineData }
 		x-init={ alpineWatch }
 	>
@@ -538,10 +555,26 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 						/>
 					}
 					<!-- TrackFill -->
-					{{ trackFillClass := "absolute inset-0 h-full rounded-full bg-neutral-50/30" }}
+					{{ trackFillColor := "bg-neutral-50/30" }}
+					if componentSettings.TrackFillColor != "" {
+						{{ trackFillColor = "bg-" + componentSettings.TrackFillColor }}
+					}
+					if componentSettings.TrackFillColorFrom != "" || componentSettings.TrackFillColorVia != "" || componentSettings.TrackFillColorTo != "" {
+						{{ trackFillColor = "bg-gradient-to-r" }}
+						if componentSettings.TrackFillColorFrom != "" {
+							{{ trackFillColor += " from-" + componentSettings.TrackFillColorFrom }}
+						}
+						if componentSettings.TrackFillColorVia != "" {
+							{{ trackFillColor += " via-" + componentSettings.TrackFillColorVia }}
+						}
+						if componentSettings.TrackFillColorTo != "" {
+							{{ trackFillColor += " to-" + componentSettings.TrackFillColorTo }}
+						}
+					}
+					{{ trackFillClass := "absolute inset-0 h-full rounded-full " + trackFillColor }}
 					{{ trackFillStyle := "'width: ' + thumbValuePercent + '%'" }}
 					if componentSettings.ThumbDualValueModeEnabled {
-						{{ trackFillClass = "absolute inset-0 h-full rounded-full bg-neutral-50/30" }}
+						{{ trackFillClass = "absolute inset-0 h-full rounded-full " + trackFillColor }}
 						{{ trackFillStyle = "'left: ' + thumbValuePercent + '%; right: ' + (100 - thumbUpperValuePercent) + '%'" }}
 					}
 					<div class={ trackFillClass } x-bind:style={ trackFillStyle }></div>

@@ -1033,7 +1033,7 @@ templ RangeSliderDemo() {
 				</div>
 				<div class="flex w-full flex-col gap-2">
 					<p class="text-sm text-neutral-400">RangeSliderSizeXs to RangeSliderSizeXl</p>
-					<div class="flex flex-col gap-7">
+					<div class="flex flex-col gap-3">
 						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
 							ThumbValueTwoWayStatePath: "sliderValue",
 							Size:                      uiControl.RangeSliderSizeXs,
@@ -1058,7 +1058,7 @@ templ RangeSliderDemo() {
 				</div>
 				<div class="flex w-full flex-col gap-2">
 					<p class="text-sm text-neutral-400">Thumb Shapes</p>
-					<div class="flex flex-col gap-7">
+					<div class="flex flex-col gap-3">
 						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
 							ThumbValueTwoWayStatePath: "sliderValue",
 							ThumbShape:                uiControl.RangeSliderThumbShapeCircular,
@@ -1079,7 +1079,7 @@ templ RangeSliderDemo() {
 				</div>
 				<div class="flex w-full flex-col gap-2">
 					<p class="text-sm text-neutral-400">Thumb Colors & Icons</p>
-					<div class="flex flex-col gap-7">
+					<div class="flex flex-col gap-3">
 						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
 							ThumbValueTwoWayStatePath: "sliderValue",
 							ThumbBackgroundColor:      "red-500",
@@ -1103,9 +1103,9 @@ templ RangeSliderDemo() {
 						})
 					</div>
 				</div>
-				<div class="flex w-full flex-col gap-7">
+				<div class="flex w-full flex-col gap-2">
 					<p class="text-sm text-neutral-400">ThumbValueBubble</p>
-					<div class="flex flex-col gap-7">
+					<div class="flex flex-col gap-3">
 						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
 							ThumbValueTwoWayStatePath:       "sliderValue",
 							ThumbValueBubbleEnabled:         true,
@@ -1120,24 +1120,22 @@ templ RangeSliderDemo() {
 							ThumbValueBubbleBackgroundColor: "emerald-500",
 							ThumbValueBubbleTextColor:       "neutral-50",
 						})
-						<div class="mt-18">
-							@uiControl.RangeSlider(uiControl.RangeSliderSettings{
-								ThumbValueTwoWayStatePath:       "sliderValue",
-								ThumbValueBubbleEnabled:         true,
-								ThumbValueBubblePosition:        uiControl.RangeSliderThumbValueBubblePositionTop,
-								ThumbValueBubbleBackgroundColor: "transparent",
-								ThumbValueBubbleTextColor:       "neutral-50",
-								ThumbValueBubbleSize:            uiControl.RangeSliderThumbValueBubbleSizeLg,
-								ThumbValueBubbleShape:           uiControl.RangeSliderThumbValueBubbleShapeRounded,
-								ThumbValueBubbleRingColor:       "violet-500",
-								ThumbValueBubbleRingThickness:   uiControl.RangeSliderThumbValueBubbleRingThicknessXl,
-							})
-						</div>
+						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+							ThumbValueTwoWayStatePath:       "sliderValue",
+							ThumbValueBubbleEnabled:         true,
+							ThumbValueBubblePosition:        uiControl.RangeSliderThumbValueBubblePositionTop,
+							ThumbValueBubbleBackgroundColor: "transparent",
+							ThumbValueBubbleTextColor:       "neutral-50",
+							ThumbValueBubbleSize:            uiControl.RangeSliderThumbValueBubbleSizeLg,
+							ThumbValueBubbleShape:           uiControl.RangeSliderThumbValueBubbleShapeRounded,
+							ThumbValueBubbleRingColor:       "violet-500",
+							ThumbValueBubbleRingThickness:   uiControl.RangeSliderThumbValueBubbleRingThicknessXl,
+						})
 					</div>
 				</div>
 				<div class="flex w-full flex-col gap-2">
 					<p class="text-sm text-neutral-400">Track Labels Positions</p>
-					<div class="flex flex-col gap-8">
+					<div class="flex flex-col gap-3">
 						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
 							ThumbValueTwoWayStatePath:   "sliderValue",
 							TrackStartValue:             "0",
@@ -1167,7 +1165,7 @@ templ RangeSliderDemo() {
 				</div>
 				<div class="flex w-full flex-col gap-2">
 					<p class="text-sm text-neutral-400">Track Colors & Icons</p>
-					<div class="flex flex-col gap-6">
+					<div class="flex flex-col gap-3">
 						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
 							ThumbValueTwoWayStatePath:     "sliderValue",
 							TrackStartValue:               "0",
@@ -1205,9 +1203,9 @@ templ RangeSliderDemo() {
 						})
 					</div>
 				</div>
-				<div class="flex w-full flex-col gap-2">
+				<div class="flex w-full flex-col gap-1">
 					<p class="text-sm text-neutral-400">Dual Mode</p>
-					<div x-data="{lowerValue: 25, upperValue: 75}" class="flex flex-col gap-7">
+					<div x-data="{lowerValue: 25, upperValue: 75}" class="flex flex-col gap-3">
 						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
 							ThumbDualValueModeEnabled:      true,
 							ThumbBackgroundColor:           "emerald-500",
@@ -1237,9 +1235,11 @@ templ RangeSliderDemo() {
 							ThumbUpperValueBubbleShape:           uiControl.RangeSliderThumbValueBubbleShapeCircular,
 							ThumbValueBubbleEnabled:              true,
 							ThumbUpperValueBubbleEnabled:         true,
+							TrackSteps:                           "1",
+							TrackFillColorFrom:                   "emerald-500",
+							TrackFillColorTo:                     "red-500",
 							TrackStartValue:                      "0",
 							TrackEndValue:                        "100",
-							TrackSteps:                           "1",
 							TrackStartValueLabelEnabled:          true,
 							TrackEndValueLabelEnabled:            true,
 						})
