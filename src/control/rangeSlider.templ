@@ -187,7 +187,8 @@ templ Thumb(componentSettings RangeSliderSettings, isUpper bool) {
 	}
 	<div
 		class={ "absolute select-none flex justify-center items-center " + thumbPosition + " " + thumbSize + " " + thumbShape + " " + thumbBackgroundColor + " " + thumbTextColor + " cursor-pointer shadow-md transition-transform duration-200 z-10" }
-		x-bind:style={ "'left: calc(' + " + percentValue + " + '%); transform: translateX(-50%) scale(' + (" + hoverState + " ? 1.1 : 1) + ');'" }
+		:style={ "'left: calc(' + " + percentValue + " + '%); transform: translateX(-50%) scale(' + (" + hoverState + " ? 1.1 : 1) + ');'" }
+		:class={ "!" + hoverState + " && 'z-30'" }
 		@mouseenter={ hoverState + " = true" }
 		@mouseleave={ hoverState + " = false" }
 	>
