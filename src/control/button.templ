@@ -36,6 +36,7 @@ type ButtonSettings struct {
 	IsFullWidth                   bool
 	IsSubmit                      bool
 	OnClickFunc                   string
+	OnClickPreventDefault         bool
 	Shape                         string
 	Size                          string
 	TextColor                     string
@@ -147,7 +148,11 @@ templ Button(componentSettings ButtonSettings) {
 				type="submit"
 			}
 			if componentSettings.OnClickFunc != "" && !componentSettings.IsDisabled {
-				@click={ componentSettings.OnClickFunc }
+				if componentSettings.OnClickPreventDefault {
+					@click.prevent={ componentSettings.OnClickFunc }
+				} else {
+					@click={ componentSettings.OnClickFunc }
+				}
 			}
 			if componentSettings.IsDisabled {
 				disabled
