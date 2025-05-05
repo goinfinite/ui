@@ -38,11 +38,11 @@ templ SelectInput(componentSettings SelectInputSettings) {
 		{{ selectValueStatePath = componentSettings.TwoWayStatePath }}
 	}
 	<!-- SelectInput -->
-	{{ labelValueOptionsScriptId := componentSettings.InputName + "LabelValueOptions" }}
-	if len(componentSettings.LabelValueOptions) > 0 {
-		@templ.JSONScript(labelValueOptionsScriptId, componentSettings.LabelValueOptions)
-	}
-	<div x-data={ selectState }>
+	<div x-data={ selectState } class="relative w-full">
+		{{ labelValueOptionsScriptId := componentSettings.InputName + "LabelValueOptions" }}
+		if len(componentSettings.LabelValueOptions) > 0 {
+			@templ.JSONScript(labelValueOptionsScriptId, componentSettings.LabelValueOptions)
+		}
 		if componentSettings.InputName != "" {
 			<input
 				type="hidden"
