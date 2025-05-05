@@ -59,10 +59,16 @@ templ SelectInput(componentSettings SelectInputSettings) {
 			/>
 		}
 		<fieldset
-			class="bg-neutral-50/7.5 relative w-full rounded border border-neutral-50/5 transition-all focus-within:border-neutral-50/30 hover:border-neutral-50/30"
+			class="bg-neutral-50/7.5 relative -mt-2 w-full rounded border border-neutral-50/5 transition-colors autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30"
+			if componentSettings.TwoWayStatePath != "" {
+				:class={ `!` + componentSettings.TwoWayStatePath + ` && 'mt-0'` }
+			}
 		>
 			<legend
-				class="ml-1 select-none px-1 text-xs font-bold text-neutral-50/80 transition-opacity"
+				class="ml-1 select-none px-1 text-xs font-bold text-neutral-50/80"
+				if componentSettings.TwoWayStatePath != "" {
+					:class={ `!` + componentSettings.TwoWayStatePath + ` && 'opacity-0 !p-0 w-0 h-0'` }
+				}
 			>
 				{ componentSettings.Label }
 				if componentSettings.IsRequired {
@@ -72,6 +78,9 @@ templ SelectInput(componentSettings SelectInputSettings) {
 			<!-- SelectField -->
 			<div
 				class="group flex w-full cursor-pointer items-center justify-between px-2 pb-2 text-sm text-neutral-100"
+				if componentSettings.TwoWayStatePath != "" {
+					:class={ `!` + componentSettings.TwoWayStatePath + ` && 'pt-2'` }
+				}
 				@click="isOpen = !isOpen"
 			>
 				{{ selectedLabelText := selectValueStatePath }}
@@ -79,7 +88,7 @@ templ SelectInput(componentSettings SelectInputSettings) {
 					{{ selectedLabelText = `JSON.parse(document.getElementById('` + labelValueOptionsScriptId + `').textContent).find(option => option.value == ` + selectValueStatePath + `)?.label` }}
 				}
 				<div
-					x-text={ selectedLabelText + " || '--'" }
+					x-text={ selectedLabelText + " || '" + componentSettings.Label + "'" }
 					class="w-full overflow-hidden text-ellipsis"
 				></div>
 				<div class="flex items-center gap-1.5 text-neutral-100/60">
