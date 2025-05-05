@@ -329,7 +329,7 @@ func Thumb(componentSettings RangeSliderSettings, isUpper bool) templ.Component 
 			case RangeSliderSizeMd:
 				thumbIconSize = "text-sm"
 			case RangeSliderSizeLg:
-				thumbIconSize = "text-md"
+				thumbIconSize = "text-base"
 			case RangeSliderSizeXl:
 				thumbIconSize = "text-lg"
 			}
@@ -374,7 +374,7 @@ func Thumb(componentSettings RangeSliderSettings, isUpper bool) templ.Component 
 			case RangeSliderSizeMd:
 				thumbLabelSize = "text-sm"
 			case RangeSliderSizeLg:
-				thumbLabelSize = "text-md"
+				thumbLabelSize = "text-base"
 			case RangeSliderSizeXl:
 				thumbLabelSize = "text-lg"
 			}
@@ -888,7 +888,7 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 			case RangeSliderSizeXs:
 				startLabelIconSize = "text-sm"
 			case RangeSliderSizeSm:
-				startLabelIconSize = "text-md"
+				startLabelIconSize = "text-base"
 			case RangeSliderSizeMd:
 				startLabelIconSize = "text-lg"
 			case RangeSliderSizeLg:
@@ -1254,7 +1254,7 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 			case RangeSliderSizeXs:
 				endLabelIconSize = "text-sm"
 			case RangeSliderSizeSm:
-				endLabelIconSize = "text-md"
+				endLabelIconSize = "text-base"
 			case RangeSliderSizeMd:
 				endLabelIconSize = "text-lg"
 			case RangeSliderSizeLg:

@@ -174,18 +174,18 @@ func Button(componentSettings ButtonSettings) templ.Component {
 		case ButtonShapeSquare:
 			radiusRoundness = "rounded-none"
 		}
-		iconSize := "text-xl"
+		iconSize := "text-base"
 		switch componentSettings.Size {
 		case ButtonSizeXs:
-			iconSize = "text-md"
+			iconSize = "text-sm"
 		case ButtonSizeSm:
-			iconSize = "text-lg"
+			iconSize = "text-base"
 		case ButtonSizeMd:
-			iconSize = "text-xl"
+			iconSize = "text-lg"
 		case ButtonSizeLg:
-			iconSize = "text-2xl"
+			iconSize = "text-xl"
 		case ButtonSizeXl:
-			iconSize = "text-3xl"
+			iconSize = "text-2xl"
 		}
 		buttonClasses := buttonWidth + " " + backgroundClasses + " " + textColor + " " + textColorHover + " " + radiusRoundness + " " + ringClasses + " justify-center text-center font-bold flex flex-row items-center leading-none transition-all"
 		disabledClasses := "opacity-50 cursor-not-allowed pointer-events-none"
