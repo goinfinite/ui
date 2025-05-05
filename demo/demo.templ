@@ -140,7 +140,7 @@ templ InputFieldDemo() {
 		<div class="flex flex-col gap-4" x-data="{name: ''}">
 			<h4 class="mb-2 text-lg font-bold">Live Example</h4>
 			<div class="lg:*:max-w-50 flex flex-row flex-wrap items-start justify-between gap-10">
-				<div class="flex flex-col gap-1">
+				<div class="flex flex-col gap-2">
 					<p class="text-sm text-neutral-400">Basic Input</p>
 					@uiForm.InputField(uiForm.InputFieldSettings{
 						InputType:       uiForm.InputTypeText,
@@ -149,7 +149,7 @@ templ InputFieldDemo() {
 						TwoWayStatePath: "name",
 					})
 				</div>
-				<div class="flex flex-col gap-1">
+				<div class="flex flex-col gap-2">
 					<p class="text-sm text-neutral-400">Value & IsReadOnly</p>
 					@uiForm.InputField(uiForm.InputFieldSettings{
 						InputType:  uiForm.InputTypeText,
@@ -159,7 +159,7 @@ templ InputFieldDemo() {
 						IsReadOnly: true,
 					})
 				</div>
-				<div class="flex flex-col gap-1">
+				<div class="flex flex-col gap-2">
 					<p class="text-sm text-neutral-400">InputTypeNumberMin, Max & Step</p>
 					@uiForm.InputField(uiForm.InputFieldSettings{
 						InputType:       uiForm.InputTypeNumber,
@@ -171,7 +171,7 @@ templ InputFieldDemo() {
 						InputNumberStep: ".1",
 					})
 				</div>
-				<div class="flex flex-col gap-1">
+				<div class="flex flex-col gap-2">
 					<p class="text-sm text-neutral-400">AffixLeftValue & AffixRightValue</p>
 					@uiForm.InputField(uiForm.InputFieldSettings{
 						InputType:       uiForm.InputTypeText,
@@ -188,7 +188,7 @@ templ InputFieldDemo() {
 						AffixRightValue: ".jpg",
 					})
 				</div>
-				<div class="flex flex-col gap-1">
+				<div class="flex flex-col gap-2">
 					<p class="text-sm text-neutral-400">HintValue & HintDisplay</p>
 					@uiForm.InputField(uiForm.InputFieldSettings{
 						InputType:       uiForm.InputTypeText,
@@ -390,21 +390,21 @@ templ InlineRadioGroupDemo() {
 
 templ SelectInputDemoOption1() {
 	<div class="flex flex-col">
-		<h4 class="text-md font-bold">🇦🇷 Argentina</h4>
+		<h4 class="text-base font-bold">🇦🇷 Argentina</h4>
 		<p class="text-sm text-neutral-400">Known for its dance and wine.</p>
 	</div>
 }
 
 templ SelectInputDemoOption2() {
 	<div class="flex flex-col">
-		<h4 class="text-md font-bold">🇧🇷 Brazil</h4>
+		<h4 class="text-base font-bold">🇧🇷 Brazil</h4>
 		<p class="text-sm text-neutral-400">Known for its music and natural beauty.</p>
 	</div>
 }
 
 templ SelectInputDemoOption3() {
 	<div class="flex flex-col">
-		<h4 class="text-md font-bold">🇨🇱 Chile</h4>
+		<h4 class="text-base font-bold">🇨🇱 Chile</h4>
 		<p class="text-sm text-neutral-400">Known for its deserts and mysterious islands.</p>
 	</div>
 }
@@ -901,7 +901,7 @@ templ ButtonDemo() {
 				</div>
 				<div class="flex flex-col gap-2">
 					<p class="text-sm text-neutral-400">Button with Ring</p>
-					<div class="flex flex-col gap-2">
+					<div class="flex flex-col gap-3">
 						@uiControl.Button(uiControl.ButtonSettings{
 							Label:           "Red Ring",
 							BackgroundColor: "red-500/10",
@@ -971,7 +971,7 @@ templ ButtonDemo() {
 							IsFullWidth:               true,
 						})
 						<div class="flex flex-row items-center gap-2">
-							<p class="flex gap-1 text-sm text-neutral-400">
+							<p class="flex gap-2 text-sm text-neutral-400">
 								Count: <span x-text="clickCount"></span>
 							</p>
 							@uiControl.Button(uiControl.ButtonSettings{
@@ -1204,7 +1204,7 @@ templ RangeSliderDemo() {
 						})
 					</div>
 				</div>
-				<div class="flex w-full flex-col gap-1">
+				<div class="flex w-full flex-col gap-2">
 					<p class="text-sm text-neutral-400">Dual Mode</p>
 					<div x-data="{lowerValue: 25, upperValue: 75}" class="flex flex-col gap-3">
 						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
