@@ -25,14 +25,17 @@ type TextAreaSettings struct {
 templ TextArea(componentSettings TextAreaSettings) {
 	<!-- TextArea -->
 	<fieldset
-		class="bg-neutral-50/7.5 relative w-full rounded border border-neutral-50/5 transition-all autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30"
+		class="bg-neutral-50/7.5 relative -mt-2 w-full rounded border border-neutral-50/5 transition-colors autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30"
+		if componentSettings.TwoWayStatePath != "" {
+			:class={ `!` + componentSettings.TwoWayStatePath + ` && 'mt-0'` }
+		}
 		x-data="{ isTextAreaExpanded: false }"
 		@click.away="isTextAreaExpanded = false"
 	>
 		<legend
-			class="ml-1 select-none px-1 text-xs font-bold text-neutral-50/80 transition-opacity"
+			class="ml-1 select-none px-1 text-xs font-bold text-neutral-50/80"
 			if componentSettings.TwoWayStatePath != "" {
-				:class={ `!` + componentSettings.TwoWayStatePath + ` && 'opacity-0 !p-0 w-0 h-3.5'` }
+				:class={ `!` + componentSettings.TwoWayStatePath + ` && 'opacity-0 !p-0 w-0 h-0'` }
 			}
 		>
 			{ componentSettings.Label }
@@ -71,6 +74,11 @@ templ TextArea(componentSettings TextAreaSettings) {
 		if componentSettings.IsCode {
 			{{ textAreaClasses += " font-mono" }}
 		}
+		{{ textAreaDynamicClasses := `{'` + isExpandedClasses + `': isTextAreaExpanded` }}
+		if componentSettings.TwoWayStatePath != "" {
+			{{ textAreaDynamicClasses += `, 'pt-2': !` + componentSettings.TwoWayStatePath }}
+		}
+		{{ textAreaDynamicClasses += `}` }}
 		<textarea
 			if componentSettings.InputId != "" {
 				id={ componentSettings.InputId }
@@ -79,7 +87,6 @@ templ TextArea(componentSettings TextAreaSettings) {
 			if componentSettings.InputName != "" {
 				name={ componentSettings.InputName }
 			}
-			else
 			if componentSettings.InputId != "" {
 				name={ componentSettings.InputId }
 			}
@@ -88,14 +95,19 @@ templ TextArea(componentSettings TextAreaSettings) {
 			}
 			placeholder={ componentSettings.Label }
 			class={ textAreaClasses }
-			:class={ "isTextAreaExpanded && '" + isExpandedClasses + "'" }
+			:class={ textAreaDynamicClasses }
 			if componentSettings.IsReadOnly {
 				readonly
 			}
 		>
 			{ componentSettings.Value }
 		</textarea>
-		<div class="text-md absolute right-4 top-0 hidden flex-col gap-1 transition-all hover:flex active:flex peer-hover:flex">
+		<div
+			class="absolute right-4 top-0 hidden flex-col gap-1 text-base transition-all hover:flex active:flex peer-hover:flex"
+			if componentSettings.TwoWayStatePath != "" {
+				:class={ `!` + componentSettings.TwoWayStatePath + ` && 'top-2'` }
+			}
+		>
 			{{ floatingIconsClasses := "ph-bold border-1 active:bg-secondary-500 cursor-pointer rounded border-neutral-50/5 bg-neutral-50/5 p-1 text-neutral-100 hover:border-neutral-50/30 hover:bg-neutral-50/20" }}
 			<i
 				class={ floatingIconsClasses + " ph-arrows-out" }

@@ -44,7 +44,12 @@ type InputFieldSettings struct {
 templ InputField(componentSettings InputFieldSettings) {
 	<!-- InputField HTML -->
 	<div class="flex w-full flex-col">
-		<fieldset class="bg-neutral-50/7.5 relative rounded border border-neutral-50/5 transition-colors autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30">
+		<fieldset
+			class="bg-neutral-50/7.5 relative -mt-2 w-full rounded border border-neutral-50/5 transition-colors autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30"
+			if componentSettings.TwoWayStatePath != "" {
+				:class={ `!` + componentSettings.TwoWayStatePath + ` && 'mt-0'` }
+			}
+		>
 			<legend
 				class="ml-1 select-none px-1 text-xs font-bold text-neutral-50/80"
 				if componentSettings.TwoWayStatePath != "" {
