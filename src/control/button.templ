@@ -69,18 +69,34 @@ templ Button(componentSettings ButtonSettings) {
 		if componentSettings.BackgroundColorHover != "" {
 			{{ backgroundHoverColor = "hover:bg-" + componentSettings.BackgroundColorHover }}
 		}
-		{{ backgroundSize := "px-2 py-2.5 text-base gap-1" }}
+		{{ backgroundSize := "p-2 text-base gap-1" }}
 		switch componentSettings.Size {
 			case ButtonSizeXs:
-				{{ backgroundSize = "px-1 py-1.5 text-xs gap-0.5" }}
+				{{ backgroundSize = "p-1 text-xs gap-0.5" }}
 			case ButtonSizeSm:
-				{{ backgroundSize = "px-1.5 py-2 text-sm gap-0.75" }}
+				{{ backgroundSize = "p-1.5 text-sm gap-0.75" }}
 			case ButtonSizeMd:
-				{{ backgroundSize = "px-2 py-2.5 text-base gap-1" }}
+				{{ backgroundSize = "p-2 text-base gap-1" }}
 			case ButtonSizeLg:
-				{{ backgroundSize = "px-2.5 py-3 text-lg gap-1.25" }}
+				{{ backgroundSize = "p-2.5 text-lg gap-1.25" }}
 			case ButtonSizeXl:
-				{{ backgroundSize = "px-3 py-3.5 text-xl gap-1.5" }}
+				{{ backgroundSize = "p-3 text-xl gap-1.5" }}
+		}
+		if componentSettings.Label != "" {
+			switch componentSettings.Size {
+				case ButtonSizeXs:
+					{{ backgroundSize += " py-1.5" }}
+				case ButtonSizeSm:
+					{{ backgroundSize += " py-2" }}
+				case ButtonSizeMd:
+					{{ backgroundSize += " py-2.5" }}
+				case ButtonSizeLg:
+					{{ backgroundSize += " py-3" }}
+				case ButtonSizeXl:
+					{{ backgroundSize += " py-3.5" }}
+				default:
+					{{ backgroundSize += " py-2.5" }}
+			}
 		}
 		{{ backgroundClasses := backgroundColor + " " + backgroundHoverColor + " " + backgroundSize }}
 		{{ textColor := "text-neutral-50" }}
