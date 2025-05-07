@@ -121,18 +121,18 @@ func Button(componentSettings ButtonSettings) templ.Component {
 		if componentSettings.BackgroundColorHover != "" {
 			backgroundHoverColor = "hover:bg-" + componentSettings.BackgroundColorHover
 		}
-		backgroundSize := "p-2 text-base gap-1"
+		backgroundSize := "p-2 py-2.5 text-base gap-1"
 		switch componentSettings.Size {
 		case ButtonSizeXs:
-			backgroundSize = "p-1 text-xs gap-0.5"
+			backgroundSize = "p-1 py-1.5 text-xs gap-0.5"
 		case ButtonSizeSm:
-			backgroundSize = "p-1.5 text-sm gap-0.75"
+			backgroundSize = "p-1.5 py-2 text-sm gap-0.75"
 		case ButtonSizeMd:
-			backgroundSize = "p-2 text-base gap-1"
+			backgroundSize = "p-2 py-2.5 text-base gap-1"
 		case ButtonSizeLg:
-			backgroundSize = "p-2.5 text-lg gap-1.25"
+			backgroundSize = "p-2.5 py-3 text-lg gap-1.25"
 		case ButtonSizeXl:
-			backgroundSize = "p-3 text-xl gap-1.5"
+			backgroundSize = "p-3 py-3.5 text-xl gap-1.5"
 		}
 		backgroundClasses := backgroundColor + " " + backgroundHoverColor + " " + backgroundSize
 		textColor := "text-neutral-50"
@@ -187,7 +187,7 @@ func Button(componentSettings ButtonSettings) templ.Component {
 		case ButtonSizeXl:
 			iconSize = "text-2xl"
 		}
-		buttonClasses := buttonWidth + " " + backgroundClasses + " " + textColor + " " + textColorHover + " " + radiusRoundness + " " + ringClasses + " justify-center text-center font-bold flex flex-row items-center leading-none transition-all"
+		buttonClasses := buttonWidth + " " + backgroundClasses + " " + textColor + " " + textColorHover + " " + radiusRoundness + " " + ringClasses + " justify-center items-center text-center font-bold flex flex-row leading-none transition-all"
 		disabledClasses := "opacity-50 cursor-not-allowed pointer-events-none"
 		if componentSettings.IsDisabled {
 			buttonClasses += " " + disabledClasses
