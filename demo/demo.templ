@@ -1022,18 +1022,23 @@ templ SidebarDemoMiddle() {
 		<div class="flex flex-col gap-2">
 			<h4 class="text-lg font-bold">Recent Items</h4>
 			<div class="flex flex-col gap-1">
-				<div class="flex items-center gap-2 rounded-md p-2 text-neutral-400">
-					<i class="ph-duotone ph-file-text"></i>
-					<span>Document 1</span>
-				</div>
-				<div class="flex items-center gap-2 rounded-md p-2 text-neutral-400">
-					<i class="ph-duotone ph-file-text"></i>
-					<span>Document 2</span>
-				</div>
-				<div class="flex items-center gap-2 rounded-md p-2 text-neutral-400">
-					<i class="ph-duotone ph-file-text"></i>
-					<span>Document 3</span>
-				</div>
+				for i := 1; i <= 3; i++ {
+					<div class="flex items-center gap-2 rounded-md p-2 text-neutral-400">
+						<i class="ph-duotone ph-file-text"></i>
+						<span>Document { i }</span>
+					</div>
+				}
+			</div>
+		</div>
+		<div class="flex flex-col gap-2 mt-4">
+			<h4 class="text-lg font-bold">Projects</h4>
+			<div class="flex flex-col gap-1">
+				for i := 1; i <= 10; i++ {
+					<div class="flex items-center gap-2 rounded-md p-2 text-neutral-400">
+						<i class="ph-duotone ph-folder"></i>
+						<span>Project { i }</span>
+					</div>
+				}
 			</div>
 		</div>
 	</div>
@@ -1063,11 +1068,15 @@ templ SidebarDemo() {
 	MiddleContent: SidebarDemoMiddle(),
 
 	// OptionalFields
-	HeaderContent: SidebarDemoHeader(),
-	FooterContent: SidebarDemoFooter(),
-	Width: "w-64",
-	BackgroundColor: "bg-neutral-900/10",
-	IsSticky: true,
+	HeaderContent:                 SidebarDemoHeader(),
+	FooterContent:                 SidebarDemoFooter(),
+	Width:                         "w-64",
+	BackgroundColor:               "bg-neutral-50/5",
+	IsVisibleTwoWayStatePath:      "isVisible",
+	IsCollapsedTwoWayStatePath:    "isCollapsed",
+	AttachmentMode:                uiDisplay.SidebarAttachmentModeFixed,
+	AttachmentModeTwoWayStatePath: "attachmentMode",
+	SideTwoWayStatePath:           "side",
 })` }
 					</code>
 				</pre>
@@ -1077,7 +1086,7 @@ templ SidebarDemo() {
 			<h4 class="mb-2 text-lg font-bold">Live Example</h4>
 			<div
 				class="grid gap-10 md:grid-cols-2 items-center"
-				x-data="{isVisible: true, isCollapsed: false, isSticky: true}"
+				x-data="{isVisible: true, isCollapsed: false, attachmentMode: 'inline', side: 'left'}"
 			>
 				<div class="flex flex-col gap-4">
 					<div class="flex flex-col gap-2">
@@ -1087,7 +1096,8 @@ templ SidebarDemo() {
 								{ `<div x-data="{
   isVisible: true,
   isCollapsed: false,
-  isSticky: true
+  attachmentMode: 'inline',
+  side: 'left'
 }"></div>` }
 							</code>
 						</pre>
@@ -1107,10 +1117,40 @@ templ SidebarDemo() {
 								OnClickFunc: "isCollapsed = !isCollapsed",
 								Size:        uiControl.ButtonSizeSm,
 							})
+						</div>
+					</div>
+					<div class="flex flex-col gap-2">
+						<p class="text-sm text-neutral-400">AttachmentMode</p>
+						<div class="flex flex-wrap gap-2">
 							@uiControl.Button(uiControl.ButtonSettings{
-								Label:       "Toggle Sticky",
+								Label:           "Inline",
+								IconLeft:        "ph-layout",
+								OnClickFunc:     "attachmentMode = 'inline'",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "neutral-50/10",
+							})
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:       "Fixed",
 								IconLeft:    "ph-push-pin",
-								OnClickFunc: "isSticky = !isSticky",
+								OnClickFunc: "attachmentMode = 'fixed'",
+								Size:        uiControl.ButtonSizeSm,
+							})
+						</div>
+					</div>
+					<div class="flex flex-col gap-2">
+						<p class="text-sm text-neutral-400">Side</p>
+						<div class="flex flex-wrap gap-2">
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "Left",
+								IconLeft:        "ph-align-left",
+								OnClickFunc:     "side = 'left'",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "neutral-50/10",
+							})
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:       "Right",
+								IconLeft:    "ph-align-right",
+								OnClickFunc: "side = 'right'",
 								Size:        uiControl.ButtonSizeSm,
 							})
 						</div>
@@ -1118,13 +1158,14 @@ templ SidebarDemo() {
 				</div>
 				<div class="flex h-128 flex-col overflow-hidden rounded-md border border-neutral-800">
 					@uiDisplay.Sidebar(uiDisplay.SidebarSettings{
-						MiddleContent:              SidebarDemoMiddle(),
-						HeaderContent:              SidebarDemoHeader(),
-						FooterContent:              SidebarDemoFooter(),
-						BackgroundColor:            "bg-neutral-900/10",
-						IsVisibleTwoWayStatePath:   "!isVisible",
-						IsCollapsedTwoWayStatePath: "isCollapsed",
-						IsStickyTwoWayStatePath:    "isSticky",
+						MiddleContent:                 SidebarDemoMiddle(),
+						HeaderContent:                 SidebarDemoHeader(),
+						FooterContent:                 SidebarDemoFooter(),
+						BackgroundColor:               "bg-neutral-50/5",
+						IsVisibleTwoWayStatePath:      "isVisible",
+						IsCollapsedTwoWayStatePath:    "isCollapsed",
+						AttachmentModeTwoWayStatePath: "attachmentMode",
+						SideTwoWayStatePath:           "side",
 					})
 				</div>
 			</div>

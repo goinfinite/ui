@@ -1,24 +1,34 @@
 package uiDisplay
 
+const (
+	SidebarSideLeft  string = "left"
+	SidebarSideRight string = "right"
+
+	SidebarAttachmentModeInline string = "inline"
+	SidebarAttachmentModeFixed  string = "fixed"
+)
+
 type SidebarSettings struct {
 	MiddleContent templ.Component
 
 	// OptionalFields
-	Width                      string
-	BackgroundColor            string
-	HeaderContent              templ.Component
-	FooterContent              templ.Component
-	IsVisibleTwoWayStatePath   string
-	IsCollapsed                bool
-	IsCollapsedTwoWayStatePath string
-	IsSticky                   bool
-	IsStickyTwoWayStatePath    string
+	HeaderContent                 templ.Component
+	FooterContent                 templ.Component
+	Width                         string
+	BackgroundColor               string
+	IsVisibleTwoWayStatePath      string
+	IsCollapsed                   bool
+	IsCollapsedTwoWayStatePath    string
+	AttachmentMode                string
+	AttachmentModeTwoWayStatePath string
+	Side                          string
+	SideTwoWayStatePath           string
 }
 
 templ Sidebar(componentSettings SidebarSettings) {
 	<!-- Sidebar -->
 	// SidebarCssClasses
-	{{ sidebarClasses := "h-screen flex flex-col" }}
+	{{ sidebarClasses := "h-full flex flex-col transition-all duration-200 ease-linear relative" }}
 	// - SidebarWidth
 	{{ sidebarWidthClass := "w-64" }}
 	if componentSettings.Width != "" {
@@ -26,51 +36,94 @@ templ Sidebar(componentSettings SidebarSettings) {
 	}
 	{{ sidebarClasses += " " + sidebarWidthClass }}
 	// - SidebarBackgroundColor
-	{{ sidebarBackgroundColorClass := "neutral-900/10" }}
+	{{ sidebarBackgroundColorClass := "bg-neutral-50/5" }}
 	if componentSettings.BackgroundColor != "" {
 		{{ sidebarBackgroundColorClass = componentSettings.BackgroundColor }}
 	}
 	{{ sidebarClasses += " " + sidebarBackgroundColorClass }}
-	if componentSettings.IsSticky {
-		{{ sidebarClasses += " sticky" }}
+	// - SidebarAttachmentMode
+	{{ sidebarAttachmentMode := SidebarAttachmentModeInline }}
+	if componentSettings.AttachmentMode != "" {
+		{{ sidebarAttachmentMode = componentSettings.AttachmentMode }}
+	}
+	if sidebarAttachmentMode == SidebarAttachmentModeFixed {
+		{{ sidebarClasses += " !fixed top-0" }}
+	}
+	// - SidebarSide
+	switch componentSettings.Side {
+		case SidebarSideLeft:
+			{{ sidebarClasses += " left-0" }}
+		case SidebarSideRight:
+			{{ sidebarClasses += " right-0" }}
 	}
 	if componentSettings.IsCollapsed {
 		{{ sidebarClasses += " !w-32" }}
 	}
-	// SidebarDynamicClasses
+	// SidebarDynamicCssClasses
 	{{ sidebarDynamicClasses := "{" }}
 	if componentSettings.IsVisibleTwoWayStatePath != "" {
-		{{ sidebarDynamicClasses += "'invisible': " + componentSettings.IsVisibleTwoWayStatePath + "," }}
+		{{ sidebarDynamicClasses += "'invisible': !" + componentSettings.IsVisibleTwoWayStatePath + "," }}
 	}
 	if componentSettings.IsCollapsedTwoWayStatePath != "" {
 		{{ sidebarDynamicClasses += "'!w-32': " + componentSettings.IsCollapsedTwoWayStatePath + "," }}
 	}
-	if componentSettings.IsStickyTwoWayStatePath != "" {
-		{{ sidebarDynamicClasses += "'sticky': " + componentSettings.IsStickyTwoWayStatePath + "," }}
+	if componentSettings.AttachmentModeTwoWayStatePath != "" {
+		{{ sidebarDynamicClasses += "'!fixed top-0': " + componentSettings.AttachmentModeTwoWayStatePath + " === '" + SidebarAttachmentModeFixed + "'," }}
+	}
+	if componentSettings.SideTwoWayStatePath != "" {
+		{{ sidebarDynamicClasses += "'left-0': " + componentSettings.SideTwoWayStatePath + " === '" + SidebarSideLeft + "'," }}
+		{{ sidebarDynamicClasses += "'right-0': " + componentSettings.SideTwoWayStatePath + " === '" + SidebarSideRight + "'," }}
 	}
 	{{ sidebarDynamicClasses += "}" }}
-	<aside class={ sidebarClasses } :class={ sidebarDynamicClasses }>
-		<!-- HeaderContent -->
+	<aside x-data="{scrolledToTop: true}" class={ sidebarClasses } :class={ sidebarDynamicClasses }>
+		<!-- SidebarHeaderContent -->
 		if componentSettings.HeaderContent != nil {
-			<div class="flex-1 items-center justify-between">
+			<div class="flex items-center justify-between border-b border-neutral-50/5">
 				@componentSettings.HeaderContent
 			</div>
 		}
-		<!-- Middle Content -->
-		<button
-			@click="scrollMiddleContentToTop()"
-			class="mt-2 hidden rounded-full p-2 transition-all"
+		<!-- SidebarMiddleContent -->
+		<div
+			class="relative grow overflow-y-auto [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-neutral-50/30 [&::-webkit-scrollbar-thumb]:hover:bg-neutral-50/50 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-neutral-50/10 [&::-webkit-scrollbar]:w-3"
+			@scroll="scrolledToTop = $event.target.scrollTop <= 10"
 		>
-			<i class="ph-duotone ph-arrow-fat-up block"></i>
-		</button>
-		<div class="flex-1 overflow-y-auto">
 			@componentSettings.MiddleContent
+			<!-- SidebarScrollToTopButton -->
+			<i
+				class="absolute -right-2 top-3 ph-bold hover:text-secondary-500 cursor-pointer text-neutral-50/50 ph-arrow-up"
+				@click="if(scrolledToTop) { $el.scrollIntoView({ behavior: 'smooth' }) } else { $el.scrollIntoView({ behavior: 'smooth', block: 'end' }) }"
+			></i>
 		</div>
-		<!-- FooterContent -->
+		<!-- SidebarFooterContent -->
 		if componentSettings.FooterContent != nil {
-			<div class="flex-1 items-center justify-between">
+			<div class="flex border-t border-neutral-50/5">
 				@componentSettings.FooterContent
 			</div>
+		}
+		<!-- SidebarCollapseToggleButton -->
+		if componentSettings.IsCollapsedTwoWayStatePath != "" {
+			{{ collapseIconClasses := "absolute top-3 ph-bold hover:text-secondary-500 cursor-pointer text-neutral-50/50" }}
+			{{ collapseIconAlignmentClass := "" }}
+			switch componentSettings.Side {
+				case SidebarSideRight:
+					{{ collapseIconAlignmentClass = "-left-2 ph-arrow-square-left" }}
+				default:
+					if componentSettings.SideTwoWayStatePath == "" {
+						{{ collapseIconAlignmentClass = "-right-2 ph-arrow-square-right" }}
+					}
+			}
+			{{ collapseIconClasses += " " + collapseIconAlignmentClass }}
+			{{ collapseIconDynamicClasses := "{ 'rotate-180':!" + componentSettings.IsCollapsedTwoWayStatePath + "," }}
+			if componentSettings.SideTwoWayStatePath != "" {
+				{{ collapseIconDynamicClasses += "'-left-2 ph-arrow-square-left':" + componentSettings.SideTwoWayStatePath + " === '" + SidebarSideRight + "'," }}
+				{{ collapseIconDynamicClasses += "'-right-2 ph-arrow-square-right':" + componentSettings.SideTwoWayStatePath + " === '" + SidebarSideLeft + "'" }}
+			}
+			{{ collapseIconDynamicClasses += "}" }}
+			<i
+				class={ collapseIconClasses }
+				:class={ collapseIconDynamicClasses }
+				@click={ componentSettings.IsCollapsedTwoWayStatePath + " = !" + componentSettings.IsCollapsedTwoWayStatePath }
+			></i>
 		}
 	</aside>
 }
