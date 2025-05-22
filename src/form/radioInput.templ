@@ -20,7 +20,7 @@ type RadioInputSettings struct {
 }
 
 templ RadioInput(componentSettings RadioInputSettings) {
-	<!-- RadioInput HTML -->
+	<!-- RadioInput -->
 	<div
 		class="hover:text-secondary-500 inline-flex items-center text-neutral-100"
 		@click={ componentSettings.TwoWayStatePath + ` = "` + componentSettings.StateValue + `"` }

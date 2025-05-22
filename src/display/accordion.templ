@@ -13,10 +13,10 @@ type AccordionSettings struct {
 }
 
 templ Accordion(componentSettings AccordionSettings) {
-	<!-- Accordion HTML -->
+	<!-- Accordion -->
 	<section class="w-full rounded-md">
 		for _, item := range componentSettings.Items {
-			<!-- AccordionItem HTML -->
+			<!-- AccordionItem -->
 			<details class="border-b-1 open:bg-neutral-50/7.5 hover:bg-neutral-50/7.5 group border-neutral-50/5 bg-neutral-50/5 p-3 transition-all duration-300 first:rounded-t last:rounded-b last:border-b-0">
 				<summary class="relative flex cursor-pointer list-none items-center gap-1.5 pr-8 text-neutral-50/80 focus-visible:outline-none [&::-webkit-details-marker]:hidden">
 					if item.Icon != "" {

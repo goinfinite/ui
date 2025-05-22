@@ -41,12 +41,12 @@ func Accordion(componentSettings AccordionSettings) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!-- Accordion HTML --><section class=\"w-full rounded-md\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!-- Accordion --><section class=\"w-full rounded-md\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		for _, item := range componentSettings.Items {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<!-- AccordionItem HTML --> <details class=\"border-b-1 open:bg-neutral-50/7.5 hover:bg-neutral-50/7.5 group border-neutral-50/5 bg-neutral-50/5 p-3 transition-all duration-300 first:rounded-t last:rounded-b last:border-b-0\"><summary class=\"relative flex cursor-pointer list-none items-center gap-1.5 pr-8 text-neutral-50/80 focus-visible:outline-none [&amp;::-webkit-details-marker]:hidden\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<!-- AccordionItem --> <details class=\"border-b-1 open:bg-neutral-50/7.5 hover:bg-neutral-50/7.5 group border-neutral-50/5 bg-neutral-50/5 p-3 transition-all duration-300 first:rounded-t last:rounded-b last:border-b-0\"><summary class=\"relative flex cursor-pointer list-none items-center gap-1.5 pr-8 text-neutral-50/80 focus-visible:outline-none [&amp;::-webkit-details-marker]:hidden\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
