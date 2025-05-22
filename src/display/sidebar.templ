@@ -1,0 +1,76 @@
+package uiDisplay
+
+type SidebarSettings struct {
+	MiddleContent templ.Component
+
+	// OptionalFields
+	Width                      string
+	BackgroundColor            string
+	HeaderContent              templ.Component
+	FooterContent              templ.Component
+	IsVisibleTwoWayStatePath   string
+	IsCollapsed                bool
+	IsCollapsedTwoWayStatePath string
+	IsSticky                   bool
+	IsStickyTwoWayStatePath    string
+}
+
+templ Sidebar(componentSettings SidebarSettings) {
+	<!-- Sidebar -->
+	// SidebarCssClasses
+	{{ sidebarClasses := "h-screen flex flex-col" }}
+	// - SidebarWidth
+	{{ sidebarWidthClass := "w-64" }}
+	if componentSettings.Width != "" {
+		{{ sidebarWidthClass = componentSettings.Width }}
+	}
+	{{ sidebarClasses += " " + sidebarWidthClass }}
+	// - SidebarBackgroundColor
+	{{ sidebarBackgroundColorClass := "neutral-900/10" }}
+	if componentSettings.BackgroundColor != "" {
+		{{ sidebarBackgroundColorClass = componentSettings.BackgroundColor }}
+	}
+	{{ sidebarClasses += " " + sidebarBackgroundColorClass }}
+	if componentSettings.IsSticky {
+		{{ sidebarClasses += " sticky" }}
+	}
+	if componentSettings.IsCollapsed {
+		{{ sidebarClasses += " !w-32" }}
+	}
+	// SidebarDynamicClasses
+	{{ sidebarDynamicClasses := "{" }}
+	if componentSettings.IsVisibleTwoWayStatePath != "" {
+		{{ sidebarDynamicClasses += "'invisible': " + componentSettings.IsVisibleTwoWayStatePath + "," }}
+	}
+	if componentSettings.IsCollapsedTwoWayStatePath != "" {
+		{{ sidebarDynamicClasses += "'!w-32': " + componentSettings.IsCollapsedTwoWayStatePath + "," }}
+	}
+	if componentSettings.IsStickyTwoWayStatePath != "" {
+		{{ sidebarDynamicClasses += "'sticky': " + componentSettings.IsStickyTwoWayStatePath + "," }}
+	}
+	{{ sidebarDynamicClasses += "}" }}
+	<aside class={ sidebarClasses } :class={ sidebarDynamicClasses }>
+		<!-- HeaderContent -->
+		if componentSettings.HeaderContent != nil {
+			<div class="flex-1 items-center justify-between">
+				@componentSettings.HeaderContent
+			</div>
+		}
+		<!-- Middle Content -->
+		<button
+			@click="scrollMiddleContentToTop()"
+			class="mt-2 hidden rounded-full p-2 transition-all"
+		>
+			<i class="ph-duotone ph-arrow-fat-up block"></i>
+		</button>
+		<div class="flex-1 overflow-y-auto">
+			@componentSettings.MiddleContent
+		</div>
+		<!-- FooterContent -->
+		if componentSettings.FooterContent != nil {
+			<div class="flex-1 items-center justify-between">
+				@componentSettings.FooterContent
+			</div>
+		}
+	</aside>
+}
