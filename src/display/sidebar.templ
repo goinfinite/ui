@@ -57,7 +57,7 @@ templ Sidebar(componentSettings SidebarSettings) {
 			{{ sidebarClasses += " right-0" }}
 	}
 	if componentSettings.IsCollapsed {
-		{{ sidebarClasses += " !w-32" }}
+		{{ sidebarClasses += " !w-16" }}
 	}
 	// SidebarDynamicCssClasses
 	{{ sidebarDynamicClasses := "{" }}
@@ -65,7 +65,7 @@ templ Sidebar(componentSettings SidebarSettings) {
 		{{ sidebarDynamicClasses += "'invisible': !" + componentSettings.IsVisibleTwoWayStatePath + "," }}
 	}
 	if componentSettings.IsCollapsedTwoWayStatePath != "" {
-		{{ sidebarDynamicClasses += "'!w-32': " + componentSettings.IsCollapsedTwoWayStatePath + "," }}
+		{{ sidebarDynamicClasses += "'!w-16': " + componentSettings.IsCollapsedTwoWayStatePath + "," }}
 	}
 	if componentSettings.AttachmentModeTwoWayStatePath != "" {
 		{{ sidebarDynamicClasses += "'!fixed top-0': " + componentSettings.AttachmentModeTwoWayStatePath + " === '" + SidebarAttachmentModeFixed + "'," }}
@@ -75,7 +75,7 @@ templ Sidebar(componentSettings SidebarSettings) {
 		{{ sidebarDynamicClasses += "'right-0': " + componentSettings.SideTwoWayStatePath + " === '" + SidebarSideRight + "'," }}
 	}
 	{{ sidebarDynamicClasses += "}" }}
-	<aside x-data="{scrolledToTop: true}" class={ sidebarClasses } :class={ sidebarDynamicClasses }>
+	<aside class={ sidebarClasses } :class={ sidebarDynamicClasses }>
 		<!-- SidebarHeaderContent -->
 		if componentSettings.HeaderContent != nil {
 			<div class="flex items-center justify-between border-b border-neutral-50/5">
@@ -84,14 +84,17 @@ templ Sidebar(componentSettings SidebarSettings) {
 		}
 		<!-- SidebarMiddleContent -->
 		<div
-			class="relative grow overflow-y-auto [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-neutral-50/30 [&::-webkit-scrollbar-thumb]:hover:bg-neutral-50/50 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-neutral-50/10 [&::-webkit-scrollbar]:w-3"
-			@scroll="scrolledToTop = $event.target.scrollTop <= 10"
+			class="relative grow overflow-y-auto overflow-x-hidden [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-neutral-50/30 [&::-webkit-scrollbar-thumb]:hover:bg-neutral-50/50 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-neutral-50/10 [&::-webkit-scrollbar]:w-3"
+			x-data="{displayScrollToTopButton: false}"
+			@scroll.debounce="$event.target.scrollTop > 10 ? displayScrollToTopButton = true : displayScrollToTopButton = false"
 		>
 			@componentSettings.MiddleContent
 			<!-- SidebarScrollToTopButton -->
 			<i
-				class="absolute -right-2 top-3 ph-bold hover:text-secondary-500 cursor-pointer text-neutral-50/50 ph-arrow-up"
-				@click="if(scrolledToTop) { $el.scrollIntoView({ behavior: 'smooth' }) } else { $el.scrollIntoView({ behavior: 'smooth', block: 'end' }) }"
+				class="ph-bold hover:text-secondary-500 ph-arrow-square-up sticky bottom-3 right-3 float-right cursor-pointer text-neutral-50/50"
+				@click="$el.parentElement.scrollTo({ top: 0, behavior: 'smooth' });"
+				x-show="displayScrollToTopButton"
+				x-transition
 			></i>
 		</div>
 		<!-- SidebarFooterContent -->
