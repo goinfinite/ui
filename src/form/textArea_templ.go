@@ -147,10 +147,12 @@ func TextArea(componentSettings TextAreaSettings) templ.Component {
 			textAreaSizeClasses = "h-36 text-xl"
 			isExpandedClasses = "h-108"
 		}
-		textAreaClasses += " " + textAreaSizeClasses + " placeholder-text-neutral-50 peer w-full resize-none overflow-y-scroll bg-transparent pl-2 pr-9 text-sm text-neutral-100 outline-none transition-all"
+		textAreaClasses += " " + textAreaSizeClasses + " placeholder-text-neutral-50 peer w-full resize-none overflow-y-scroll bg-transparent pl-2 pr-9 outline-none focus:outline-none transition-all"
 		textAreaClasses += " [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-neutral-50/10 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-neutral-50/30 [&::-webkit-scrollbar-thumb]:hover:bg-neutral-50/50"
 		if componentSettings.IsReadOnly {
 			textAreaClasses += " text-neutral-400 cursor-not-allowed"
+		} else {
+			textAreaClasses += " text-neutral-100"
 		}
 		if componentSettings.IsCode {
 			textAreaClasses += " font-mono"
@@ -177,7 +179,7 @@ func TextArea(componentSettings TextAreaSettings) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.InputId)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/textArea.templ`, Line: 84, Col: 34}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/textArea.templ`, Line: 86, Col: 34}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -190,7 +192,7 @@ func TextArea(componentSettings TextAreaSettings) templ.Component {
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.InputId)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/textArea.templ`, Line: 85, Col: 37}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/textArea.templ`, Line: 87, Col: 37}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -209,7 +211,7 @@ func TextArea(componentSettings TextAreaSettings) templ.Component {
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.InputName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/textArea.templ`, Line: 88, Col: 38}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/textArea.templ`, Line: 90, Col: 38}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -228,7 +230,7 @@ func TextArea(componentSettings TextAreaSettings) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.InputId)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/textArea.templ`, Line: 91, Col: 36}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/textArea.templ`, Line: 93, Col: 36}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -247,7 +249,7 @@ func TextArea(componentSettings TextAreaSettings) templ.Component {
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.TwoWayStatePath)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/textArea.templ`, Line: 94, Col: 53}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/textArea.templ`, Line: 96, Col: 53}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
@@ -265,7 +267,7 @@ func TextArea(componentSettings TextAreaSettings) templ.Component {
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.Label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/textArea.templ`, Line: 96, Col: 40}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/textArea.templ`, Line: 98, Col: 40}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
@@ -291,7 +293,7 @@ func TextArea(componentSettings TextAreaSettings) templ.Component {
 		var templ_7745c5c3_Var13 string
 		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(textAreaDynamicClasses)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/textArea.templ`, Line: 98, Col: 34}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/textArea.templ`, Line: 100, Col: 34}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {
@@ -314,7 +316,7 @@ func TextArea(componentSettings TextAreaSettings) templ.Component {
 		var templ_7745c5c3_Var14 string
 		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.Value)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/textArea.templ`, Line: 103, Col: 28}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/textArea.templ`, Line: 105, Col: 28}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 		if templ_7745c5c3_Err != nil {
@@ -332,7 +334,7 @@ func TextArea(componentSettings TextAreaSettings) templ.Component {
 			var templ_7745c5c3_Var15 string
 			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(`!` + componentSettings.TwoWayStatePath + ` && 'top-2'`)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/textArea.templ`, Line: 108, Col: 68}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/textArea.templ`, Line: 110, Col: 68}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 			if templ_7745c5c3_Err != nil {
@@ -401,7 +403,7 @@ func TextArea(componentSettings TextAreaSettings) templ.Component {
 				var templ_7745c5c3_Var20 string
 				templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs("navigator.clipboard.writeText(" + componentSettings.TwoWayStatePath + ")")
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/textArea.templ`, Line: 121, Col: 97}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/textArea.templ`, Line: 123, Col: 97}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 				if templ_7745c5c3_Err != nil {
@@ -420,7 +422,7 @@ func TextArea(componentSettings TextAreaSettings) templ.Component {
 					var templ_7745c5c3_Var21 string
 					templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs("$refs." + componentSettings.InputId + ".select(); document.execCommand('copy')")
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/textArea.templ`, Line: 124, Col: 104}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/textArea.templ`, Line: 126, Col: 104}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 					if templ_7745c5c3_Err != nil {
@@ -463,7 +465,7 @@ func TextArea(componentSettings TextAreaSettings) templ.Component {
 			var templ_7745c5c3_Var24 string
 			templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.TwoWayStatePath + " = ''")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/textArea.templ`, Line: 132, Col: 65}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/textArea.templ`, Line: 134, Col: 65}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 			if templ_7745c5c3_Err != nil {

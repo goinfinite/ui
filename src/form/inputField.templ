@@ -83,9 +83,11 @@ templ InputField(componentSettings InputFieldSettings) {
 						}
 					</div>
 				}
-				{{ inputClasses := "w-full bg-transparent text-neutral-100 placeholder-text-neutral-50 placeholder-text-opacity-80 outline-none p-2 pt-0 text-sm peer" }}
+				{{ inputClasses := "w-full bg-transparent placeholder-text-neutral-50 placeholder-text-opacity-80 outline-none focus:outline-none p-2 pt-0 text-sm peer" }}
 				if componentSettings.IsReadOnly {
 					{{ inputClasses += " text-neutral-400 cursor-not-allowed" }}
+				} else {
+					{{ inputClasses += " text-neutral-100" }}
 				}
 				<input
 					type={ componentSettings.InputType }
@@ -110,7 +112,6 @@ templ InputField(componentSettings InputFieldSettings) {
 					if componentSettings.Value != "" {
 						value={ componentSettings.Value }
 					}
-					autocomplete="off"
 					if componentSettings.Label != "" {
 						placeholder={ componentSettings.Label }
 					}

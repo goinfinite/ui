@@ -66,10 +66,12 @@ templ TextArea(componentSettings TextAreaSettings) {
 				{{ textAreaSizeClasses = "h-36 text-xl" }}
 				{{ isExpandedClasses = "h-108" }}
 		}
-		{{ textAreaClasses += " " + textAreaSizeClasses + " placeholder-text-neutral-50 peer w-full resize-none overflow-y-scroll bg-transparent pl-2 pr-9 text-sm text-neutral-100 outline-none transition-all" }}
+		{{ textAreaClasses += " " + textAreaSizeClasses + " placeholder-text-neutral-50 peer w-full resize-none overflow-y-scroll bg-transparent pl-2 pr-9 outline-none focus:outline-none transition-all" }}
 		{{ textAreaClasses += " [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-neutral-50/10 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-neutral-50/30 [&::-webkit-scrollbar-thumb]:hover:bg-neutral-50/50" }}
 		if componentSettings.IsReadOnly {
 			{{ textAreaClasses += " text-neutral-400 cursor-not-allowed" }}
+		} else {
+			{{ textAreaClasses += " text-neutral-100" }}
 		}
 		if componentSettings.IsCode {
 			{{ textAreaClasses += " font-mono" }}
