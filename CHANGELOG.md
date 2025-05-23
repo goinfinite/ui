@@ -1,6 +1,10 @@
 # Changelog
 
 ```log
+0.0.4 - 2025/05/23
+feat: add wrapper to sidebar
+fix: sidebar scroll bar width
+
 0.0.3 - 2025/05/23
 feat: sidebar
 fix: textarea and input field text color replacement
