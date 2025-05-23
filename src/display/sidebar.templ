@@ -28,7 +28,6 @@ type SidebarSettings struct {
 }
 
 templ Sidebar(componentSettings SidebarSettings) {
-	<!-- Sidebar -->
 	// SidebarCssClasses
 	{{ sidebarClasses := "h-full flex flex-col transition-all duration-200 ease-linear relative" }}
 	// - SidebarWidth
@@ -92,65 +91,90 @@ templ Sidebar(componentSettings SidebarSettings) {
 		{{ sidebarDynamicClasses += "'float-right': " + componentSettings.SideTwoWayStatePath + " === '" + SidebarSideRight + "' && " + componentSettings.AttachmentModeTwoWayStatePath + " === '" + SidebarAttachmentModeInline + "'," }}
 	}
 	{{ sidebarDynamicClasses += "}" }}
-	<aside class={ sidebarClasses } :class={ sidebarDynamicClasses }>
-		<!-- SidebarHeaderContent -->
-		if componentSettings.HeaderContent != nil {
-			<div class="flex border-b border-neutral-50/5">
-				@componentSettings.HeaderContent
-			</div>
-		}
-		<!-- SidebarMiddleContent -->
-		<div
-			class="relative grow overflow-y-auto overflow-x-hidden [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-neutral-50/30 [&::-webkit-scrollbar-thumb]:hover:bg-neutral-50/50 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-neutral-50/10 [&::-webkit-scrollbar]:w-3"
-			x-data="{displayScrollToTopButton: false}"
-			@scroll.debounce="$event.target.scrollTop > 10 ? displayScrollToTopButton = true : displayScrollToTopButton = false"
-		>
-			@componentSettings.MiddleContent
-			<!-- SidebarScrollToTopButton -->
-			{{ scrollToTopButtonClasses := "ph-bold hover:text-secondary-500 ph-arrow-square-up sticky bottom-3 cursor-pointer text-neutral-50/50" }}
-			{{ scrollToTopButtonPositionClass := "right-3 float-right" }}
-			if componentSettings.IsCollapsed {
-				{{ scrollToTopButtonPositionClass = "block !bottom-2 text-center" }}
+	// SidebarWrapperCssClasses
+	{{ sidebarWrapperClasses := "h-full flex" }}
+	// - SidebarWrapperWidth
+	{{ sidebarWrapperWidthClass := "w-64" }}
+	if componentSettings.Width != "" {
+		{{ sidebarWrapperWidthClass = componentSettings.Width }}
+	}
+	{{ sidebarWrapperClasses += " " + sidebarWrapperWidthClass }}
+	// SidebarWrapperDynamicCssClasses
+	{{ sidebarWrapperDynamicClasses := "{" }}
+	if componentSettings.IsVisibleTwoWayStatePath != "" {
+		{{ sidebarWrapperDynamicClasses += "'invisible': !" + componentSettings.IsVisibleTwoWayStatePath + "," }}
+	}
+	if componentSettings.IsOffCanvasTwoWayStatePath != "" {
+		{{ sidebarWrapperDynamicClasses += "'!w-0': " + componentSettings.IsOffCanvasTwoWayStatePath + "," }}
+	}
+	if componentSettings.IsCollapsedTwoWayStatePath != "" {
+		{{ sidebarWrapperDynamicClasses += "'!w-16': " + componentSettings.IsCollapsedTwoWayStatePath + "," }}
+	}
+	{{ sidebarWrapperDynamicClasses += "}" }}
+	<!-- Sidebar -->
+	<aside class={ sidebarWrapperClasses } :class={ sidebarWrapperDynamicClasses }>
+		<div class={ sidebarClasses } :class={ sidebarDynamicClasses }>
+			<!-- SidebarHeaderContent -->
+			if componentSettings.HeaderContent != nil {
+				<div class="flex border-b border-neutral-50/5">
+					@componentSettings.HeaderContent
+				</div>
 			}
-			{{ scrollToTopButtonClasses += " " + scrollToTopButtonPositionClass }}
-			<i
-				class={ scrollToTopButtonClasses }
-				:class={ "{ 'block text-center !bottom-2 !float-none': " + componentSettings.IsCollapsedTwoWayStatePath + "}" }
-				@click="$el.parentElement.scrollTo({ top: 0, behavior: 'smooth' });"
-				x-show="displayScrollToTopButton"
-				x-transition
-			></i>
-		</div>
-		<!-- SidebarFooterContent -->
-		if componentSettings.FooterContent != nil {
-			<div class="flex border-t border-neutral-50/5">
-				@componentSettings.FooterContent
-			</div>
-		}
-		<!-- SidebarCollapseToggleButton -->
-		if componentSettings.IsCollapsedTwoWayStatePath != "" {
-			{{ collapseIconClasses := "absolute top-3 ph-bold hover:text-secondary-500 cursor-pointer text-neutral-50/50" }}
-			{{ collapseIconAlignmentClass := "" }}
-			switch componentSettings.Side {
-				case SidebarSideRight:
-					{{ collapseIconAlignmentClass = "-left-2 ph-arrow-square-left" }}
-				default:
-					if componentSettings.SideTwoWayStatePath == "" {
-						{{ collapseIconAlignmentClass = "-right-2 ph-arrow-square-right" }}
+			<!-- SidebarMiddleContent -->
+			<div
+				class="relative grow overflow-y-auto overflow-x-hidden [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-neutral-50/30 [&::-webkit-scrollbar-thumb]:hover:bg-neutral-50/50 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-neutral-50/10 [&::-webkit-scrollbar]:w-2"
+				x-data="{displayScrollToTopButton: false}"
+				@scroll.debounce="$event.target.scrollTop > 10 ? displayScrollToTopButton = true : displayScrollToTopButton = false"
+			>
+				@componentSettings.MiddleContent
+				<!-- SidebarScrollToTopButton -->
+				{{ scrollToTopButtonClasses := "ph-bold hover:text-secondary-500 ph-arrow-square-up sticky bottom-3 cursor-pointer text-neutral-50/50" }}
+				{{ scrollToTopButtonPositionClass := "right-3 float-right" }}
+				if componentSettings.IsCollapsed {
+					{{ scrollToTopButtonPositionClass = "block !bottom-2 text-center" }}
+				}
+				{{ scrollToTopButtonClasses += " " + scrollToTopButtonPositionClass }}
+				<i
+					class={ scrollToTopButtonClasses }
+					if componentSettings.IsCollapsedTwoWayStatePath != "" {
+						:class={ "{ 'block text-center !bottom-2 !float-none': " + componentSettings.IsCollapsedTwoWayStatePath + "}" }
 					}
+					@click="$el.parentElement.scrollTo({ top: 0, behavior: 'smooth' });"
+					x-show="displayScrollToTopButton"
+					x-transition
+				></i>
+			</div>
+			<!-- SidebarFooterContent -->
+			if componentSettings.FooterContent != nil {
+				<div class="flex border-t border-neutral-50/5">
+					@componentSettings.FooterContent
+				</div>
 			}
-			{{ collapseIconClasses += " " + collapseIconAlignmentClass }}
-			{{ collapseIconDynamicClasses := "{ 'rotate-180':!" + componentSettings.IsCollapsedTwoWayStatePath + "," }}
-			if componentSettings.SideTwoWayStatePath != "" {
-				{{ collapseIconDynamicClasses += "'-left-2 ph-arrow-square-left':" + componentSettings.SideTwoWayStatePath + " === '" + SidebarSideRight + "'," }}
-				{{ collapseIconDynamicClasses += "'-right-2 ph-arrow-square-right':" + componentSettings.SideTwoWayStatePath + " === '" + SidebarSideLeft + "'" }}
+			<!-- SidebarCollapseToggleButton -->
+			if componentSettings.IsCollapsedTwoWayStatePath != "" {
+				{{ collapseIconClasses := "absolute top-3 ph-bold hover:text-secondary-500 cursor-pointer text-neutral-50/50" }}
+				{{ collapseIconAlignmentClass := "" }}
+				switch componentSettings.Side {
+					case SidebarSideRight:
+						{{ collapseIconAlignmentClass = "-left-2 ph-arrow-square-left" }}
+					default:
+						if componentSettings.SideTwoWayStatePath == "" {
+							{{ collapseIconAlignmentClass = "-right-2 ph-arrow-square-right" }}
+						}
+				}
+				{{ collapseIconClasses += " " + collapseIconAlignmentClass }}
+				{{ collapseIconDynamicClasses := "{ 'rotate-180':!" + componentSettings.IsCollapsedTwoWayStatePath + "," }}
+				if componentSettings.SideTwoWayStatePath != "" {
+					{{ collapseIconDynamicClasses += "'-left-2 ph-arrow-square-left':" + componentSettings.SideTwoWayStatePath + " === '" + SidebarSideRight + "'," }}
+					{{ collapseIconDynamicClasses += "'-right-2 ph-arrow-square-right':" + componentSettings.SideTwoWayStatePath + " === '" + SidebarSideLeft + "'" }}
+				}
+				{{ collapseIconDynamicClasses += "}" }}
+				<i
+					class={ collapseIconClasses }
+					:class={ collapseIconDynamicClasses }
+					@click={ componentSettings.IsCollapsedTwoWayStatePath + " = !" + componentSettings.IsCollapsedTwoWayStatePath }
+				></i>
 			}
-			{{ collapseIconDynamicClasses += "}" }}
-			<i
-				class={ collapseIconClasses }
-				:class={ collapseIconDynamicClasses }
-				@click={ componentSettings.IsCollapsedTwoWayStatePath + " = !" + componentSettings.IsCollapsedTwoWayStatePath }
-			></i>
-		}
+		</div>
 	</aside>
 }
