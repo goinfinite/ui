@@ -23,6 +23,8 @@ type SidebarSettings struct {
 	AttachmentModeTwoWayStatePath string
 	Side                          string
 	SideTwoWayStatePath           string
+	IsOffCanvas                   bool
+	IsOffCanvasTwoWayStatePath    string
 }
 
 templ Sidebar(componentSettings SidebarSettings) {
@@ -49,12 +51,22 @@ templ Sidebar(componentSettings SidebarSettings) {
 	if sidebarAttachmentMode == SidebarAttachmentModeFixed {
 		{{ sidebarClasses += " !fixed top-0" }}
 	}
+	// - SidebarOffCanvas
+	if componentSettings.IsOffCanvas {
+		{{ sidebarClasses += " !absolute top-0 z-50" }}
+	}
 	// - SidebarSide
 	switch componentSettings.Side {
 		case SidebarSideLeft:
 			{{ sidebarClasses += " left-0" }}
+			if sidebarAttachmentMode == SidebarAttachmentModeInline {
+				{{ sidebarClasses += " float-left" }}
+			}
 		case SidebarSideRight:
 			{{ sidebarClasses += " right-0" }}
+			if sidebarAttachmentMode == SidebarAttachmentModeInline {
+				{{ sidebarClasses += " float-right" }}
+			}
 	}
 	if componentSettings.IsCollapsed {
 		{{ sidebarClasses += " !w-16" }}
@@ -70,15 +82,20 @@ templ Sidebar(componentSettings SidebarSettings) {
 	if componentSettings.AttachmentModeTwoWayStatePath != "" {
 		{{ sidebarDynamicClasses += "'!fixed top-0': " + componentSettings.AttachmentModeTwoWayStatePath + " === '" + SidebarAttachmentModeFixed + "'," }}
 	}
+	if componentSettings.IsOffCanvasTwoWayStatePath != "" {
+		{{ sidebarDynamicClasses += "'!absolute top-0 z-50': " + componentSettings.IsOffCanvasTwoWayStatePath + "," }}
+	}
 	if componentSettings.SideTwoWayStatePath != "" {
 		{{ sidebarDynamicClasses += "'left-0': " + componentSettings.SideTwoWayStatePath + " === '" + SidebarSideLeft + "'," }}
 		{{ sidebarDynamicClasses += "'right-0': " + componentSettings.SideTwoWayStatePath + " === '" + SidebarSideRight + "'," }}
+		{{ sidebarDynamicClasses += "'float-left': " + componentSettings.SideTwoWayStatePath + " === '" + SidebarSideLeft + "' && " + componentSettings.AttachmentModeTwoWayStatePath + " === '" + SidebarAttachmentModeInline + "'," }}
+		{{ sidebarDynamicClasses += "'float-right': " + componentSettings.SideTwoWayStatePath + " === '" + SidebarSideRight + "' && " + componentSettings.AttachmentModeTwoWayStatePath + " === '" + SidebarAttachmentModeInline + "'," }}
 	}
 	{{ sidebarDynamicClasses += "}" }}
 	<aside class={ sidebarClasses } :class={ sidebarDynamicClasses }>
 		<!-- SidebarHeaderContent -->
 		if componentSettings.HeaderContent != nil {
-			<div class="flex items-center justify-between border-b border-neutral-50/5">
+			<div class="flex border-b border-neutral-50/5">
 				@componentSettings.HeaderContent
 			</div>
 		}
@@ -90,8 +107,15 @@ templ Sidebar(componentSettings SidebarSettings) {
 		>
 			@componentSettings.MiddleContent
 			<!-- SidebarScrollToTopButton -->
+			{{ scrollToTopButtonClasses := "ph-bold hover:text-secondary-500 ph-arrow-square-up sticky bottom-3 cursor-pointer text-neutral-50/50" }}
+			{{ scrollToTopButtonPositionClass := "right-3 float-right" }}
+			if componentSettings.IsCollapsed {
+				{{ scrollToTopButtonPositionClass = "block !bottom-2 text-center" }}
+			}
+			{{ scrollToTopButtonClasses += " " + scrollToTopButtonPositionClass }}
 			<i
-				class="ph-bold hover:text-secondary-500 ph-arrow-square-up sticky bottom-3 right-3 float-right cursor-pointer text-neutral-50/50"
+				class={ scrollToTopButtonClasses }
+				:class={ "{ 'block text-center !bottom-2 !float-none': " + componentSettings.IsCollapsedTwoWayStatePath + "}" }
 				@click="$el.parentElement.scrollTo({ top: 0, behavior: 'smooth' });"
 				x-show="displayScrollToTopButton"
 				x-transition

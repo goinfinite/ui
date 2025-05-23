@@ -990,53 +990,53 @@ templ ButtonDemo() {
 }
 
 templ SidebarDemoHeader() {
-	<div class="flex flex-col gap-2 p-4 border-b border-neutral-800">
-		<h4 class="text-lg font-bold">Sidebar Header</h4>
-		<p class="text-sm text-neutral-400">This is the header content</p>
+	<div class="flex flex-col gap-2 overflow-hidden p-3">
+		<h4 class="text-wrap break-words text-lg font-bold" x-show="!isCollapsed">Sidebar Header</h4>
+		<h4 class="text-wrap break-words text-lg font-bold" x-show="isCollapsed">SH</h4>
+		<p class="text-sm text-neutral-400" x-show="!isCollapsed">This is the header content</p>
 	</div>
 }
 
 templ SidebarDemoMiddle() {
-	<div class="flex flex-col gap-4 p-4">
+	<div class="flex flex-col gap-5 p-3">
 		<div class="flex flex-col gap-2">
-			<h4 class="text-lg font-bold">Navigation</h4>
-			<div class="flex flex-col gap-1">
+			<h4 class="text-lg font-bold" x-show="!isCollapsed">Navigation</h4>
+			<h4 class="text-center text-lg font-bold" x-show="isCollapsed">N</h4>
+			<div class="flex flex-col gap-1" :class="{'*:justify-center': isCollapsed}">
 				<a href="#" class="flex items-center gap-2 rounded-md p-2 text-neutral-50 hover:bg-neutral-800">
 					<i class="ph-duotone ph-house"></i>
-					<span>Home</span>
+					<span x-show="!isCollapsed">Home</span>
 				</a>
 				<a href="#" class="flex items-center gap-2 rounded-md bg-neutral-800 p-2 text-neutral-50">
 					<i class="ph-duotone ph-chart-line-up"></i>
-					<span>Dashboard</span>
+					<span x-show="!isCollapsed">Dashboard</span>
 				</a>
 				<a href="#" class="flex items-center gap-2 rounded-md p-2 text-neutral-50 hover:bg-neutral-800">
 					<i class="ph-duotone ph-gear"></i>
-					<span>Settings</span>
-				</a>
-				<a href="#" class="flex items-center gap-2 rounded-md p-2 text-neutral-50 hover:bg-neutral-800">
-					<i class="ph-duotone ph-user"></i>
-					<span>Profile</span>
+					<span x-show="!isCollapsed">Settings</span>
 				</a>
 			</div>
 		</div>
 		<div class="flex flex-col gap-2">
-			<h4 class="text-lg font-bold">Recent Items</h4>
-			<div class="flex flex-col gap-1">
+			<h4 class="text-lg font-bold" x-show="!isCollapsed">Recent Items</h4>
+			<h4 class="text-center text-lg font-bold" x-show="isCollapsed">R</h4>
+			<div class="flex flex-col gap-1" :class="{'*:justify-center': isCollapsed}">
 				for i := 1; i <= 3; i++ {
 					<div class="flex items-center gap-2 rounded-md p-2 text-neutral-400">
 						<i class="ph-duotone ph-file-text"></i>
-						<span>Document { i }</span>
+						<span x-show="!isCollapsed">Document { i }</span>
 					</div>
 				}
 			</div>
 		</div>
-		<div class="flex flex-col gap-2 mt-4">
-			<h4 class="text-lg font-bold">Projects</h4>
-			<div class="flex flex-col gap-1">
+		<div class="flex flex-col gap-2">
+			<h4 class="text-lg font-bold" x-show="!isCollapsed">Projects</h4>
+			<h4 class="text-center text-lg font-bold" x-show="isCollapsed">P</h4>
+			<div class="flex flex-col gap-1" :class="{'*:justify-center': isCollapsed}">
 				for i := 1; i <= 10; i++ {
 					<div class="flex items-center gap-2 rounded-md p-2 text-neutral-400">
 						<i class="ph-duotone ph-folder"></i>
-						<span>Project { i }</span>
+						<span x-show="!isCollapsed">Project { i }</span>
 					</div>
 				}
 			</div>
@@ -1045,15 +1045,16 @@ templ SidebarDemoMiddle() {
 }
 
 templ SidebarDemoFooter() {
-	<div class="flex flex-col gap-2 p-4 border-t border-neutral-800">
-		<h4 class="text-lg font-bold">Sidebar Footer</h4>
-		<p class="text-sm text-neutral-400">This is the footer content</p>
+	<div class="flex flex-col gap-2 p-3">
+		<h4 class="text-wrap break-words text-lg font-bold" x-show="!isCollapsed">Sidebar Footer</h4>
+		<h4 class="text-wrap break-words text-lg font-bold" x-show="isCollapsed">SF</h4>
+		<p class="text-sm text-neutral-400" x-show="!isCollapsed">This is the footer content</p>
 	</div>
 }
 
 templ SidebarDemo() {
 	<div class="flex flex-col gap-4">
-		<div class="flex flex-row flex-wrap items-center gap-x-20 gap-y-10">
+		<div class="flex flex-row flex-wrap items-center gap-10">
 			<div class="flex flex-col gap-2">
 				<h3 class="text-xl font-bold">.Sidebar</h3>
 				<p class="text-sm text-neutral-400">
@@ -1070,13 +1071,12 @@ templ SidebarDemo() {
 	// OptionalFields
 	HeaderContent:                 SidebarDemoHeader(),
 	FooterContent:                 SidebarDemoFooter(),
-	Width:                         "w-64",
 	BackgroundColor:               "bg-neutral-50/5",
 	IsVisibleTwoWayStatePath:      "isVisible",
 	IsCollapsedTwoWayStatePath:    "isCollapsed",
-	AttachmentMode:                uiDisplay.SidebarAttachmentModeFixed,
 	AttachmentModeTwoWayStatePath: "attachmentMode",
 	SideTwoWayStatePath:           "side",
+	IsOffCanvasTwoWayStatePath:    "isOffCanvas",
 })` }
 					</code>
 				</pre>
@@ -1085,8 +1085,8 @@ templ SidebarDemo() {
 		<div class="flex flex-col gap-4">
 			<h4 class="mb-2 text-lg font-bold">Live Example</h4>
 			<div
-				class="grid gap-10 md:grid-cols-2 items-center"
-				x-data="{isVisible: true, isCollapsed: false, attachmentMode: 'inline', side: 'left'}"
+				class="grid items-center gap-10 md:grid-cols-2"
+				x-data="{isVisible: true, isCollapsed: false, attachmentMode: 'inline', side: 'left', isOffCanvas: false}"
 			>
 				<div class="flex flex-col gap-4">
 					<div class="flex flex-col gap-2">
@@ -1097,7 +1097,8 @@ templ SidebarDemo() {
   isVisible: true,
   isCollapsed: false,
   attachmentMode: 'inline',
-  side: 'left'
+  side: 'left',
+  isOffCanvas: false
 }"></div>` }
 							</code>
 						</pre>
@@ -1138,6 +1139,24 @@ templ SidebarDemo() {
 						</div>
 					</div>
 					<div class="flex flex-col gap-2">
+						<p class="text-sm text-neutral-400">OffCanvas</p>
+						<div class="flex flex-wrap gap-2">
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "Off",
+								IconLeft:        "ph-x",
+								OnClickFunc:     "isOffCanvas = false",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "neutral-50/10",
+							})
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:       "On",
+								IconLeft:    "ph-check",
+								OnClickFunc: "isOffCanvas = true",
+								Size:        uiControl.ButtonSizeSm,
+							})
+						</div>
+					</div>
+					<div class="flex flex-col gap-2">
 						<p class="text-sm text-neutral-400">Side</p>
 						<div class="flex flex-wrap gap-2">
 							@uiControl.Button(uiControl.ButtonSettings{
@@ -1156,7 +1175,7 @@ templ SidebarDemo() {
 						</div>
 					</div>
 				</div>
-				<div class="flex h-128 flex-col overflow-hidden rounded-md border border-neutral-800">
+				<div class="h-128 flex-none overflow-hidden rounded-md border border-neutral-800">
 					@uiDisplay.Sidebar(uiDisplay.SidebarSettings{
 						MiddleContent:                 SidebarDemoMiddle(),
 						HeaderContent:                 SidebarDemoHeader(),
@@ -1166,6 +1185,7 @@ templ SidebarDemo() {
 						IsCollapsedTwoWayStatePath:    "isCollapsed",
 						AttachmentModeTwoWayStatePath: "attachmentMode",
 						SideTwoWayStatePath:           "side",
+						IsOffCanvasTwoWayStatePath:    "isOffCanvas",
 					})
 				</div>
 			</div>

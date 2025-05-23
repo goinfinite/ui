@@ -31,6 +31,8 @@ type SidebarSettings struct {
 	AttachmentModeTwoWayStatePath string
 	Side                          string
 	SideTwoWayStatePath           string
+	IsOffCanvas                   bool
+	IsOffCanvasTwoWayStatePath    string
 }
 
 func Sidebar(componentSettings SidebarSettings) templ.Component {
@@ -76,11 +78,20 @@ func Sidebar(componentSettings SidebarSettings) templ.Component {
 		if sidebarAttachmentMode == SidebarAttachmentModeFixed {
 			sidebarClasses += " !fixed top-0"
 		}
+		if componentSettings.IsOffCanvas {
+			sidebarClasses += " !absolute top-0 z-50"
+		}
 		switch componentSettings.Side {
 		case SidebarSideLeft:
 			sidebarClasses += " left-0"
+			if sidebarAttachmentMode == SidebarAttachmentModeInline {
+				sidebarClasses += " float-left"
+			}
 		case SidebarSideRight:
 			sidebarClasses += " right-0"
+			if sidebarAttachmentMode == SidebarAttachmentModeInline {
+				sidebarClasses += " float-right"
+			}
 		}
 		if componentSettings.IsCollapsed {
 			sidebarClasses += " !w-16"
@@ -95,9 +106,14 @@ func Sidebar(componentSettings SidebarSettings) templ.Component {
 		if componentSettings.AttachmentModeTwoWayStatePath != "" {
 			sidebarDynamicClasses += "'!fixed top-0': " + componentSettings.AttachmentModeTwoWayStatePath + " === '" + SidebarAttachmentModeFixed + "',"
 		}
+		if componentSettings.IsOffCanvasTwoWayStatePath != "" {
+			sidebarDynamicClasses += "'!absolute top-0 z-50': " + componentSettings.IsOffCanvasTwoWayStatePath + ","
+		}
 		if componentSettings.SideTwoWayStatePath != "" {
 			sidebarDynamicClasses += "'left-0': " + componentSettings.SideTwoWayStatePath + " === '" + SidebarSideLeft + "',"
 			sidebarDynamicClasses += "'right-0': " + componentSettings.SideTwoWayStatePath + " === '" + SidebarSideRight + "',"
+			sidebarDynamicClasses += "'float-left': " + componentSettings.SideTwoWayStatePath + " === '" + SidebarSideLeft + "' && " + componentSettings.AttachmentModeTwoWayStatePath + " === '" + SidebarAttachmentModeInline + "',"
+			sidebarDynamicClasses += "'float-right': " + componentSettings.SideTwoWayStatePath + " === '" + SidebarSideRight + "' && " + componentSettings.AttachmentModeTwoWayStatePath + " === '" + SidebarAttachmentModeInline + "',"
 		}
 		sidebarDynamicClasses += "}"
 		var templ_7745c5c3_Var2 = []any{sidebarClasses}
@@ -125,7 +141,7 @@ func Sidebar(componentSettings SidebarSettings) templ.Component {
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(sidebarDynamicClasses)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/sidebar.templ`, Line: 78, Col: 63}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/sidebar.templ`, Line: 95, Col: 63}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -136,7 +152,7 @@ func Sidebar(componentSettings SidebarSettings) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if componentSettings.HeaderContent != nil {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"flex items-center justify-between border-b border-neutral-50/5\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"flex border-b border-neutral-50/5\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -157,12 +173,53 @@ func Sidebar(componentSettings SidebarSettings) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<!-- SidebarScrollToTopButton --><i class=\"ph-bold hover:text-secondary-500 ph-arrow-square-up sticky bottom-3 right-3 float-right cursor-pointer text-neutral-50/50\" @click=\"$el.parentElement.scrollTo({ top: 0, behavior: &#39;smooth&#39; });\" x-show=\"displayScrollToTopButton\" x-transition></i></div><!-- SidebarFooterContent -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<!-- SidebarScrollToTopButton -->")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		scrollToTopButtonClasses := "ph-bold hover:text-secondary-500 ph-arrow-square-up sticky bottom-3 cursor-pointer text-neutral-50/50"
+		scrollToTopButtonPositionClass := "right-3 float-right"
+		if componentSettings.IsCollapsed {
+			scrollToTopButtonPositionClass = "block !bottom-2 text-center"
+		}
+		scrollToTopButtonClasses += " " + scrollToTopButtonPositionClass
+		var templ_7745c5c3_Var5 = []any{scrollToTopButtonClasses}
+		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var5...)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<i class=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var6 string
+		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(templ.CSSClasses(templ_7745c5c3_Var5).String())
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/sidebar.templ`, Line: 1, Col: 0}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" :class=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var7 string
+		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs("{ 'block text-center !bottom-2 !float-none': " + componentSettings.IsCollapsedTwoWayStatePath + "}")
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/sidebar.templ`, Line: 118, Col: 113}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" @click=\"$el.parentElement.scrollTo({ top: 0, behavior: &#39;smooth&#39; });\" x-show=\"displayScrollToTopButton\" x-transition></i></div><!-- SidebarFooterContent -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if componentSettings.FooterContent != nil {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"flex border-t border-neutral-50/5\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<div class=\"flex border-t border-neutral-50/5\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -170,12 +227,12 @@ func Sidebar(componentSettings SidebarSettings) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<!-- SidebarCollapseToggleButton -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<!-- SidebarCollapseToggleButton -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -190,7 +247,7 @@ func Sidebar(componentSettings SidebarSettings) templ.Component {
 					collapseIconAlignmentClass = "-right-2 ph-arrow-square-right"
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -200,61 +257,61 @@ func Sidebar(componentSettings SidebarSettings) templ.Component {
 				collapseIconDynamicClasses += "'-left-2 ph-arrow-square-left':" + componentSettings.SideTwoWayStatePath + " === '" + SidebarSideRight + "',"
 				collapseIconDynamicClasses += "'-right-2 ph-arrow-square-right':" + componentSettings.SideTwoWayStatePath + " === '" + SidebarSideLeft + "'"
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			collapseIconDynamicClasses += "}"
-			var templ_7745c5c3_Var5 = []any{collapseIconClasses}
-			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var5...)
+			var templ_7745c5c3_Var8 = []any{collapseIconClasses}
+			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var8...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<i class=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<i class=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var6 string
-			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(templ.CSSClasses(templ_7745c5c3_Var5).String())
+			var templ_7745c5c3_Var9 string
+			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(templ.CSSClasses(templ_7745c5c3_Var8).String())
 			if templ_7745c5c3_Err != nil {
 				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/sidebar.templ`, Line: 1, Col: 0}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\" :class=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" :class=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var7 string
-			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(collapseIconDynamicClasses)
+			var templ_7745c5c3_Var10 string
+			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(collapseIconDynamicClasses)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/sidebar.templ`, Line: 127, Col: 39}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/sidebar.templ`, Line: 151, Col: 39}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\" @click=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var8 string
-			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.IsCollapsedTwoWayStatePath + " = !" + componentSettings.IsCollapsedTwoWayStatePath)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/sidebar.templ`, Line: 128, Col: 113}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\" @click=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\"></i>")
+			var templ_7745c5c3_Var11 string
+			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.IsCollapsedTwoWayStatePath + " = !" + componentSettings.IsCollapsedTwoWayStatePath)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/sidebar.templ`, Line: 152, Col: 113}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</aside>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</aside>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
