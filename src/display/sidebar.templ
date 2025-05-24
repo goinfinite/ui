@@ -29,7 +29,7 @@ type SidebarSettings struct {
 
 templ Sidebar(componentSettings SidebarSettings) {
 	// SidebarCssClasses
-	{{ sidebarClasses := "h-full flex flex-col transition-all duration-200 ease-linear relative" }}
+	{{ sidebarClasses := "h-full flex flex-col transition-all duration-200 ease-linear relative group/sidebar" }}
 	// - SidebarWidth
 	{{ sidebarWidthClass := "w-64" }}
 	if componentSettings.Width != "" {
@@ -114,8 +114,8 @@ templ Sidebar(componentSettings SidebarSettings) {
 	<!-- Sidebar -->
 	<aside class={ sidebarWrapperClasses } :class={ sidebarWrapperDynamicClasses }>
 		<div class={ sidebarClasses } :class={ sidebarDynamicClasses }>
-			<!-- SidebarHeaderContent -->
 			if componentSettings.HeaderContent != nil {
+				<!-- SidebarHeaderContent -->
 				<div class="flex border-b border-neutral-50/5">
 					@componentSettings.HeaderContent
 				</div>
@@ -144,15 +144,15 @@ templ Sidebar(componentSettings SidebarSettings) {
 					x-transition
 				></i>
 			</div>
-			<!-- SidebarFooterContent -->
 			if componentSettings.FooterContent != nil {
+				<!-- SidebarFooterContent -->
 				<div class="flex border-t border-neutral-50/5">
 					@componentSettings.FooterContent
 				</div>
 			}
 			<!-- SidebarCollapseToggleButton -->
 			if componentSettings.IsCollapsedTwoWayStatePath != "" {
-				{{ collapseIconClasses := "absolute top-3 ph-bold hover:text-secondary-500 cursor-pointer text-neutral-50/50" }}
+				{{ collapseIconClasses := "absolute opacity-0 top-3 ph-bold hover:text-secondary-500 cursor-pointer text-neutral-50/50 group-hover/sidebar:opacity-100 transition-opacity" }}
 				{{ collapseIconAlignmentClass := "" }}
 				switch componentSettings.Side {
 					case SidebarSideRight:

@@ -56,7 +56,7 @@ func Sidebar(componentSettings SidebarSettings) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		sidebarClasses := "h-full flex flex-col transition-all duration-200 ease-linear relative"
+		sidebarClasses := "h-full flex flex-col transition-all duration-200 ease-linear relative group/sidebar"
 		sidebarWidthClass := "w-64"
 		if componentSettings.Width != "" {
 			sidebarWidthClass = componentSettings.Width
@@ -199,12 +199,12 @@ func Sidebar(componentSettings SidebarSettings) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\"><!-- SidebarHeaderContent -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if componentSettings.HeaderContent != nil {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"flex border-b border-neutral-50/5\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<!-- SidebarHeaderContent --> <div class=\"flex border-b border-neutral-50/5\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -217,7 +217,7 @@ func Sidebar(componentSettings SidebarSettings) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<!-- SidebarMiddleContent --><div class=\"relative grow overflow-y-auto overflow-x-hidden [&amp;::-webkit-scrollbar-thumb]:rounded-full [&amp;::-webkit-scrollbar-thumb]:bg-neutral-50/30 [&amp;::-webkit-scrollbar-thumb]:hover:bg-neutral-50/50 [&amp;::-webkit-scrollbar-track]:rounded-full [&amp;::-webkit-scrollbar-track]:bg-neutral-50/10 [&amp;::-webkit-scrollbar]:w-3\" x-data=\"{displayScrollToTopButton: false}\" @scroll.debounce=\"$event.target.scrollTop &gt; 10 ? displayScrollToTopButton = true : displayScrollToTopButton = false\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<!-- SidebarMiddleContent --><div class=\"relative grow overflow-y-auto overflow-x-hidden [&amp;::-webkit-scrollbar-thumb]:rounded-full [&amp;::-webkit-scrollbar-thumb]:bg-neutral-50/30 [&amp;::-webkit-scrollbar-thumb]:hover:bg-neutral-50/50 [&amp;::-webkit-scrollbar-track]:rounded-full [&amp;::-webkit-scrollbar-track]:bg-neutral-50/10 [&amp;::-webkit-scrollbar]:w-2\" x-data=\"{displayScrollToTopButton: false}\" @scroll.debounce=\"$event.target.scrollTop &gt; 10 ? displayScrollToTopButton = true : displayScrollToTopButton = false\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -276,12 +276,12 @@ func Sidebar(componentSettings SidebarSettings) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, " @click=\"$el.parentElement.scrollTo({ top: 0, behavior: &#39;smooth&#39; });\" x-show=\"displayScrollToTopButton\" x-transition></i></div><!-- SidebarFooterContent -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, " @click=\"$el.parentElement.scrollTo({ top: 0, behavior: &#39;smooth&#39; });\" x-show=\"displayScrollToTopButton\" x-transition></i></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if componentSettings.FooterContent != nil {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<div class=\"flex border-t border-neutral-50/5\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<!-- SidebarFooterContent --> <div class=\"flex border-t border-neutral-50/5\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -299,7 +299,7 @@ func Sidebar(componentSettings SidebarSettings) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if componentSettings.IsCollapsedTwoWayStatePath != "" {
-			collapseIconClasses := "absolute top-3 ph-bold hover:text-secondary-500 cursor-pointer text-neutral-50/50"
+			collapseIconClasses := "absolute opacity-0 top-3 ph-bold hover:text-secondary-500 cursor-pointer text-neutral-50/50 group-hover/sidebar:opacity-100 transition-opacity"
 			collapseIconAlignmentClass := ""
 			switch componentSettings.Side {
 			case SidebarSideRight:
