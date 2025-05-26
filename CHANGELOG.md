@@ -1,6 +1,10 @@
 # Changelog
 
 ```log
+0.0.5 - 2025/05/26
+feat: toast
+fix: show sidebar collapse button only on hover
+
 0.0.4 - 2025/05/23
 feat: add wrapper to sidebar
 fix: sidebar scroll bar width
