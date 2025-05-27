@@ -19,7 +19,7 @@ type LoadingOverlaySettings struct {
 	Icon                     string
 	IconSize                 string
 	AnimationName            string
-	AnimationDuration        string
+	AnimationDurationSeconds string
 }
 
 templ LoadingOverlay(componentSettings LoadingOverlaySettings) {
@@ -66,11 +66,11 @@ templ LoadingOverlay(componentSettings LoadingOverlaySettings) {
 			{{ loadingOverlayIconAnimationName = LoadingOverlayAnimationNameSpin }}
 	}
 	{{ loadingOverlayIconClasses += " animate-" + loadingOverlayIconAnimationName }}
-	{{ loadingOverlayIconAnimationDuration := "2s" }}
-	if componentSettings.AnimationDuration != "" {
-		{{ loadingOverlayIconAnimationDuration = componentSettings.AnimationDuration }}
+	{{ loadingOverlayIconAnimationDuration := "2" }}
+	if componentSettings.AnimationDurationSeconds != "" {
+		{{ loadingOverlayIconAnimationDuration = componentSettings.AnimationDurationSeconds }}
 	}
-	{{ loadingOverlayIconClasses += " animate-duration-[" + loadingOverlayIconAnimationDuration + "]" }}
+	{{ loadingOverlayIconClasses += " animate-duration-[" + loadingOverlayIconAnimationDuration + "s]" }}
 	<!-- LoadingOverlay HTML -->
 	<div
 		id="loading-overlay"

@@ -27,7 +27,7 @@ type LoadingOverlaySettings struct {
 	Icon                     string
 	IconSize                 string
 	AnimationName            string
-	AnimationDuration        string
+	AnimationDurationSeconds string
 }
 
 func LoadingOverlay(componentSettings LoadingOverlaySettings) templ.Component {
@@ -96,11 +96,11 @@ func LoadingOverlay(componentSettings LoadingOverlaySettings) templ.Component {
 			loadingOverlayIconAnimationName = LoadingOverlayAnimationNameSpin
 		}
 		loadingOverlayIconClasses += " animate-" + loadingOverlayIconAnimationName
-		loadingOverlayIconAnimationDuration := "2s"
-		if componentSettings.AnimationDuration != "" {
-			loadingOverlayIconAnimationDuration = componentSettings.AnimationDuration
+		loadingOverlayIconAnimationDuration := "2"
+		if componentSettings.AnimationDurationSeconds != "" {
+			loadingOverlayIconAnimationDuration = componentSettings.AnimationDurationSeconds
 		}
-		loadingOverlayIconClasses += " animate-duration-[" + loadingOverlayIconAnimationDuration + "]"
+		loadingOverlayIconClasses += " animate-duration-[" + loadingOverlayIconAnimationDuration + "s]"
 		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<!-- LoadingOverlay HTML -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
