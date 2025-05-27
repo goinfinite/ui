@@ -40,8 +40,8 @@ templ Toast(componentSettings ToastSettings) {
 	<!-- Toast JavaScript -->
 	@templ.Raw(`<script type="text/javascript">` + toastAlpineState + `</script>`)
 	<!-- Toast HTML -->
-	{{ toastClasses := "fixed bottom-5 right-10 flex w-fit flex-row items-center justify-stretch shadow-md" }}
-	{{ toastIconSizeClasses := "text-3xl" }}
+	{{ toastClasses := "fixed bottom-5 right-10 flex w-fit flex-row items-center justify-stretch shadow-md z-100" }}
+	{{ toastIconSizeClasses := "text-2xl" }}
 	if componentSettings.Size == "" {
 		{{ componentSettings.Size = ToastSizeMd }}
 	}
