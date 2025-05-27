@@ -1,6 +1,9 @@
 # Changelog
 
 ```log
+0.0.6 - 2025/05/27
+feat: loading overlay
+
 0.0.5 - 2025/05/26
 feat: toast
 fix: show sidebar collapse button only on hover
