@@ -1,0 +1,151 @@
+package uiDisplay
+
+import "strconv"
+
+const (
+	CloakLoadingIconSizeXs string = "2rem"
+	CloakLoadingIconSizeSm string = "3rem"
+	CloakLoadingIconSizeMd string = "5rem"
+	CloakLoadingIconSizeLg string = "7rem"
+
+	CloakLoadingTextSizeXs string = "0.75rem"
+	CloakLoadingTextSizeSm string = "1rem"
+	CloakLoadingTextSizeMd string = "1.25rem"
+	CloakLoadingTextSizeLg string = "1.5rem"
+
+	CloakLoadingAnimationNameBounce string = "bounce"
+	CloakLoadingAnimationNamePing   string = "ping"
+	CloakLoadingAnimationNamePulse  string = "pulse"
+	CloakLoadingAnimationNameSpin   string = "spin"
+)
+
+type CloakLoadingSettings struct {
+	// OptionalFields
+	HideDelaySeconds             string
+	BackgroundColor              string
+	TextMessage                  string
+	TextColor                    string
+	TextSize                     string
+	Icon                         string
+	IconSize                     string
+	IconColor                    string
+	IconAnimationName            string
+	IconAnimationDurationSeconds string
+}
+
+templ CloakLoading(componentSettings CloakLoadingSettings) {
+	// HideDelay
+	{{
+		hideDelaySeconds := "1"
+		if componentSettings.HideDelaySeconds != "" {
+			hideDelaySeconds = componentSettings.HideDelaySeconds
+		}
+		hideDelayInt, err := strconv.Atoi(hideDelaySeconds)
+		if err != nil {
+			hideDelayInt = 1
+		}
+		hideDelayMilliseconds := strconv.Itoa(hideDelayInt * 1000)
+	}}
+	// BackgroundColor
+	{{ bgColor := "rgb(7, 27, 39)" }}
+	if componentSettings.BackgroundColor != "" {
+		{{ bgColor = componentSettings.BackgroundColor }}
+	}
+	// Icon
+	{{ iconClass := "ph-duotone" }}
+	{{ iconName := "ph-compass-rose" }}
+	if componentSettings.Icon != "" {
+		{{ iconName = componentSettings.Icon }}
+	}
+	{{ iconClass += " " + iconName }}
+	// IconSize
+	{{ iconSize := "3rem" }}
+	switch componentSettings.IconSize {
+		case CloakLoadingIconSizeXs:
+			{{ iconSize = CloakLoadingIconSizeXs }}
+		case CloakLoadingIconSizeSm:
+			{{ iconSize = CloakLoadingIconSizeSm }}
+		case CloakLoadingIconSizeMd:
+			{{ iconSize = CloakLoadingIconSizeMd }}
+		case CloakLoadingIconSizeLg:
+			{{ iconSize = CloakLoadingIconSizeLg }}
+	}
+	// IconColor
+	{{ iconColor := "rgb(250, 250, 250)" }}
+	if componentSettings.IconColor != "" {
+		{{ iconColor = componentSettings.IconColor }}
+	}
+	// Animation
+	{{ animationName := CloakLoadingAnimationNameSpin }}
+	switch componentSettings.IconAnimationName {
+		case CloakLoadingAnimationNameBounce:
+			{{ animationName = CloakLoadingAnimationNameBounce }}
+		case CloakLoadingAnimationNamePing:
+			{{ animationName = CloakLoadingAnimationNamePing }}
+		case CloakLoadingAnimationNamePulse:
+			{{ animationName = CloakLoadingAnimationNamePulse }}
+	}
+	// IconAnimationDurationSeconds
+	{{ animationDurationSeconds := "2" }}
+	if componentSettings.IconAnimationDurationSeconds != "" {
+		{{ animationDurationSeconds = componentSettings.IconAnimationDurationSeconds }}
+	}
+	{{ iconAnimationStyle := "animation: " + animationName + " " + animationDurationSeconds + "s" }}
+	switch animationName {
+		case CloakLoadingAnimationNameBounce:
+			{{ iconAnimationStyle += " infinite" }}
+		case CloakLoadingAnimationNamePing:
+			{{ iconAnimationStyle += " cubic-bezier(0, 0, 0.2, 1) infinite" }}
+		case CloakLoadingAnimationNamePulse:
+			{{ iconAnimationStyle += " cubic-bezier(0.4, 0, 0.6, 1) infinite" }}
+		case CloakLoadingAnimationNameSpin:
+			{{ iconAnimationStyle += " linear infinite" }}
+	}
+	// TextMessage
+	{{ textMessage := "Loading..." }}
+	if componentSettings.TextMessage != "" {
+		{{ textMessage = componentSettings.TextMessage }}
+	}
+	// TextSize
+	{{ textSize := "1rem" }}
+	switch componentSettings.TextSize {
+		case CloakLoadingTextSizeXs:
+			{{ textSize = CloakLoadingTextSizeXs }}
+		case CloakLoadingTextSizeSm:
+			{{ textSize = CloakLoadingTextSizeSm }}
+		case CloakLoadingTextSizeMd:
+			{{ textSize = CloakLoadingTextSizeMd }}
+		case CloakLoadingTextSizeLg:
+			{{ textSize = CloakLoadingTextSizeLg }}
+	}
+	// TextColor
+	{{ textColor := "rgb(250, 250, 250)" }}
+	if componentSettings.TextColor != "" {
+		{{ textColor = componentSettings.TextColor }}
+	}
+	<div
+		style={ "display: flex; " +
+			"align-items: center; " +
+			"justify-content: center; " +
+			"position: fixed; " +
+			"top: 0; " +
+			"left: 0; " +
+			"width: 100%; " +
+			"height: 100%; " +
+			"background-color: " + bgColor + "; " +
+			"z-index: 9999; " +
+			"flex-direction: column; " +
+			"gap: 1rem;" }
+		x-init={ "setTimeout(() => { $el.style.display = 'none'; }, " + hideDelayMilliseconds + ");" }
+	>
+		<i
+			class={ iconClass }
+			style={ "font-size: " + iconSize + "; " +
+				"color: " + iconColor + "; " +
+				iconAnimationStyle }
+		></i>
+		if textMessage != "" {
+			<span style={ "font-size: " + textSize + "; color: " + textColor + ";" }>{ textMessage }</span>
+		}
+	</div>
+}

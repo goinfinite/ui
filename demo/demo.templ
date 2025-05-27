@@ -13,27 +13,7 @@ templ DemoIndex() {
 		<head>
 			<title>Infinite UI Demo</title>
 			<meta charset="utf-8"/>
-			<script type="text/javascript">
-window.__unocss = {
-  theme: {
-    colors: {
-      secondary: {
-        50: "#dea893",
-        100: "#d89a81",
-        200: "#d38b6f",
-        300: "#cd7d5d",
-        400: "#ca7654",
-        500: "#c97350",
-        600: "#c46f4d",
-        700: "#ba6949",
-        800: "#a55e41",
-        900: "#905239",
-        950: "#7c4631",
-      },
-    },
-  },
-};
-</script>
+			<script type="text/javascript">window.__unocss={theme:{colors:{primary:{50:'#edfcff',100:'#d7f6ff',200:'#b8f0ff',300:'#86eaff',400:'#4edbff',500:'#25c2ff',600:'#0da6ff',700:'#0993f8',800:'#0d6fc0',900:'#115e97',950:'#10395b'},secondary:{50:"#dea893",100:"#d89a81",200:"#d38b6f",300:"#cd7d5d",400:"#ca7654",500:"#c97350",600:"#c46f4d",700:"#ba6949",800:"#a55e41",900:"#905239",950:"#7c4631"}}}};</script>
 			@uiImport.HeadTagsFull()
 		</head>
 		<body class="bg-neutral-900 text-neutral-50">
@@ -70,6 +50,7 @@ window.__unocss = {
 					<div class="*:border-t *:border-neutral-800 *:pt-10 flex flex-col gap-10">
 						@AccordionDemo()
 						@LoadingOverlayDemo()
+						@CloakLoadingDemo()
 						@SidebarDemo()
 						@TagDemo()
 						@ToastDemo()
@@ -1547,7 +1528,7 @@ templ LoadingOverlayDemo() {
 	Icon:                     "ph-compass-rose",
 	IconSize:                 uiDisplay.LoadingOverlayIconSizeMd,
 	AnimationName:            uiDisplay.LoadingOverlayAnimationNameSpin,
-	AnimationDuration:        "2s",
+	AnimationDurationSeconds: "2",
 })` }
 					</code>
 				</pre>
@@ -1582,8 +1563,116 @@ templ LoadingOverlayDemo() {
 						Icon:                     "ph-compass-rose",
 						IconSize:                 uiDisplay.LoadingOverlayIconSizeMd,
 						AnimationName:            uiDisplay.LoadingOverlayAnimationNameSpin,
-						AnimationDuration:        "2s",
+						AnimationDurationSeconds: "2",
 					})
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+templ CloakLoadingDemo() {
+	<div class="flex flex-col gap-4">
+		<div class="grid items-center gap-10 md:grid-cols-2">
+			<div class="flex flex-col gap-2">
+				<h3 class="text-xl font-bold">
+					.CloakLoading <i class="text-sm text-neutral-500">(pre-Alpine/HTMX)</i>
+				</h3>
+				<p class="text-sm text-neutral-400">
+					A cloak loading screen that appears only before the JavaScript libraries are loaded to prevent FOUC (Flash of Unstyled Content).
+				</p>
+			</div>
+			<div class="flex flex-col gap-2">
+				@UsageTitle("/display/cloakLoading.templ")
+				<pre class={ DemoPreCodeClasses }>
+					<code>
+						{ `@uiDisplay.CloakLoading(uiDisplay.CloakLoadingSettings{
+	// OptionalFields
+	HideDelaySeconds:             "1",
+	BackgroundColor:              "rgb(23, 23, 23)", // neutral-800
+	TextMessage:                  "Loading...",
+	TextColor:                    "rgb(250, 250, 250)", // neutral-50
+	TextSize:                     uiDisplay.CloakLoadingTextSizeMd,
+	Icon:                         "ph-compass-rose",
+	IconSize:                     uiDisplay.CloakLoadingIconSizeLg,
+	IconColor:                    "rgb(59, 130, 246)", // primary-400
+	IconAnimationName:            uiDisplay.CloakLoadingAnimationNameSpin,
+	IconAnimationDurationSeconds: "3",
+})` }
+					</code>
+				</pre>
+				<small>Keep in mind that the colors must be set as rgb(a), hex or hsl(a) values as they are used in the inline style.</small>
+			</div>
+		</div>
+		<div class="flex flex-col gap-4">
+			<h4 class="text-lg font-bold">Live Example</h4>
+			<div class="flex flex-col gap-4">
+				<div class="flex flex-col gap-2">
+					<p class="text-sm text-neutral-400">
+						Since the demo is already loaded with Alpine.js, the CloakLoading component will behave like a regular loading overlay.
+						<br/>
+						In a real application, this would be the first thing that appears when the page starts loading.
+					</p>
+				</div>
+				<div class="relative h-64 overflow-hidden rounded-md border border-neutral-800 bg-neutral-50/5">
+					<div class="flex h-full flex-col items-center justify-center gap-4 p-8">
+						<p class="text-center text-sm text-neutral-400">
+							The page content will be covered by the cloak loading screen when triggered.
+						</p>
+						<div class="flex flex-wrap gap-2" x-data="{ showCloak1: false, showCloak2: false, showCloak3: false }">
+							<template x-if="showCloak1">
+								@uiDisplay.CloakLoading(uiDisplay.CloakLoadingSettings{})
+							</template>
+							<template x-if="showCloak2">
+								@uiDisplay.CloakLoading(uiDisplay.CloakLoadingSettings{
+									HideDelaySeconds:             "2",
+									BackgroundColor:              "rgb(30, 58, 138)", // primary-900
+									TextMessage:                  "Please wait...",
+									TextColor:                    "rgb(255, 255, 255)", // white
+									TextSize:                     uiDisplay.CloakLoadingTextSizeLg,
+									Icon:                         "ph-circle-notch",
+									IconSize:                     uiDisplay.CloakLoadingIconSizeLg,
+									IconColor:                    "rgb(255, 255, 255)", // white
+									IconAnimationName:            uiDisplay.CloakLoadingAnimationNameSpin,
+									IconAnimationDurationSeconds: "1",
+								})
+							</template>
+							<template x-if="showCloak3">
+								@uiDisplay.CloakLoading(uiDisplay.CloakLoadingSettings{
+									HideDelaySeconds:             "2",
+									BackgroundColor:              "rgb(6, 78, 59)", // emerald-900
+									TextMessage:                  "Almost there...",
+									TextColor:                    "rgb(236, 253, 245)", // emerald-50
+									TextSize:                     uiDisplay.CloakLoadingTextSizeSm,
+									Icon:                         "ph-hourglass",
+									IconSize:                     uiDisplay.CloakLoadingIconSizeMd,
+									IconColor:                    "rgb(110, 231, 183)", // emerald-300
+									IconAnimationName:            uiDisplay.CloakLoadingAnimationNamePulse,
+									IconAnimationDurationSeconds: "2",
+								})
+							</template>
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:       "Show Default",
+								IconLeft:    "ph-compass-rose",
+								OnClickFunc: "showCloak1 = true; showCloak2 = false; showCloak3 = false; setTimeout(() => showCloak1 = false, 2100)",
+								Size:        uiControl.ButtonSizeSm,
+							})
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "Show Primary",
+								IconLeft:        "ph-circle-notch",
+								OnClickFunc:     "showCloak2 = true; showCloak1 = false; showCloak3 = false; setTimeout(() => showCloak2 = false, 2100)",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "primary-600",
+							})
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "Show Success",
+								IconLeft:        "ph-hourglass",
+								OnClickFunc:     "showCloak3 = true; showCloak1 = false; showCloak2 = false; setTimeout(() => showCloak3 = false, 2100)",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "emerald-600",
+							})
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
