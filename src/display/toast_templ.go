@@ -77,8 +77,8 @@ func Toast(componentSettings ToastSettings) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		toastClasses := "fixed bottom-5 right-10 flex w-fit flex-row items-center justify-stretch shadow-md"
-		toastIconSizeClasses := "text-3xl"
+		toastClasses := "fixed bottom-5 right-10 flex w-fit flex-row items-center justify-stretch shadow-md z-100"
+		toastIconSizeClasses := "text-2xl"
 		if componentSettings.Size == "" {
 			componentSettings.Size = ToastSizeMd
 		}

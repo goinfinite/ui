@@ -182,7 +182,7 @@ func HeadTagsAlpineJs() templ.Component {
 			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<script defer src=\"https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.14.9/dist/cdn.min.js\" integrity=\"sha256-jFBwr6faTqqhp3sVi4/VTxJ0FpaF9YGZN1ZGLl/5QYM=\" crossorigin=\"anonymous\"></script><script defer src=\"https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js\" integrity=\"sha256-PtHu0lJIiSHfZeNj1nFd6wTX+Squ255SGZ/fc8seCtM=\" crossorigin=\"anonymous\"></script>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<script defer src=\"https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.14.9/dist/cdn.min.js\" integrity=\"sha256-jFBwr6faTqqhp3sVi4/VTxJ0FpaF9YGZN1ZGLl/5QYM=\" crossorigin=\"anonymous\"></script><script defer src=\"https://cdn.jsdelivr.net/npm/@alpinejs/intersect@3.14.9/dist/cdn.min.js\" integrity=\"sha256-sav73qRAT3EB3ibvbi5l9O+uc757MwIUHuzyfe9oVg4=\" crossorigin=\"anonymous\"></script><script defer src=\"https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js\" integrity=\"sha256-PtHu0lJIiSHfZeNj1nFd6wTX+Squ255SGZ/fc8seCtM=\" crossorigin=\"anonymous\"></script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -219,7 +219,7 @@ func HeadTagsHtmx() templ.Component {
 	})
 }
 
-func HeadTagsMinimalCss() templ.Component {
+func HeadTagsVega() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -238,6 +238,35 @@ func HeadTagsMinimalCss() templ.Component {
 		templ_7745c5c3_Var8 := templ.GetChildren(ctx)
 		if templ_7745c5c3_Var8 == nil {
 			templ_7745c5c3_Var8 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<script src=\"https://cdn.jsdelivr.net/npm/vega@6.1.2/build/vega.min.js\" integrity=\"sha256-CPeWtqVxsLRtgZ8H+3WByhZWWvhpheF2a7GAY4V2s/g=\" crossorigin=\"anonymous\"></script><script src=\"https://cdn.jsdelivr.net/npm/vega-lite@6.1.0/build/vega-lite.min.js\" integrity=\"sha256-Z1UPjkQutWekUKkE8IPBO8R393KNMFiYRVLMNel5/Lc=\" crossorigin=\"anonymous\"></script><script src=\"https://cdn.jsdelivr.net/npm/vega-embed@7.0.2/build/vega-embed.min.js\" integrity=\"sha256-xxEaQRkAgJOLFMHeAAdNm9oW7yGZ4pGd0DjN35fYc1Q=\" crossorigin=\"anonymous\"></script>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+func HeadTagsMinimalCss() templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var9 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var9 == nil {
+			templ_7745c5c3_Var9 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		templ_7745c5c3_Err = HeadTagsAtomicCssEngine().Render(ctx, templ_7745c5c3_Buffer)
@@ -268,9 +297,9 @@ func HeadTagsFullCss() templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var9 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var9 == nil {
-			templ_7745c5c3_Var9 = templ.NopComponent
+		templ_7745c5c3_Var10 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var10 == nil {
+			templ_7745c5c3_Var10 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		templ_7745c5c3_Err = HeadTagsMinimalCss().Render(ctx, templ_7745c5c3_Buffer)
@@ -301,9 +330,9 @@ func HeadTagsMinimalJs() templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var10 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var10 == nil {
-			templ_7745c5c3_Var10 = templ.NopComponent
+		templ_7745c5c3_Var11 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var11 == nil {
+			templ_7745c5c3_Var11 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		templ_7745c5c3_Err = HeadTagsAlpineJs().Render(ctx, templ_7745c5c3_Buffer)
@@ -330,9 +359,9 @@ func HeadTagsFullJs() templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var11 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var11 == nil {
-			templ_7745c5c3_Var11 = templ.NopComponent
+		templ_7745c5c3_Var12 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var12 == nil {
+			templ_7745c5c3_Var12 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		templ_7745c5c3_Err = HeadTagsMinimalJs().Render(ctx, templ_7745c5c3_Buffer)
@@ -363,9 +392,9 @@ func HeadTagsMinimal() templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var12 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var12 == nil {
-			templ_7745c5c3_Var12 = templ.NopComponent
+		templ_7745c5c3_Var13 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var13 == nil {
+			templ_7745c5c3_Var13 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		templ_7745c5c3_Err = HeadTagsMinimalCss().Render(ctx, templ_7745c5c3_Buffer)
@@ -396,9 +425,9 @@ func HeadTagsFull() templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var13 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var13 == nil {
-			templ_7745c5c3_Var13 = templ.NopComponent
+		templ_7745c5c3_Var14 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var14 == nil {
+			templ_7745c5c3_Var14 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		templ_7745c5c3_Err = HeadTagsFullCss().Render(ctx, templ_7745c5c3_Buffer)
