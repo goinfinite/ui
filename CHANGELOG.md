@@ -1,6 +1,11 @@
 # Changelog
 
 ```log
+0.0.7 - 2025/05/27
+feat: add vega to import
+feat: add alpine intersect to import
+fix: add missing z-index to toast
+
 0.0.6 - 2025/05/27
 feat: loading overlay
 
