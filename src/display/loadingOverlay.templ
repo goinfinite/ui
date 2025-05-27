@@ -1,0 +1,84 @@
+package uiDisplay
+
+const (
+	LoadingOverlayIconSizeXs string = "text-2xl"
+	LoadingOverlayIconSizeSm string = "text-3xl"
+	LoadingOverlayIconSizeMd string = "text-5xl"
+	LoadingOverlayIconSizeLg string = "text-7xl"
+
+	LoadingOverlayAnimationNameBounce string = "bounce"
+	LoadingOverlayAnimationNamePing   string = "ping"
+	LoadingOverlayAnimationNamePulse  string = "pulse"
+	LoadingOverlayAnimationNameSpin   string = "spin"
+)
+
+type LoadingOverlaySettings struct {
+	// OptionalFields
+	IsLoadingOneWayStatePath string
+	BackgroundColor          string
+	Icon                     string
+	IconSize                 string
+	AnimationName            string
+	AnimationDuration        string
+}
+
+templ LoadingOverlay(componentSettings LoadingOverlaySettings) {
+	<!-- LoadingOverlay CSS -->
+	<style type="text/css">.htmx-request #loading-overlay,.htmx-request#loading-overlay{display:flex}</style>
+	{{ loadingOverlayClasses := "z-100 fixed top-0 left-0 h-full w-full items-center justify-center" }}
+	if componentSettings.IsLoadingOneWayStatePath != "" {
+		{{ loadingOverlayClasses += " flex" }}
+	} else {
+		{{ loadingOverlayClasses += " hidden" }}
+	}
+	{{ backgroundColor := "primary-500/60" }}
+	if componentSettings.BackgroundColor != "" {
+		{{ backgroundColor = componentSettings.BackgroundColor }}
+	}
+	{{ loadingOverlayClasses += " bg-" + backgroundColor }}
+	{{ loadingOverlayIconClasses := "ph-duotone" }}
+	{{ loadingOverlayIcon := "ph-compass-rose" }}
+	if componentSettings.Icon != "" {
+		{{ loadingOverlayIcon = componentSettings.Icon }}
+	}
+	{{ loadingOverlayIconClasses += " " + loadingOverlayIcon }}
+	{{ loadingOverlayIconSize := LoadingOverlayIconSizeMd }}
+	switch componentSettings.IconSize {
+		case LoadingOverlayIconSizeXs:
+			{{ loadingOverlayIconSize = LoadingOverlayIconSizeXs }}
+		case LoadingOverlayIconSizeSm:
+			{{ loadingOverlayIconSize = LoadingOverlayIconSizeSm }}
+		case LoadingOverlayIconSizeMd:
+			{{ loadingOverlayIconSize = LoadingOverlayIconSizeMd }}
+		case LoadingOverlayIconSizeLg:
+			{{ loadingOverlayIconSize = LoadingOverlayIconSizeLg }}
+	}
+	{{ loadingOverlayIconClasses += " " + loadingOverlayIconSize }}
+	{{ loadingOverlayIconAnimationName := LoadingOverlayAnimationNameSpin }}
+	switch componentSettings.AnimationName {
+		case LoadingOverlayAnimationNameBounce:
+			{{ loadingOverlayIconAnimationName = LoadingOverlayAnimationNameBounce }}
+		case LoadingOverlayAnimationNamePing:
+			{{ loadingOverlayIconAnimationName = LoadingOverlayAnimationNamePing }}
+		case LoadingOverlayAnimationNamePulse:
+			{{ loadingOverlayIconAnimationName = LoadingOverlayAnimationNamePulse }}
+		case LoadingOverlayAnimationNameSpin:
+			{{ loadingOverlayIconAnimationName = LoadingOverlayAnimationNameSpin }}
+	}
+	{{ loadingOverlayIconClasses += " animate-" + loadingOverlayIconAnimationName }}
+	{{ loadingOverlayIconAnimationDuration := "2s" }}
+	if componentSettings.AnimationDuration != "" {
+		{{ loadingOverlayIconAnimationDuration = componentSettings.AnimationDuration }}
+	}
+	{{ loadingOverlayIconClasses += " animate-duration-[" + loadingOverlayIconAnimationDuration + "]" }}
+	<!-- LoadingOverlay HTML -->
+	<div
+		id="loading-overlay"
+		class={ loadingOverlayClasses }
+		if componentSettings.IsLoadingOneWayStatePath != "" {
+			x-show={ componentSettings.IsLoadingOneWayStatePath }
+		}
+	>
+		<i class={ loadingOverlayIconClasses }></i>
+	</div>
+}
