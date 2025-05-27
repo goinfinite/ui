@@ -1,6 +1,10 @@
 # Changelog
 
 ```log
+0.0.8 - 2025/05/27
+feat: add cloak loading
+fix: add suffix seconds to loading overlay duration
+
 0.0.7 - 2025/05/27
 feat: add vega to import
 feat: add alpine intersect to import
