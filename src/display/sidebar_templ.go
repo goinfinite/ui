@@ -229,7 +229,7 @@ func Sidebar(componentSettings SidebarSettings) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		scrollToTopButtonClasses := "ph-bold hover:text-secondary-500 ph-arrow-square-up sticky bottom-3 cursor-pointer text-neutral-50/50"
+		scrollToTopButtonClasses := "ph-bold hover:text-secondary-500 ph-arrow-square-up sticky bottom-3 cursor-pointer text-neutral-50/50 opacity-0 group-hover/sidebar:opacity-100 transition-opacity"
 		scrollToTopButtonPositionClass := "right-3 float-right"
 		if componentSettings.IsCollapsed {
 			scrollToTopButtonPositionClass = "block !bottom-2 text-center"
