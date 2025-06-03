@@ -16,7 +16,6 @@ const (
 	ModalBorderRadiusMd   string = "md"
 	ModalBorderRadiusLg   string = "lg"
 	ModalBorderRadiusXl   string = "xl"
-	ModalBorderRadiusFull string = "full"
 
 	ModalShadowSizeNone string = "none"
 	ModalShadowSizeXs   string = "xs"
@@ -73,30 +72,42 @@ templ Modal(componentSettings ModalSettings) {
 	}
 	{{ modalClasses += " " + backgroundColor + " " + textColor }}
 	<!-- Modal Size -->
-	{{ modalSizeClasses := "w-full max-w-md" }}
-	{{ modalPaddingClasses := "p-4" }}
+	{{
+		modalSizeClassesXs := "w-full max-w-sm p-2"
+		modalSizeClassesSm := "w-full max-w-md p-3"
+		modalSizeClassesMd := "w-full max-w-lg p-4"
+		modalSizeClassesLg := "w-full max-w-xl p-5"
+		modalSizeClassesXl := "w-full max-w-2xl p-6"
+		modalSizeClassesFull := "w-full h-full p-8"
+		modalSizeClasses := modalSizeClassesMd
+		modalStandardHeaderTitleSize := "text-lg"
+		modalStandardHeaderIconSize := uiControl.ButtonSizeSm
+	}}
 	switch componentSettings.Size {
 		case ModalSizeXs:
-			{{ modalSizeClasses = "w-full max-w-xs" }}
-			{{ modalPaddingClasses = "p-2" }}
+			{{ modalSizeClasses = modalSizeClassesXs }}
 		case ModalSizeSm:
-			{{ modalSizeClasses = "w-full max-w-sm" }}
-			{{ modalPaddingClasses = "p-3" }}
+			{{ modalSizeClasses = modalSizeClassesSm }}
 		case ModalSizeMd:
-			{{ modalSizeClasses = "w-full max-w-md" }}
-			{{ modalPaddingClasses = "p-4" }}
+			{{ modalSizeClasses = modalSizeClassesMd }}
 		case ModalSizeLg:
-			{{ modalSizeClasses = "w-full max-w-lg" }}
-			{{ modalPaddingClasses = "p-5" }}
+			{{
+				modalSizeClasses = modalSizeClassesLg
+				modalStandardHeaderTitleSize = "text-xl"
+				modalStandardHeaderIconSize = uiControl.ButtonSizeMd
+			}}
 		case ModalSizeXl:
-			{{ modalSizeClasses = "w-full max-w-xl" }}
-			{{ modalPaddingClasses = "p-6" }}
+			{{
+				modalSizeClasses = modalSizeClassesXl
+				modalStandardHeaderTitleSize = "text-2xl"
+				modalStandardHeaderIconSize = uiControl.ButtonSizeMd
+			}}
 		case ModalSizeFull:
-			{{ modalSizeClasses = "w-full h-full" }}
-			{{ modalPaddingClasses = "p-8" }}
-		default:
-			{{ modalSizeClasses = "w-full max-w-md" }}
-			{{ modalPaddingClasses = "p-4" }}
+			{{
+				modalSizeClasses = modalSizeClassesFull
+				modalStandardHeaderTitleSize = "text-3xl"
+				modalStandardHeaderIconSize = uiControl.ButtonSizeMd
+			}}
 	}
 	{{ modalClasses += " " + modalSizeClasses }}
 	<!-- Modal Border Radius -->
@@ -114,8 +125,6 @@ templ Modal(componentSettings ModalSettings) {
 			{{ borderRadiusClasses = "rounded-lg" }}
 		case ModalBorderRadiusXl:
 			{{ borderRadiusClasses = "rounded-xl" }}
-		case ModalBorderRadiusFull:
-			{{ borderRadiusClasses = "rounded-full" }}
 		default:
 			{{ borderRadiusClasses = "rounded" }}
 	}
@@ -172,24 +181,24 @@ templ Modal(componentSettings ModalSettings) {
 		}
 	>
 		<div
+			if componentSettings.SizeTwoWayStatePath != "" {
+				x-data={ "{ defaultModalSize: structuredClone(" + componentSettings.SizeTwoWayStatePath + `), }` }
+			}
 			class={ modalClasses }
 			if componentSettings.SizeTwoWayStatePath != "" {
-				x-data={ "{ get modalSizeClasses() { return " + componentSettings.SizeTwoWayStatePath + " === 'xs' ? 'w-full max-w-xs' : " + componentSettings.SizeTwoWayStatePath + " === 'sm' ? 'w-full max-w-sm' : " + componentSettings.SizeTwoWayStatePath + " === 'md' ? 'w-full max-w-md' : " + componentSettings.SizeTwoWayStatePath + " === 'lg' ? 'w-full max-w-lg' : " + componentSettings.SizeTwoWayStatePath + " === 'xl' ? 'w-full max-w-xl' : " + componentSettings.SizeTwoWayStatePath + " === 'full' ? 'w-full h-full' : 'w-full max-w-md'; } }" }
-				:class="modalSizeClasses"
+				:class={ `{ '` + modalSizeClassesXs + `': ` + componentSettings.SizeTwoWayStatePath + ` === 'xs', '` + modalSizeClassesSm + `': ` + componentSettings.SizeTwoWayStatePath + ` === 'sm', '` + modalSizeClassesMd + `': ` + componentSettings.SizeTwoWayStatePath + ` === 'md', '` + modalSizeClassesLg + `': ` + componentSettings.SizeTwoWayStatePath + ` === 'lg', '` + modalSizeClassesXl + `': ` + componentSettings.SizeTwoWayStatePath + ` === 'xl', '` + modalSizeClassesFull + `': ` + componentSettings.SizeTwoWayStatePath + ` === 'full' }` }
 			}
 		>
 			if componentSettings.HeaderContent != nil {
 				<!-- ModalCustomHeader -->
-				<div class={ "border-b border-neutral-50/10 " + modalPaddingClasses }>
-					@componentSettings.HeaderContent
-				</div>
+				@componentSettings.HeaderContent
 			}
 			{{ wasTitleSet := componentSettings.Title != "" || componentSettings.TitleOneWayStatePath != "" }}
 			if componentSettings.HeaderContent == nil && wasTitleSet {
 				<!-- ModalStandardHeader -->
-				<div class={ "flex items-center justify-between border-b border-neutral-50/10 " + modalPaddingClasses }>
+				<div class="flex items-center justify-between border-b border-neutral-50/10 p-2">
 					<h2
-						class="text-lg font-bold"
+						class={ modalStandardHeaderTitleSize + " font-bold" }
 						if componentSettings.TitleOneWayStatePath != "" {
 							x-text={ componentSettings.TitleOneWayStatePath }
 						}
@@ -199,23 +208,17 @@ templ Modal(componentSettings ModalSettings) {
 					<div class="flex items-center gap-1">
 						if componentSettings.SizeTwoWayStatePath != "" {
 							@uiControl.Button(uiControl.ButtonSettings{
-								IconLeft:    "ph-minus",
-								OnClickFunc: componentSettings.SizeTwoWayStatePath + " = " + componentSettings.SizeTwoWayStatePath + " === 'xs' ? 'xs' : " + componentSettings.SizeTwoWayStatePath + " === 'sm' ? 'xs' : " + componentSettings.SizeTwoWayStatePath + " === 'md' ? 'sm' : " + componentSettings.SizeTwoWayStatePath + " === 'lg' ? 'md' : " + componentSettings.SizeTwoWayStatePath + " === 'xl' ? 'lg' : " + componentSettings.SizeTwoWayStatePath + " === 'full' ? 'xl' : 'sm'",
-								Size:        uiControl.ButtonSizeXs,
-								Shape:       uiControl.ButtonShapeCircular,
-							})
-							@uiControl.Button(uiControl.ButtonSettings{
-								IconLeft:    "ph-plus",
-								OnClickFunc: componentSettings.SizeTwoWayStatePath + " = " + componentSettings.SizeTwoWayStatePath + " === 'xs' ? 'sm' : " + componentSettings.SizeTwoWayStatePath + " === 'sm' ? 'md' : " + componentSettings.SizeTwoWayStatePath + " === 'md' ? 'lg' : " + componentSettings.SizeTwoWayStatePath + " === 'lg' ? 'xl' : " + componentSettings.SizeTwoWayStatePath + " === 'xl' ? 'full' : 'full'",
-								Size:        uiControl.ButtonSizeXs,
-								Shape:       uiControl.ButtonShapeCircular,
+								IconLeftOneWayStatePath: componentSettings.SizeTwoWayStatePath + " === 'full' ? 'ph-arrows-in' : 'ph-arrows-out'",
+								OnClickFunc:             componentSettings.SizeTwoWayStatePath + " = " + componentSettings.SizeTwoWayStatePath + " === 'xs' ? 'sm' : " + componentSettings.SizeTwoWayStatePath + " === 'sm' ? 'md' : " + componentSettings.SizeTwoWayStatePath + " === 'md' ? 'lg' : " + componentSettings.SizeTwoWayStatePath + " === 'lg' ? 'xl' : " + componentSettings.SizeTwoWayStatePath + " === 'xl' ? 'full' : defaultModalSize",
+								Size:                    modalStandardHeaderIconSize,
+								Shape:                   uiControl.ButtonShapeCircular,
 							})
 						}
 						if componentSettings.IsCloseable && componentSettings.IsVisibleTwoWayStatePath != "" {
 							@uiControl.Button(uiControl.ButtonSettings{
 								IconLeft:    "ph-x",
 								OnClickFunc: componentSettings.IsVisibleTwoWayStatePath + " = false",
-								Size:        uiControl.ButtonSizeXs,
+								Size:        modalStandardHeaderIconSize,
 								Shape:       uiControl.ButtonShapeCircular,
 							})
 						}
@@ -223,14 +226,12 @@ templ Modal(componentSettings ModalSettings) {
 				</div>
 			}
 			<!-- ModalMiddleContent -->
-			<div class={ "flex-1 overflow-y-auto " + modalPaddingClasses }>
+			<div class="flex-1 overflow-y-auto p-2">
 				@componentSettings.MiddleContent
 			</div>
 			if componentSettings.FooterContent != nil {
 				<!-- ModalCustomFooter -->
-				<div class={ "border-t border-neutral-50/10 " + modalPaddingClasses }>
-					@componentSettings.FooterContent
-				</div>
+				@componentSettings.FooterContent
 			}
 		</div>
 	</div>
