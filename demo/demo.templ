@@ -77,7 +77,7 @@ templ DemoIndex() {
 	</html>
 }
 
-const DemoPreCodeClasses = "rounded-md bg-neutral-800 p-4 text-xs text-wrap tab-2"
+const DemoPreCodeClasses string = "rounded-md bg-neutral-800 p-4 text-xs text-wrap tab-2"
 
 templ UsageTitle(componentPath string) {
 	<a
@@ -1682,7 +1682,7 @@ templ CloakLoadingDemo() {
 
 templ ModalDemo() {
 	<div class="flex flex-col gap-4">
-		<div class="grid items-center gap-10 md:grid-cols-2">
+		<div class="flex flex-row flex-wrap items-center gap-x-20 gap-y-10">
 			<div class="flex flex-col gap-2">
 				<h3 class="text-xl font-bold">.Modal</h3>
 				<p class="text-sm text-neutral-400">
@@ -1705,62 +1705,316 @@ templ ModalDemo() {
 					</code>
 				</pre>
 			</div>
-		</div>
-		<div class="flex flex-col gap-2">
-			<h5 class="text-sm font-bold">Alpine.js Parent State <i>(x-data)</i></h5>
-			<pre class={ DemoPreCodeClasses }>
-				<code>
-					{ `<div x-data="{
+			<div class="flex flex-col gap-2">
+				<h5 class="text-sm font-bold">Alpine.js Parent State <i>(x-data)</i></h5>
+				<pre class={ DemoPreCodeClasses }>
+					<code>
+						{ `<div x-data="{
   isModalVisible: false,
   modalSize: 'md',
   modalTitle: 'Interactive Modal'
 }"></div>` }
-				</code>
-			</pre>
-		</div>
-		<div
-			class="flex flex-col gap-4"
-			x-data="{
-				isModalVisible: false,
-				modalSize: 'md',
-				modalTitle: 'Interactive Modal'
-			}"
-		>
-			<h4 class="mb-2 text-lg font-bold">Live Example</h4>
-			<div class="flex flex-col gap-4">
-				<div class="flex flex-wrap gap-2">
-					@uiControl.Button(uiControl.ButtonSettings{
-						Label:           "Show Modal",
-						IconLeft:        "ph-squares-four",
-						OnClickFunc:     "isModalVisible = true",
-						Size:            uiControl.ButtonSizeSm,
-						BackgroundColor: "primary-500",
-					})
-					@uiControl.Button(uiControl.ButtonSettings{
-						Label:           "Show Small Modal",
-						IconLeft:        "ph-square",
-						OnClickFunc:     "modalSize = 'sm'; isModalVisible = true",
-						Size:            uiControl.ButtonSizeSm,
-						BackgroundColor: "secondary-500",
-					})
-					@uiControl.Button(uiControl.ButtonSettings{
-						Label:           "Show Large Modal",
-						IconLeft:        "ph-squares-four",
-						OnClickFunc:     "modalSize = 'lg'; isModalVisible = true",
-						Size:            uiControl.ButtonSizeSm,
-						BackgroundColor: "emerald-500",
-					})
-				</div>
+					</code>
+				</pre>
 			</div>
-			@uiDisplay.Modal(uiDisplay.ModalSettings{
-				MiddleContent:            ModalDemoContent(),
-				TitleOneWayStatePath:     "modalTitle",
-				SizeTwoWayStatePath:      "modalSize",
-				IsVisibleTwoWayStatePath: "isModalVisible",
-				IsCloseable:              true,
-				BorderRadius:             uiDisplay.ModalBorderRadiusMd,
-				ShadowSize:               uiDisplay.ModalShadowSizeLg,
-			})
+		</div>
+		<div class="flex flex-col gap-4">
+			<h4 class="mb-2 text-lg font-bold">Live Example</h4>
+			<div
+				class="flex flex-col gap-4"
+				x-data="{
+					isModalVisible: false,
+					modalSize: 'md',
+					modalTitle: 'Interactive Modal',
+					isDarkModalVisible: false,
+					isPrimaryModalVisible: false,
+					isSecondaryModalVisible: false,
+					isBlueBackdropModalVisible: false,
+					isRedBackdropModalVisible: false,
+					isPrimaryRingModalVisible: false,
+					isEmeraldRingModalVisible: false,
+					isRedRingModalVisible: false,
+					isThinRingModalVisible: false,
+					isSquareModalVisible: false,
+					isSmallRadiusModalVisible: false,
+					isLargeRadiusModalVisible: false,
+					isXLRadiusModalVisible: false,
+				}"
+			>
+				<div class="flex flex-row flex-wrap items-start gap-10">
+					<div class="flex flex-col gap-2">
+						<p class="text-sm text-neutral-400">Basic Modal</p>
+						<div class="flex flex-wrap gap-2">
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "Show Modal",
+								IconLeft:        "ph-squares-four",
+								OnClickFunc:     "modalSize = 'md'; isModalVisible = true",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "primary-500",
+							})
+						</div>
+					</div>
+					<div class="flex flex-col gap-2">
+						<p class="text-sm text-neutral-400">Different Sizes</p>
+						<div class="flex flex-wrap gap-2">
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "XS",
+								OnClickFunc:     "modalSize = 'xs'; isModalVisible = true",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "neutral-50/10",
+							})
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "SM",
+								OnClickFunc:     "modalSize = 'sm'; isModalVisible = true",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "neutral-50/10",
+							})
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "LG",
+								OnClickFunc:     "modalSize = 'lg'; isModalVisible = true",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "neutral-50/10",
+							})
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "XL",
+								OnClickFunc:     "modalSize = 'xl'; isModalVisible = true",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "neutral-50/10",
+							})
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "Full",
+								OnClickFunc:     "modalSize = 'full'; isModalVisible = true",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "neutral-50/10",
+							})
+						</div>
+					</div>
+					<div class="flex flex-col gap-2">
+						<p class="text-sm text-neutral-400">Background Colors</p>
+						<div class="flex flex-wrap gap-2">
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "Dark",
+								OnClickFunc:     "isDarkModalVisible = true",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "neutral-800",
+							})
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "Primary",
+								OnClickFunc:     "isPrimaryModalVisible = true",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "primary-600",
+							})
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "Secondary",
+								OnClickFunc:     "isSecondaryModalVisible = true",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "secondary-600",
+							})
+						</div>
+					</div>
+					<div class="flex flex-col gap-2">
+						<p class="text-sm text-neutral-400">Backdrop Colors</p>
+						<div class="flex flex-wrap gap-2">
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "Dark",
+								OnClickFunc:     "isModalVisible = true",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "neutral-700",
+							})
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "Blue",
+								OnClickFunc:     "isBlueBackdropModalVisible = true",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "blue-600",
+							})
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "Red",
+								OnClickFunc:     "isRedBackdropModalVisible = true",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "red-600",
+							})
+						</div>
+					</div>
+					<div class="flex flex-col gap-2">
+						<p class="text-sm text-neutral-400">Ring Variations</p>
+						<div class="flex flex-wrap gap-2">
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "Primary Ring",
+								OnClickFunc:     "isPrimaryRingModalVisible = true",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "primary-600",
+							})
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "Emerald Ring",
+								OnClickFunc:     "isEmeraldRingModalVisible = true",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "emerald-600",
+							})
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "Red Ring",
+								OnClickFunc:     "isRedRingModalVisible = true",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "red-600",
+							})
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "Thin Ring",
+								OnClickFunc:     "isThinRingModalVisible = true",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "violet-600",
+							})
+						</div>
+					</div>
+					<div class="flex flex-col gap-2">
+						<p class="text-sm text-neutral-400">Border Radius</p>
+						<div class="flex flex-wrap gap-2">
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "Square",
+								OnClickFunc:     "isSquareModalVisible = true",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "orange-600",
+							})
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "Small",
+								OnClickFunc:     "isSmallRadiusModalVisible = true",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "orange-600",
+							})
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "Large",
+								OnClickFunc:     "isLargeRadiusModalVisible = true",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "orange-600",
+							})
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "Extra Large",
+								OnClickFunc:     "isXLRadiusModalVisible = true",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "orange-600",
+							})
+						</div>
+					</div>
+				</div>
+				<!-- Basic Modal -->
+				@uiDisplay.Modal(uiDisplay.ModalSettings{
+					MiddleContent:            ModalDemoContent(),
+					TitleOneWayStatePath:     "modalTitle",
+					SizeTwoWayStatePath:      "modalSize",
+					IsVisibleTwoWayStatePath: "isModalVisible",
+					IsCloseable:              true,
+				})
+				<!-- Background Color Variations -->
+				@uiDisplay.Modal(uiDisplay.ModalSettings{
+					MiddleContent:            ModalDemoContent(),
+					Title:                    "Dark Background Modal",
+					Size:                     uiDisplay.ModalSizeMd,
+					BackgroundColor:          "neutral-900",
+					IsVisibleTwoWayStatePath: "isDarkModalVisible",
+					IsCloseable:              true,
+				})
+				@uiDisplay.Modal(uiDisplay.ModalSettings{
+					MiddleContent:            ModalDemoContent(),
+					Title:                    "Primary Background Modal",
+					Size:                     uiDisplay.ModalSizeMd,
+					BackgroundColor:          "primary-900",
+					IsVisibleTwoWayStatePath: "isPrimaryModalVisible",
+					IsCloseable:              true,
+				})
+				@uiDisplay.Modal(uiDisplay.ModalSettings{
+					MiddleContent:            ModalDemoContent(),
+					Title:                    "Secondary Background Modal",
+					Size:                     uiDisplay.ModalSizeMd,
+					BackgroundColor:          "secondary-900",
+					IsVisibleTwoWayStatePath: "isSecondaryModalVisible",
+					IsCloseable:              true,
+				})
+				<!-- Backdrop Color Variations -->
+				@uiDisplay.Modal(uiDisplay.ModalSettings{
+					MiddleContent:            ModalDemoContent(),
+					Title:                    "Blue Backdrop Modal",
+					Size:                     uiDisplay.ModalSizeXl,
+					BackdropColor:            "blue-900/60",
+					IsVisibleTwoWayStatePath: "isBlueBackdropModalVisible",
+					IsCloseable:              true,
+				})
+				@uiDisplay.Modal(uiDisplay.ModalSettings{
+					MiddleContent:            ModalDemoContent(),
+					Title:                    "Red Backdrop Modal",
+					Size:                     uiDisplay.ModalSizeMd,
+					BackdropColor:            "red-900/70",
+					IsVisibleTwoWayStatePath: "isRedBackdropModalVisible",
+					IsCloseable:              true,
+				})
+				<!-- Ring Variations -->
+				@uiDisplay.Modal(uiDisplay.ModalSettings{
+					MiddleContent:            ModalDemoContent(),
+					Title:                    "Primary Ring Modal",
+					Size:                     uiDisplay.ModalSizeMd,
+					RingColor:                "primary-500",
+					RingThickness:            "md",
+					IsVisibleTwoWayStatePath: "isPrimaryRingModalVisible",
+					IsCloseable:              true,
+				})
+				@uiDisplay.Modal(uiDisplay.ModalSettings{
+					MiddleContent:            ModalDemoContent(),
+					Title:                    "Emerald Ring Modal",
+					Size:                     uiDisplay.ModalSizeMd,
+					RingColor:                "emerald-500",
+					RingThickness:            "lg",
+					IsVisibleTwoWayStatePath: "isEmeraldRingModalVisible",
+					IsCloseable:              true,
+				})
+				@uiDisplay.Modal(uiDisplay.ModalSettings{
+					MiddleContent:            ModalDemoContent(),
+					Title:                    "Red Ring Modal",
+					Size:                     uiDisplay.ModalSizeMd,
+					RingColor:                "red-500",
+					RingThickness:            "xl",
+					IsVisibleTwoWayStatePath: "isRedRingModalVisible",
+					IsCloseable:              true,
+				})
+				@uiDisplay.Modal(uiDisplay.ModalSettings{
+					MiddleContent:            ModalDemoContent(),
+					Title:                    "Thin Violet Ring Modal",
+					Size:                     uiDisplay.ModalSizeMd,
+					RingColor:                "violet-500",
+					RingThickness:            "xs",
+					IsVisibleTwoWayStatePath: "isThinRingModalVisible",
+					IsCloseable:              true,
+				})
+				<!-- Border Radius Variations -->
+				@uiDisplay.Modal(uiDisplay.ModalSettings{
+					MiddleContent:            ModalDemoContent(),
+					Title:                    "Square Modal",
+					Size:                     uiDisplay.ModalSizeMd,
+					BorderRadius:             "none",
+					IsVisibleTwoWayStatePath: "isSquareModalVisible",
+					IsCloseable:              true,
+				})
+				@uiDisplay.Modal(uiDisplay.ModalSettings{
+					MiddleContent:            ModalDemoContent(),
+					Title:                    "Small Radius Modal",
+					Size:                     uiDisplay.ModalSizeMd,
+					BorderRadius:             "sm",
+					IsVisibleTwoWayStatePath: "isSmallRadiusModalVisible",
+					IsCloseable:              true,
+				})
+				@uiDisplay.Modal(uiDisplay.ModalSettings{
+					MiddleContent:            ModalDemoContent(),
+					Title:                    "Large Radius Modal",
+					Size:                     uiDisplay.ModalSizeMd,
+					BorderRadius:             "lg",
+					IsVisibleTwoWayStatePath: "isLargeRadiusModalVisible",
+					IsCloseable:              true,
+				})
+				@uiDisplay.Modal(uiDisplay.ModalSettings{
+					MiddleContent:            ModalDemoContent(),
+					Title:                    "Extra Large Radius Modal",
+					Size:                     uiDisplay.ModalSizeMd,
+					BorderRadius:             "xl",
+					IsVisibleTwoWayStatePath: "isXLRadiusModalVisible",
+					IsCloseable:              true,
+				})
+			</div>
 		</div>
 	</div>
 }
@@ -1772,7 +2026,7 @@ templ ModalDemoContent() {
 		</p>
 		<div class="flex flex-col gap-2">
 			<h4 class="text-base font-bold">Features:</h4>
-			<ul class="list-disc list-inside text-sm text-neutral-400 space-y-1">
+			<ul class="list-inside list-disc space-y-1 text-sm text-neutral-400">
 				<li>Click outside to close (when closeable)</li>
 				<li>Use the close button in the header</li>
 				<li>Resize using the + and - buttons</li>
