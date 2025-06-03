@@ -29,7 +29,9 @@ type ButtonSettings struct {
 	BackgroundColor               string
 	BackgroundColorHover          string
 	IconLeft                      string
+	IconLeftOneWayStatePath       string
 	IconRight                     string
+	IconRightOneWayStatePath      string
 	Id                            string
 	IsDisabled                    bool
 	IsDisabledOneWayStatePath     string
@@ -184,11 +186,17 @@ templ Button(componentSettings ButtonSettings) {
 			if componentSettings.IconLeft != "" {
 				<i class={ "ph-bold " + componentSettings.IconLeft + " " + iconSize }></i>
 			}
+			if componentSettings.IconLeftOneWayStatePath != "" {
+				<i class={ "ph-bold " + iconSize } :class={ componentSettings.IconLeftOneWayStatePath }></i>
+			}
 			if componentSettings.Label != "" {
 				{ componentSettings.Label }
 			}
 			if componentSettings.IconRight != "" {
 				<i class={ "ph-bold " + componentSettings.IconRight + " " + iconSize }></i>
+			}
+			if componentSettings.IconRightOneWayStatePath != "" {
+				<i class={ "ph-bold " + iconSize } :class={ componentSettings.IconRightOneWayStatePath }></i>
 			}
 		</button>
 		if componentSettings.TooltipContent != "" || componentSettings.TooltipContentHtml != nil || componentSettings.TooltipContentOneWayStatePath != "" {
