@@ -50,6 +50,7 @@ templ DemoIndex() {
 					<div class="*:border-t *:border-neutral-800 *:pt-10 flex flex-col gap-10">
 						@AccordionDemo()
 						@LoadingOverlayDemo()
+						@ModalDemo()
 						@CloakLoadingDemo()
 						@SidebarDemo()
 						@TagDemo()
@@ -1675,6 +1676,122 @@ templ CloakLoadingDemo() {
 					</div>
 				</div>
 			</div>
+		</div>
+	</div>
+}
+
+templ ModalDemo() {
+	<div class="flex flex-col gap-4">
+		<div class="grid items-center gap-10 md:grid-cols-2">
+			<div class="flex flex-col gap-2">
+				<h3 class="text-xl font-bold">.Modal</h3>
+				<p class="text-sm text-neutral-400">
+					A modal is a dialog box that appears on top of the main content to display additional information or request user input.
+				</p>
+			</div>
+			<div class="flex flex-col gap-2">
+				@UsageTitle("/display/modal.templ")
+				<pre class={ DemoPreCodeClasses }>
+					<code>
+						{ `@uiDisplay.Modal(uiDisplay.ModalSettings{
+	MiddleContent: ModalDemoContent(),
+
+	// OptionalFields
+	Title:                    "Modal Title",
+	Size:                     uiDisplay.ModalSizeMd,
+	IsVisibleTwoWayStatePath: "isModalVisible",
+	IsCloseable:              true,
+})` }
+					</code>
+				</pre>
+			</div>
+		</div>
+		<div class="flex flex-col gap-2">
+			<h5 class="text-sm font-bold">Alpine.js Parent State <i>(x-data)</i></h5>
+			<pre class={ DemoPreCodeClasses }>
+				<code>
+					{ `<div x-data="{
+  isModalVisible: false,
+  modalSize: 'md',
+  modalTitle: 'Interactive Modal'
+}"></div>` }
+				</code>
+			</pre>
+		</div>
+		<div
+			class="flex flex-col gap-4"
+			x-data="{
+				isModalVisible: false,
+				modalSize: 'md',
+				modalTitle: 'Interactive Modal'
+			}"
+		>
+			<h4 class="mb-2 text-lg font-bold">Live Example</h4>
+			<div class="flex flex-col gap-4">
+				<div class="flex flex-wrap gap-2">
+					@uiControl.Button(uiControl.ButtonSettings{
+						Label:           "Show Modal",
+						IconLeft:        "ph-squares-four",
+						OnClickFunc:     "isModalVisible = true",
+						Size:            uiControl.ButtonSizeSm,
+						BackgroundColor: "primary-500",
+					})
+					@uiControl.Button(uiControl.ButtonSettings{
+						Label:           "Show Small Modal",
+						IconLeft:        "ph-square",
+						OnClickFunc:     "modalSize = 'sm'; isModalVisible = true",
+						Size:            uiControl.ButtonSizeSm,
+						BackgroundColor: "secondary-500",
+					})
+					@uiControl.Button(uiControl.ButtonSettings{
+						Label:           "Show Large Modal",
+						IconLeft:        "ph-squares-four",
+						OnClickFunc:     "modalSize = 'lg'; isModalVisible = true",
+						Size:            uiControl.ButtonSizeSm,
+						BackgroundColor: "emerald-500",
+					})
+				</div>
+			</div>
+			@uiDisplay.Modal(uiDisplay.ModalSettings{
+				MiddleContent:            ModalDemoContent(),
+				TitleOneWayStatePath:     "modalTitle",
+				SizeTwoWayStatePath:      "modalSize",
+				IsVisibleTwoWayStatePath: "isModalVisible",
+				IsCloseable:              true,
+				BorderRadius:             uiDisplay.ModalBorderRadiusMd,
+				ShadowSize:               uiDisplay.ModalShadowSizeLg,
+			})
+		</div>
+	</div>
+}
+
+templ ModalDemoContent() {
+	<div class="flex flex-col gap-4">
+		<p class="text-neutral-300">
+			This is the modal content area. You can put any content here including forms, images, or other components.
+		</p>
+		<div class="flex flex-col gap-2">
+			<h4 class="text-base font-bold">Features:</h4>
+			<ul class="list-disc list-inside text-sm text-neutral-400 space-y-1">
+				<li>Click outside to close (when closeable)</li>
+				<li>Use the close button in the header</li>
+				<li>Resize using the + and - buttons</li>
+				<li>Responsive design for different screen sizes</li>
+			</ul>
+		</div>
+		<div class="flex flex-wrap gap-2">
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "Action Button",
+				IconLeft:        "ph-check",
+				Size:            uiControl.ButtonSizeSm,
+				BackgroundColor: "emerald-500",
+			})
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "Secondary Action",
+				IconLeft:        "ph-info",
+				Size:            uiControl.ButtonSizeSm,
+				BackgroundColor: "neutral-50/10",
+			})
 		</div>
 	</div>
 }

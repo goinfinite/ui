@@ -1,0 +1,237 @@
+package uiDisplay
+
+import uiControl "github.com/goinfinite/ui/src/control"
+
+const (
+	ModalSizeXs   string = "xs"
+	ModalSizeSm   string = "sm"
+	ModalSizeMd   string = "md"
+	ModalSizeLg   string = "lg"
+	ModalSizeXl   string = "xl"
+	ModalSizeFull string = "full"
+
+	ModalBorderRadiusNone string = "none"
+	ModalBorderRadiusXs   string = "xs"
+	ModalBorderRadiusSm   string = "sm"
+	ModalBorderRadiusMd   string = "md"
+	ModalBorderRadiusLg   string = "lg"
+	ModalBorderRadiusXl   string = "xl"
+	ModalBorderRadiusFull string = "full"
+
+	ModalShadowSizeNone string = "none"
+	ModalShadowSizeXs   string = "xs"
+	ModalShadowSizeSm   string = "sm"
+	ModalShadowSizeMd   string = "md"
+	ModalShadowSizeLg   string = "lg"
+	ModalShadowSizeXl   string = "xl"
+
+	ModalRingThicknessXs string = "xs"
+	ModalRingThicknessSm string = "sm"
+	ModalRingThicknessMd string = "md"
+	ModalRingThicknessLg string = "lg"
+	ModalRingThicknessXl string = "xl"
+)
+
+type ModalSettings struct {
+	MiddleContent templ.Component
+
+	// OptionalFields
+	Title                    string
+	TitleOneWayStatePath     string
+	HeaderContent            templ.Component
+	FooterContent            templ.Component
+	Size                     string
+	SizeTwoWayStatePath      string
+	BackdropColor            string
+	BackgroundColor          string
+	TextColor                string
+	BorderRadius             string
+	ShadowSize               string
+	RingColor                string
+	RingThickness            string
+	IsVisibleTwoWayStatePath string
+	IsCloseable              bool
+}
+
+templ Modal(componentSettings ModalSettings) {
+	<!-- Modal Backdrop -->
+	{{ backdropClasses := "fixed inset-0 z-100 flex items-center justify-center" }}
+	{{ backdropBackgroundColor := "bg-neutral-900/80" }}
+	if componentSettings.BackdropColor != "" {
+		{{ backdropBackgroundColor = "bg-" + componentSettings.BackdropColor }}
+	}
+	{{ backdropClasses += " " + backdropBackgroundColor }}
+	<!-- Modal Container Classes -->
+	{{ modalClasses := "relative flex flex-col" }}
+	{{ backgroundColor := "bg-primary-900" }}
+	if componentSettings.BackgroundColor != "" {
+		{{ backgroundColor = "bg-" + componentSettings.BackgroundColor }}
+	}
+	{{ textColor := "text-neutral-50" }}
+	if componentSettings.TextColor != "" {
+		{{ textColor = "text-" + componentSettings.TextColor }}
+	}
+	{{ modalClasses += " " + backgroundColor + " " + textColor }}
+	<!-- Modal Size -->
+	{{ modalSizeClasses := "w-full max-w-md" }}
+	{{ modalPaddingClasses := "p-4" }}
+	switch componentSettings.Size {
+		case ModalSizeXs:
+			{{ modalSizeClasses = "w-full max-w-xs" }}
+			{{ modalPaddingClasses = "p-2" }}
+		case ModalSizeSm:
+			{{ modalSizeClasses = "w-full max-w-sm" }}
+			{{ modalPaddingClasses = "p-3" }}
+		case ModalSizeMd:
+			{{ modalSizeClasses = "w-full max-w-md" }}
+			{{ modalPaddingClasses = "p-4" }}
+		case ModalSizeLg:
+			{{ modalSizeClasses = "w-full max-w-lg" }}
+			{{ modalPaddingClasses = "p-5" }}
+		case ModalSizeXl:
+			{{ modalSizeClasses = "w-full max-w-xl" }}
+			{{ modalPaddingClasses = "p-6" }}
+		case ModalSizeFull:
+			{{ modalSizeClasses = "w-full h-full" }}
+			{{ modalPaddingClasses = "p-8" }}
+		default:
+			{{ modalSizeClasses = "w-full max-w-md" }}
+			{{ modalPaddingClasses = "p-4" }}
+	}
+	{{ modalClasses += " " + modalSizeClasses }}
+	<!-- Modal Border Radius -->
+	{{ borderRadiusClasses := "rounded" }}
+	switch componentSettings.BorderRadius {
+		case ModalBorderRadiusNone:
+			{{ borderRadiusClasses = "rounded-none" }}
+		case ModalBorderRadiusXs:
+			{{ borderRadiusClasses = "rounded-xs" }}
+		case ModalBorderRadiusSm:
+			{{ borderRadiusClasses = "rounded-sm" }}
+		case ModalBorderRadiusMd:
+			{{ borderRadiusClasses = "rounded" }}
+		case ModalBorderRadiusLg:
+			{{ borderRadiusClasses = "rounded-lg" }}
+		case ModalBorderRadiusXl:
+			{{ borderRadiusClasses = "rounded-xl" }}
+		case ModalBorderRadiusFull:
+			{{ borderRadiusClasses = "rounded-full" }}
+		default:
+			{{ borderRadiusClasses = "rounded" }}
+	}
+	{{ modalClasses += " " + borderRadiusClasses }}
+	<!-- Modal Shadow -->
+	{{ shadowClasses := "shadow-md" }}
+	switch componentSettings.ShadowSize {
+		case ModalShadowSizeNone:
+			{{ shadowClasses = "shadow-none" }}
+		case ModalShadowSizeXs:
+			{{ shadowClasses = "shadow-xs" }}
+		case ModalShadowSizeSm:
+			{{ shadowClasses = "shadow-sm" }}
+		case ModalShadowSizeMd:
+			{{ shadowClasses = "shadow-md" }}
+		case ModalShadowSizeLg:
+			{{ shadowClasses = "shadow-lg" }}
+		case ModalShadowSizeXl:
+			{{ shadowClasses = "shadow-xl" }}
+		default:
+			{{ shadowClasses = "shadow-md" }}
+	}
+	{{ modalClasses += " " + shadowClasses }}
+	<!-- Modal Ring -->
+	{{ ringClasses := "" }}
+	if componentSettings.RingColor != "" && componentSettings.RingThickness != "" {
+		{{ ringThickness := "ring-1" }}
+		switch componentSettings.RingThickness {
+			case ModalRingThicknessXs:
+				{{ ringThickness = "ring-1" }}
+			case ModalRingThicknessSm:
+				{{ ringThickness = "ring-1.5" }}
+			case ModalRingThicknessMd:
+				{{ ringThickness = "ring-2" }}
+			case ModalRingThicknessLg:
+				{{ ringThickness = "ring-2.5" }}
+			case ModalRingThicknessXl:
+				{{ ringThickness = "ring-3" }}
+		}
+		{{ ringClasses = ringThickness + " ring-" + componentSettings.RingColor }}
+	}
+	{{ modalClasses += " " + ringClasses }}
+	<!-- Modal HTML -->
+	<div
+		class={ backdropClasses }
+		if componentSettings.IsVisibleTwoWayStatePath != "" {
+			x-show={ componentSettings.IsVisibleTwoWayStatePath }
+		}
+		x-transition
+		x-cloak
+		un-cloak
+		if componentSettings.IsVisibleTwoWayStatePath != "" {
+			@click.self={ componentSettings.IsVisibleTwoWayStatePath + " = false" }
+		}
+	>
+		<div
+			class={ modalClasses }
+			if componentSettings.SizeTwoWayStatePath != "" {
+				x-data={ "{ get modalSizeClasses() { return " + componentSettings.SizeTwoWayStatePath + " === 'xs' ? 'w-full max-w-xs' : " + componentSettings.SizeTwoWayStatePath + " === 'sm' ? 'w-full max-w-sm' : " + componentSettings.SizeTwoWayStatePath + " === 'md' ? 'w-full max-w-md' : " + componentSettings.SizeTwoWayStatePath + " === 'lg' ? 'w-full max-w-lg' : " + componentSettings.SizeTwoWayStatePath + " === 'xl' ? 'w-full max-w-xl' : " + componentSettings.SizeTwoWayStatePath + " === 'full' ? 'w-full h-full' : 'w-full max-w-md'; } }" }
+				:class="modalSizeClasses"
+			}
+		>
+			if componentSettings.HeaderContent != nil {
+				<!-- ModalCustomHeader -->
+				<div class={ "border-b border-neutral-50/10 " + modalPaddingClasses }>
+					@componentSettings.HeaderContent
+				</div>
+			}
+			{{ wasTitleSet := componentSettings.Title != "" || componentSettings.TitleOneWayStatePath != "" }}
+			if componentSettings.HeaderContent == nil && wasTitleSet {
+				<!-- ModalStandardHeader -->
+				<div class={ "flex items-center justify-between border-b border-neutral-50/10 " + modalPaddingClasses }>
+					<h2
+						class="text-lg font-bold"
+						if componentSettings.TitleOneWayStatePath != "" {
+							x-text={ componentSettings.TitleOneWayStatePath }
+						}
+					>
+						{ componentSettings.Title }
+					</h2>
+					<div class="flex items-center gap-1">
+						if componentSettings.SizeTwoWayStatePath != "" {
+							@uiControl.Button(uiControl.ButtonSettings{
+								IconLeft:    "ph-minus",
+								OnClickFunc: componentSettings.SizeTwoWayStatePath + " = " + componentSettings.SizeTwoWayStatePath + " === 'xs' ? 'xs' : " + componentSettings.SizeTwoWayStatePath + " === 'sm' ? 'xs' : " + componentSettings.SizeTwoWayStatePath + " === 'md' ? 'sm' : " + componentSettings.SizeTwoWayStatePath + " === 'lg' ? 'md' : " + componentSettings.SizeTwoWayStatePath + " === 'xl' ? 'lg' : " + componentSettings.SizeTwoWayStatePath + " === 'full' ? 'xl' : 'sm'",
+								Size:        uiControl.ButtonSizeXs,
+								Shape:       uiControl.ButtonShapeCircular,
+							})
+							@uiControl.Button(uiControl.ButtonSettings{
+								IconLeft:    "ph-plus",
+								OnClickFunc: componentSettings.SizeTwoWayStatePath + " = " + componentSettings.SizeTwoWayStatePath + " === 'xs' ? 'sm' : " + componentSettings.SizeTwoWayStatePath + " === 'sm' ? 'md' : " + componentSettings.SizeTwoWayStatePath + " === 'md' ? 'lg' : " + componentSettings.SizeTwoWayStatePath + " === 'lg' ? 'xl' : " + componentSettings.SizeTwoWayStatePath + " === 'xl' ? 'full' : 'full'",
+								Size:        uiControl.ButtonSizeXs,
+								Shape:       uiControl.ButtonShapeCircular,
+							})
+						}
+						if componentSettings.IsCloseable && componentSettings.IsVisibleTwoWayStatePath != "" {
+							@uiControl.Button(uiControl.ButtonSettings{
+								IconLeft:    "ph-x",
+								OnClickFunc: componentSettings.IsVisibleTwoWayStatePath + " = false",
+								Size:        uiControl.ButtonSizeXs,
+								Shape:       uiControl.ButtonShapeCircular,
+							})
+						}
+					</div>
+				</div>
+			}
+			<!-- ModalMiddleContent -->
+			<div class={ "flex-1 overflow-y-auto " + modalPaddingClasses }>
+				@componentSettings.MiddleContent
+			</div>
+			if componentSettings.FooterContent != nil {
+				<!-- ModalCustomFooter -->
+				<div class={ "border-t border-neutral-50/10 " + modalPaddingClasses }>
+					@componentSettings.FooterContent
+				</div>
+			}
+		</div>
+	</div>
+}
