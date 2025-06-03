@@ -1,6 +1,11 @@
 # Changelog
 
 ```log
+0.0.9 - 2025/06/03
+feat: modal
+feat: alpine state for button icons
+chore: update templ to v0.3.887
+
 0.0.8 - 2025/05/27
 feat: add cloak loading
 fix: add suffix seconds to loading overlay duration
