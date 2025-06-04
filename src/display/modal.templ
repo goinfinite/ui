@@ -50,18 +50,19 @@ type ModalSettings struct {
 	RingThickness            string
 	IsVisibleTwoWayStatePath string
 	IsCloseable              bool
+	IsResizable              bool
 }
 
 templ Modal(componentSettings ModalSettings) {
 	<!-- Modal Backdrop -->
 	{{ backdropClasses := "fixed inset-0 z-100 flex items-center justify-center" }}
-	{{ backdropBackgroundColor := "bg-neutral-900/80" }}
+	{{ backdropBackgroundColor := "bg-neutral-900/75" }}
 	if componentSettings.BackdropColor != "" {
 		{{ backdropBackgroundColor = "bg-" + componentSettings.BackdropColor }}
 	}
 	{{ backdropClasses += " " + backdropBackgroundColor }}
 	<!-- Modal Container Classes -->
-	{{ modalClasses := "relative flex flex-col" }}
+	{{ modalClasses := "relative flex flex-col gap-4" }}
 	{{ backgroundColor := "bg-primary-900" }}
 	if componentSettings.BackgroundColor != "" {
 		{{ backgroundColor = "bg-" + componentSettings.BackgroundColor }}
@@ -73,16 +74,19 @@ templ Modal(componentSettings ModalSettings) {
 	{{ modalClasses += " " + backgroundColor + " " + textColor }}
 	<!-- Modal Size -->
 	{{
-		modalSizeClassesXs := "w-full max-w-sm p-2"
-		modalSizeClassesSm := "w-full max-w-md p-3"
-		modalSizeClassesMd := "w-full max-w-lg p-4"
-		modalSizeClassesLg := "w-full max-w-xl p-5"
-		modalSizeClassesXl := "w-full max-w-2xl p-6"
-		modalSizeClassesFull := "w-full h-full p-8"
+		modalSizeClassesXs := "w-full max-w-md p-3"
+		modalSizeClassesSm := "w-full max-w-lg p-3.5"
+		modalSizeClassesMd := "w-full max-w-xl p-4"
+		modalSizeClassesLg := "w-full max-w-2xl p-4.5"
+		modalSizeClassesXl := "w-full max-w-3xl p-5"
+		modalSizeClassesFull := "w-full h-full p-5.5"
 		modalSizeClasses := modalSizeClassesMd
 		modalStandardHeaderTitleSize := "text-lg"
 		modalStandardHeaderIconSize := uiControl.ButtonSizeSm
 	}}
+	if componentSettings.Size == "" {
+		{{ componentSettings.Size = ModalSizeMd }}
+	}
 	switch componentSettings.Size {
 		case ModalSizeXs:
 			{{ modalSizeClasses = modalSizeClassesXs }}
@@ -180,9 +184,16 @@ templ Modal(componentSettings ModalSettings) {
 			@click.self={ componentSettings.IsVisibleTwoWayStatePath + " = false" }
 		}
 	>
+		{{ modalInternalState := "" }}
+		if componentSettings.SizeTwoWayStatePath == "" && componentSettings.IsResizable != false {
+			{{ modalInternalState = "{ modalSize: '" + componentSettings.Size + "', defaultModalSize: '" + componentSettings.Size + "' }" }}
+		}
+		if componentSettings.SizeTwoWayStatePath != "" {
+			{{ modalInternalState = "{ defaultModalSize: structuredClone(" + componentSettings.SizeTwoWayStatePath + ") }" }}
+		}
 		<div
-			if componentSettings.SizeTwoWayStatePath != "" {
-				x-data={ "{ defaultModalSize: structuredClone(" + componentSettings.SizeTwoWayStatePath + `), }` }
+			if modalInternalState != "" {
+				x-data={ modalInternalState }
 			}
 			class={ modalClasses }
 			if componentSettings.SizeTwoWayStatePath != "" {
@@ -196,7 +207,7 @@ templ Modal(componentSettings ModalSettings) {
 			{{ wasTitleSet := componentSettings.Title != "" || componentSettings.TitleOneWayStatePath != "" }}
 			if componentSettings.HeaderContent == nil && wasTitleSet {
 				<!-- ModalStandardHeader -->
-				<div class="flex items-center justify-between border-b border-neutral-50/10 p-2">
+				<div class="flex items-center justify-between border-b border-neutral-50/10 pb-2.5">
 					<h2
 						class={ modalStandardHeaderTitleSize + " font-bold" }
 						if componentSettings.TitleOneWayStatePath != "" {
@@ -214,7 +225,7 @@ templ Modal(componentSettings ModalSettings) {
 								Shape:                   uiControl.ButtonShapeCircular,
 							})
 						}
-						if componentSettings.IsCloseable && componentSettings.IsVisibleTwoWayStatePath != "" {
+						if componentSettings.IsCloseable != false && componentSettings.IsVisibleTwoWayStatePath != "" {
 							@uiControl.Button(uiControl.ButtonSettings{
 								IconLeft:    "ph-x",
 								OnClickFunc: componentSettings.IsVisibleTwoWayStatePath + " = false",
@@ -226,7 +237,7 @@ templ Modal(componentSettings ModalSettings) {
 				</div>
 			}
 			<!-- ModalMiddleContent -->
-			<div class="flex-1 overflow-y-auto p-2">
+			<div class="flex-1 overflow-y-auto">
 				@componentSettings.MiddleContent
 			</div>
 			if componentSettings.FooterContent != nil {
