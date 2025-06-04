@@ -1,6 +1,11 @@
 # Changelog
 
 ```log
+0.1.0 - 2025/06/04
+feat: add isResizable to modal
+fix: modal padding
+chore: update templ to v0.3.894
+
 0.0.9 - 2025/06/03
 feat: modal
 feat: alpine state for button icons
