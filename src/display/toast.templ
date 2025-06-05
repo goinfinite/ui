@@ -1,6 +1,9 @@
 package uiDisplay
 
-import _ "embed"
+import (
+	"github.com/goinfinite/ui/src/toolset"
+	_ "embed"
+)
 
 const (
 	ToastSizeXs string = "xs"
@@ -38,7 +41,7 @@ type ToastSettings struct {
 
 templ Toast(componentSettings ToastSettings) {
 	<!-- Toast JavaScript -->
-	@templ.Raw(`<script type="text/javascript">` + toastAlpineState + `</script>`)
+	@uiToolset.MinifierTemplateJs(&toastAlpineState)
 	<!-- Toast HTML -->
 	{{ toastClasses := "fixed bottom-5 right-10 flex w-fit flex-row items-center justify-stretch shadow-md z-100" }}
 	{{ toastIconSizeClasses := "text-2xl" }}
