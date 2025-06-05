@@ -119,7 +119,7 @@ func Button(componentSettings ButtonSettings) templ.Component {
 		if componentSettings.BackgroundColor != "" {
 			backgroundColor = "bg-" + componentSettings.BackgroundColor
 		}
-		backgroundHoverColor := "hover:bg-neutral-50/10"
+		backgroundHoverColor := "hover:bg-neutral-50/12.5"
 		if componentSettings.BackgroundColorHover != "" {
 			backgroundHoverColor = "hover:bg-" + componentSettings.BackgroundColorHover
 		}
