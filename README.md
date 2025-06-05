@@ -97,3 +97,31 @@ The `On` prefix (e.g., `OnClick`, `OnChange`) indicates event-driven execution, 
 Infinite UI does not require HTMX to function, but it is designed to work well with it. HTMX is a JavaScript library that allows you to make AJAX requests and update parts of your page without reloading the entire page.
 
 Form submissions done with HTMX usually utilize the `FormData` object to send form data to the server. Infinite UI allows you to set the `InputName` field to specify the keys of the `FormData` object. There is also `InputId` but `id` attributes are not required for form submissions, it's for locating the element in the DOM if necessary.
+
+### JavaScript Toolset
+
+The `toolset.js` file is a collection of JavaScript utility functions that can be used in your project. It is included in the `@uiImport.HeadTagsFullJs()` component or you can include it manually using `@uiImport.ToolsetJs()`.
+
+To use the toolset, you can access it through the `UiToolset` object or `window.UiToolset` object.
+
+- `UiToolset.CreateRandomPassword()`: Creates a random password of length 16 characters.
+- `UiToolset.ToggleLoadingOverlay()`: Toggles the loading overlay element with the id `loading-overlay`.
+- `UiToolset.JsonAjax()`: Makes a JSON AJAX request to the specified URL.¹
+- `UiToolset.RegisterAlpineState()`: Registers a function to be called when Alpine.js is initialized or when it is already initialized. Useful for avoiding registering repeated addEventListeners for the same method, like when transiting through pages.
+
+_¹Available when Alpine.js was already initialized._
+
+### Go(lang) Toolset
+
+Besides the JavaScript toolset, Infinite UI also provides a Go(lang) toolset to address common UI related tasks.
+
+#### Minifier
+
+Based on [esbuild](https://github.com/evanw/esbuild), the minifier is a tool to minify JavaScript and CSS content. Use the MinifierSettings struct if the defaults are breaking your code.
+
+- `Minifier(MinifierSettings)`: Minifies JavaScript and CSS content.
+- `MinifierJs(unminifiedContent)`: Minifier but takes a string as input and returns a string.
+- `MinifierCss(unminifiedContent)`: MinifierJs but for CSS content.
+- `MinifierTemplate(MinifierSettings)`: Minifier but returns a templ.Component instead of a string.
+- `MinifierJsTemplate(unminifiedContent)`: MinifierJs but returns a templ.Component.
+- `MinifierCssTemplate(unminifiedContent)`: MinifierCss but returns a templ.Component.
