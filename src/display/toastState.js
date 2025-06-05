@@ -1,4 +1,4 @@
-document.addEventListener("alpine:init", () => {
+UiToolset.RegisterAlpineState(() => {
   Alpine.store("toast", {
     toastVisible: false,
     toastMessage: "",
