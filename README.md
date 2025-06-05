@@ -16,7 +16,7 @@ The library is engineered for developer efficiency and ease of implementation, o
 To use Infinite UI in your project, you can install it using Go modules. Run the following command in your terminal:
 
 ```bash
-go get github.com/goinfinite/ui
+go get github.com/goinfinite/ui@latest
 ```
 
 After installing Infinite UI, make sure your `<head>` component is including [Alpine.js](https://alpinejs.dev/essentials/installation), [Tailwind CSS](https://unocss.dev/integrations/runtime) and [Phosphor Icons](https://github.com/phosphor-icons/homepage?tab=readme-ov-file#vanilla-web).
