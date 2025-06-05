@@ -1,5 +1,10 @@
 package uiImport
 
+import (
+	"github.com/goinfinite/ui/src/toolset"
+	_ "embed"
+)
+
 templ HeadTagsAtomicCssEngine() {
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@unocss/reset@66.0.0/tailwind-compat.css" integrity="sha256-YmuJOpwODv9JhZSXl17QoPLeBbIhkqZpNt39S++mkdk=" crossorigin="anonymous"/>
@@ -37,6 +42,12 @@ templ HeadTagsHtmx() {
 	<script defer src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.4/dist/htmx.min.js" integrity="sha256-4gndpcgjVHnzFm3vx3UOHbzVpcGAi3eS/C5nM3aPtEc=" crossorigin="anonymous"></script>
 }
 
+//go:embed toolset.js
+var unminifiedToolsetJs string
+templ HeadTagsToolset() {
+	@uiToolset.MinifierTemplateJs(&unminifiedToolsetJs)
+}
+
 templ HeadTagsVega() {
 	<script src="https://cdn.jsdelivr.net/npm/vega@6.1.2/build/vega.min.js" integrity="sha256-CPeWtqVxsLRtgZ8H+3WByhZWWvhpheF2a7GAY4V2s/g=" crossorigin="anonymous"></script>
 	<script src="https://cdn.jsdelivr.net/npm/vega-lite@6.1.0/build/vega-lite.min.js" integrity="sha256-Z1UPjkQutWekUKkE8IPBO8R393KNMFiYRVLMNel5/Lc=" crossorigin="anonymous"></script>
@@ -58,6 +69,7 @@ templ HeadTagsMinimalJs() {
 }
 
 templ HeadTagsFullJs() {
+	@HeadTagsToolset()
 	@HeadTagsMinimalJs()
 	@HeadTagsHtmx()
 }
