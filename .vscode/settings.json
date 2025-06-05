@@ -1,8 +1,11 @@
 {
   "cSpell.words": [
     "Atoi",
+    "esbuild",
+    "evanw",
     "fieldset",
     "github",
+    "goinfinite",
     "htmx",
     "Htmx",
     "Itoa",
@@ -12,6 +15,7 @@
     "stylesheet",
     "templ",
     "Uncloseable",
+    "unminified",
     "Unresizable"
   ],
   "tailwindCSS.includeLanguages": {
