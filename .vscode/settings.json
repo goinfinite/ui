@@ -10,7 +10,9 @@
     "mouseleave",
     "strconv",
     "stylesheet",
-    "templ"
+    "templ",
+    "Uncloseable",
+    "Unresizable"
   ],
   "tailwindCSS.includeLanguages": {
     "templ": "html"
