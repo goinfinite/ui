@@ -57,8 +57,8 @@ type ModalSettings struct {
 	RingColor                string
 	RingThickness            string
 	IsVisibleTwoWayStatePath string
-	IsCloseable              bool
-	IsResizable              bool
+	IsUncloseable            bool
+	IsUnresizable            bool
 }
 
 func Modal(componentSettings ModalSettings) templ.Component {
@@ -287,11 +287,13 @@ func Modal(componentSettings ModalSettings) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		modalInternalState := ""
-		if componentSettings.SizeTwoWayStatePath == "" && componentSettings.IsResizable != false {
-			modalInternalState = "{ modalSize: '" + componentSettings.Size + "', defaultModalSize: '" + componentSettings.Size + "' }"
-		}
 		if componentSettings.SizeTwoWayStatePath != "" {
 			modalInternalState = "{ defaultModalSize: structuredClone(" + componentSettings.SizeTwoWayStatePath + ") }"
+		}
+		if componentSettings.SizeTwoWayStatePath == "" && !componentSettings.IsUnresizable {
+
+			modalInternalState = "{ modalSize: '" + componentSettings.Size + "', defaultModalSize: '" + componentSettings.Size + "' }"
+			componentSettings.SizeTwoWayStatePath = "modalSize"
 		}
 		var templ_7745c5c3_Var6 = []any{modalClasses}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var6...)
@@ -310,7 +312,7 @@ func Modal(componentSettings ModalSettings) templ.Component {
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(modalInternalState)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 196, Col: 31}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 199, Col: 31}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -346,7 +348,7 @@ func Modal(componentSettings ModalSettings) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(`{ '` + modalSizeClassesXs + `': ` + componentSettings.SizeTwoWayStatePath + ` === 'xs', '` + modalSizeClassesSm + `': ` + componentSettings.SizeTwoWayStatePath + ` === 'sm', '` + modalSizeClassesMd + `': ` + componentSettings.SizeTwoWayStatePath + ` === 'md', '` + modalSizeClassesLg + `': ` + componentSettings.SizeTwoWayStatePath + ` === 'lg', '` + modalSizeClassesXl + `': ` + componentSettings.SizeTwoWayStatePath + ` === 'xl', '` + modalSizeClassesFull + `': ` + componentSettings.SizeTwoWayStatePath + ` === 'full' }`)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 200, Col: 537}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 203, Col: 537}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -407,7 +409,7 @@ func Modal(componentSettings ModalSettings) templ.Component {
 				var templ_7745c5c3_Var12 string
 				templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.TitleOneWayStatePath)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 214, Col: 54}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 217, Col: 54}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 				if templ_7745c5c3_Err != nil {
@@ -425,7 +427,7 @@ func Modal(componentSettings ModalSettings) templ.Component {
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.Title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 217, Col: 31}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 220, Col: 31}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
@@ -446,7 +448,7 @@ func Modal(componentSettings ModalSettings) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			if componentSettings.IsCloseable != false && componentSettings.IsVisibleTwoWayStatePath != "" {
+			if componentSettings.IsVisibleTwoWayStatePath != "" && !componentSettings.IsUncloseable {
 				templ_7745c5c3_Err = uiControl.Button(uiControl.ButtonSettings{
 					IconLeft:    "ph-x",
 					OnClickFunc: componentSettings.IsVisibleTwoWayStatePath + " = false",

@@ -49,8 +49,8 @@ type ModalSettings struct {
 	RingColor                string
 	RingThickness            string
 	IsVisibleTwoWayStatePath string
-	IsCloseable              bool
-	IsResizable              bool
+	IsUncloseable            bool
+	IsUnresizable            bool
 }
 
 templ Modal(componentSettings ModalSettings) {
@@ -185,11 +185,14 @@ templ Modal(componentSettings ModalSettings) {
 		}
 	>
 		{{ modalInternalState := "" }}
-		if componentSettings.SizeTwoWayStatePath == "" && componentSettings.IsResizable != false {
-			{{ modalInternalState = "{ modalSize: '" + componentSettings.Size + "', defaultModalSize: '" + componentSettings.Size + "' }" }}
-		}
 		if componentSettings.SizeTwoWayStatePath != "" {
 			{{ modalInternalState = "{ defaultModalSize: structuredClone(" + componentSettings.SizeTwoWayStatePath + ") }" }}
+		}
+		if componentSettings.SizeTwoWayStatePath == "" && !componentSettings.IsUnresizable {
+			{{
+				modalInternalState = "{ modalSize: '" + componentSettings.Size + "', defaultModalSize: '" + componentSettings.Size + "' }"
+				componentSettings.SizeTwoWayStatePath = "modalSize"
+			}}
 		}
 		<div
 			if modalInternalState != "" {
@@ -225,7 +228,7 @@ templ Modal(componentSettings ModalSettings) {
 								Shape:                   uiControl.ButtonShapeCircular,
 							})
 						}
-						if componentSettings.IsCloseable != false && componentSettings.IsVisibleTwoWayStatePath != "" {
+						if componentSettings.IsVisibleTwoWayStatePath != "" && !componentSettings.IsUncloseable {
 							@uiControl.Button(uiControl.ButtonSettings{
 								IconLeft:    "ph-x",
 								OnClickFunc: componentSettings.IsVisibleTwoWayStatePath + " = false",
