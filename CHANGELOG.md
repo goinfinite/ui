@@ -1,6 +1,10 @@
 # Changelog
 
 ```log
+0.1.2 - 2025/06/05
+feat: javascript toolset
+feat: esbuild-based minifier
+
 0.1.1 - 2025/06/05
 fix: increase bg opacity on button hover
 fix: invert closeable and resizable logic on modal
