@@ -17,7 +17,31 @@ templ DemoIndex() {
 			@uiImport.HeadTagsFull()
 		</head>
 		<body class="bg-neutral-900 text-neutral-50">
-			<h1 class="my-10 text-center text-5xl font-bold">Infinite UI Demo</h1>
+			<div class="container mx-auto flex flex-col items-center justify-between gap-4 my-10">
+				<h1 class="text-center text-5xl font-bold">Infinite UI Demo</h1>
+				<p class="text-center text-sm text-neutral-400">
+					<i><a href="https://goinfinite.net" target="_blank" title="goinfinite.net">Infinite</a></i> UI is a collection of reusable components for building elegant user interfaces in Go.
+					<br/>
+					It is built with <i>a-h/templ</i>, <i>Alpine.js</i>, <i>Tailwind CSS</i>, <i>Phosphor Icons</i> and the occasional additional JavaScript libraries when necessary.
+				</p>
+				<div class="flex flex-row items-center gap-2">
+					<a href="https://github.com/goinfinite/ui" target="_blank" title="GitHub Repository">
+						<img src="https://img.shields.io/badge/repository-262626?logo=github" alt="GitHub Repository"/>
+					</a>
+					<a href="https://github.com/orgs/goinfinite/discussions" target="_blank" title="GitHub Discussions">
+						<img src="https://img.shields.io/badge/discussions-751A3D?logo=github" alt="GitHub Discussions"/>
+					</a>
+					<a href="https://www.reddit.com/r/goinfinite/" target="_blank" title="Reddit Subreddit">
+						<img src="https://img.shields.io/badge/%2Fr%2Fgoinfinite-FF4500?logo=reddit&logoColor=ffffff" alt="Reddit Subreddit"/>
+					</a>
+					<a href="https://goreportcard.com/report/github.com/goinfinite/ui" target="_blank" title="Go Report Card">
+						<img src="https://goreportcard.com/badge/github.com/goinfinite/ui" alt="Go Report Card"/>
+					</a>
+					<a href="https://github.com/goinfinite/ui/blob/main/LICENSE.md" target="_blank" title="License">
+						<img src="https://img.shields.io/badge/license-MIT-teal.svg" alt="License"/>
+					</a>
+				</div>
+			</div>
 			<section class="gap-30 container mx-auto flex flex-col overflow-x-auto overflow-y-hidden p-4">
 				<div class="flex flex-col gap-10">
 					<!-- uiForm -->
@@ -73,6 +97,7 @@ templ DemoIndex() {
 					</div>
 				</div>
 			</section>
+			@uiDisplay.CloakLoading(uiDisplay.CloakLoadingSettings{BackgroundColor: "rgb(38, 38, 38)"})
 		</body>
 	</html>
 }
