@@ -51,6 +51,8 @@ type ModalSettings struct {
 	IsVisibleTwoWayStatePath string
 	IsUncloseable            bool
 	IsUnresizable            bool
+	OnCloseFunc              string
+	OnResizeFunc             string
 }
 
 templ Modal(componentSettings ModalSettings) {
@@ -223,7 +225,7 @@ templ Modal(componentSettings ModalSettings) {
 						if componentSettings.SizeTwoWayStatePath != "" {
 							@uiControl.Button(uiControl.ButtonSettings{
 								IconLeftOneWayStatePath: componentSettings.SizeTwoWayStatePath + " === 'full' ? 'ph-arrows-in' : 'ph-arrows-out'",
-								OnClickFunc:             componentSettings.SizeTwoWayStatePath + " = " + componentSettings.SizeTwoWayStatePath + " === 'xs' ? 'sm' : " + componentSettings.SizeTwoWayStatePath + " === 'sm' ? 'md' : " + componentSettings.SizeTwoWayStatePath + " === 'md' ? 'lg' : " + componentSettings.SizeTwoWayStatePath + " === 'lg' ? 'xl' : " + componentSettings.SizeTwoWayStatePath + " === 'xl' ? 'full' : defaultModalSize",
+								OnClickFunc:             componentSettings.SizeTwoWayStatePath + " = " + componentSettings.SizeTwoWayStatePath + " === 'xs' ? 'sm' : " + componentSettings.SizeTwoWayStatePath + " === 'sm' ? 'md' : " + componentSettings.SizeTwoWayStatePath + " === 'md' ? 'lg' : " + componentSettings.SizeTwoWayStatePath + " === 'lg' ? 'xl' : " + componentSettings.SizeTwoWayStatePath + " === 'xl' ? 'full' : defaultModalSize;" + componentSettings.OnResizeFunc,
 								Size:                    modalStandardHeaderIconSize,
 								Shape:                   uiControl.ButtonShapeCircular,
 							})
@@ -231,7 +233,7 @@ templ Modal(componentSettings ModalSettings) {
 						if componentSettings.IsVisibleTwoWayStatePath != "" && !componentSettings.IsUncloseable {
 							@uiControl.Button(uiControl.ButtonSettings{
 								IconLeft:    "ph-x",
-								OnClickFunc: componentSettings.IsVisibleTwoWayStatePath + " = false",
+								OnClickFunc: componentSettings.IsVisibleTwoWayStatePath + " = false;" + componentSettings.OnCloseFunc,
 								Size:        modalStandardHeaderIconSize,
 								Shape:       uiControl.ButtonShapeCircular,
 							})
