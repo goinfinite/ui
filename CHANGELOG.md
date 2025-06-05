@@ -1,6 +1,10 @@
 # Changelog
 
 ```log
+0.1.1 - 2025/06/05
+fix: increase bg opacity on button hover
+fix: invert closeable and resizable logic on modal
+
 0.1.0 - 2025/06/04
 feat: add isResizable to modal
 fix: modal padding
