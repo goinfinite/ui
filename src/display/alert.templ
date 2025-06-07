@@ -1,0 +1,332 @@
+package uiDisplay
+
+import (
+	"github.com/goinfinite/ui/src/control"
+	"strconv"
+)
+
+const (
+	AlertVariationSuccess string = "success"
+	AlertVariationWarning string = "warning"
+	AlertVariationError   string = "error"
+	AlertVariationInfo    string = "info"
+
+	AlertSizeXs string = "xs"
+	AlertSizeSm string = "sm"
+	AlertSizeMd string = "md"
+	AlertSizeLg string = "lg"
+	AlertSizeXl string = "xl"
+
+	AlertRingThicknessXs string = "xs"
+	AlertRingThicknessSm string = "sm"
+	AlertRingThicknessMd string = "md"
+	AlertRingThicknessLg string = "lg"
+	AlertRingThicknessXl string = "xl"
+
+	AlertBorderRadiusNone string = "none"
+	AlertBorderRadiusXs   string = "xs"
+	AlertBorderRadiusSm   string = "sm"
+	AlertBorderRadiusMd   string = "md"
+	AlertBorderRadiusLg   string = "lg"
+	AlertBorderRadiusXl   string = "xl"
+
+	AlertShadowSizeNone string = "none"
+	AlertShadowSizeXs   string = "xs"
+	AlertShadowSizeSm   string = "sm"
+	AlertShadowSizeMd   string = "md"
+	AlertShadowSizeLg   string = "lg"
+	AlertShadowSizeXl   string = "xl"
+)
+
+type AlertSettings struct {
+	// OptionalFields
+	ContentHtml                         templ.Component
+	Title                               string
+	TitleOneWayStatePath                string
+	TitleLeftIcon                       string
+	TitleLeftIconTwoWayStatePath        string
+	TitleRightIcon                      string
+	TitleRightIconTwoWayStatePath       string
+	Description                         string
+	DescriptionOneWayStatePath          string
+	DescriptionLeftIcon                 string
+	DescriptionLeftIconTwoWayStatePath  string
+	DescriptionRightIcon                string
+	DescriptionRightIconTwoWayStatePath string
+	Variation                           string
+	Size                                string
+	BackgroundColor                     string
+	TextColor                           string
+	TextTitleColor                      string
+	TextDescriptionColor                string
+	RingColor                           string
+	RingThickness                       string
+	BorderRadius                        string
+	ShadowSize                          string
+	IsCloseable                         bool
+	IsCloseableOneWayStatePath          string
+	CloseIconBackgroundColor            string
+	CloseIconTextColor                  string
+	OnCloseFunc                         string
+	DisplayTimeoutSeconds               int
+	OnTimeoutFunc                       string
+}
+
+templ Alert(componentSettings AlertSettings) {
+	{{ alertClasses := "flex w-full items-start gap-3 p-4" }}
+	{{ alertIconClasses := "ph-duotone text-xl flex-shrink-0 mt-0.5" }}
+	{{ alertContentClasses := "flex-1 min-w-0" }}
+	{{ alertTitleClasses := "font-semibold" }}
+	{{ alertDescriptionClasses := "mt-1" }}
+	{{ alertCloseClasses := "ph-bold ph-x cursor-pointer flex-shrink-0 hover:opacity-75 transition-opacity" }}
+	// Size Classes
+	if componentSettings.Size == "" {
+		{{ componentSettings.Size = AlertSizeMd }}
+	}
+	switch componentSettings.Size {
+		case AlertSizeXs:
+			{{ alertClasses += " text-xs" }}
+			{{ alertIconClasses = "ph-duotone text-sm flex-shrink-0 mt-0.5" }}
+			{{ alertTitleClasses += " text-xs" }}
+			{{ alertDescriptionClasses += " text-xs" }}
+			{{ alertCloseClasses += " text-xs p-0.5" }}
+		case AlertSizeSm:
+			{{ alertClasses += " text-sm" }}
+			{{ alertIconClasses = "ph-duotone text-base flex-shrink-0 mt-0.5" }}
+			{{ alertTitleClasses += " text-sm" }}
+			{{ alertDescriptionClasses += " text-sm" }}
+			{{ alertCloseClasses += " text-sm p-1" }}
+		case AlertSizeMd:
+			{{ alertClasses += " text-base" }}
+			{{ alertIconClasses = "ph-duotone text-xl flex-shrink-0 mt-0.5" }}
+			{{ alertTitleClasses += " text-base" }}
+			{{ alertDescriptionClasses += " text-base" }}
+			{{ alertCloseClasses += " text-base p-1" }}
+		case AlertSizeLg:
+			{{ alertClasses += " text-lg" }}
+			{{ alertIconClasses = "ph-duotone text-2xl flex-shrink-0 mt-0.5" }}
+			{{ alertTitleClasses += " text-lg" }}
+			{{ alertDescriptionClasses += " text-lg" }}
+			{{ alertCloseClasses += " text-lg p-1.5" }}
+		case AlertSizeXl:
+			{{ alertClasses += " text-xl" }}
+			{{ alertIconClasses = "ph-duotone text-3xl flex-shrink-0 mt-0.5" }}
+			{{ alertTitleClasses += " text-xl" }}
+			{{ alertDescriptionClasses += " text-xl" }}
+			{{ alertCloseClasses += " text-xl p-2" }}
+	}
+	// Variation Classes
+	{{ alertVariationIcon := "" }}
+	{{ alertVariationBgColor := "bg-neutral-50/10" }}
+	{{ alertVariationTextColor := "text-neutral-50" }}
+	{{ alertVariationIconColor := "text-blue-400" }}
+	switch componentSettings.Variation {
+		case AlertVariationSuccess:
+			{{ alertVariationIcon = "ph-check-circle" }}
+			{{ alertVariationBgColor = "bg-emerald-50/10" }}
+			{{ alertVariationTextColor = "text-emerald-50" }}
+			{{ alertVariationIconColor = "text-emerald-400" }}
+		case AlertVariationWarning:
+			{{ alertVariationIcon = "ph-warning" }}
+			{{ alertVariationBgColor = "bg-yellow-50/10" }}
+			{{ alertVariationTextColor = "text-yellow-50" }}
+			{{ alertVariationIconColor = "text-yellow-400" }}
+		case AlertVariationError:
+			{{ alertVariationIcon = "ph-x-circle" }}
+			{{ alertVariationBgColor = "bg-red-50/10" }}
+			{{ alertVariationTextColor = "text-red-50" }}
+			{{ alertVariationIconColor = "text-red-400" }}
+		case AlertVariationInfo:
+			{{ alertVariationIcon = "ph-info" }}
+			{{ alertVariationBgColor = "bg-blue-50/10" }}
+			{{ alertVariationTextColor = "text-blue-50" }}
+			{{ alertVariationIconColor = "text-blue-400" }}
+	}
+	// Background Color
+	{{ backgroundColor := alertVariationBgColor }}
+	if componentSettings.BackgroundColor != "" {
+		{{ backgroundColor = "bg-" + componentSettings.BackgroundColor }}
+	}
+	{{ alertClasses += " " + backgroundColor }}
+	// Text Color
+	{{ textColor := alertVariationTextColor }}
+	if componentSettings.TextColor != "" {
+		{{ textColor = "text-" + componentSettings.TextColor }}
+	}
+	{{ alertClasses += " " + textColor }}
+	// Ring Classes
+	{{ ringClasses := "ring-0" }}
+	if componentSettings.RingThickness != "" {
+		switch componentSettings.RingThickness {
+			case AlertRingThicknessXs:
+				{{ ringClasses = "ring-1" }}
+			case AlertRingThicknessSm:
+				{{ ringClasses = "ring-1.5" }}
+			case AlertRingThicknessMd:
+				{{ ringClasses = "ring-2" }}
+			case AlertRingThicknessLg:
+				{{ ringClasses = "ring-2.5" }}
+			case AlertRingThicknessXl:
+				{{ ringClasses = "ring-3" }}
+		}
+		if componentSettings.RingColor != "" {
+			{{ ringClasses += " ring-" + componentSettings.RingColor }}
+		}
+	}
+	{{ alertClasses += " " + ringClasses }}
+	// Border Radius
+	{{ borderRadius := "" }}
+	if componentSettings.BorderRadius == "" {
+		{{ componentSettings.BorderRadius = AlertBorderRadiusMd }}
+	}
+	switch componentSettings.BorderRadius {
+		case AlertBorderRadiusNone:
+			{{ borderRadius = "rounded-none" }}
+		case AlertBorderRadiusXs:
+			{{ borderRadius = "rounded-xs" }}
+		case AlertBorderRadiusSm:
+			{{ borderRadius = "rounded-sm" }}
+		case AlertBorderRadiusMd:
+			{{ borderRadius = "rounded" }}
+		case AlertBorderRadiusLg:
+			{{ borderRadius = "rounded-lg" }}
+		case AlertBorderRadiusXl:
+			{{ borderRadius = "rounded-xl" }}
+	}
+	{{ alertClasses += " " + borderRadius }}
+	// Shadow
+	{{ shadowClasses := "" }}
+	switch componentSettings.ShadowSize {
+		case AlertShadowSizeXs:
+			{{ shadowClasses = "shadow-xs" }}
+		case AlertShadowSizeSm:
+			{{ shadowClasses = "shadow-sm" }}
+		case AlertShadowSizeMd:
+			{{ shadowClasses = "shadow-md" }}
+		case AlertShadowSizeLg:
+			{{ shadowClasses = "shadow-lg" }}
+		case AlertShadowSizeXl:
+			{{ shadowClasses = "shadow-xl" }}
+	}
+	if shadowClasses != "" {
+		{{ alertClasses += " " + shadowClasses }}
+	}
+	<!-- Alert HTML -->
+	{{ alertAlpineState := "" }}
+	if componentSettings.DisplayTimeoutSeconds > 0 || componentSettings.IsCloseable {
+		{{ alertAlpineState = "{ alertVisible: true }" }}
+	}
+	<div
+		class={ alertClasses }
+		if alertAlpineState != "" {
+			x-data={ alertAlpineState }
+			x-show="alertVisible"
+			if componentSettings.DisplayTimeoutSeconds > 0 {
+				x-init={ "setTimeout(() => { alertVisible = false; " + componentSettings.OnTimeoutFunc + " }, " + strconv.Itoa(componentSettings.DisplayTimeoutSeconds*1000) + ")" }
+			}
+		}
+		role="alert"
+	>
+		{{ iconClasses := alertIconClasses + " " + alertVariationIconColor }}
+		if componentSettings.TitleLeftIcon != "" || componentSettings.TitleLeftIconTwoWayStatePath != "" {
+			<!-- AlertLeftIcon -->
+			<i
+				class={ "ph-duotone " + componentSettings.TitleLeftIcon + " " + iconClasses }
+				if componentSettings.TitleLeftIconTwoWayStatePath != "" {
+					:class={ "'" + componentSettings.TitleLeftIconTwoWayStatePath + "'" }
+				}
+			></i>
+		} else if componentSettings.Variation != "" {
+			<!-- AlertVariationIcon -->
+			<i class={ alertVariationIcon + " " + iconClasses }></i>
+		}
+		<!-- AlertContent -->
+		<div class={ alertContentClasses }>
+			if componentSettings.ContentHtml != nil {
+				@componentSettings.ContentHtml
+			} else {
+				<!-- AlertTitle -->
+				{{ titleTextColor := "" }}
+				if componentSettings.TextTitleColor != "" {
+					{{ titleTextColor = "text-" + componentSettings.TextTitleColor }}
+				}
+				{{ titleClasses := alertTitleClasses }}
+				if titleTextColor != "" {
+					{{ titleClasses += " " + titleTextColor }}
+				}
+				if componentSettings.Title != "" || componentSettings.TitleOneWayStatePath != "" {
+					<div
+						class={ titleClasses }
+						if componentSettings.TitleOneWayStatePath != "" {
+							x-text={ componentSettings.TitleOneWayStatePath }
+						}
+					>
+						{ componentSettings.Title }
+					</div>
+				}
+				<!-- AlertDescription -->
+				{{ descriptionTextColor := "" }}
+				if componentSettings.TextDescriptionColor != "" {
+					{{ descriptionTextColor = "text-" + componentSettings.TextDescriptionColor }}
+				}
+				{{ descriptionClasses := alertDescriptionClasses }}
+				if descriptionTextColor != "" {
+					{{ descriptionClasses += " " + descriptionTextColor }}
+				}
+				if componentSettings.Description != "" || componentSettings.DescriptionOneWayStatePath != "" {
+					<div
+						class={ descriptionClasses }
+						if componentSettings.DescriptionOneWayStatePath != "" {
+							x-text={ componentSettings.DescriptionOneWayStatePath }
+						}
+					>
+						{ componentSettings.Description }
+					</div>
+				}
+			}
+		</div>
+		if componentSettings.TitleRightIcon != "" || componentSettings.TitleRightIconTwoWayStatePath != "" {
+			<!-- AlertRightIcon -->
+			<i
+				class={ "ph-duotone " + componentSettings.TitleRightIcon + " " + iconClasses }
+				if componentSettings.TitleRightIconTwoWayStatePath != "" {
+					:class={ "'" + componentSettings.TitleRightIconTwoWayStatePath + "'" }
+				}
+			></i>
+		}
+		if componentSettings.IsCloseable || componentSettings.IsCloseableOneWayStatePath != "" {
+			{{ closeIconSize := uiControl.ButtonSizeXs }}
+			switch componentSettings.Size {
+				case AlertSizeXs:
+					{{ closeIconSize = uiControl.ButtonSizeXs }}
+				case AlertSizeSm:
+					{{ closeIconSize = uiControl.ButtonSizeXs }}
+				case AlertSizeMd:
+					{{ closeIconSize = uiControl.ButtonSizeSm }}
+				case AlertSizeLg:
+					{{ closeIconSize = uiControl.ButtonSizeSm }}
+				case AlertSizeXl:
+					{{ closeIconSize = uiControl.ButtonSizeMd }}
+			}
+			<!-- AlertCloseButton -->
+			{{
+				closeButtonSettings := uiControl.ButtonSettings{
+					IconLeft:    "ph-x",
+					OnClickFunc: "alertVisible = false; " + componentSettings.OnCloseFunc,
+					Size:        closeIconSize,
+					Shape:       uiControl.ButtonShapeCircular,
+				}
+				if componentSettings.CloseIconBackgroundColor != "" {
+					closeButtonSettings.BackgroundColor = componentSettings.CloseIconBackgroundColor
+				}
+				if componentSettings.CloseIconTextColor != "" {
+					closeButtonSettings.TextColor = componentSettings.CloseIconTextColor
+				}
+				if componentSettings.IsCloseableOneWayStatePath != "" {
+					closeButtonSettings.IsVisibleOneWayStatePath = componentSettings.IsCloseableOneWayStatePath
+				}
+			}}
+			@uiControl.Button(closeButtonSettings)
+		}
+	</div>
+}

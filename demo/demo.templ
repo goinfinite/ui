@@ -17,7 +17,7 @@ templ DemoIndex() {
 			@uiImport.HeadTagsFull()
 		</head>
 		<body class="bg-neutral-900 text-neutral-50">
-			<div class="container mx-auto flex flex-col items-center justify-between gap-4 my-10">
+			<div class="container mx-auto my-10 flex flex-col items-center justify-between gap-4">
 				<h1 class="text-center text-5xl font-bold">Infinite UI Demo</h1>
 				<p class="text-center text-sm text-neutral-400">
 					<i><a href="https://goinfinite.net" target="_blank" title="goinfinite.net">Infinite</a></i> UI is a collection of reusable components for building elegant user interfaces in Go.
@@ -72,6 +72,7 @@ templ DemoIndex() {
 						</p>
 					</div>
 					<div class="*:border-t *:border-neutral-800 *:pt-10 flex flex-col gap-10">
+						@AlertDemo()
 						@AccordionDemo()
 						@LoadingOverlayDemo()
 						@ModalDemo()
@@ -2056,6 +2057,182 @@ templ ModalDemoContent() {
 				Size:            uiControl.ButtonSizeSm,
 				BackgroundColor: "neutral-50/10",
 			})
+		</div>
+	</div>
+}
+
+templ AlertDemo() {
+	<div class="flex flex-col gap-4">
+		<div class="flex flex-row flex-wrap items-center gap-10">
+			<div class="flex flex-col gap-2">
+				<h3 class="text-xl font-bold">.Alert</h3>
+				<p class="text-sm text-neutral-400">
+					An alert is a notification component that displays important information to users.
+				</p>
+			</div>
+			<div class="flex flex-col gap-2">
+				@UsageTitle("/display/alert.templ")
+				<pre class={ DemoPreCodeClasses }>
+					<code>
+						{ `@uiDisplay.Alert(uiDisplay.AlertSettings{
+	// OptionalFields
+	Title:       "Alert Title",
+	Description: "This is an alert message.",
+	Variation:   uiDisplay.AlertVariationInfo,
+	Size:        uiDisplay.AlertSizeMd,
+	IsCloseable: true,
+})` }
+					</code>
+				</pre>
+			</div>
+		</div>
+		<div class="flex flex-col gap-4">
+			<h4 class="mb-2 text-lg font-bold">Live Example</h4>
+			<div class="grid gap-10 md:grid-cols-2">
+				<!-- Left Column -->
+				<div class="flex flex-col gap-4">
+					<div class="flex flex-col gap-2">
+						<p class="text-sm text-neutral-400">Alert Variations</p>
+						<div class="flex flex-col gap-3">
+							@uiDisplay.Alert(uiDisplay.AlertSettings{
+								Title:       "Success Alert",
+								Description: "Your operation completed successfully!",
+								Variation:   uiDisplay.AlertVariationSuccess,
+								Size:        uiDisplay.AlertSizeMd,
+								IsCloseable: true,
+							})
+							@uiDisplay.Alert(uiDisplay.AlertSettings{
+								Title:       "Warning Alert",
+								Description: "Please review your settings before proceeding.",
+								Variation:   uiDisplay.AlertVariationWarning,
+								Size:        uiDisplay.AlertSizeMd,
+								IsCloseable: true,
+							})
+							@uiDisplay.Alert(uiDisplay.AlertSettings{
+								Title:       "Error Alert",
+								Description: "An error occurred while processing your request.",
+								Variation:   uiDisplay.AlertVariationError,
+								Size:        uiDisplay.AlertSizeMd,
+								IsCloseable: true,
+							})
+							@uiDisplay.Alert(uiDisplay.AlertSettings{
+								Title:       "Info Alert",
+								Description: "Here's some helpful information for you.",
+								Variation:   uiDisplay.AlertVariationInfo,
+								Size:        uiDisplay.AlertSizeMd,
+								IsCloseable: true,
+							})
+						</div>
+					</div>
+				</div>
+				<!-- Right Column -->
+				<div class="flex flex-col gap-4">
+					<div class="flex flex-col gap-2">
+						<p class="text-sm text-neutral-400">Flashy Customization Examples</p>
+						<div class="flex flex-col gap-3">
+							@uiDisplay.Alert(uiDisplay.AlertSettings{
+								Title:                    "🌈 Rainbow Gradient Alert (SizeXs)",
+								Description:              "This alert has a vibrant gradient background!",
+								Size:                     uiDisplay.AlertSizeXs,
+								BackgroundColor:          "gradient-to-r from-purple-500/20 via-pink-500/20 to-red-500/20",
+								TextColor:                "white",
+								IsCloseable:              true,
+								CloseIconBackgroundColor: "red-500/20",
+								CloseIconTextColor:       "white",
+							})
+							@uiDisplay.Alert(uiDisplay.AlertSettings{
+								Title:                    "✨ Neon Glow Alert (SizeSm)",
+								Description:              "This alert glows with neon colors!",
+								Size:                     uiDisplay.AlertSizeSm,
+								BackgroundColor:          "cyan-500/20",
+								TextColor:                "cyan-100",
+								RingThickness:            uiDisplay.AlertRingThicknessLg,
+								RingColor:                "cyan-400",
+								ShadowSize:               uiDisplay.AlertShadowSizeXl,
+								IsCloseable:              true,
+								CloseIconBackgroundColor: "cyan-500/30",
+							})
+							@uiDisplay.Alert(uiDisplay.AlertSettings{
+								Title:                    "🔥 Fire Alert (SizeMd)",
+								Description:              "This alert is on fire with hot colors!",
+								Size:                     uiDisplay.AlertSizeMd,
+								BackgroundColor:          "gradient-to-r from-orange-500/25 to-red-500/25",
+								TextColor:                "orange-100",
+								BorderRadius:             uiDisplay.AlertBorderRadiusMd,
+								RingThickness:            uiDisplay.AlertRingThicknessMd,
+								RingColor:                "orange-400",
+								IsCloseable:              true,
+								CloseIconBackgroundColor: "red-500/30",
+							})
+							@uiDisplay.Alert(uiDisplay.AlertSettings{
+								Title:                    "💎 Diamond Luxury Alert (SizeLg)",
+								Description:              "This alert sparkles with luxury!",
+								Size:                     uiDisplay.AlertSizeLg,
+								BackgroundColor:          "gradient-to-br from-violet-500/20 via-purple-500/20 to-blue-500/20",
+								TextColor:                "violet-100",
+								ShadowSize:               uiDisplay.AlertShadowSizeLg,
+								RingThickness:            uiDisplay.AlertRingThicknessLg,
+								RingColor:                "violet-400",
+								IsCloseable:              true,
+								CloseIconBackgroundColor: "violet-500/30",
+								CloseIconTextColor:       "violet-100",
+							})
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- Alpine.js Integration Section -->
+			<div class="flex flex-col gap-4" x-data="{alertMessage: 'Dynamic alert content!', isAlertCloseable: true}">
+				<div class="flex flex-col gap-2">
+					<p class="text-sm text-neutral-400">Alpine.js Integration</p>
+					<div class="flex flex-col gap-2">
+						<h5 class="text-sm font-bold">Alpine.js Parent State <i>(x-data)</i></h5>
+						<pre class={ DemoPreCodeClasses }>
+							<code>{ `<div x-data="{alertMessage: 'Dynamic alert content!', isAlertCloseable: true}"></div>` }</code>
+						</pre>
+					</div>
+				</div>
+				<div class="grid gap-6 md:grid-cols-2">
+					<div class="flex flex-col gap-3">
+						<p class="text-sm text-neutral-400">Dynamic Content</p>
+						@uiDisplay.Alert(uiDisplay.AlertSettings{
+							Title:                      "Dynamic Content Alert",
+							DescriptionOneWayStatePath: "alertMessage",
+							Variation:                  uiDisplay.AlertVariationInfo,
+							Size:                       uiDisplay.AlertSizeMd,
+							IsCloseable:                true,
+						})
+						<div class="flex gap-2">
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:       "Change Message",
+								IconLeft:    "ph-pencil",
+								OnClickFunc: "alertMessage = 'Message updated at ' + new Date().toLocaleTimeString()",
+								Size:        uiControl.ButtonSizeSm,
+							})
+						</div>
+					</div>
+					<div class="flex flex-col gap-3">
+						<p class="text-sm text-neutral-400">Dynamic Close Button</p>
+						@uiDisplay.Alert(uiDisplay.AlertSettings{
+							Title:                      "Conditional Close Button",
+							Description:                "This alert's close button can be toggled!",
+							Variation:                  uiDisplay.AlertVariationWarning,
+							Size:                       uiDisplay.AlertSizeMd,
+							IsCloseableOneWayStatePath: "isAlertCloseable",
+							CloseIconBackgroundColor:   "yellow-500/20",
+							CloseIconTextColor:         "yellow-100",
+						})
+						<div class="flex gap-2">
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:       "Toggle Close Button",
+								IconLeft:    "ph-toggle-left",
+								OnClickFunc: "isAlertCloseable = !isAlertCloseable",
+								Size:        uiControl.ButtonSizeSm,
+							})
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 }
