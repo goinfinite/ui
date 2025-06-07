@@ -1,6 +1,11 @@
 # Changelog
 
 ```log
+0.1.5 - 2025/06/07
+feat: max width setting for alert
+fix: allow html in alert title and description
+chore: update templ to v0.3.898
+
 0.1.4 - 2025/06/07
 feat: alert
 feat: button IsVisibleOneWayStatePath setting
