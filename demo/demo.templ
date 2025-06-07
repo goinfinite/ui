@@ -7,6 +7,11 @@ import (
 	uiImport "github.com/goinfinite/ui/src/import"
 )
 
+const (
+	DemoPreCodeClasses string = "rounded-md bg-neutral-800 p-4 text-xs text-wrap tab-2"
+	UiVersion          string = "0.1.4"
+)
+
 templ DemoIndex() {
 	<!DOCTYPE html>
 	<html class="dark">
@@ -16,8 +21,11 @@ templ DemoIndex() {
 			<script type="text/javascript">window.__unocss={theme:{colors:{primary:{50:'#edfcff',100:'#d7f6ff',200:'#b8f0ff',300:'#86eaff',400:'#4edbff',500:'#25c2ff',600:'#0da6ff',700:'#0993f8',800:'#0d6fc0',900:'#115e97',950:'#10395b'},secondary:{50:"#dea893",100:"#d89a81",200:"#d38b6f",300:"#cd7d5d",400:"#ca7654",500:"#c97350",600:"#c46f4d",700:"#ba6949",800:"#a55e41",900:"#905239",950:"#7c4631"}}}};</script>
 			@uiImport.HeadTagsFull()
 		</head>
-		<body class="bg-neutral-900 text-neutral-50">
-			<div class="container mx-auto my-10 flex flex-col items-center justify-between gap-4">
+		<body class="bg-neutral-900 text-neutral-50" x-data="{isDemoSidebarCollapsed: $persist(false).as('uiDemo.isSidebarCollapsed')}">
+			<!-- Navigation Sidebar -->
+			@DemoNavigationSidebar()
+			<!-- Demo Header -->
+			<div class="container mx-auto my-20 flex flex-col items-center justify-between gap-4 overflow-y-auto" id="demo-header">
 				<h1 class="text-center text-5xl font-bold">Infinite UI Demo</h1>
 				<p class="text-center text-sm text-neutral-400">
 					<i><a href="https://goinfinite.net" target="_blank" title="goinfinite.net">Infinite</a></i> UI is a collection of reusable components for building elegant user interfaces in Go.
@@ -42,10 +50,11 @@ templ DemoIndex() {
 					</a>
 				</div>
 			</div>
-			<section class="gap-30 container mx-auto flex flex-col overflow-x-auto overflow-y-hidden p-4">
+			<!-- Main Content -->
+			<section class="gap-30 container mx-auto flex flex-col overflow-x-auto overflow-y-hidden p-4" id="main-content">
 				<div class="flex flex-col gap-10">
 					<!-- uiForm -->
-					<div class="flex flex-col gap-2">
+					<div id="ui-form-section" class="flex flex-col gap-2">
 						<h2 class="text-3xl font-bold">
 							{ `@uiForm` }
 						</h2>
@@ -53,7 +62,7 @@ templ DemoIndex() {
 							uiForm is a collection of components that make it easy to create forms.
 						</p>
 					</div>
-					<div class="*:border-t *:border-neutral-800 *:pt-10 flex flex-col gap-10">
+					<div class="*:border-t *:border-neutral-800 *:py-20 flex flex-col">
 						@InputFieldDemo()
 						@TextAreaDemo()
 						@RadioInputDemo()
@@ -63,7 +72,7 @@ templ DemoIndex() {
 				</div>
 				<!-- uiDisplay -->
 				<div class="flex flex-col gap-10">
-					<div class="flex flex-col gap-2">
+					<div id="ui-display-section" class="flex flex-col gap-2">
 						<h2 class="text-3xl font-bold">
 							{ `@uiDisplay` }
 						</h2>
@@ -71,7 +80,7 @@ templ DemoIndex() {
 							uiDisplay is a collection of components for displaying content.
 						</p>
 					</div>
-					<div class="*:border-t *:border-neutral-800 *:pt-10 flex flex-col gap-10">
+					<div class="*:border-t *:border-neutral-800 *:py-20 flex flex-col">
 						@AlertDemo()
 						@AccordionDemo()
 						@LoadingOverlayDemo()
@@ -84,7 +93,7 @@ templ DemoIndex() {
 				</div>
 				<!-- uiControl -->
 				<div class="flex flex-col gap-10">
-					<div class="flex flex-col gap-2">
+					<div id="ui-control-section" class="flex flex-col gap-2">
 						<h2 class="text-3xl font-bold">
 							{ `@uiControl` }
 						</h2>
@@ -92,7 +101,7 @@ templ DemoIndex() {
 							uiControl is a collection of components for controlling content.
 						</p>
 					</div>
-					<div class="*:border-t *:border-neutral-800 *:pt-10 flex flex-col gap-10">
+					<div class="*:border-t *:border-neutral-800 *:py-20 flex flex-col">
 						@ButtonDemo()
 						@RangeSliderDemo()
 					</div>
@@ -103,7 +112,83 @@ templ DemoIndex() {
 	</html>
 }
 
-const DemoPreCodeClasses string = "rounded-md bg-neutral-800 p-4 text-xs text-wrap tab-2"
+templ DemoNavigationSidebar() {
+	@uiDisplay.Sidebar(uiDisplay.SidebarSettings{
+		MiddleContent:              DemoNavigationContent(),
+		HeaderContent:              DemoNavigationHeader(),
+		BackgroundColor:            "bg-neutral-800/50",
+		IsCollapsedTwoWayStatePath: "isDemoSidebarCollapsed",
+		Width:                      "w-46",
+		AttachmentMode:             uiDisplay.SidebarAttachmentModeFixed,
+	})
+}
+
+templ DemoNavigationHeader() {
+	<div class="mx-auto flex flex-col items-center justify-center gap-4 py-4">
+		<!-- UI Logo -->
+		<div class="flex flex-col items-center justify-center gap-1">
+			<a
+				href="#"
+				@click="document.documentElement.scrollTop = 0"
+				title="Infinite UI"
+				:class="isDemoSidebarCollapsed ? 'w-12' : 'w-24'"
+			>
+				<img src="https://ui.demo.goinfinite.net/assets/ui-logo.svg" alt="Infinite UI" class="fill-white"/>
+			</a>
+			<p class="text-center text-[0.5rem]">v{ UiVersion }</p>
+		</div>
+	</div>
+}
+
+templ DemoNavItem(label, targetId, icon string) {
+	<li>
+		<a
+			href={ templ.SafeURL("#" + targetId) }
+			class="group relative flex cursor-pointer items-center gap-2 rounded"
+			:class="{'px-3 hover:bg-neutral-50/5 py-2':!isDemoSidebarCollapsed}"
+			title={ label }
+		>
+			<div
+				class="group-hover:text-secondary-500 flex items-center justify-center rounded bg-neutral-50/5 transition-colors group-hover:bg-neutral-50/10"
+				:class="isDemoSidebarCollapsed ? 'p-2' : 'p-1.5'"
+			>
+				<i
+					class={ "ph-duotone " + icon + " block text-2xl" }
+					:class="{'text-xl': !isDemoSidebarCollapsed}"
+				></i>
+			</div>
+			<span
+				class="group-hover:text-secondary-500 select-none text-sm"
+				:class="{'hidden' : isDemoSidebarCollapsed}"
+			>
+				{ label }
+			</span>
+		</a>
+	</li>
+}
+
+templ DemoNavigationContent() {
+	<ul
+		class="flex flex-col gap-0.5 py-4"
+		:class="isDemoSidebarCollapsed && 'gap-2 items-center'"
+	>
+		@DemoNavItem("InputField", "input-field-demo", "ph-text-aa")
+		@DemoNavItem("TextArea", "text-area-demo", "ph-text-align-left")
+		@DemoNavItem("RadioInput", "radio-input-demo", "ph-radio-button")
+		@DemoNavItem("InlineRadioGroup", "inline-radio-group-demo", "ph-selection")
+		@DemoNavItem("SelectInput", "select-input-demo", "ph-caret-down")
+		@DemoNavItem("Alert", "alert-demo", "ph-warning")
+		@DemoNavItem("Accordion", "accordion-demo", "ph-list")
+		@DemoNavItem("LoadingOverlay", "loading-overlay-demo", "ph-spinner")
+		@DemoNavItem("Modal", "modal-demo", "ph-square")
+		@DemoNavItem("CloakLoading", "cloak-loading-demo", "ph-eye-slash")
+		@DemoNavItem("Sidebar", "sidebar-demo", "ph-sidebar")
+		@DemoNavItem("Tag", "tag-demo", "ph-tag")
+		@DemoNavItem("Toast", "toast-demo", "ph-bell")
+		@DemoNavItem("Button", "button-demo", "ph-cursor")
+		@DemoNavItem("RangeSlider", "range-slider-demo", "ph-sliders")
+	</ul>
+}
 
 templ UsageTitle(componentPath string) {
 	<a
@@ -120,7 +205,7 @@ templ UsageTitle(componentPath string) {
 }
 
 templ InputFieldDemo() {
-	<div class="flex flex-col gap-4">
+	<div class="flex flex-col gap-4" id="input-field-demo">
 		<div class="flex flex-row flex-wrap items-center gap-x-20 gap-y-10">
 			<div class="flex flex-col gap-2">
 				<h3 class="text-xl font-bold">.InputField</h3>
@@ -226,7 +311,7 @@ templ InputFieldDemo() {
 }
 
 templ TextAreaDemo() {
-	<div class="flex flex-col gap-4">
+	<div class="flex flex-col gap-4" id="text-area-demo">
 		<div class="flex flex-col gap-2">
 			<h3 class="text-xl font-bold">.TextArea</h3>
 			<p class="text-sm text-neutral-400">
@@ -280,7 +365,7 @@ templ TextAreaDemo() {
 }
 
 templ RadioInputDemo() {
-	<div class="flex flex-col gap-4">
+	<div class="flex flex-col gap-4" id="radio-input-demo">
 		<div class="flex flex-col gap-2">
 			<h3 class="text-xl font-bold">.RadioInput</h3>
 			<p class="text-sm text-neutral-400">
@@ -335,7 +420,7 @@ templ RadioInputDemo() {
 }
 
 templ InlineRadioGroupDemo() {
-	<div class="flex flex-col gap-4">
+	<div class="flex flex-col gap-4" id="inline-radio-group-demo">
 		<div class="flex flex-col gap-2">
 			<h3 class="text-xl font-bold">.InlineRadioGroup</h3>
 			<p class="text-sm text-neutral-400">
@@ -423,7 +508,7 @@ templ SelectInputDemoOption3() {
 }
 
 templ SelectInputDemo() {
-	<div class="flex flex-col gap-4">
+	<div class="flex flex-col gap-4" id="select-input-demo">
 		<div class="flex flex-col gap-2">
 			<h3 class="text-xl font-bold">.SelectInput</h3>
 			<p class="text-sm text-neutral-400">
@@ -619,7 +704,7 @@ templ AccordionDemoSection3() {
 }
 
 templ AccordionDemo() {
-	<div class="flex flex-col gap-4">
+	<div class="flex flex-col gap-4" id="accordion-demo">
 		<div class="flex flex-col gap-2">
 			<h3 class="text-xl font-bold">.Accordion</h3>
 			<p class="text-sm text-neutral-400">
@@ -680,7 +765,7 @@ templ AccordionDemo() {
 }
 
 templ TagDemo() {
-	<div class="flex flex-col gap-4">
+	<div class="flex flex-col gap-4" id="tag-demo">
 		<div class="flex flex-row flex-wrap items-center gap-x-20 gap-y-10">
 			<div class="flex flex-col gap-2">
 				<h3 class="text-xl font-bold">.Tag</h3>
@@ -804,7 +889,7 @@ templ TagDemo() {
 }
 
 templ ButtonDemo() {
-	<div class="flex flex-col gap-4">
+	<div class="flex flex-col gap-4" id="button-demo">
 		<div class="flex flex-row flex-wrap items-center gap-x-20 gap-y-10">
 			<div class="flex flex-col gap-2">
 				<h3 class="text-xl font-bold">.Button</h3>
@@ -1065,7 +1150,7 @@ templ SidebarDemoFooter() {
 }
 
 templ SidebarDemo() {
-	<div class="flex flex-col gap-4">
+	<div class="flex flex-col gap-4" id="sidebar-demo">
 		<div class="flex flex-row flex-wrap items-center gap-10">
 			<div class="flex flex-col gap-2">
 				<h3 class="text-xl font-bold">.Sidebar</h3>
@@ -1206,7 +1291,7 @@ templ SidebarDemo() {
 }
 
 templ RangeSliderDemo() {
-	<div class="flex flex-col gap-4">
+	<div class="flex flex-col gap-4" id="range-slider-demo">
 		<div class="flex flex-row flex-wrap items-center gap-10">
 			<div class="flex flex-col gap-2">
 				<h3 class="text-xl font-bold">.RangeSlider</h3>
@@ -1469,7 +1554,7 @@ templ RangeSliderDemo() {
 }
 
 templ ToastDemo() {
-	<div class="flex flex-col gap-4">
+	<div class="flex flex-col gap-4" id="toast-demo">
 		<div class="flex flex-row flex-wrap items-center gap-10">
 			<div class="flex flex-col gap-2">
 				<h3 class="text-xl font-bold">.Toast</h3>
@@ -1534,7 +1619,7 @@ templ ToastDemo() {
 }
 
 templ LoadingOverlayDemo() {
-	<div class="flex flex-col gap-4">
+	<div class="flex flex-col gap-4" id="loading-overlay-demo">
 		<div class="grid items-center gap-10 md:grid-cols-2">
 			<div class="flex flex-col gap-2">
 				<h3 class="text-xl font-bold">
@@ -1599,7 +1684,7 @@ templ LoadingOverlayDemo() {
 }
 
 templ CloakLoadingDemo() {
-	<div class="flex flex-col gap-4">
+	<div class="flex flex-col gap-4" id="cloak-loading-demo">
 		<div class="grid items-center gap-10 md:grid-cols-2">
 			<div class="flex flex-col gap-2">
 				<h3 class="text-xl font-bold">
@@ -1707,7 +1792,7 @@ templ CloakLoadingDemo() {
 }
 
 templ ModalDemo() {
-	<div class="flex flex-col gap-4">
+	<div class="flex flex-col gap-4" id="modal-demo">
 		<div class="flex flex-row flex-wrap items-center gap-x-20 gap-y-10">
 			<div class="flex flex-col gap-2">
 				<h3 class="text-xl font-bold">.Modal</h3>
@@ -2031,7 +2116,7 @@ templ ModalDemo() {
 }
 
 templ ModalDemoContent() {
-	<div class="flex flex-col gap-4">
+	<div class="flex flex-col gap-4" id="modal-demo-content">
 		<p class="text-neutral-300">
 			This is the modal content area. You can put any content here including forms, images, or other components.
 		</p>
@@ -2062,7 +2147,7 @@ templ ModalDemoContent() {
 }
 
 templ AlertDemo() {
-	<div class="flex flex-col gap-4">
+	<div class="flex flex-col gap-4" id="alert-demo">
 		<div class="flex flex-row flex-wrap items-center gap-10">
 			<div class="flex flex-col gap-2">
 				<h3 class="text-xl font-bold">.Alert</h3>
