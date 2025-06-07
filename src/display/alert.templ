@@ -55,6 +55,7 @@ type AlertSettings struct {
 	DescriptionRightIconTwoWayStatePath string
 	Variation                           string
 	Size                                string
+	MaxWidth                            string
 	BackgroundColor                     string
 	TextColor                           string
 	TextTitleColor                      string
@@ -75,9 +76,9 @@ type AlertSettings struct {
 templ Alert(componentSettings AlertSettings) {
 	{{ alertClasses := "flex w-full items-start gap-3 p-4" }}
 	{{ alertIconClasses := "ph-duotone text-xl flex-shrink-0 mt-0.5" }}
-	{{ alertContentClasses := "flex-1 min-w-0" }}
+	{{ alertContentClasses := "flex-1 flex flex-col gap-0.5" }}
 	{{ alertTitleClasses := "font-semibold" }}
-	{{ alertDescriptionClasses := "mt-1" }}
+	{{ alertDescriptionClasses := "" }}
 	{{ alertCloseClasses := "ph-bold ph-x cursor-pointer flex-shrink-0 hover:opacity-75 transition-opacity" }}
 	// Size Classes
 	if componentSettings.Size == "" {
@@ -115,6 +116,12 @@ templ Alert(componentSettings AlertSettings) {
 			{{ alertDescriptionClasses += " text-xl" }}
 			{{ alertCloseClasses += " text-xl p-2" }}
 	}
+	// MaxWidth Classes
+	{{ maxWidthClasses := "" }}
+	if componentSettings.MaxWidth != "" {
+		{{ maxWidthClasses = "max-w-" + componentSettings.MaxWidth }}
+	}
+	{{ alertClasses += " " + maxWidthClasses }}
 	// Variation Classes
 	{{ alertVariationIcon := "" }}
 	{{ alertVariationBgColor := "bg-neutral-50/10" }}
@@ -123,22 +130,22 @@ templ Alert(componentSettings AlertSettings) {
 	switch componentSettings.Variation {
 		case AlertVariationSuccess:
 			{{ alertVariationIcon = "ph-check-circle" }}
-			{{ alertVariationBgColor = "bg-emerald-50/10" }}
+			{{ alertVariationBgColor = "bg-emerald-500/10" }}
 			{{ alertVariationTextColor = "text-emerald-50" }}
 			{{ alertVariationIconColor = "text-emerald-400" }}
 		case AlertVariationWarning:
 			{{ alertVariationIcon = "ph-warning" }}
-			{{ alertVariationBgColor = "bg-yellow-50/10" }}
+			{{ alertVariationBgColor = "bg-yellow-500/10" }}
 			{{ alertVariationTextColor = "text-yellow-50" }}
 			{{ alertVariationIconColor = "text-yellow-400" }}
 		case AlertVariationError:
 			{{ alertVariationIcon = "ph-x-circle" }}
-			{{ alertVariationBgColor = "bg-red-50/10" }}
+			{{ alertVariationBgColor = "bg-red-500/10" }}
 			{{ alertVariationTextColor = "text-red-50" }}
 			{{ alertVariationIconColor = "text-red-400" }}
 		case AlertVariationInfo:
 			{{ alertVariationIcon = "ph-info" }}
-			{{ alertVariationBgColor = "bg-blue-50/10" }}
+			{{ alertVariationBgColor = "bg-blue-500/10" }}
 			{{ alertVariationTextColor = "text-blue-50" }}
 			{{ alertVariationIconColor = "text-blue-400" }}
 	}
@@ -261,7 +268,7 @@ templ Alert(componentSettings AlertSettings) {
 							x-text={ componentSettings.TitleOneWayStatePath }
 						}
 					>
-						{ componentSettings.Title }
+						@templ.Raw(componentSettings.Title)
 					</div>
 				}
 				<!-- AlertDescription -->
@@ -280,7 +287,7 @@ templ Alert(componentSettings AlertSettings) {
 							x-text={ componentSettings.DescriptionOneWayStatePath }
 						}
 					>
-						{ componentSettings.Description }
+						@templ.Raw(componentSettings.Description)
 					</div>
 				}
 			}
