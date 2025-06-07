@@ -1,6 +1,10 @@
 # Changelog
 
 ```log
+0.1.4 - 2025/06/07
+feat: alert
+feat: button IsVisibleOneWayStatePath setting
+
 0.1.3 - 2025/06/05
 feat: modal resize and close functions
 
