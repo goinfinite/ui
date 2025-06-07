@@ -35,6 +35,7 @@ type ButtonSettings struct {
 	Id                            string
 	IsDisabled                    bool
 	IsDisabledOneWayStatePath     string
+	IsVisibleOneWayStatePath      string
 	IsFullWidth                   bool
 	IsSubmit                      bool
 	OnClickFunc                   string
@@ -177,6 +178,9 @@ templ Button(componentSettings ButtonSettings) {
 			}
 			if componentSettings.IsDisabledOneWayStatePath != "" {
 				:disabled={ componentSettings.IsDisabledOneWayStatePath }
+			}
+			if componentSettings.IsVisibleOneWayStatePath != "" {
+				x-show={ componentSettings.IsVisibleOneWayStatePath }
 			}
 			class={ buttonClasses }
 			if componentSettings.IsDisabledOneWayStatePath != "" {
