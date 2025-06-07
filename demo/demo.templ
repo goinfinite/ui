@@ -21,92 +21,96 @@ templ DemoIndex() {
 			<script type="text/javascript">window.__unocss={theme:{colors:{primary:{50:'#edfcff',100:'#d7f6ff',200:'#b8f0ff',300:'#86eaff',400:'#4edbff',500:'#25c2ff',600:'#0da6ff',700:'#0993f8',800:'#0d6fc0',900:'#115e97',950:'#10395b'},secondary:{50:"#dea893",100:"#d89a81",200:"#d38b6f",300:"#cd7d5d",400:"#ca7654",500:"#c97350",600:"#c46f4d",700:"#ba6949",800:"#a55e41",900:"#905239",950:"#7c4631"}}}};</script>
 			@uiImport.HeadTagsFull()
 		</head>
-		<body class="bg-neutral-900 text-neutral-50" x-data="{isDemoSidebarCollapsed: $persist(false).as('uiDemo.isSidebarCollapsed')}">
+		<body class="bg-neutral-900 text-neutral-50 flex">
 			<!-- Navigation Sidebar -->
-			@DemoNavigationSidebar()
-			<!-- Demo Header -->
-			<div class="container mx-auto my-20 flex flex-col items-center justify-between gap-4 overflow-y-auto" id="demo-header">
-				<h1 class="text-center text-5xl font-bold">Infinite UI Demo</h1>
-				<p class="text-center text-sm text-neutral-400">
-					<i><a href="https://goinfinite.net" target="_blank" title="goinfinite.net">Infinite</a></i> UI is a collection of reusable components for building elegant user interfaces in Go.
-					<br/>
-					It is built with <i>a-h/templ</i>, <i>Alpine.js</i>, <i>Tailwind CSS</i>, <i>Phosphor Icons</i> and the occasional additional JavaScript libraries when necessary.
-				</p>
-				<div class="flex flex-row items-center gap-2">
-					<a href="https://github.com/goinfinite/ui" target="_blank" title="GitHub Repository">
-						<img src="https://img.shields.io/badge/repository-262626?logo=github" alt="GitHub Repository"/>
-					</a>
-					<a href="https://github.com/orgs/goinfinite/discussions" target="_blank" title="GitHub Discussions">
-						<img src="https://img.shields.io/badge/discussions-751A3D?logo=github" alt="GitHub Discussions"/>
-					</a>
-					<a href="https://www.reddit.com/r/goinfinite/" target="_blank" title="Reddit Subreddit">
-						<img src="https://img.shields.io/badge/%2Fr%2Fgoinfinite-FF4500?logo=reddit&logoColor=ffffff" alt="Reddit Subreddit"/>
-					</a>
-					<a href="https://goreportcard.com/report/github.com/goinfinite/ui" target="_blank" title="Go Report Card">
-						<img src="https://goreportcard.com/badge/github.com/goinfinite/ui" alt="Go Report Card"/>
-					</a>
-					<a href="https://github.com/goinfinite/ui/blob/main/LICENSE.md" target="_blank" title="License">
-						<img src="https://img.shields.io/badge/license-MIT-teal.svg" alt="License"/>
-					</a>
-				</div>
+			<div x-data="{isDemoSidebarCollapsed: $persist(false).as('uiDemo.isSidebarCollapsed')}">
+				@DemoNavigationSidebar()
 			</div>
-			<!-- Main Content -->
-			<section class="gap-30 container mx-auto flex flex-col overflow-x-auto overflow-y-hidden p-4" id="main-content">
-				<div class="flex flex-col gap-10">
-					<!-- uiForm -->
-					<div id="ui-form-section" class="flex flex-col gap-2">
-						<h2 class="text-3xl font-bold">
-							{ `@uiForm` }
-						</h2>
-						<p class="text-sm text-neutral-400">
-							uiForm is a collection of components that make it easy to create forms.
-						</p>
+			<div class="container mx-auto flex flex-col gap-20">
+				<!-- Demo Header -->
+				<section class="flex flex-col items-center justify-between gap-4 overflow-y-auto mt-20" id="demo-header">
+					<h1 class="text-center text-5xl font-bold">Infinite UI Demo</h1>
+					<p class="text-center text-sm text-neutral-400">
+						<i><a href="https://goinfinite.net" target="_blank" title="goinfinite.net">Infinite</a></i> UI is a collection of reusable components for building elegant user interfaces in Go.
+						<br/>
+						It is built with <i>a-h/templ</i>, <i>Alpine.js</i>, <i>Tailwind CSS</i>, <i>Phosphor Icons</i> and the occasional additional JavaScript libraries when necessary.
+					</p>
+					<div class="flex flex-row items-center gap-2">
+						<a href="https://github.com/goinfinite/ui" target="_blank" title="GitHub Repository">
+							<img src="https://img.shields.io/badge/repository-262626?logo=github" alt="GitHub Repository"/>
+						</a>
+						<a href="https://github.com/orgs/goinfinite/discussions" target="_blank" title="GitHub Discussions">
+							<img src="https://img.shields.io/badge/discussions-751A3D?logo=github" alt="GitHub Discussions"/>
+						</a>
+						<a href="https://www.reddit.com/r/goinfinite/" target="_blank" title="Reddit Subreddit">
+							<img src="https://img.shields.io/badge/%2Fr%2Fgoinfinite-FF4500?logo=reddit&logoColor=ffffff" alt="Reddit Subreddit"/>
+						</a>
+						<a href="https://goreportcard.com/report/github.com/goinfinite/ui" target="_blank" title="Go Report Card">
+							<img src="https://goreportcard.com/badge/github.com/goinfinite/ui" alt="Go Report Card"/>
+						</a>
+						<a href="https://github.com/goinfinite/ui/blob/main/LICENSE.md" target="_blank" title="License">
+							<img src="https://img.shields.io/badge/license-MIT-teal.svg" alt="License"/>
+						</a>
 					</div>
-					<div class="*:border-t *:border-neutral-800 *:py-20 flex flex-col">
-						@InputFieldDemo()
-						@TextAreaDemo()
-						@RadioInputDemo()
-						@InlineRadioGroupDemo()
-						@SelectInputDemo()
+				</section>
+				<!-- Main Content -->
+				<section class="flex flex-col gap-30 overflow-x-auto overflow-y-hidden p-4" id="main-content">
+					<div class="flex flex-col gap-10">
+						<!-- uiForm -->
+						<div id="ui-form-section" class="flex flex-col gap-2">
+							<h2 class="text-3xl font-bold">
+								{ `@uiForm` }
+							</h2>
+							<p class="text-sm text-neutral-400">
+								uiForm is a collection of components that make it easy to create forms.
+							</p>
+						</div>
+						<div class="*:border-t *:border-neutral-800 *:py-20 flex flex-col">
+							@InputFieldDemo()
+							@TextAreaDemo()
+							@RadioInputDemo()
+							@InlineRadioGroupDemo()
+							@SelectInputDemo()
+						</div>
 					</div>
-				</div>
-				<!-- uiDisplay -->
-				<div class="flex flex-col gap-10">
-					<div id="ui-display-section" class="flex flex-col gap-2">
-						<h2 class="text-3xl font-bold">
-							{ `@uiDisplay` }
-						</h2>
-						<p class="text-sm text-neutral-400">
-							uiDisplay is a collection of components for displaying content.
-						</p>
+					<!-- uiDisplay -->
+					<div class="flex flex-col gap-10">
+						<div id="ui-display-section" class="flex flex-col gap-2">
+							<h2 class="text-3xl font-bold">
+								{ `@uiDisplay` }
+							</h2>
+							<p class="text-sm text-neutral-400">
+								uiDisplay is a collection of components for displaying content.
+							</p>
+						</div>
+						<div class="*:border-t *:border-neutral-800 *:py-20 flex flex-col">
+							@AlertDemo()
+							@AccordionDemo()
+							@LoadingOverlayDemo()
+							@ModalDemo()
+							@CloakLoadingDemo()
+							@SidebarDemo()
+							@TagDemo()
+							@ToastDemo()
+						</div>
 					</div>
-					<div class="*:border-t *:border-neutral-800 *:py-20 flex flex-col">
-						@AlertDemo()
-						@AccordionDemo()
-						@LoadingOverlayDemo()
-						@ModalDemo()
-						@CloakLoadingDemo()
-						@SidebarDemo()
-						@TagDemo()
-						@ToastDemo()
+					<!-- uiControl -->
+					<div class="flex flex-col gap-10">
+						<div id="ui-control-section" class="flex flex-col gap-2">
+							<h2 class="text-3xl font-bold">
+								{ `@uiControl` }
+							</h2>
+							<p class="text-sm text-neutral-400">
+								uiControl is a collection of components for controlling content.
+							</p>
+						</div>
+						<div class="*:border-t *:border-neutral-800 *:py-20 flex flex-col">
+							@ButtonDemo()
+							@RangeSliderDemo()
+						</div>
 					</div>
-				</div>
-				<!-- uiControl -->
-				<div class="flex flex-col gap-10">
-					<div id="ui-control-section" class="flex flex-col gap-2">
-						<h2 class="text-3xl font-bold">
-							{ `@uiControl` }
-						</h2>
-						<p class="text-sm text-neutral-400">
-							uiControl is a collection of components for controlling content.
-						</p>
-					</div>
-					<div class="*:border-t *:border-neutral-800 *:py-20 flex flex-col">
-						@ButtonDemo()
-						@RangeSliderDemo()
-					</div>
-				</div>
-			</section>
+				</section>
+			</div>
 			@uiDisplay.CloakLoading(uiDisplay.CloakLoadingSettings{BackgroundColor: "rgb(38, 38, 38)"})
 		</body>
 	</html>
