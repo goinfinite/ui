@@ -96,39 +96,52 @@ async function jsonAjax(
     });
 }
 
+function randomNumberGenerator(rangeSize) {
+  const randomValues = crypto.getRandomValues(new Uint32Array(1));
+  const rawRandomInteger = randomValues[0];
+  const numberWithinRange = rawRandomInteger % rangeSize;
+  return numberWithinRange;
+}
+
 function createRandomPassword() {
   const passwordLength = 16;
-  const letterChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const letterChars =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const numberChars = "0123456789";
   const specialChars = "!@#$%^&*()_+";
   const allChars = letterChars + numberChars + specialChars;
 
-  const pickRandomChar = (charSet) => {
-    const randomIndex = Math.floor(Math.random() * charSet.length);
-    return charSet[randomIndex];
-  };
-
   let passwordChars = [];
-  let passwordIterationCount = 0;
-  while (passwordIterationCount < passwordLength) {
-    passwordChars.push(pickRandomChar(allChars));
-    passwordIterationCount++;
+  for (
+    let charIndex = 0;
+    charIndex < passwordLength;
+    charIndex++
+  ) {
+    const randomPosition = randomNumberGenerator(allChars.length);
+    passwordChars.push(allChars[randomPosition]);
   }
 
-  const hasLetter = passwordChars.some((char) => /[a-zA-Z]/.test(char));
-  const hasNumber = passwordChars.some((char) => /[0-9]/.test(char));
-  const hasSpecial = passwordChars.some((char) => /[^a-zA-Z0-9]/.test(char));
+  const letterPosition = randomNumberGenerator(passwordLength);
 
-  const missingClasses = [];
-  if (!hasLetter) missingClasses.push(letterChars);
-  if (!hasNumber) missingClasses.push(numberChars);
-  if (!hasSpecial) missingClasses.push(specialChars);
-
-  let replacementPositionIndex = 0;
-  for (const missingCharSet of missingClasses) {
-    passwordChars[replacementPositionIndex] = pickRandomChar(missingCharSet);
-    replacementPositionIndex++;
+  let numberPosition = randomNumberGenerator(passwordLength);
+  while (numberPosition === letterPosition) {
+    numberPosition = randomNumberGenerator(passwordLength);
   }
+
+  let specialPosition = randomNumberGenerator(passwordLength);
+  while (
+    specialPosition === letterPosition ||
+    specialPosition === numberPosition
+  ) {
+    specialPosition = randomNumberGenerator(passwordLength);
+  }
+
+  passwordChars[letterPosition] =
+    letterChars[randomNumberGenerator(letterChars.length)];
+  passwordChars[numberPosition] =
+    numberChars[randomNumberGenerator(numberChars.length)];
+  passwordChars[specialPosition] =
+    specialChars[randomNumberGenerator(specialChars.length)];
 
   return passwordChars.join("");
 }

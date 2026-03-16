@@ -170,7 +170,7 @@ Collapsible section component for grouping content into expandable panels.
 
 ## CDN Dependencies Setup
 
-Consolidated export of all third-party library dependencies (Alpine.js, Tailwind CSS via UnoCSS, Phosphor Icons, Google Fonts, HTMX) as composable templ components for easy inclusion in application head tags.
+Consolidated export of all third-party library dependencies (Alpine.js, UnoCSS runtime with Tailwind-compatible presets, Phosphor Icons, Google Fonts, HTMX) as composable templ components for easy inclusion in application head tags.
 
 **Flow:**
 
