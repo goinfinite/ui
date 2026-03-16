@@ -98,20 +98,39 @@ async function jsonAjax(
 
 function createRandomPassword() {
   const passwordLength = 16;
-  const chars =
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
+  const letterChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const numberChars = "0123456789";
+  const specialChars = "!@#$%^&*()_+";
+  const allChars = letterChars + numberChars + specialChars;
 
-  let passwordContent = "";
+  const pickRandomChar = (charSet) => {
+    const randomIndex = Math.floor(Math.random() * charSet.length);
+    return charSet[randomIndex];
+  };
+
+  let passwordChars = [];
   let passwordIterationCount = 0;
   while (passwordIterationCount < passwordLength) {
-    const randomIndex = Math.floor(Math.random() * chars.length);
-    const indexAfterRandomIndex = randomIndex + 1;
-    passwordContent += chars.substring(randomIndex, indexAfterRandomIndex);
-
+    passwordChars.push(pickRandomChar(allChars));
     passwordIterationCount++;
   }
 
-  return passwordContent;
+  const hasLetter = passwordChars.some((char) => /[a-zA-Z]/.test(char));
+  const hasNumber = passwordChars.some((char) => /[0-9]/.test(char));
+  const hasSpecial = passwordChars.some((char) => /[^a-zA-Z0-9]/.test(char));
+
+  const missingClasses = [];
+  if (!hasLetter) missingClasses.push(letterChars);
+  if (!hasNumber) missingClasses.push(numberChars);
+  if (!hasSpecial) missingClasses.push(specialChars);
+
+  let replacementPositionIndex = 0;
+  for (const missingCharSet of missingClasses) {
+    passwordChars[replacementPositionIndex] = pickRandomChar(missingCharSet);
+    replacementPositionIndex++;
+  }
+
+  return passwordChars.join("");
 }
 
 function registerAlpineState(stateFunction) {
