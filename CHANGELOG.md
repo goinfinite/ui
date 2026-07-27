@@ -3,6 +3,7 @@
 ```log
 0.1.7 - 2026/07/27
 chore: bump go and templ deps
+chore: update templ generated files to v0.3.1020
 
 0.1.6 - 2026/03/16
 fix: ensure createRandomPassword meets password VO requirements
