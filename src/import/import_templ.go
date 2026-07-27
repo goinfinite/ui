@@ -34,7 +34,7 @@ func HeadTagsAtomicCssEngine() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/@unocss/reset@66.0.0/tailwind-compat.css\" integrity=\"sha256-YmuJOpwODv9JhZSXl17QoPLeBbIhkqZpNt39S++mkdk=\" crossorigin=\"anonymous\"><script src=\"https://cdn.jsdelivr.net/npm/@unocss/runtime@66.0.0/uno.global.min.js\" integrity=\"sha256-blhgsQv0/ztGg+RPOT4x4o8o0G85scS6EQKcOsVBJl0=\" crossorigin=\"anonymous\"></script>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/@unocss/reset@66.7.5/tailwind-compat.css\" integrity=\"sha256-YmuJOpwODv9JhZSXl17QoPLeBbIhkqZpNt39S++mkdk=\" crossorigin=\"anonymous\"><script src=\"https://cdn.jsdelivr.net/npm/@unocss/runtime@66.7.5/uno.global.min.js\" integrity=\"sha256-zrkLPNBBcnPlp/2ImSC7r81d5YK3B9OfRWWU7Ol+EEs=\" crossorigin=\"anonymous\"></script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -63,7 +63,7 @@ func HeadTagsPhosphorIcons() templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css\" integrity=\"sha256-yKMt9n+L1X9wxjceFewjLfJd3ro+uQYNeqpoEBps4kA=\" crossorigin=\"anonymous\"><link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/duotone/style.css\" integrity=\"sha256-/G039/D3/9zfcUxUGB/dJ5EZaeRzfTFRuXLUuAblrl0=\" crossorigin=\"anonymous\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/bold/style.css\" integrity=\"sha256-yKMt9n+L1X9wxjceFewjLfJd3ro+uQYNeqpoEBps4kA=\" crossorigin=\"anonymous\"><link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/duotone/style.css\" integrity=\"sha256-/G039/D3/9zfcUxUGB/dJ5EZaeRzfTFRuXLUuAblrl0=\" crossorigin=\"anonymous\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -92,36 +92,7 @@ func HeadTagsGoogleFonts() templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin><link href=\"https://fonts.googleapis.com/css?family=Lato:700,regular,italic,700italic,&display=swap\" rel=\"stylesheet\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		return nil
-	})
-}
-
-func HeadTagsMozillaFonts() templ.Component {
-	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
-			return templ_7745c5c3_CtxErr
-		}
-		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-		if !templ_7745c5c3_IsBuffer {
-			defer func() {
-				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err == nil {
-					templ_7745c5c3_Err = templ_7745c5c3_BufErr
-				}
-			}()
-		}
-		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var4 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var4 == nil {
-			templ_7745c5c3_Var4 = templ.NopComponent
-		}
-		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<style>@font-face{font-family:\"Mozilla Headline\";src:local(\"Mozilla Headline Regular\"), local(\"MozillaHeadline-Regular\"), url(\"https://ui.demo.goinfinite.net/assets/fonts/MozillaHeadline-Regular.woff2\") format(\"woff2\");font-weight:normal;font-style:normal;font-display:swap}@font-face{font-family:\"Mozilla Headline\";src:local(\"Mozilla Headline Italic\"), local(\"MozillaHeadline-Italic\"), url(\"https://ui.demo.goinfinite.net/assets/fonts/MozillaHeadline-Italic.woff2\") format(\"woff2\");font-weight:normal;font-style:italic;font-display:swap}@font-face{font-family:\"Mozilla Headline\";src:local(\"Mozilla Headline SemiBold\"), local(\"MozillaHeadline-SemiBold\"), url(\"https://ui.demo.goinfinite.net/assets/fonts/MozillaHeadline-SemiBold.woff2\") format(\"woff2\");font-weight:bold;font-style:normal;font-display:swap}@font-face{font-family:\"Mozilla Headline\";src:local(\"Mozilla Headline SemiBold Italic\"), local(\"MozillaHeadline-SemiBoldItalic\"), url(\"https://ui.demo.goinfinite.net/assets/fonts/MozillaHeadline-SemiBoldItalic.woff2\") format(\"woff2\");font-weight:bold;font-style:italic;font-display:swap}</style>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin><link href=\"https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&family=Mozilla+Headline:wght@200..700&display=swap\" rel=\"stylesheet\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -145,20 +116,16 @@ func HeadTagsFonts() templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var5 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var5 == nil {
-			templ_7745c5c3_Var5 = templ.NopComponent
+		templ_7745c5c3_Var4 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var4 == nil {
+			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = HeadTagsMozillaFonts().Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
 		templ_7745c5c3_Err = HeadTagsGoogleFonts().Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<style>body{font-family:\"Lato\", \"Helvetica Neue\", Arial, X-LocaleSpecific, sans-serif}h1,h2,h3,h4,h5,h6{font-family:\"Mozilla Headline\", \"Helvetica Neue\", Arial, X-LocaleSpecific, sans-serif;font-weight:bold}</style>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<style>body{font-family:\"Lato\", \"Helvetica Neue\", Arial, X-LocaleSpecific, sans-serif}h1,h2,h3,h4,h5,h6{font-family:\"Mozilla Headline\", \"Helvetica Neue\", Arial, X-LocaleSpecific, sans-serif;font-weight:bold}</style>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -182,12 +149,12 @@ func HeadTagsAlpineJs() templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var6 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var6 == nil {
-			templ_7745c5c3_Var6 = templ.NopComponent
+		templ_7745c5c3_Var5 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var5 == nil {
+			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<script defer src=\"https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.14.9/dist/cdn.min.js\" integrity=\"sha256-jFBwr6faTqqhp3sVi4/VTxJ0FpaF9YGZN1ZGLl/5QYM=\" crossorigin=\"anonymous\"></script><script defer src=\"https://cdn.jsdelivr.net/npm/@alpinejs/intersect@3.14.9/dist/cdn.min.js\" integrity=\"sha256-sav73qRAT3EB3ibvbi5l9O+uc757MwIUHuzyfe9oVg4=\" crossorigin=\"anonymous\"></script><script defer src=\"https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js\" integrity=\"sha256-PtHu0lJIiSHfZeNj1nFd6wTX+Squ255SGZ/fc8seCtM=\" crossorigin=\"anonymous\"></script>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<script defer src=\"https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.15.12/dist/cdn.min.js\" integrity=\"sha256-532TLFLOYWwqXF3EVTCgIhkRoxqrSKF56GgJMtTTqkc=\" crossorigin=\"anonymous\"></script><script defer src=\"https://cdn.jsdelivr.net/npm/@alpinejs/intersect@3.15.12/dist/cdn.min.js\" integrity=\"sha256-sav73qRAT3EB3ibvbi5l9O+uc757MwIUHuzyfe9oVg4=\" crossorigin=\"anonymous\"></script><script defer src=\"https://cdn.jsdelivr.net/npm/alpinejs@3.15.12/dist/cdn.min.js\" integrity=\"sha256-V7N9fK6aJ9ll/a5K3MhEJF39xAfmVa7oXc//OggDaj8=\" crossorigin=\"anonymous\"></script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -211,12 +178,12 @@ func HeadTagsHtmx() templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var7 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var7 == nil {
-			templ_7745c5c3_Var7 = templ.NopComponent
+		templ_7745c5c3_Var6 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var6 == nil {
+			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<script defer src=\"https://cdn.jsdelivr.net/npm/htmx.org@2.0.4/dist/htmx.min.js\" integrity=\"sha256-4gndpcgjVHnzFm3vx3UOHbzVpcGAi3eS/C5nM3aPtEc=\" crossorigin=\"anonymous\"></script>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<script defer src=\"https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js\" integrity=\"sha256-cepnGFv6jJjDnTFxfG/OXYUjcPzf0SnbRUN3TTFFwN4=\" crossorigin=\"anonymous\"></script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -243,9 +210,9 @@ func HeadTagsToolset() templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var8 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var8 == nil {
-			templ_7745c5c3_Var8 = templ.NopComponent
+		templ_7745c5c3_Var7 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var7 == nil {
+			templ_7745c5c3_Var7 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		templ_7745c5c3_Err = uiToolset.MinifierTemplateJs(&unminifiedToolsetJs).Render(ctx, templ_7745c5c3_Buffer)
@@ -272,12 +239,12 @@ func HeadTagsVega() templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var9 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var9 == nil {
-			templ_7745c5c3_Var9 = templ.NopComponent
+		templ_7745c5c3_Var8 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var8 == nil {
+			templ_7745c5c3_Var8 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<script src=\"https://cdn.jsdelivr.net/npm/vega@6.1.2/build/vega.min.js\" integrity=\"sha256-CPeWtqVxsLRtgZ8H+3WByhZWWvhpheF2a7GAY4V2s/g=\" crossorigin=\"anonymous\"></script><script src=\"https://cdn.jsdelivr.net/npm/vega-lite@6.1.0/build/vega-lite.min.js\" integrity=\"sha256-Z1UPjkQutWekUKkE8IPBO8R393KNMFiYRVLMNel5/Lc=\" crossorigin=\"anonymous\"></script><script src=\"https://cdn.jsdelivr.net/npm/vega-embed@7.0.2/build/vega-embed.min.js\" integrity=\"sha256-xxEaQRkAgJOLFMHeAAdNm9oW7yGZ4pGd0DjN35fYc1Q=\" crossorigin=\"anonymous\"></script>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<script src=\"https://cdn.jsdelivr.net/npm/vega@6.3.1/build/vega.min.js\" integrity=\"sha256-cL/chLFfEfP7NGmiSvAzFLMiLezk8shhXlQvGD+Pd1o=\" crossorigin=\"anonymous\"></script><script src=\"https://cdn.jsdelivr.net/npm/vega-lite@6.4.3/build/vega-lite.min.js\" integrity=\"sha256-NamCHfg4glsFpqc+lBS1h0ehsYMhWDhY7ZA8Zjk6XH4=\" crossorigin=\"anonymous\"></script><script src=\"https://cdn.jsdelivr.net/npm/vega-embed@7.1.0/build/vega-embed.min.js\" integrity=\"sha256-w2JUJwIZ7uWPubHZVN7K2VT7B7/Jq3gMXUQBvURc1Qw=\" crossorigin=\"anonymous\"></script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -301,9 +268,9 @@ func HeadTagsMinimalCss() templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var10 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var10 == nil {
-			templ_7745c5c3_Var10 = templ.NopComponent
+		templ_7745c5c3_Var9 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var9 == nil {
+			templ_7745c5c3_Var9 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		templ_7745c5c3_Err = HeadTagsAtomicCssEngine().Render(ctx, templ_7745c5c3_Buffer)
@@ -334,9 +301,9 @@ func HeadTagsFullCss() templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var11 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var11 == nil {
-			templ_7745c5c3_Var11 = templ.NopComponent
+		templ_7745c5c3_Var10 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var10 == nil {
+			templ_7745c5c3_Var10 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		templ_7745c5c3_Err = HeadTagsMinimalCss().Render(ctx, templ_7745c5c3_Buffer)
@@ -367,9 +334,9 @@ func HeadTagsMinimalJs() templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var12 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var12 == nil {
-			templ_7745c5c3_Var12 = templ.NopComponent
+		templ_7745c5c3_Var11 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var11 == nil {
+			templ_7745c5c3_Var11 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		templ_7745c5c3_Err = HeadTagsAlpineJs().Render(ctx, templ_7745c5c3_Buffer)
@@ -396,9 +363,9 @@ func HeadTagsFullJs() templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var13 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var13 == nil {
-			templ_7745c5c3_Var13 = templ.NopComponent
+		templ_7745c5c3_Var12 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var12 == nil {
+			templ_7745c5c3_Var12 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		templ_7745c5c3_Err = HeadTagsToolset().Render(ctx, templ_7745c5c3_Buffer)
@@ -433,9 +400,9 @@ func HeadTagsMinimal() templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var14 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var14 == nil {
-			templ_7745c5c3_Var14 = templ.NopComponent
+		templ_7745c5c3_Var13 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var13 == nil {
+			templ_7745c5c3_Var13 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		templ_7745c5c3_Err = HeadTagsMinimalCss().Render(ctx, templ_7745c5c3_Buffer)
@@ -466,9 +433,9 @@ func HeadTagsFull() templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var15 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var15 == nil {
-			templ_7745c5c3_Var15 = templ.NopComponent
+		templ_7745c5c3_Var14 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var14 == nil {
+			templ_7745c5c3_Var14 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		templ_7745c5c3_Err = HeadTagsFullCss().Render(ctx, templ_7745c5c3_Buffer)
