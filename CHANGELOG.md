@@ -1,6 +1,9 @@
 # Changelog
 
 ```log
+0.1.7 - 2026/07/27
+chore: bump go and templ deps
+
 0.1.6 - 2026/03/16
 fix: ensure createRandomPassword meets password VO requirements
 chore: update go and deps
