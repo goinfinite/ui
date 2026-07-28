@@ -4,6 +4,8 @@
 0.1.7 - 2026/07/27
 chore: bump go and templ deps
 chore: update templ generated files to v0.3.1020
+feat: selectInput hint display modes (tooltip and description)
+docs: add development build instructions
 
 0.1.6 - 2026/03/16
 fix: ensure createRandomPassword meets password VO requirements
