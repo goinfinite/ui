@@ -33,6 +33,8 @@ Dropdown select component with support for flat string options or label-value pa
 1. `src/form/selectInput.templ` — Component definition with SelectInputSettings struct and SelectLabelValueOption data structure
 2. `src/form/selectInput_templ.go` — Compiled output rendering select with embedded JSON script for options and Alpine.js state management
 
+Supports optional hint text rendered either as an info-icon tooltip inside the dropdown row or as a description line below the fieldset.
+
 ---
 
 ## Radio Button Input

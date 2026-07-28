@@ -692,6 +692,68 @@ templ SelectInputDemo() {
 				})
 			</div>
 		</div>
+		<div class="my-10 grid gap-10 md:grid-cols-2" x-data="{country: 'Brazil'}">
+			<div class="flex flex-col gap-4">
+				<div class="flex flex-col gap-2">
+					<h4 class="text-lg font-bold">
+						Usage <span class="text-sm text-neutral-500">(w/HintValue & HintDisplay)</span>
+					</h4>
+					<pre class={ DemoPreCodeClasses }>
+						<code>
+							{ `@uiForm.SelectInput(uiForm.SelectInputSettings{
+	InputName: "country",
+	Label:     "Country",
+
+	// OptionalFields
+	FlatOptions:              []string{"Argentina", "Brazil", "Chile"},
+	TwoWayStatePath:          "country",
+	ShouldIncludeBlankOption: true,
+	HintValue:                "This is a helpful hint displayed as a description below the select.",
+	HintDisplay:              uiForm.InputTypeHintDisplayDescription,
+})` }
+						</code>
+					</pre>
+				</div>
+				<div class="flex flex-col gap-2">
+					<h5 class="text-sm font-bold">Alpine.js Parent State <i>(x-data)</i></h5>
+					<pre class={ DemoPreCodeClasses }>
+						<code>{ `<div x-data="{country: '` }<span x-text="country"></span>{ `'}"></div>` }</code>
+					</pre>
+				</div>
+			</div>
+			<div class="flex flex-col gap-3">
+				<h4 class="text-lg font-bold">Live Example</h4>
+				<div class="flex flex-col gap-6">
+					<p class="text-sm text-neutral-400">HintValue & HintDisplay</p>
+					@uiForm.SelectInput(uiForm.SelectInputSettings{
+						InputName: "country",
+						Label:     "Country",
+						FlatOptions: []string{
+							"Argentina",
+							"Brazil",
+							"Chile",
+						},
+						TwoWayStatePath:          "country",
+						ShouldIncludeBlankOption: true,
+						HintValue:                "This is a helpful hint displayed as a description below the select.",
+						HintDisplay:              uiForm.InputTypeHintDisplayDescription,
+					})
+					@uiForm.SelectInput(uiForm.SelectInputSettings{
+						InputName: "country",
+						Label:     "Country",
+						FlatOptions: []string{
+							"Argentina",
+							"Brazil",
+							"Chile",
+						},
+						TwoWayStatePath:          "country",
+						ShouldIncludeBlankOption: true,
+						HintValue:                "This is a helpful hint displayed as a tooltip.",
+						HintDisplay:              uiForm.InputTypeHintDisplayTooltip,
+					})
+				</div>
+			</div>
+		</div>
 	</div>
 }
 

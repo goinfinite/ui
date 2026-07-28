@@ -19,15 +19,19 @@ type SelectInputSettings struct {
 	Label     string
 
 	// OptionalFields
-	FlatOptions              []string
-	LabelValueOptions        []SelectLabelValueOption
-	TwoWayStatePath          string
-	OnChangeFunc             string
-	Size                     string
-	DropdownBackgroundColor  string
-	InputId                  string
-	IsRequired               bool
-	ShouldIncludeBlankOption bool
+	FlatOptions                       []string
+	LabelValueOptions                 []SelectLabelValueOption
+	TwoWayStatePath                   string
+	OnChangeFunc                      string
+	Size                              string
+	DropdownBackgroundColor           string
+	InputId                           string
+	IsRequired                        bool
+	ShouldIncludeBlankOption          bool
+	HintValue                         string
+	HintStatePath                     string
+	HintDisplay                       string
+	HintDisplayTooltipBackgroundColor string
 }
 
 templ SelectInput(componentSettings SelectInputSettings) {
@@ -58,91 +62,124 @@ templ SelectInput(componentSettings SelectInputSettings) {
 				}
 			/>
 		}
-		<fieldset
-			class="bg-neutral-50/7.5 relative -mt-2 w-full rounded border border-neutral-50/5 transition-colors autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30"
-			if componentSettings.TwoWayStatePath != "" {
-				:class={ `!` + componentSettings.TwoWayStatePath + ` && 'mt-0'` }
-			}
-		>
-			<legend
-				class="ml-1 select-none px-1 text-xs font-bold text-neutral-50/80"
+		<div class="flex w-full flex-col">
+			<fieldset
+				class="bg-neutral-50/7.5 relative -mt-2 w-full rounded border border-neutral-50/5 transition-colors autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30"
 				if componentSettings.TwoWayStatePath != "" {
-					:class={ `!` + componentSettings.TwoWayStatePath + ` && 'opacity-0 !p-0 w-0 h-0'` }
+					:class={ `!` + componentSettings.TwoWayStatePath + ` && 'mt-0'` }
 				}
 			>
-				{ componentSettings.Label }
-				if componentSettings.IsRequired {
-					<span class="text-red-700">*</span>
-				}
-			</legend>
-			<!-- SelectField -->
-			<div
-				class="group flex w-full cursor-pointer items-center justify-between px-2 pb-2 text-sm text-neutral-100"
-				if componentSettings.TwoWayStatePath != "" {
-					:class={ `!` + componentSettings.TwoWayStatePath + ` && 'pt-2'` }
-				}
-				@click="isOpen = !isOpen"
-			>
-				{{ selectedLabelText := selectValueStatePath }}
-				if len(componentSettings.LabelValueOptions) > 0 {
-					{{ selectedLabelText = `JSON.parse(document.getElementById('` + labelValueOptionsScriptId + `').textContent).find(option => option.value == ` + selectValueStatePath + `)?.label` }}
-				}
+				<legend
+					class="ml-1 select-none px-1 text-xs font-bold text-neutral-50/80"
+					if componentSettings.TwoWayStatePath != "" {
+						:class={ `!` + componentSettings.TwoWayStatePath + ` && 'opacity-0 !p-0 w-0 h-0'` }
+					}
+				>
+					{ componentSettings.Label }
+					if componentSettings.IsRequired {
+						<span class="text-red-700">*</span>
+					}
+				</legend>
+				<!-- SelectField -->
 				<div
-					x-text={ selectedLabelText + " || '" + componentSettings.Label + "'" }
-					class="w-full overflow-hidden text-ellipsis"
-				></div>
-				<div class="flex items-center gap-1.5 text-neutral-100/60">
-					<!-- SelectDropdownIcon -->
-					<i class="ph-bold ph-caret-down pt-0.5 text-sm transition-transform hover:text-neutral-300 group-focus-within:text-neutral-300 group-hover:text-neutral-300" :class="isOpen ? 'rotate-180' : ''"></i>
+					class="group flex w-full cursor-pointer items-center justify-between px-2 pb-2 text-sm text-neutral-100"
+					if componentSettings.TwoWayStatePath != "" {
+						:class={ `!` + componentSettings.TwoWayStatePath + ` && 'pt-2'` }
+					}
+					@click="isOpen = !isOpen"
+				>
+					{{ selectedLabelText := selectValueStatePath }}
+					if len(componentSettings.LabelValueOptions) > 0 {
+						{{ selectedLabelText = `JSON.parse(document.getElementById('` + labelValueOptionsScriptId + `').textContent).find(option => option.value == ` + selectValueStatePath + `)?.label` }}
+					}
+					<div
+						x-text={ selectedLabelText + " || '" + componentSettings.Label + "'" }
+						class="w-full overflow-hidden text-ellipsis"
+					></div>
+					<div class="flex items-center gap-1.5 text-neutral-100/60">
+						<!-- SelectDropdownIcon -->
+						<i class="ph-bold ph-caret-down pt-0.5 text-sm transition-transform hover:text-neutral-300 group-focus-within:text-neutral-300 group-hover:text-neutral-300" :class="isOpen ? 'rotate-180' : ''"></i>
+						if componentSettings.ShouldIncludeBlankOption {
+							<!-- SelectClearIcon -->
+							<i
+								x-show={ selectValueStatePath + " !== ''" }
+								@click.prevent={ selectValueStatePath + " = ''; isOpen = false" }
+								class="ph-bold ph-x-circle text-lg hover:text-neutral-300"
+							></i>
+						}
+						if componentSettings.HintDisplay == InputTypeHintDisplayTooltip && (componentSettings.HintValue != "" || componentSettings.HintStatePath != "") {
+							<!-- HintDisplayTooltip -->
+							<div class="group/tooltip relative shrink-0 px-1 inline-flex items-center">
+								<i class="ph-bold ph-info text-lg text-neutral-400 transition-colors hover:text-neutral-100"></i>
+								{{ initialTooltipBackgroundColor := "neutral-800/95" }}
+								if componentSettings.HintDisplayTooltipBackgroundColor != "" {
+									{{ initialTooltipBackgroundColor = componentSettings.HintDisplayTooltipBackgroundColor }}
+								}
+								<div
+									class={ "invisible absolute flex right-0 z-10 mt-1.5 min-w-32 max-w-128 rounded border border-neutral-50/10 bg-" + initialTooltipBackgroundColor + " p-2 text-xs text-neutral-100 opacity-0 shadow-md transition-all group-hover/tooltip:visible group-hover/tooltip:opacity-100 select-none" }
+									if componentSettings.HintStatePath != "" {
+										x-text={ componentSettings.HintStatePath }
+									}
+								>
+									if componentSettings.HintValue != "" {
+										{ componentSettings.HintValue }
+									}
+								</div>
+							</div>
+						}
+					</div>
+				</div>
+				<!-- SelectDropdown -->
+				{{ initialDropdownBackgroundColor := "neutral-800/95" }}
+				if componentSettings.DropdownBackgroundColor != "" {
+					{{ initialDropdownBackgroundColor = componentSettings.DropdownBackgroundColor }}
+				}
+				<ul
+					class={ "absolute left-0 z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border border-neutral-50/5 bg-" + initialDropdownBackgroundColor + " shadow-lg hover:border-neutral-50/30" }
+					x-show="isOpen"
+					@click.away="isOpen = false"
+					x-transition
+				>
+					{{ dropdownClasses := "cursor-pointer px-3 py-2 transition-colors hover:bg-neutral-50/5 border-neutral-50/5 border-t first:border-t-0" }}
+					{{ dropdownSelectedClasses := "bg-neutral-50/10 border-y !border-neutral-50/10" }}
 					if componentSettings.ShouldIncludeBlankOption {
-						<!-- SelectClearIcon -->
-						<i
-							x-show={ selectValueStatePath + " !== ''" }
-							@click.prevent={ selectValueStatePath + " = ''; isOpen = false" }
-							class="ph-bold ph-x-circle text-lg hover:text-neutral-300"
-						></i>
+						<li class={ dropdownClasses } @click={ selectValueStatePath + " = ''; isOpen = false" }>--</li>
+					}
+					for _, option := range componentSettings.FlatOptions {
+						<li
+							class={ dropdownClasses }
+							@click={ selectValueStatePath + " = '" + option + "'; isOpen = false" }
+							:class={ selectValueStatePath + " === '" + option + "' && '" + dropdownSelectedClasses + "'" }
+						>
+							{ option }
+						</li>
+					}
+					for _, option := range componentSettings.LabelValueOptions {
+						<li
+							class={ dropdownClasses }
+							@click={ selectValueStatePath + " = '" + option.Value + "'; isOpen = false" }
+							:class={ selectValueStatePath + " === '" + option.Value + "' && '" + dropdownSelectedClasses + "'" }
+						>
+							if option.LabelHtml != nil {
+								@option.LabelHtml
+							} else {
+								{ option.Label }
+							}
+						</li>
+					}
+				</ul>
+			</fieldset>
+			if componentSettings.HintDisplay == InputTypeHintDisplayDescription {
+				<!-- HintDisplayDescription -->
+				<div class="my-1 px-1 text-xs text-neutral-400">
+					if componentSettings.HintValue != "" {
+						{ componentSettings.HintValue }
+					}
+					if componentSettings.HintStatePath != "" {
+						<span x-text={ componentSettings.HintStatePath }></span>
 					}
 				</div>
-			</div>
-			<!-- SelectDropdown -->
-			{{ initialDropdownBackgroundColor := "neutral-800/95" }}
-			if componentSettings.DropdownBackgroundColor != "" {
-				{{ initialDropdownBackgroundColor = componentSettings.DropdownBackgroundColor }}
 			}
-			<ul
-				class={ "absolute left-0 z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border border-neutral-50/5 bg-" + initialDropdownBackgroundColor + " shadow-lg hover:border-neutral-50/30" }
-				x-show="isOpen"
-				@click.away="isOpen = false"
-				x-transition
-			>
-				{{ dropdownClasses := "cursor-pointer px-3 py-2 transition-colors hover:bg-neutral-50/5 border-neutral-50/5 border-t first:border-t-0" }}
-				{{ dropdownSelectedClasses := "bg-neutral-50/10 border-y !border-neutral-50/10" }}
-				if componentSettings.ShouldIncludeBlankOption {
-					<li class={ dropdownClasses } @click={ selectValueStatePath + " = ''; isOpen = false" }>--</li>
-				}
-				for _, option := range componentSettings.FlatOptions {
-					<li
-						class={ dropdownClasses }
-						@click={ selectValueStatePath + " = '" + option + "'; isOpen = false" }
-						:class={ selectValueStatePath + " === '" + option + "' && '" + dropdownSelectedClasses + "'" }
-					>
-						{ option }
-					</li>
-				}
-				for _, option := range componentSettings.LabelValueOptions {
-					<li
-						class={ dropdownClasses }
-						@click={ selectValueStatePath + " = '" + option.Value + "'; isOpen = false" }
-						:class={ selectValueStatePath + " === '" + option.Value + "' && '" + dropdownSelectedClasses + "'" }
-					>
-						if option.LabelHtml != nil {
-							@option.LabelHtml
-						} else {
-							{ option.Label }
-						}
-					</li>
-				}
-			</ul>
-		</fieldset>
+		</div>
 	</div>
 }
