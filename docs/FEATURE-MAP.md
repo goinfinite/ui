@@ -37,6 +37,20 @@ Supports optional hint text rendered either as an info-icon tooltip inside the d
 
 ---
 
+## Multi-Select Dropdown
+
+Dropdown component that lets the user select multiple options from a flat list or label-value pairs, binding an array via Alpine.js two-way state path.
+
+**Flow:**
+
+1. `src/form/multiSelectInput.templ` — Component definition with MultiSelectInputSettings struct, reusing SelectLabelValueOption for label-value options
+2. `src/form/multiSelectInputState.js` — Alpine.js data component providing the dropdown toggle state
+3. `src/form/multiSelectInput_templ.go` — Compiled output rendering checkbox-based dropdown with embedded JSON script for label-value options and Alpine.js state management
+
+Form submission uses multiple checkboxes sharing the same `name` so the browser sends an array of values. Supports optional hint text rendered either as an info-icon tooltip inside the dropdown row or as a description line below the fieldset.
+
+---
+
 ## Radio Button Input
 
 Single radio button component for choice selection within a group, with label and state binding support.

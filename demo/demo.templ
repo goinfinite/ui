@@ -71,6 +71,7 @@ templ DemoIndex() {
 							@RadioInputDemo()
 							@InlineRadioGroupDemo()
 							@SelectInputDemo()
+							@MultiSelectInputDemo()
 						</div>
 					</div>
 					<!-- uiDisplay -->
@@ -181,6 +182,7 @@ templ DemoNavigationContent() {
 		@DemoNavItem("RadioInput", "radio-input-demo", "ph-radio-button")
 		@DemoNavItem("InlineRadioGroup", "inline-radio-group-demo", "ph-selection")
 		@DemoNavItem("SelectInput", "select-input-demo", "ph-caret-down")
+		@DemoNavItem("MultiSelectInput", "multi-select-input-demo", "ph-list-checks")
 		@DemoNavItem("Alert", "alert-demo", "ph-warning")
 		@DemoNavItem("Accordion", "accordion-demo", "ph-list")
 		@DemoNavItem("LoadingOverlay", "loading-overlay-demo", "ph-spinner")
@@ -750,6 +752,256 @@ templ SelectInputDemo() {
 						ShouldIncludeBlankOption: true,
 						HintValue:                "This is a helpful hint displayed as a tooltip.",
 						HintDisplay:              uiForm.InputTypeHintDisplayTooltip,
+					})
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+templ MultiSelectInputDemoOption1() {
+	<div class="flex flex-col">
+		<h4 class="text-base font-bold">🇦🇷 Argentina</h4>
+		<p class="text-sm text-neutral-400">Known for its dance and wine.</p>
+	</div>
+}
+
+templ MultiSelectInputDemoOption2() {
+	<div class="flex flex-col">
+		<h4 class="text-base font-bold">🇧🇷 Brazil</h4>
+		<p class="text-sm text-neutral-400">Known for its music and natural beauty.</p>
+	</div>
+}
+
+templ MultiSelectInputDemoOption3() {
+	<div class="flex flex-col">
+		<h4 class="text-base font-bold">🇨🇱 Chile</h4>
+		<p class="text-sm text-neutral-400">Known for its deserts and mysterious islands.</p>
+	</div>
+}
+
+templ MultiSelectInputDemo() {
+	<div class="flex flex-col gap-4" id="multi-select-input-demo">
+		<div class="flex flex-col gap-2">
+			<h3 class="text-xl font-bold">.MultiSelectInput</h3>
+			<p class="text-sm text-neutral-400">
+				A multi-select input allows users to select multiple options from a dropdown list.
+			</p>
+		</div>
+		<div class="grid gap-10 md:grid-cols-2" x-data="{countries: ['Brazil']}">
+			<div class="flex flex-col gap-4">
+				<div class="flex flex-col gap-2">
+					<h4 class="text-lg font-bold">
+						Usage <span class="text-sm text-neutral-500">(w/FlatOptions)</span>
+					</h4>
+					<pre class={ DemoPreCodeClasses }>
+						<code>
+							{ `@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
+	InputName: "countries",
+	Label:     "Countries",
+
+	// OptionalFields
+	FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+	TwoWayStatePath: "countries",
+})` }
+						</code>
+					</pre>
+				</div>
+				<div class="flex flex-col gap-2">
+					<h5 class="text-sm font-bold">Alpine.js Parent State <i>(x-data)</i></h5>
+					<pre class={ DemoPreCodeClasses }>
+						<code>{ `<div x-data="{countries: [` }<span x-text="countries"></span>{ `]}"></div>` }</code>
+					</pre>
+				</div>
+			</div>
+			<div class="flex flex-col">
+				<h4 class="mb-2 text-lg font-bold">Live Example</h4>
+				@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
+					InputName:       "countries",
+					Label:           "Countries",
+					FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+					TwoWayStatePath: "countries",
+				})
+			</div>
+		</div>
+		<div class="my-10 grid gap-10 md:grid-cols-2" x-data="{countries: ['BR']}">
+			<div class="flex flex-col gap-4">
+				<div class="flex flex-col gap-2">
+					<h4 class="text-lg font-bold">
+						Usage <span class="text-sm text-neutral-500">(w/LabelValueOptions)</span>
+					</h4>
+					<pre class={ DemoPreCodeClasses }>
+						<code>
+							{ `@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
+	InputName: "countries",
+	Label:     "Countries",
+
+	// OptionalFields
+	LabelValueOptions: []uiForm.SelectLabelValueOption{
+		{
+			Label: "Argentina",
+			Value: "AR",
+		},
+		{
+			Label: "Brazil",
+			Value: "BR",
+		},
+		{
+			Label: "Chile",
+			Value: "CL",
+		},
+	},
+	TwoWayStatePath: "countries",
+})` }
+						</code>
+					</pre>
+				</div>
+				<div class="flex flex-col gap-2">
+					<h5 class="text-sm font-bold">Alpine.js Parent State <i>(x-data)</i></h5>
+					<pre class={ DemoPreCodeClasses }>
+						<code>{ `<div x-data="{countries: [` }<span x-text="countries"></span>{ `]}"></div>` }</code>
+					</pre>
+				</div>
+			</div>
+			<div class="flex flex-col">
+				<h4 class="mb-2 text-lg font-bold">Live Example</h4>
+				@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
+					InputName: "countries",
+					Label:     "Countries",
+					LabelValueOptions: []uiForm.SelectLabelValueOption{
+						{
+							Label: "Argentina",
+							Value: "AR",
+						},
+						{
+							Label: "Brazil",
+							Value: "BR",
+						},
+						{
+							Label: "Chile",
+							Value: "CL",
+						},
+					},
+					TwoWayStatePath: "countries",
+				})
+			</div>
+		</div>
+		<div class="grid gap-10 md:grid-cols-2" x-data="{countries: ['BR']}">
+			<div class="flex flex-col gap-4">
+				<div class="flex flex-col gap-2">
+					<h4 class="text-lg font-bold">
+						Usage <span class="text-sm text-neutral-500">(w/LabelValueOptions and LabelHtml)</span>
+					</h4>
+					<pre class={ DemoPreCodeClasses }>
+						<code>
+							{ `@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
+	InputName: "countries",
+	Label:     "Countries",
+
+	// OptionalFields
+	LabelValueOptions: []uiForm.SelectLabelValueOption{
+		{
+			Label:     "Argentina",
+			LabelHtml: MultiSelectInputDemoOption1(),
+			Value:     "AR",
+		},
+		{
+			Label:     "Brazil",
+			LabelHtml: MultiSelectInputDemoOption2(),
+			Value:     "BR",
+		},
+		{
+			Label:     "Chile",
+			LabelHtml: MultiSelectInputDemoOption3(),
+			Value:     "CL",
+		},
+	},
+	TwoWayStatePath: "countries",
+})` }
+						</code>
+					</pre>
+				</div>
+				<div class="flex flex-col gap-2">
+					<h5 class="text-sm font-bold">Alpine.js Parent State <i>(x-data)</i></h5>
+					<pre class={ DemoPreCodeClasses }>
+						<code>{ `<div x-data="{countries: [` }<span x-text="countries"></span>{ `]}"></div>` }</code>
+					</pre>
+				</div>
+			</div>
+			<div class="flex flex-col gap-3">
+				<h4 class="text-lg font-bold">Live Example</h4>
+				<p class="text-sm text-neutral-400">Click the dropdown to see the HTML labels.</p>
+				@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
+					InputName: "countries",
+					Label:     "Countries",
+					LabelValueOptions: []uiForm.SelectLabelValueOption{
+						{
+							Label:     "Argentina",
+							LabelHtml: MultiSelectInputDemoOption1(),
+							Value:     "AR",
+						},
+						{
+							Label:     "Brazil",
+							LabelHtml: MultiSelectInputDemoOption2(),
+							Value:     "BR",
+						},
+						{
+							Label:     "Chile",
+							LabelHtml: MultiSelectInputDemoOption3(),
+							Value:     "CL",
+						},
+					},
+					TwoWayStatePath: "countries",
+				})
+			</div>
+		</div>
+		<div class="my-10 grid gap-10 md:grid-cols-2" x-data="{countries: ['Brazil']}">
+			<div class="flex flex-col gap-4">
+				<div class="flex flex-col gap-2">
+					<h4 class="text-lg font-bold">
+						Usage <span class="text-sm text-neutral-500">(w/HintValue & HintDisplay)</span>
+					</h4>
+					<pre class={ DemoPreCodeClasses }>
+						<code>
+							{ `@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
+	InputName: "countries",
+	Label:     "Countries",
+
+	// OptionalFields
+	FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+	TwoWayStatePath: "countries",
+	HintValue:       "This is a helpful hint displayed as a description below the multi-select.",
+	HintDisplay:     uiForm.InputTypeHintDisplayDescription,
+})` }
+						</code>
+					</pre>
+				</div>
+				<div class="flex flex-col gap-2">
+					<h5 class="text-sm font-bold">Alpine.js Parent State <i>(x-data)</i></h5>
+					<pre class={ DemoPreCodeClasses }>
+						<code>{ `<div x-data="{countries: [` }<span x-text="countries"></span>{ `]}"></div>` }</code>
+					</pre>
+				</div>
+			</div>
+			<div class="flex flex-col gap-3">
+				<h4 class="text-lg font-bold">Live Example</h4>
+				<div class="flex flex-col gap-6">
+					<p class="text-sm text-neutral-400">HintValue & HintDisplay</p>
+					@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
+						InputName:       "countries",
+						Label:           "Countries",
+						FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+						TwoWayStatePath: "countries",
+						HintValue:       "This is a helpful hint displayed as a description below the multi-select.",
+						HintDisplay:     uiForm.InputTypeHintDisplayDescription,
+					})
+					@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
+						InputName:       "countries",
+						Label:           "Countries",
+						FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+						TwoWayStatePath: "countries",
+						HintValue:       "This is a helpful hint displayed as a tooltip.",
+						HintDisplay:     uiForm.InputTypeHintDisplayTooltip,
 					})
 				</div>
 			</div>
