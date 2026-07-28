@@ -3,6 +3,7 @@ UiToolset.RegisterAlpineState(() => {
     toastVisible: false,
     toastMessage: "",
     toastType: "danger",
+    displayDurationMs: 10000,
 
     displayToast(message, toastType) {
       this.toastVisible = true;
@@ -10,7 +11,7 @@ UiToolset.RegisterAlpineState(() => {
       this.toastType = toastType;
       setTimeout(() => {
         this.clearToast();
-      }, 4000);
+      }, this.displayDurationMs);
     },
 
     clearToast() {

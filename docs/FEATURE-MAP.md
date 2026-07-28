@@ -145,8 +145,8 @@ Dismissible notification toast component with title, description, and Alpine.js 
 
 **Flow:**
 
-1. `src/display/toast.templ` — Component definition with ToastSettings struct
-2. `src/display/toastState.js` — Helper JavaScript for managing toast queue and lifecycle
+1. `src/display/toast.templ` — Component definition with ToastSettings struct exposing optional AutoDismissSeconds (defaults to 10s)
+2. `src/display/toastState.js` — Helper JavaScript for managing toast queue and lifecycle, reading the duration from the Alpine store
 3. `src/display/toast_templ.go` — Compiled output rendering toast element with Alpine.js binding and timer logic
 
 ---

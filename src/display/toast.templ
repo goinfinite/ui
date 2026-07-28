@@ -3,6 +3,7 @@ package uiDisplay
 import (
 	"github.com/goinfinite/ui/src/toolset"
 	_ "embed"
+	"strconv"
 )
 
 const (
@@ -24,6 +25,8 @@ const (
 	ToastRadiusLg   string = "lg"
 	ToastRadiusXl   string = "xl"
 	ToastRadiusFull string = "full"
+
+	ToastAutoDismissSecondsDefault int = 10
 )
 
 //go:embed toastState.js
@@ -31,18 +34,24 @@ var toastAlpineState string
 
 type ToastSettings struct {
 	// OptionalFields
-	BackgroundColor string
-	TextColor       string
-	Size            string
-	RingThickness   string
-	RingColor       string
-	Radius          string
+	BackgroundColor    string
+	TextColor          string
+	Size               string
+	RingThickness      string
+	RingColor          string
+	Radius             string
+	AutoDismissSeconds int
 }
 
 templ Toast(componentSettings ToastSettings) {
 	<!-- Toast JavaScript -->
 	@uiToolset.MinifierTemplateJs(&toastAlpineState)
 	<!-- Toast HTML -->
+	{{ autoDismissSeconds := ToastAutoDismissSecondsDefault }}
+	if componentSettings.AutoDismissSeconds > 0 {
+		{{ autoDismissSeconds = componentSettings.AutoDismissSeconds }}
+	}
+	{{ autoDismissMilliseconds := strconv.Itoa(autoDismissSeconds * 1000) }}
 	{{ toastClasses := "fixed bottom-5 right-10 flex w-fit flex-row items-center justify-stretch shadow-md z-100" }}
 	{{ toastIconSizeClasses := "text-2xl" }}
 	if componentSettings.Size == "" {
@@ -117,6 +126,7 @@ templ Toast(componentSettings ToastSettings) {
 		x-transition
 		x-cloak
 		un-cloak
+		x-init={ "$store.toast.displayDurationMs = " + autoDismissMilliseconds }
 		role="alert"
 	>
 		{{ toastIconClasses := "ph-duotone rounded p-2 " + toastIconSizeClasses }}

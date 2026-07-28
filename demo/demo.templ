@@ -1886,12 +1886,13 @@ templ ToastDemo() {
 					<code>
 						{ `@uiDisplay.Toast(uiDisplay.ToastSettings{
 	// OptionalFields
-	BackgroundColor: "neutral-800",
-	TextColor:       "neutral-50",
-	Size:            uiDisplay.ToastSizeMd,
-	RingThickness:   uiDisplay.ToastRingThicknessMd,
-	RingColor:       "neutral-500",
-	Radius:          uiDisplay.ToastRadiusMd,
+	BackgroundColor:    "neutral-800",
+	TextColor:          "neutral-50",
+	Size:               uiDisplay.ToastSizeMd,
+	RingThickness:      uiDisplay.ToastRingThicknessMd,
+	RingColor:          "neutral-500",
+	Radius:             uiDisplay.ToastRadiusMd,
+	AutoDismissSeconds: 10, // defaults to 10s if zero
 })` }
 					</code>
 				</pre>
@@ -1900,12 +1901,13 @@ templ ToastDemo() {
 		<div class="flex flex-col gap-4">
 			<h4 class="mb-2 text-lg font-bold">Live Example</h4>
 			@uiDisplay.Toast(uiDisplay.ToastSettings{
-				BackgroundColor: "neutral-800",
-				TextColor:       "neutral-50",
-				Size:            uiDisplay.ToastSizeMd,
-				RingThickness:   uiDisplay.ToastRingThicknessMd,
-				RingColor:       "neutral-500",
-				Radius:          uiDisplay.ToastRadiusMd,
+				BackgroundColor:    "neutral-800",
+				TextColor:          "neutral-50",
+				Size:               uiDisplay.ToastSizeMd,
+				RingThickness:      uiDisplay.ToastRingThicknessMd,
+				RingColor:          "neutral-500",
+				Radius:             uiDisplay.ToastRadiusMd,
+				AutoDismissSeconds: 6,
 			})
 			<div class="flex flex-col gap-4">
 				<div class="flex flex-wrap gap-2" x-data>

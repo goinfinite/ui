@@ -6,6 +6,7 @@ chore: bump go and templ deps
 chore: update templ generated files to v0.3.1020
 feat: selectInput hint display modes (tooltip and description)
 feat: multiSelectInput
+feat: toast AutoDismissSeconds setting (defaults to 10s)
 docs: add development build instructions
 
 0.1.6 - 2026/03/16
