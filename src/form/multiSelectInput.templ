@@ -35,7 +35,7 @@ templ MultiSelectInput(componentSettings MultiSelectInputSettings) {
 	}
 	{{ labelValueOptionsScriptId := componentSettings.InputName + "LabelValueOptions" }}
 	<div
-		x-data={ `multiSelectInput('` + labelValueOptionsScriptId + `')` }
+		x-data={ templ.JSFuncCall("multiSelectInput", labelValueOptionsScriptId) }
 		class="flex w-full flex-col"
 		@click.away="closeDropdown()"
 		@keydown.escape.window="closeDropdown()"
