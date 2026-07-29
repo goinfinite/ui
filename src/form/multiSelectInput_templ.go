@@ -204,7 +204,7 @@ func MultiSelectInput(componentSettings MultiSelectInputSettings) templ.Componen
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\" class=\"w-full overflow-hidden text-ellipsis\"></div><div class=\"flex items-center gap-1.5 text-neutral-100/60\"><!-- SelectDropdownIcon --><i class=\"ph-bold ph-caret-down pt-0.5 text-sm transition-transform hover:text-neutral-300 group-focus-within:text-neutral-300 group-hover:text-neutral-300\" :class=\"shouldExpandOptions ? 'rotate-180' : ''\"></i><!-- SelectClearIcon --><i x-show=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\" class=\"w-full overflow-hidden text-ellipsis\"></div><div class=\"flex items-center gap-2.5 text-neutral-100/60\"><!-- SelectDropdownIcon --><i class=\"ph-bold ph-caret-down pt-0.5 text-sm transition-transform hover:text-neutral-300 group-focus-within:text-neutral-300 group-hover:text-neutral-300\" :class=\"shouldExpandOptions ? 'rotate-180' : ''\"></i><!-- SelectClearIcon --><i x-show=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -217,14 +217,14 @@ func MultiSelectInput(componentSettings MultiSelectInputSettings) templ.Componen
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\" @click.prevent=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\" @click.stop.prevent=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.ResolveAttributeValue(selectedItemsStatePath + " = []")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/multiSelectInput.templ`, Line: 88, Col: 55}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/multiSelectInput.templ`, Line: 88, Col: 60}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var9)
 		if templ_7745c5c3_Err != nil {
@@ -235,7 +235,7 @@ func MultiSelectInput(componentSettings MultiSelectInputSettings) templ.Componen
 			return templ_7745c5c3_Err
 		}
 		if componentSettings.HintDisplay == InputTypeHintDisplayTooltip && (componentSettings.HintValue != "" || componentSettings.HintStatePath != "") {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<!-- HintDisplayTooltip --> <div class=\"group/tooltip relative shrink-0 px-1 inline-flex items-center\"><i class=\"ph-bold ph-info text-lg text-neutral-400 transition-colors hover:text-neutral-100\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<!-- HintDisplayTooltip --> <div @click.stop class=\"group/tooltip relative shrink-0 inline-flex items-center\"><i class=\"ph-bold ph-info text-lg text-neutral-400 transition-colors hover:text-neutral-100\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

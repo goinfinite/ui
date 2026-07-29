@@ -290,7 +290,7 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "\" class=\"w-full overflow-hidden text-ellipsis\"></div><div class=\"flex items-center gap-1.5 text-neutral-100/60\"><!-- SelectDropdownIcon --><i class=\"ph-bold ph-caret-down pt-0.5 text-sm transition-transform hover:text-neutral-300 group-focus-within:text-neutral-300 group-hover:text-neutral-300\" :class=\"isOpen ? 'rotate-180' : ''\"></i> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "\" class=\"w-full overflow-hidden text-ellipsis\"></div><div class=\"flex items-center gap-2.5 text-neutral-100/60\"><!-- SelectDropdownIcon --><i class=\"ph-bold ph-caret-down pt-0.5 text-sm transition-transform hover:text-neutral-300 group-focus-within:text-neutral-300 group-hover:text-neutral-300\" :class=\"isOpen ? 'rotate-180' : ''\"></i> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -308,14 +308,14 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "\" @click.prevent=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "\" @click.stop.prevent=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.ResolveAttributeValue(selectValueStatePath + " = ''; isOpen = false")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 106, Col: 71}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 106, Col: 76}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var13)
 			if templ_7745c5c3_Err != nil {
@@ -327,7 +327,7 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 			}
 		}
 		if componentSettings.HintDisplay == InputTypeHintDisplayTooltip && (componentSettings.HintValue != "" || componentSettings.HintStatePath != "") {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "<!-- HintDisplayTooltip --> <div class=\"group/tooltip relative shrink-0 px-1 inline-flex items-center\"><i class=\"ph-bold ph-info text-lg text-neutral-400 transition-colors hover:text-neutral-100\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "<!-- HintDisplayTooltip --> <div @click.stop class=\"group/tooltip relative shrink-0 inline-flex items-center\"><i class=\"ph-bold ph-info text-lg text-neutral-400 transition-colors hover:text-neutral-100\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

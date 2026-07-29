@@ -96,20 +96,20 @@ templ SelectInput(componentSettings SelectInputSettings) {
 						x-text={ selectedLabelText + " || '" + componentSettings.Label + "'" }
 						class="w-full overflow-hidden text-ellipsis"
 					></div>
-					<div class="flex items-center gap-1.5 text-neutral-100/60">
+					<div class="flex items-center gap-2.5 text-neutral-100/60">
 						<!-- SelectDropdownIcon -->
 						<i class="ph-bold ph-caret-down pt-0.5 text-sm transition-transform hover:text-neutral-300 group-focus-within:text-neutral-300 group-hover:text-neutral-300" :class="isOpen ? 'rotate-180' : ''"></i>
 						if componentSettings.ShouldIncludeBlankOption {
 							<!-- SelectClearIcon -->
 							<i
 								x-show={ selectValueStatePath + " !== ''" }
-								@click.prevent={ selectValueStatePath + " = ''; isOpen = false" }
+								@click.stop.prevent={ selectValueStatePath + " = ''; isOpen = false" }
 								class="ph-bold ph-x-circle text-lg hover:text-neutral-300"
 							></i>
 						}
 						if componentSettings.HintDisplay == InputTypeHintDisplayTooltip && (componentSettings.HintValue != "" || componentSettings.HintStatePath != "") {
 							<!-- HintDisplayTooltip -->
-							<div class="group/tooltip relative shrink-0 px-1 inline-flex items-center">
+							<div @click.stop class="group/tooltip relative shrink-0 inline-flex items-center">
 								<i class="ph-bold ph-info text-lg text-neutral-400 transition-colors hover:text-neutral-100"></i>
 								{{ initialTooltipBackgroundColor := "neutral-800/95" }}
 								if componentSettings.HintDisplayTooltipBackgroundColor != "" {

@@ -79,18 +79,18 @@ templ MultiSelectInput(componentSettings MultiSelectInputSettings) {
 					x-text={ formattedSelectedItemsExpression }
 					class="w-full overflow-hidden text-ellipsis"
 				></div>
-				<div class="flex items-center gap-1.5 text-neutral-100/60">
+				<div class="flex items-center gap-2.5 text-neutral-100/60">
 					<!-- SelectDropdownIcon -->
 					<i class="ph-bold ph-caret-down pt-0.5 text-sm transition-transform hover:text-neutral-300 group-focus-within:text-neutral-300 group-hover:text-neutral-300" :class="shouldExpandOptions ? 'rotate-180' : ''"></i>
 					<!-- SelectClearIcon -->
 					<i
 						x-show={ selectedItemsStatePath + ".length > 0" }
-						@click.prevent={ selectedItemsStatePath + " = []" }
+						@click.stop.prevent={ selectedItemsStatePath + " = []" }
 						class="ph-bold ph-x-circle text-lg hover:text-neutral-300"
 					></i>
 					if componentSettings.HintDisplay == InputTypeHintDisplayTooltip && (componentSettings.HintValue != "" || componentSettings.HintStatePath != "") {
 						<!-- HintDisplayTooltip -->
-						<div class="group/tooltip relative shrink-0 px-1 inline-flex items-center">
+						<div @click.stop class="group/tooltip relative shrink-0 inline-flex items-center">
 							<i class="ph-bold ph-info text-lg text-neutral-400 transition-colors hover:text-neutral-100"></i>
 							{{ initialTooltipBackgroundColor := "neutral-800/95" }}
 							if componentSettings.HintDisplayTooltipBackgroundColor != "" {

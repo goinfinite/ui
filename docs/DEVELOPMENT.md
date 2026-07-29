@@ -5,7 +5,7 @@
 The demo is a static HTML file generated from the `.templ` sources. To regenerate it, run the following command from the project root:
 
 ```bash
-templ generate && cd docs; go run ../demo/*.go; cd ..
+templ generate && (cd docs && go run ../demo/*.go)
 ```
 
 This will:

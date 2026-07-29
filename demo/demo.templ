@@ -632,7 +632,7 @@ templ SelectInputDemo() {
 					<pre class={ DemoPreCodeClasses }>
 						<code>
 							{ `@uiForm.SelectInput(uiForm.SelectInputSettings{
-	InputName: "country",
+	InputName: "countryWithHtml",
 	Label:     "Country",
 
 	// OptionalFields
@@ -670,7 +670,7 @@ templ SelectInputDemo() {
 				<h4 class="text-lg font-bold">Live Example</h4>
 				<p class="text-sm text-neutral-400">Click the dropdown to see the HTML labels.</p>
 				@uiForm.SelectInput(uiForm.SelectInputSettings{
-					InputName: "country",
+					InputName: "countryWithHtml",
 					Label:     "Country",
 					LabelValueOptions: []uiForm.SelectLabelValueOption{
 						{
@@ -895,7 +895,7 @@ templ MultiSelectInputDemo() {
 					<pre class={ DemoPreCodeClasses }>
 						<code>
 							{ `@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
-	InputName: "countries",
+	InputName: "countriesWithHtml",
 	Label:     "Countries",
 
 	// OptionalFields
@@ -932,7 +932,7 @@ templ MultiSelectInputDemo() {
 				<h4 class="text-lg font-bold">Live Example</h4>
 				<p class="text-sm text-neutral-400">Click the dropdown to see the HTML labels.</p>
 				@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
-					InputName: "countries",
+					InputName: "countriesWithHtml",
 					Label:     "Countries",
 					LabelValueOptions: []uiForm.SelectLabelValueOption{
 						{
