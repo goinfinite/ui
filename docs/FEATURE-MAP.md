@@ -33,6 +33,22 @@ Dropdown select component with support for flat string options or label-value pa
 1. `src/form/selectInput.templ` — Component definition with SelectInputSettings struct and SelectLabelValueOption data structure
 2. `src/form/selectInput_templ.go` — Compiled output rendering select with embedded JSON script for options and Alpine.js state management
 
+Supports optional hint text rendered either as an info-icon tooltip inside the dropdown row or as a description line below the fieldset.
+
+---
+
+## Multi-Select Dropdown
+
+Dropdown component that lets the user select multiple options from a flat list or label-value pairs, binding an array via Alpine.js two-way state path.
+
+**Flow:**
+
+1. `src/form/multiSelectInput.templ` — Component definition with MultiSelectInputSettings struct, reusing SelectLabelValueOption for label-value options
+2. `src/form/multiSelectInputState.js` — Alpine.js data component providing the dropdown toggle state
+3. `src/form/multiSelectInput_templ.go` — Compiled output rendering checkbox-based dropdown with embedded JSON script for label-value options and Alpine.js state management
+
+Form submission uses multiple checkboxes sharing the same `name` so the browser sends an array of values. Supports optional hint text rendered either as an info-icon tooltip inside the dropdown row or as a description line below the fieldset.
+
 ---
 
 ## Radio Button Input
@@ -129,8 +145,8 @@ Dismissible notification toast component with title, description, and Alpine.js 
 
 **Flow:**
 
-1. `src/display/toast.templ` — Component definition with ToastSettings struct
-2. `src/display/toastState.js` — Helper JavaScript for managing toast queue and lifecycle
+1. `src/display/toast.templ` — Component definition with ToastSettings struct exposing optional AutoDismissSeconds (defaults to 10s)
+2. `src/display/toastState.js` — Helper JavaScript for managing toast queue and lifecycle, reading the duration from the Alpine store
 3. `src/display/toast_templ.go` — Compiled output rendering toast element with Alpine.js binding and timer logic
 
 ---
