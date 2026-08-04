@@ -6,6 +6,7 @@ feat: add ToggleSwitch with configurable styles and Alpine bindings
 docs: expand ToggleSwitch and component usage examples
 fix: scope hint tooltips and accordion groups
 fix: preserve separate FormData values for array-bound ToggleSwitch
+fix: serialize MultiSelectInput demo state as valid JavaScript
 
 0.1.7 - 2026/07/27
 chore: bump go and templ deps
