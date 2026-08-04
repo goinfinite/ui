@@ -69,6 +69,7 @@ templ DemoIndex() {
 							@InputFieldDemo()
 							@TextAreaDemo()
 							@RadioInputDemo()
+							@ToggleSwitchDemo()
 							@InlineRadioGroupDemo()
 							@SelectInputDemo()
 							@MultiSelectInputDemo()
@@ -180,6 +181,7 @@ templ DemoNavigationContent() {
 		@DemoNavItem("InputField", "input-field-demo", "ph-text-aa")
 		@DemoNavItem("TextArea", "text-area-demo", "ph-text-align-left")
 		@DemoNavItem("RadioInput", "radio-input-demo", "ph-radio-button")
+		@DemoNavItem("ToggleSwitch", "toggle-switch-demo", "ph-toggle-right")
 		@DemoNavItem("InlineRadioGroup", "inline-radio-group-demo", "ph-selection")
 		@DemoNavItem("SelectInput", "select-input-demo", "ph-caret-down")
 		@DemoNavItem("MultiSelectInput", "multi-select-input-demo", "ph-list-checks")
@@ -425,6 +427,144 @@ templ RadioInputDemo() {
 	</div>
 }
 
+templ ToggleSwitchDemo() {
+	<div class="flex flex-col gap-4" id="toggle-switch-demo">
+		<div class="flex flex-col gap-2">
+			<h3 class="text-xl font-bold">.ToggleSwitch</h3>
+			<p class="text-sm text-neutral-400">
+				A switch toggles a boolean state or adds and removes a custom value from an array.
+			</p>
+		</div>
+		<div class="grid gap-10 md:grid-cols-2">
+			<div class="flex flex-col gap-4">
+				<div class="flex flex-col gap-2">
+					@UsageTitle("/form/toggleSwitch.templ")
+					<pre class={ DemoPreCodeClasses }>
+						<code>
+							{ `@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
+	Label:           "Enable notifications",
+	TwoWayStatePath: "isNotificationsEnabled",
+
+	// OptionalFields
+	InputName: "notificationsEnabled",
+})
+@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
+	Label:           "Email notifications",
+	TwoWayStatePath: "selectedChannels",
+	CustomValue:     "email",
+	InputName:       "channels",
+})` }
+						</code>
+					</pre>
+				</div>
+				<div class="flex flex-col gap-2">
+					<h5 class="text-sm font-bold">Alpine.js Parent State <i>(x-data)</i></h5>
+					<pre class={ DemoPreCodeClasses }>
+						<code>
+							{ `<div x-data="{isNotificationsEnabled: false}"></div>
+<div x-data="{selectedChannels: ['email']}"></div>` }
+						</code>
+					</pre>
+				</div>
+			</div>
+			<div class="flex flex-col gap-6">
+				<h4 class="text-lg font-bold">Live Examples</h4>
+				<div
+					x-data="{isNotificationsEnabled: false}"
+					class="flex flex-col gap-3"
+				>
+					<h5 class="text-sm font-bold">Boolean state</h5>
+					@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
+						Label:           "Enable notifications",
+						TwoWayStatePath: "isNotificationsEnabled",
+						InputName:       "notificationsEnabled",
+					})
+					<p class="text-sm text-neutral-400">
+						Value: <span x-text="isNotificationsEnabled"></span>
+					</p>
+				</div>
+				<div
+					x-data="{selectedChannels: ['email']}"
+					class="flex flex-col gap-3"
+				>
+					<h5 class="text-sm font-bold">Array state</h5>
+					@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
+						Label:           "Email notifications",
+						TwoWayStatePath: "selectedChannels",
+						CustomValue:     "email",
+						InputId:         "channel-email",
+						InputName:       "channels",
+					})
+					@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
+						Label:           "SMS notifications",
+						TwoWayStatePath: "selectedChannels",
+						CustomValue:     "sms",
+						InputId:         "channel-sms",
+						InputName:       "channels",
+					})
+					<p class="text-sm text-neutral-400">
+						Values: <span x-text="selectedChannels"></span>
+					</p>
+				</div>
+			</div>
+		</div>
+		<div
+			x-data="{isSizeExampleEnabled: false, isRequiredExampleEnabled: false, emeraldEnabled: true, violetEnabled: false, amberEnabled: true}"
+			class="grid gap-10 md:grid-cols-2"
+		>
+			<div class="flex flex-col gap-3">
+				<p class="text-sm text-neutral-400">Sizes</p>
+				for _, toggleSwitchSize := range []string{uiForm.ToggleSwitchSizeXs, uiForm.ToggleSwitchSizeSm, uiForm.ToggleSwitchSizeMd, uiForm.ToggleSwitchSizeLg, uiForm.ToggleSwitchSizeXl} {
+					@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
+						Label:           toggleSwitchSize,
+						TwoWayStatePath: "isSizeExampleEnabled",
+						Size:            toggleSwitchSize,
+					})
+				}
+			</div>
+			<div class="flex flex-col gap-3">
+				<p class="text-sm text-neutral-400">Color variants</p>
+				@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
+					Label:                       "Emerald accent",
+					TwoWayStatePath:             "emeraldEnabled",
+					TrackBackgroundColor:        "emerald-900/40",
+					TrackCheckedBackgroundColor: "emerald-500",
+					FocusRingColor:              "emerald-500/50",
+				})
+				@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
+					Label:                       "Violet accent",
+					TwoWayStatePath:             "violetEnabled",
+					TrackBackgroundColor:        "violet-900/40",
+					TrackCheckedBackgroundColor: "violet-500",
+					FocusRingColor:              "violet-500/50",
+				})
+				@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
+					Label:                       "Amber thumb",
+					TwoWayStatePath:             "amberEnabled",
+					TrackBackgroundColor:        "red-500/20",
+					TrackCheckedBackgroundColor: "amber-500",
+					ThumbBackgroundColor:        "amber-300",
+					ThumbBorderColor:            "amber-500",
+					TextColor:                   "amber-100",
+					FocusRingColor:              "amber-500/50",
+				})
+				<p class="mt-3 text-sm text-neutral-400">Required state</p>
+				@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
+					Label:           "Required notifications",
+					TwoWayStatePath: "isRequiredExampleEnabled",
+					IsRequired:      true,
+				})
+				<p class="mt-3 text-sm text-neutral-400">Disabled state</p>
+				@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
+					Label:           "Disabled",
+					TwoWayStatePath: "isSizeExampleEnabled",
+					IsDisabled:      true,
+				})
+			</div>
+		</div>
+	</div>
+}
+
 templ InlineRadioGroupDemo() {
 	<div class="flex flex-col gap-4" id="inline-radio-group-demo">
 		<div class="flex flex-col gap-2">
@@ -524,9 +664,10 @@ templ SelectInputDemo() {
 		<div class="grid gap-10 md:grid-cols-2" x-data="{country: 'Brazil'}">
 			<div class="flex flex-col gap-4">
 				<div class="flex flex-col gap-2">
-					<h4 class="text-lg font-bold">
-						Usage <span class="text-sm text-neutral-500">(w/FlatOptions)</span>
-					</h4>
+					<div class="flex items-center gap-2">
+						@UsageTitle("/form/selectInput.templ")
+						<span class="text-sm text-neutral-500">(w/FlatOptions)</span>
+					</div>
 					<pre class={ DemoPreCodeClasses }>
 						<code>
 							{ `@uiForm.SelectInput(uiForm.SelectInputSettings{
@@ -562,9 +703,10 @@ templ SelectInputDemo() {
 		<div class="my-10 grid gap-10 md:grid-cols-2" x-data="{country: 'BR'}">
 			<div class="flex flex-col gap-4">
 				<div class="flex flex-col gap-2">
-					<h4 class="text-lg font-bold">
-						Usage <span class="text-sm text-neutral-500">(w/LabelValueOptions)</span>
-					</h4>
+					<div class="flex items-center gap-2">
+						@UsageTitle("/form/selectInput.templ")
+						<span class="text-sm text-neutral-500">(w/LabelValueOptions)</span>
+					</div>
 					<pre class={ DemoPreCodeClasses }>
 						<code>
 							{ `@uiForm.SelectInput(uiForm.SelectInputSettings{
@@ -626,9 +768,10 @@ templ SelectInputDemo() {
 		<div class="grid gap-10 md:grid-cols-2" x-data="{country: 'BR'}">
 			<div class="flex flex-col gap-4">
 				<div class="flex flex-col gap-2">
-					<h4 class="text-lg font-bold">
-						Usage <span class="text-sm text-neutral-500">(w/LabelValueOptions and LabelHtml)</span>
-					</h4>
+					<div class="flex items-center gap-2">
+						@UsageTitle("/form/selectInput.templ")
+						<span class="text-sm text-neutral-500">(w/LabelValueOptions and LabelHtml)</span>
+					</div>
 					<pre class={ DemoPreCodeClasses }>
 						<code>
 							{ `@uiForm.SelectInput(uiForm.SelectInputSettings{
@@ -697,9 +840,10 @@ templ SelectInputDemo() {
 		<div class="my-10 grid gap-10 md:grid-cols-2" x-data="{country: 'Brazil'}">
 			<div class="flex flex-col gap-4">
 				<div class="flex flex-col gap-2">
-					<h4 class="text-lg font-bold">
-						Usage <span class="text-sm text-neutral-500">(w/HintValue & HintDisplay)</span>
-					</h4>
+					<div class="flex items-center gap-2">
+						@UsageTitle("/form/selectInput.templ")
+						<span class="text-sm text-neutral-500">(w/HintValue & HintDisplay)</span>
+					</div>
 					<pre class={ DemoPreCodeClasses }>
 						<code>
 							{ `@uiForm.SelectInput(uiForm.SelectInputSettings{
@@ -791,9 +935,10 @@ templ MultiSelectInputDemo() {
 		<div class="grid gap-10 md:grid-cols-2" x-data="{countries: ['Brazil']}">
 			<div class="flex flex-col gap-4">
 				<div class="flex flex-col gap-2">
-					<h4 class="text-lg font-bold">
-						Usage <span class="text-sm text-neutral-500">(w/FlatOptions)</span>
-					</h4>
+					<div class="flex items-center gap-2">
+						@UsageTitle("/form/multiSelectInput.templ")
+						<span class="text-sm text-neutral-500">(w/FlatOptions)</span>
+					</div>
 					<pre class={ DemoPreCodeClasses }>
 						<code>
 							{ `@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
@@ -810,7 +955,7 @@ templ MultiSelectInputDemo() {
 				<div class="flex flex-col gap-2">
 					<h5 class="text-sm font-bold">Alpine.js Parent State <i>(x-data)</i></h5>
 					<pre class={ DemoPreCodeClasses }>
-						<code>{ `<div x-data="{countries: [` }<span x-text="countries"></span>{ `]}"></div>` }</code>
+						<code>{ `<div x-data="{countries: ` }<span x-text="JSON.stringify(countries)"></span>{ `}"></div>` }</code>
 					</pre>
 				</div>
 			</div>
@@ -827,9 +972,10 @@ templ MultiSelectInputDemo() {
 		<div class="my-10 grid gap-10 md:grid-cols-2" x-data="{countries: ['BR']}">
 			<div class="flex flex-col gap-4">
 				<div class="flex flex-col gap-2">
-					<h4 class="text-lg font-bold">
-						Usage <span class="text-sm text-neutral-500">(w/LabelValueOptions)</span>
-					</h4>
+					<div class="flex items-center gap-2">
+						@UsageTitle("/form/multiSelectInput.templ")
+						<span class="text-sm text-neutral-500">(w/LabelValueOptions)</span>
+					</div>
 					<pre class={ DemoPreCodeClasses }>
 						<code>
 							{ `@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
@@ -859,7 +1005,7 @@ templ MultiSelectInputDemo() {
 				<div class="flex flex-col gap-2">
 					<h5 class="text-sm font-bold">Alpine.js Parent State <i>(x-data)</i></h5>
 					<pre class={ DemoPreCodeClasses }>
-						<code>{ `<div x-data="{countries: [` }<span x-text="countries"></span>{ `]}"></div>` }</code>
+						<code>{ `<div x-data="{countries: ` }<span x-text="JSON.stringify(countries)"></span>{ `}"></div>` }</code>
 					</pre>
 				</div>
 			</div>
@@ -889,9 +1035,10 @@ templ MultiSelectInputDemo() {
 		<div class="grid gap-10 md:grid-cols-2" x-data="{countries: ['BR']}">
 			<div class="flex flex-col gap-4">
 				<div class="flex flex-col gap-2">
-					<h4 class="text-lg font-bold">
-						Usage <span class="text-sm text-neutral-500">(w/LabelValueOptions and LabelHtml)</span>
-					</h4>
+					<div class="flex items-center gap-2">
+						@UsageTitle("/form/multiSelectInput.templ")
+						<span class="text-sm text-neutral-500">(w/LabelValueOptions and LabelHtml)</span>
+					</div>
 					<pre class={ DemoPreCodeClasses }>
 						<code>
 							{ `@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
@@ -924,7 +1071,7 @@ templ MultiSelectInputDemo() {
 				<div class="flex flex-col gap-2">
 					<h5 class="text-sm font-bold">Alpine.js Parent State <i>(x-data)</i></h5>
 					<pre class={ DemoPreCodeClasses }>
-						<code>{ `<div x-data="{countries: [` }<span x-text="countries"></span>{ `]}"></div>` }</code>
+						<code>{ `<div x-data="{countries: ` }<span x-text="JSON.stringify(countries)"></span>{ `}"></div>` }</code>
 					</pre>
 				</div>
 			</div>
@@ -958,9 +1105,10 @@ templ MultiSelectInputDemo() {
 		<div class="my-10 grid gap-10 md:grid-cols-2" x-data="{countries: ['Brazil']}">
 			<div class="flex flex-col gap-4">
 				<div class="flex flex-col gap-2">
-					<h4 class="text-lg font-bold">
-						Usage <span class="text-sm text-neutral-500">(w/HintValue & HintDisplay)</span>
-					</h4>
+					<div class="flex items-center gap-2">
+						@UsageTitle("/form/multiSelectInput.templ")
+						<span class="text-sm text-neutral-500">(w/HintValue & HintDisplay)</span>
+					</div>
 					<pre class={ DemoPreCodeClasses }>
 						<code>
 							{ `@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
@@ -979,7 +1127,7 @@ templ MultiSelectInputDemo() {
 				<div class="flex flex-col gap-2">
 					<h5 class="text-sm font-bold">Alpine.js Parent State <i>(x-data)</i></h5>
 					<pre class={ DemoPreCodeClasses }>
-						<code>{ `<div x-data="{countries: [` }<span x-text="countries"></span>{ `]}"></div>` }</code>
+						<code>{ `<div x-data="{countries: ` }<span x-text="JSON.stringify(countries)"></span>{ `}"></div>` }</code>
 					</pre>
 				</div>
 			</div>
