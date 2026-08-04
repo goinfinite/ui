@@ -452,6 +452,7 @@ templ ToggleSwitchDemo() {
 	Label:           "Email notifications",
 	TwoWayStatePath: "selectedChannels",
 	CustomValue:     "email",
+	InputName:       "channels",
 })` }
 						</code>
 					</pre>
@@ -492,12 +493,14 @@ templ ToggleSwitchDemo() {
 						TwoWayStatePath: "selectedChannels",
 						CustomValue:     "email",
 						InputId:         "channel-email",
+						InputName:       "channels",
 					})
 					@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
 						Label:           "SMS notifications",
 						TwoWayStatePath: "selectedChannels",
 						CustomValue:     "sms",
 						InputId:         "channel-sms",
+						InputName:       "channels",
 					})
 					<p class="text-sm text-neutral-400">
 						Values: <span x-text="selectedChannels"></span>

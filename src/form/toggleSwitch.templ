@@ -96,7 +96,7 @@ templ ToggleSwitch(componentSettings ToggleSwitchSettings) {
 	}
 	{{ trackClasses := "peer relative " + trackSizeClasses + " rounded-full " + trackBackgroundColor + " transition-colors " + trackCheckedBackgroundColor + " peer-focus-visible:ring-2 peer-focus-visible:ring-" + focusRingColor }}
 	{{ thumbClasses := "after:absolute after:start-[2px] after:top-0.5 " + thumbSizeClasses + " after:rounded-full after:border " + thumbBorderColor + " " + thumbBackgroundColor + " after:transition-all after:content-[''] peer-checked:after:translate-x-full" }}
-	if componentSettings.InputName != "" {
+	if componentSettings.InputName != "" && componentSettings.CustomValue == "" {
 		<input
 			type="hidden"
 			name={ componentSettings.InputName }
@@ -113,6 +113,9 @@ templ ToggleSwitch(componentSettings ToggleSwitchSettings) {
 			type="checkbox"
 			if componentSettings.InputId != "" {
 				id={ componentSettings.InputId }
+			}
+			if componentSettings.CustomValue != "" && componentSettings.InputName != "" {
+				name={ componentSettings.InputName }
 			}
 			if componentSettings.TwoWayStatePath != "" {
 				x-model={ componentSettings.TwoWayStatePath }
