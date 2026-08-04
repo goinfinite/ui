@@ -1,6 +1,9 @@
 # Changelog
 
 ```log
+0.1.8 - 2026/08/04
+fix: scope hint tooltips and accordion groups
+
 0.1.7 - 2026/07/27
 chore: bump go and templ deps
 chore: update templ generated files to v0.3.1020

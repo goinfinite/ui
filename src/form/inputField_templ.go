@@ -525,7 +525,7 @@ func InputField(componentSettings InputFieldSettings) templ.Component {
 			}
 		}
 		if componentSettings.HintDisplay == InputTypeHintDisplayTooltip && (componentSettings.HintValue != "" || componentSettings.HintStatePath != "") {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "<!-- HintDisplayTooltip --> <div class=\"group relative shrink-0 px-2\"><i class=\"ph-bold ph-info text-sm text-neutral-400 transition-colors hover:text-neutral-100\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "<!-- HintDisplayTooltip --> <div class=\"group/tooltip relative shrink-0 px-2\"><i class=\"ph-bold ph-info text-sm text-neutral-400 transition-colors hover:text-neutral-100\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -533,7 +533,7 @@ func InputField(componentSettings InputFieldSettings) templ.Component {
 			if componentSettings.HintDisplayTooltipBackgroundColor != "" {
 				initialTooltipBackgroundColor = componentSettings.HintDisplayTooltipBackgroundColor
 			}
-			var templ_7745c5c3_Var24 = []any{"invisible absolute flex right-0 z-10 mt-1.5 min-w-32 max-w-128 rounded border border-neutral-50/10 bg-" + initialTooltipBackgroundColor + " p-2 text-xs text-neutral-100 opacity-0 shadow-md transition-all group-hover:visible group-hover:opacity-100 select-none"}
+			var templ_7745c5c3_Var24 = []any{"invisible absolute flex right-0 z-10 mt-1.5 min-w-32 max-w-128 rounded border border-neutral-50/10 bg-" + initialTooltipBackgroundColor + " p-2 text-xs text-neutral-100 opacity-0 shadow-md transition-all group-hover/tooltip:visible group-hover/tooltip:opacity-100 select-none"}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var24...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
