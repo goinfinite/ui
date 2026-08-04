@@ -51,6 +51,19 @@ Form submission uses multiple checkboxes sharing the same `name` so the browser 
 
 ---
 
+## Toggle Switch
+
+Switch component that binds either a boolean Alpine.js state or a custom value in an Alpine.js array, with configurable sizes, colors, required state, and disabled state.
+
+**Flow:**
+
+1. `src/form/toggleSwitch.templ` — Component definition with ToggleSwitchSettings for binding, sizing, colors, and disabled state
+2. `src/form/toggleSwitch_templ.go` — Compiled output rendering the hidden form field, checkbox input, and switch track
+
+With `CustomValue`, Alpine.js adds or removes the value from an array. Without it, Alpine.js treats the checkbox as a boolean state.
+
+---
+
 ## Radio Button Input
 
 Single radio button component for choice selection within a group, with label and state binding support.

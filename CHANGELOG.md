@@ -2,6 +2,8 @@
 
 ```log
 0.1.8 - 2026/08/04
+feat: add ToggleSwitch with configurable styles and Alpine bindings
+docs: expand ToggleSwitch and component usage examples
 fix: scope hint tooltips and accordion groups
 
 0.1.7 - 2026/07/27
