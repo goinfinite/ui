@@ -16,6 +16,23 @@ UiToolset.RegisterAlpineState(() => {
       }, this.displayDurationMs);
     },
 
+    displayToastWithApiResponse(apiResponse, httpStatusCode) {
+      const responseDisplay = UiToolset.ResolveApiResponseDisplay(
+        apiResponse,
+        httpStatusCode,
+      );
+      if (responseDisplay.message === "") {
+        return;
+      }
+
+      let toastType = responseDisplay.outcome;
+      if (toastType === "error") {
+        toastType = "danger";
+      }
+
+      this.displayToast(responseDisplay.message, toastType);
+    },
+
     clearToast() {
       clearTimeout(this.dismissTimeoutId);
       this.dismissTimeoutId = null;
@@ -26,19 +43,10 @@ UiToolset.RegisterAlpineState(() => {
 });
 
 document.addEventListener("htmx:afterRequest", (event) => {
-  const httpErrorStatusCodeWithMessage = {
-    400: "BadRequest",
-    401: "Unauthorized",
-    403: "Forbidden",
-    404: "NotFound",
-    500: "InternalServerError",
-    502: "BadGateway",
-    503: "ServiceUnavailable",
-    504: "GatewayTimeout",
-  };
   const httpResponseObject = event.detail.xhr;
   if (
-    httpResponseObject.getResponseHeader("Content-Type") !== "application/json"
+    !httpResponseObject?.getResponseHeader("Content-Type")
+      ?.includes("application/json")
   ) {
     return;
   }
@@ -48,31 +56,17 @@ document.addEventListener("htmx:afterRequest", (event) => {
     return;
   }
 
-  const parsedResponse = JSON.parse(responseData);
-  if (parsedResponse.body === undefined || parsedResponse.body === "") {
+  let parsedResponse;
+  try {
+    parsedResponse = JSON.parse(responseData);
+  } catch (parseError) {
+    console.error("ToastApiResponseParseFailed", parseError);
+    Alpine.store("toast").displayToast("UnexpectedResponse", "danger");
     return;
   }
 
-  httpResponseStatusCode = httpResponseObject.status;
-
-  let toastType = "success";
-  let toastMessage = "Success";
-  if (httpResponseStatusCode == 207) {
-    toastType = "partialSuccess";
-    toastMessage = "PartialSuccess";
-  }
-
-  if (httpResponseStatusCode >= 400) {
-    toastType = "danger";
-    toastMessage = "Error";
-    if (httpErrorStatusCodeWithMessage[httpResponseStatusCode]) {
-      toastMessage = httpErrorStatusCodeWithMessage[httpResponseStatusCode];
-    }
-  }
-
-  if (typeof parsedResponse.body === "string") {
-    toastMessage = parsedResponse.body;
-  }
-
-  Alpine.store("toast").displayToast(toastMessage, toastType);
+  Alpine.store("toast").displayToastWithApiResponse(
+    parsedResponse,
+    httpResponseObject.status,
+  );
 });

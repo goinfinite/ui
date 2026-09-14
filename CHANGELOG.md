@@ -4,6 +4,7 @@
 0.1.8 - 2026/09/14
 chore: update go and deps
 chore: pin tool versions in mise
+feat: display liaison response messages in toast
 
 0.1.7 - 2026/07/27
 chore: bump go and templ deps

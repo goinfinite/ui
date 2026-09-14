@@ -37,8 +37,30 @@ templ HeadTagsHtmx() {
 	<script defer src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js" integrity="sha256-cepnGFv6jJjDnTFxfG/OXYUjcPzf0SnbRUN3TTFFwN4=" crossorigin="anonymous"></script>
 }
 
-//go:embed toolset.js
-var unminifiedToolsetJs string
+//go:embed toolset/alpineState.js
+var toolsetAlpineStateJs string
+
+//go:embed toolset/loadingOverlay.js
+var toolsetLoadingOverlayJs string
+
+//go:embed toolset/apiResponse.js
+var toolsetApiResponseJs string
+
+//go:embed toolset/jsonAjax.js
+var toolsetJsonAjaxJs string
+
+//go:embed toolset/randomPassword.js
+var toolsetRandomPasswordJs string
+
+//go:embed toolset/index.js
+var toolsetIndexJs string
+
+var unminifiedToolsetJs = toolsetAlpineStateJs + "\n" +
+	toolsetLoadingOverlayJs + "\n" +
+	toolsetApiResponseJs + "\n" +
+	toolsetJsonAjaxJs + "\n" +
+	toolsetRandomPasswordJs + "\n" +
+	toolsetIndexJs
 
 templ HeadTagsToolset() {
 	@uiToolset.MinifierTemplateJs(&unminifiedToolsetJs)

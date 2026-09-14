@@ -100,16 +100,35 @@ Form submissions done with HTMX usually utilize the `FormData` object to send fo
 
 ### JavaScript Toolset
 
-The `toolset.js` file is a collection of JavaScript utility functions that can be used in your project. It is included in the `@uiImport.HeadTagsFullJs()` component or you can include it manually using `@uiImport.ToolsetJs()`.
+The JavaScript toolset is a collection of utility files. It is included in the `@uiImport.HeadTagsFullJs()` component or you can include it manually using `@uiImport.HeadTagsToolset()`.
 
 To use the toolset, you can access it through the `UiToolset` object or `window.UiToolset` object.
 
 - `UiToolset.CreateRandomPassword()`: Creates a random password of length 16 characters.
+- `UiToolset.ResolveApiResponseDisplay(apiResponse, httpStatusCode)`: Resolves the message and outcome (`success`, `partialSuccess`, or `error`) from an Infinite API response envelope.
 - `UiToolset.ToggleLoadingOverlay()`: Toggles the loading overlay element with the id `loading-overlay`.
 - `UiToolset.JsonAjax()`: Makes a JSON AJAX request to the specified URL.¹
 - `UiToolset.RegisterAlpineState()`: Registers a function to be called when Alpine.js is initialized or when it is already initialized. Useful for avoiding registering repeated addEventListeners for the same method, like when transiting through pages.
 
 _¹Available when Alpine.js was already initialized._
+
+When the Toast component is present, Infinite API responses can provide
+automatic messages using the recommended envelope:
+
+```json
+{
+    "status": 200,
+    "readableMessage": "Operation completed successfully.",
+    "body": {}
+}
+```
+
+`readableMessage` is a string. `body` can contain any JSON value. Toast
+styling is selected from the HTTP status. A `humanReadableMessage` object
+with `error`, `partialSuccess`, and `success` fields is also supported.
+`readableMessage` takes precedence when it is not empty. Otherwise the
+matching `humanReadableMessage` field is used. A string `body` is the last
+fallback. The toast stays hidden when the response carries no message.
 
 ### Go(lang) Toolset
 

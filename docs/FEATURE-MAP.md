@@ -146,8 +146,10 @@ Dismissible notification toast component with title, description, and Alpine.js 
 **Flow:**
 
 1. `src/display/toast.templ` — Component definition with ToastSettings struct exposing optional AutoDismissSeconds (defaults to 10s)
-2. `src/display/toastState.js` — Helper JavaScript for managing toast queue and lifecycle, reading the duration from the Alpine store
+2. `src/display/toastState.js` — Alpine toast state and HTMX response handling
 3. `src/display/toast_templ.go` — Compiled output rendering toast element with Alpine.js binding and timer logic
+4. `src/import/toolset/apiResponse.js` — API response message and outcome resolution
+5. `src/import/toolset/jsonAjax.js` — JsonAjax response handling delegated to the toast store
 
 ---
 
@@ -197,12 +199,12 @@ Consolidated export of all third-party library dependencies (Alpine.js, UnoCSS r
 
 ## JavaScript Toolset
 
-Bundled utility functions for client-side operations: random password generation, loading overlay toggle, JSON AJAX requests, and Alpine.js lifecycle hooks.
+Bundled utility functions for client-side operations: random password generation, loading overlay toggle, JSON AJAX requests, API response message resolution, and Alpine.js lifecycle hooks.
 
 **Flow:**
 
-1. `src/import/toolset.js` — JavaScript utility library with UiToolset functions embedded as string
-2. `src/import/import.templ` — HeadTagsToolset() component embedding minified toolset.js in a script tag via MinifierTemplateJs()
+1. `src/import/toolset/index.js` — UiToolset assembly; sibling files own one concern each: Alpine state registration, loading overlay, API response resolution, JsonAjax, and password generation
+2. `src/import/import.templ` — HeadTagsToolset() component concatenating the toolset files and embedding the minified result in a script tag via MinifierTemplateJs()
 3. `src/toolset/minifier.go` — esbuild-based minifier called by MinifierTemplateJs() to minify JS before rendering
 
 ---
@@ -214,7 +216,7 @@ Utility for minifying JavaScript and CSS at compile time or runtime using esbuil
 **Flow:**
 
 1. `src/toolset/minifier.go` — Minifier() function wrapping esbuild transform API with support for JavaScript and CSS content types
-2. `src/import/import.templ` — Uses MinifierTemplateJs() and MinifierTemplateCss() wrapper functions to minify embedded toolset.js and inline styles
+2. `src/import/import.templ` — Uses MinifierTemplateJs() and MinifierTemplateCss() wrapper functions to minify the embedded toolset files and inline styles
 3. `src/toolset/minifier_test.go` — Tests validating minification behavior and error handling
 
 ---
