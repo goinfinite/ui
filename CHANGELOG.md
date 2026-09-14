@@ -5,6 +5,7 @@
 chore: update go and deps
 chore: pin tool versions in mise
 feat: display liaison response messages in toast
+docs: add consumer skill file
 
 0.1.7 - 2026/07/27
 chore: bump go and templ deps
