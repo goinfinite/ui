@@ -12,6 +12,8 @@ function displayApiErrorToast(error) {
   );
 }
 
+let activeJsonAjaxRequestCount = 0;
+
 async function jsonAjax(
   method = "POST",
   url,
@@ -33,10 +35,17 @@ async function jsonAjax(
     throw new Error("InvalidPayload");
   }
 
-  if (typeof shouldDisplayToast !== "boolean") {
-    shouldDisplayToast = true;
+  const payloadIsEmpty = Object.keys(payload).length === 0;
+
+  if (method === "GET" && !payloadIsEmpty) {
+    throw new Error("GetRequestPayloadNotAllowed");
   }
 
+  if (typeof shouldDisplayToast !== "boolean") {
+    throw new Error("InvalidShouldDisplayToast");
+  }
+
+  activeJsonAjaxRequestCount++;
   toggleLoadingOverlay(true);
 
   try {
@@ -46,9 +55,8 @@ async function jsonAjax(
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: Object.keys(payload).length > 0 ? JSON.stringify(payload) : undefined,
+      body: payloadIsEmpty ? undefined : JSON.stringify(payload),
     });
-    toggleLoadingOverlay(false);
 
     const contentType = response.headers.get("Content-Type");
     if (!(contentType && contentType.includes("application/json"))) {
@@ -79,12 +87,15 @@ async function jsonAjax(
 
     return responseData?.body;
   } catch (error) {
-    toggleLoadingOverlay(false);
-
     if (shouldDisplayToast) {
       displayApiErrorToast(error);
     }
 
     throw error;
+  } finally {
+    activeJsonAjaxRequestCount--;
+    if (activeJsonAjaxRequestCount === 0) {
+      toggleLoadingOverlay(false);
+    }
   }
 }
