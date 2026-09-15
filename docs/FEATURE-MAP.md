@@ -15,11 +15,11 @@ Single-line text input with configurable type (text, email, number, date, passwo
 
 ## Multi-line Text Area
 
-Multi-line text input component with configurable rows and full support for form submission and state binding.
+Multi-line text input with five height steps (h-12/24/36/48/60), expand-to-3x toggle, and floating action icons (expand, copy, clear) anchored to the text line.
 
 **Flow:**
 
-1. `src/form/textArea.templ` — Component definition with TextAreaSettings struct
+1. `src/form/textArea.templ` — Component definition with TextAreaSettings struct; heights and icon positions supplied mutually exclusively via Alpine `:class`
 2. `src/form/textArea_templ.go` — Compiled output rendering textarea element with styling and Alpine.js integration
 
 ---
@@ -57,7 +57,7 @@ Switch component that binds either a boolean Alpine.js state or a custom value i
 
 **Flow:**
 
-1. `src/form/toggleSwitch.templ` — Component definition with ToggleSwitchSettings for binding, sizing, colors, and disabled state
+1. `src/form/toggleSwitch.templ` — Component definition with ToggleSwitchSettings for binding, sizing, colors, disabled state, and label position
 2. `src/form/toggleSwitch_templ.go` — Compiled output rendering the hidden form field, checkbox input, and switch track
 
 With `CustomValue`, Alpine.js adds or removes the value from an array. Without it, Alpine.js treats the checkbox as a boolean state.
@@ -159,8 +159,10 @@ Dismissible notification toast component with title, description, and Alpine.js 
 **Flow:**
 
 1. `src/display/toast.templ` — Component definition with ToastSettings struct exposing optional AutoDismissSeconds (defaults to 10s)
-2. `src/display/toastState.js` — Helper JavaScript for managing toast queue and lifecycle, reading the duration from the Alpine store
+2. `src/display/toastState.js` — Alpine toast state and HTMX response handling
 3. `src/display/toast_templ.go` — Compiled output rendering toast element with Alpine.js binding and timer logic
+4. `src/import/toolset/apiResponse.js` — API response message and outcome resolution
+5. `src/import/toolset/jsonAjax.js` — JsonAjax response handling delegated to the toast store
 
 ---
 
@@ -210,12 +212,12 @@ Consolidated export of all third-party library dependencies (Alpine.js, UnoCSS r
 
 ## JavaScript Toolset
 
-Bundled utility functions for client-side operations: random password generation, loading overlay toggle, JSON AJAX requests, and Alpine.js lifecycle hooks.
+Bundled utility functions for client-side operations: random password generation, loading overlay toggle, JSON AJAX requests, API response message resolution, and Alpine.js lifecycle hooks.
 
 **Flow:**
 
-1. `src/import/toolset.js` — JavaScript utility library with UiToolset functions embedded as string
-2. `src/import/import.templ` — HeadTagsToolset() component embedding minified toolset.js in a script tag via MinifierTemplateJs()
+1. `src/import/toolset/index.js` — UiToolset assembly; sibling files own one concern each: Alpine state registration, loading overlay, API response resolution, JsonAjax, and password generation
+2. `src/import/import.templ` — HeadTagsToolset() component concatenating the toolset files and embedding the minified result in a script tag via MinifierTemplateJs()
 3. `src/toolset/minifier.go` — esbuild-based minifier called by MinifierTemplateJs() to minify JS before rendering
 
 ---
@@ -227,7 +229,7 @@ Utility for minifying JavaScript and CSS at compile time or runtime using esbuil
 **Flow:**
 
 1. `src/toolset/minifier.go` — Minifier() function wrapping esbuild transform API with support for JavaScript and CSS content types
-2. `src/import/import.templ` — Uses MinifierTemplateJs() and MinifierTemplateCss() wrapper functions to minify embedded toolset.js and inline styles
+2. `src/import/import.templ` — Uses MinifierTemplateJs() and MinifierTemplateCss() wrapper functions to minify the embedded toolset files and inline styles
 3. `src/toolset/minifier_test.go` — Tests validating minification behavior and error handling
 
 ---
@@ -241,5 +243,21 @@ Build-time HTML generation showcasing all UI components with usage examples and 
 1. `demo/demo.go` — Entrypoint that renders DemoIndex() templ component and writes to index.html
 2. `demo/demo.templ` — Full demo page structure with component usage examples, sidebar navigation, and styling
 3. `src/import/import.templ` — DemoIndex imports HeadTagsFull() for CDN resources
+
+---
+
+## Test Suite
+
+Single entry point for all verification: Go units, Playwright behavioral specs against the demo, axe ratchet, and golden performance budgets.
+
+**Flow:**
+
+1. `tests/tests.sh` — Contract entry point: registry selection, demo server lifecycle, cumulative levels, exit 0/1/2
+2. `tests/registry.yaml` — Explicit feature:scope/level registry; trusted input
+3. `tests/lib/registry.mjs` — Registry reader for list and select modes
+4. `tests/lib/serveDemo.mjs` — Static localhost server for docs/
+5. `tests/lib/checkPerformance.mjs` — Compares measured latencies against `tests/golden.yaml` tiers
+6. `tests/ui/run.sh` — Playwright mode runner (smoke, standard, a11y, performance, toolset, cross-browser, toolset-cross-browser)
+7. `tests/ui/specs/` — Behavioral specs by feature: form, toolset, a11y, performance
 
 ---

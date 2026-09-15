@@ -1,4 +1,4 @@
-# [Infinite UI](https://github.com/goinfinite/ui) &middot; [![Demo](https://img.shields.io/badge/demo-233876)](https://ui.demo.goinfinite.net/) [![/r/goinfinite](https://img.shields.io/badge/%2Fr%2Fgoinfinite-FF4500?logo=reddit&logoColor=ffffff)](https://www.reddit.com/r/goinfinite/) [![Discussions](https://img.shields.io/badge/discussions-751A3D?logo=github)](https://github.com/orgs/goinfinite/discussions) [![Report Card](https://img.shields.io/badge/report-A%2B-brightgreen)](https://goreportcard.com/report/github.com/goinfinite/ui) [![License](https://img.shields.io/badge/license-MIT-teal.svg)](https://github.com/goinfinite/ui/blob/main/LICENSE.md)
+# [Infinite UI](https://github.com/goinfinite/ui) &middot; [![Demo](https://img.shields.io/badge/demo-233876)](https://ui.demo.goinfinite.net/) [![/r/goinfinite](https://img.shields.io/badge/%2Fr%2Fgoinfinite-FF4500?logo=reddit&logoColor=ffffff)](https://www.reddit.com/r/goinfinite/) [![Discussions](https://img.shields.io/badge/discussions-751A3D?logo=github)](https://github.com/orgs/goinfinite/discussions) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=goinfinite_ui&metric=alert_status)](https://sonarcloud.io/project/overview?id=goinfinite_ui) [![License](https://img.shields.io/badge/license-MIT-teal.svg)](https://github.com/goinfinite/ui/blob/main/LICENSE.md)
 
 Infinite UI is a collection of reusable components for building elegant user interfaces in Go with [a-h/templ](https://github.com/a-h/templ), [Alpine.js](https://github.com/alpinejs/alpine), [Tailwind CSS](https://github.com/tailwindlabs/tailwindcss), [Phosphor Icons](https://phosphoricons.com/) and the occasional additional JavaScript libraries when necessary.
 
@@ -100,16 +100,35 @@ Form submissions done with HTMX usually utilize the `FormData` object to send fo
 
 ### JavaScript Toolset
 
-The `toolset.js` file is a collection of JavaScript utility functions that can be used in your project. It is included in the `@uiImport.HeadTagsFullJs()` component or you can include it manually using `@uiImport.ToolsetJs()`.
+The JavaScript toolset is a collection of utility files. It is included in the `@uiImport.HeadTagsFullJs()` component or you can include it manually using `@uiImport.HeadTagsToolset()`.
 
 To use the toolset, you can access it through the `UiToolset` object or `window.UiToolset` object.
 
 - `UiToolset.CreateRandomPassword()`: Creates a random password of length 16 characters.
+- `UiToolset.ResolveApiResponseDisplay(apiResponse, httpStatusCode)`: Resolves the message and outcome (`success`, `partialSuccess`, or `error`) from an Infinite API response envelope.
 - `UiToolset.ToggleLoadingOverlay()`: Toggles the loading overlay element with the id `loading-overlay`.
 - `UiToolset.JsonAjax()`: Makes a JSON AJAX request to the specified URL.¹
 - `UiToolset.RegisterAlpineState()`: Registers a function to be called when Alpine.js is initialized or when it is already initialized. Useful for avoiding registering repeated addEventListeners for the same method, like when transiting through pages.
 
 _¹Available when Alpine.js was already initialized._
+
+When the Toast component is present, Infinite API responses can provide
+automatic messages using the recommended envelope:
+
+```json
+{
+    "status": 200,
+    "readableMessage": "Operation completed successfully.",
+    "body": {}
+}
+```
+
+`readableMessage` is a string. `body` can contain any JSON value. Toast
+styling is selected from the HTTP status. A `humanReadableMessage` object
+with `error`, `partialSuccess`, and `success` fields is also supported.
+`readableMessage` takes precedence when it is not empty. Otherwise the
+matching `humanReadableMessage` field is used. A string `body` is the last
+fallback. The toast stays hidden when the response carries no message.
 
 ### Go(lang) Toolset
 

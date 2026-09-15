@@ -191,8 +191,30 @@ func HeadTagsHtmx() templ.Component {
 	})
 }
 
-//go:embed toolset.js
-var unminifiedToolsetJs string
+//go:embed toolset/alpineState.js
+var toolsetAlpineStateJs string
+
+//go:embed toolset/loadingOverlay.js
+var toolsetLoadingOverlayJs string
+
+//go:embed toolset/apiResponse.js
+var toolsetApiResponseJs string
+
+//go:embed toolset/jsonAjax.js
+var toolsetJsonAjaxJs string
+
+//go:embed toolset/randomPassword.js
+var toolsetRandomPasswordJs string
+
+//go:embed toolset/index.js
+var toolsetIndexJs string
+
+var unminifiedToolsetJs = toolsetAlpineStateJs + "\n" +
+	toolsetLoadingOverlayJs + "\n" +
+	toolsetApiResponseJs + "\n" +
+	toolsetJsonAjaxJs + "\n" +
+	toolsetRandomPasswordJs + "\n" +
+	toolsetIndexJs
 
 func HeadTagsToolset() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {

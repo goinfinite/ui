@@ -9,11 +9,13 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 const (
-	ToggleSwitchSizeXs string = "xs"
-	ToggleSwitchSizeSm string = "sm"
-	ToggleSwitchSizeMd string = "md"
-	ToggleSwitchSizeLg string = "lg"
-	ToggleSwitchSizeXl string = "xl"
+	ToggleSwitchLabelPositionLeft  string = "left"
+	ToggleSwitchLabelPositionRight string = "right"
+	ToggleSwitchSizeXs             string = "xs"
+	ToggleSwitchSizeSm             string = "sm"
+	ToggleSwitchSizeMd             string = "md"
+	ToggleSwitchSizeLg             string = "lg"
+	ToggleSwitchSizeXl             string = "xl"
 )
 
 type ToggleSwitchSettings struct {
@@ -27,6 +29,7 @@ type ToggleSwitchSettings struct {
 	InputName                   string
 	IsDisabled                  bool
 	IsRequired                  bool
+	LabelPosition               string
 	Size                        string
 	TextColor                   string
 	ThumbBackgroundColor        string
@@ -121,9 +124,9 @@ func ToggleSwitch(componentSettings ToggleSwitchSettings) templ.Component {
 		if componentSettings.TextColor != "" {
 			textColor = "text-" + componentSettings.TextColor
 		}
-		labelClasses := "inline-flex cursor-pointer select-none items-center"
+		labelClasses := "inline-flex cursor-pointer select-none items-center gap-2"
 		if componentSettings.IsDisabled {
-			labelClasses = "inline-flex cursor-not-allowed select-none items-center opacity-50"
+			labelClasses = "inline-flex cursor-not-allowed select-none items-center gap-2 opacity-50"
 		}
 		trackClasses := "peer relative " + trackSizeClasses + " rounded-full " + trackBackgroundColor + " transition-colors " + trackCheckedBackgroundColor + " peer-focus-visible:ring-2 peer-focus-visible:ring-" + focusRingColor
 		thumbClasses := "after:absolute after:start-[2px] after:top-0.5 " + thumbSizeClasses + " after:rounded-full after:border " + thumbBorderColor + " " + thumbBackgroundColor + " after:transition-all after:content-[''] peer-checked:after:translate-x-full"
@@ -135,7 +138,7 @@ func ToggleSwitch(componentSettings ToggleSwitchSettings) templ.Component {
 			var templ_7745c5c3_Var2 string
 			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.InputName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/toggleSwitch.templ`, Line: 102, Col: 37}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/toggleSwitch.templ`, Line: 105, Col: 37}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var2)
 			if templ_7745c5c3_Err != nil {
@@ -153,7 +156,7 @@ func ToggleSwitch(componentSettings ToggleSwitchSettings) templ.Component {
 				var templ_7745c5c3_Var3 string
 				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.TwoWayStatePath)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/toggleSwitch.templ`, Line: 104, Col: 47}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/toggleSwitch.templ`, Line: 107, Col: 47}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
 				if templ_7745c5c3_Err != nil {
@@ -205,7 +208,7 @@ func ToggleSwitch(componentSettings ToggleSwitchSettings) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.InputId)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/toggleSwitch.templ`, Line: 115, Col: 34}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/toggleSwitch.templ`, Line: 118, Col: 34}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
 			if templ_7745c5c3_Err != nil {
@@ -224,7 +227,7 @@ func ToggleSwitch(componentSettings ToggleSwitchSettings) templ.Component {
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.InputName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/toggleSwitch.templ`, Line: 118, Col: 38}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/toggleSwitch.templ`, Line: 121, Col: 38}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
 			if templ_7745c5c3_Err != nil {
@@ -243,7 +246,7 @@ func ToggleSwitch(componentSettings ToggleSwitchSettings) templ.Component {
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.TwoWayStatePath)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/toggleSwitch.templ`, Line: 121, Col: 47}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/toggleSwitch.templ`, Line: 124, Col: 47}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var8)
 			if templ_7745c5c3_Err != nil {
@@ -262,7 +265,7 @@ func ToggleSwitch(componentSettings ToggleSwitchSettings) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.CustomValue)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/toggleSwitch.templ`, Line: 124, Col: 41}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/toggleSwitch.templ`, Line: 127, Col: 41}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var9)
 			if templ_7745c5c3_Err != nil {
@@ -307,30 +310,40 @@ func ToggleSwitch(componentSettings ToggleSwitchSettings) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "\"></div><span class=\"ml-2\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "\"></div><span")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if componentSettings.LabelPosition == ToggleSwitchLabelPositionLeft {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, " class=\"order-first\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, ">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.Label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/toggleSwitch.templ`, Line: 136, Col: 28}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/toggleSwitch.templ`, Line: 143, Col: 28}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, " ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, " ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if componentSettings.IsRequired {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<span class=\"text-red-700\">*</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<span class=\"text-red-700\">*</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "</span></label>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "</span></label>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

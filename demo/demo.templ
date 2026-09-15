@@ -9,12 +9,12 @@ import (
 
 const (
 	DemoPreCodeClasses string = "rounded-md bg-neutral-800 p-4 text-xs text-wrap tab-2"
-	UiVersion          string = "0.1.7"
+	UiVersion          string = "0.1.9"
 )
 
 templ DemoIndex() {
 	<!DOCTYPE html>
-	<html class="dark">
+	<html lang="en" class="dark">
 		<head>
 			<title>Infinite UI Demo</title>
 			<meta charset="utf-8"/>
@@ -31,24 +31,24 @@ templ DemoIndex() {
 				<section class="flex flex-col items-center justify-between gap-4 overflow-y-auto mt-20" id="demo-header">
 					<h1 class="text-center text-5xl font-bold">Infinite UI Demo</h1>
 					<p class="text-center text-sm text-neutral-400">
-						<i><a href="https://goinfinite.net" target="_blank" title="goinfinite.net">Infinite</a></i> UI is a collection of reusable components for building elegant user interfaces in Go.
+						<i><a href="https://goinfinite.net" target="_blank" rel="noopener noreferrer" title="goinfinite.net">Infinite</a></i> UI is a collection of reusable components for building elegant user interfaces in Go.
 						<br/>
 						It is built with <i>a-h/templ</i>, <i>Alpine.js</i>, <i>Tailwind CSS</i>, <i>Phosphor Icons</i> and the occasional additional JavaScript libraries when necessary.
 					</p>
 					<div class="flex flex-row items-center gap-2">
-						<a href="https://github.com/goinfinite/ui" target="_blank" title="GitHub Repository">
+						<a href="https://github.com/goinfinite/ui" target="_blank" rel="noopener noreferrer" title="GitHub Repository">
 							<img src="https://img.shields.io/badge/repository-262626?logo=github" alt="GitHub Repository"/>
 						</a>
-						<a href="https://github.com/orgs/goinfinite/discussions" target="_blank" title="GitHub Discussions">
+						<a href="https://github.com/orgs/goinfinite/discussions" target="_blank" rel="noopener noreferrer" title="GitHub Discussions">
 							<img src="https://img.shields.io/badge/discussions-751A3D?logo=github" alt="GitHub Discussions"/>
 						</a>
-						<a href="https://www.reddit.com/r/goinfinite/" target="_blank" title="Reddit Subreddit">
+						<a href="https://www.reddit.com/r/goinfinite/" target="_blank" rel="noopener noreferrer" title="Reddit Subreddit">
 							<img src="https://img.shields.io/badge/%2Fr%2Fgoinfinite-FF4500?logo=reddit&logoColor=ffffff" alt="Reddit Subreddit"/>
 						</a>
-						<a href="https://goreportcard.com/report/github.com/goinfinite/ui" target="_blank" title="Go Report Card">
-							<img src="https://goreportcard.com/badge/github.com/goinfinite/ui" alt="Go Report Card"/>
+						<a href="https://sonarcloud.io/project/overview?id=goinfinite_ui" target="_blank" rel="noopener noreferrer" title="Quality Gate Status">
+							<img src="https://sonarcloud.io/api/project_badges/measure?project=goinfinite_ui&metric=alert_status" alt="Quality Gate Status"/>
 						</a>
-						<a href="https://github.com/goinfinite/ui/blob/main/LICENSE.md" target="_blank" title="License">
+						<a href="https://github.com/goinfinite/ui/blob/main/LICENSE.md" target="_blank" rel="noopener noreferrer" title="License">
 							<img src="https://img.shields.io/badge/license-MIT-teal.svg" alt="License"/>
 						</a>
 					</div>
@@ -201,7 +201,7 @@ templ DemoNavigationContent() {
 templ UsageTitle(componentPath string) {
 	<a
 		href={ "https://github.com/goinfinite/ui/blob/main/src" + templ.SafeURL(componentPath) }
-		rel="help"
+		rel="help noopener noreferrer"
 		target="_blank"
 		title="View Complete Component Settings"
 	>
@@ -521,6 +521,17 @@ templ ToggleSwitchDemo() {
 						Size:            toggleSwitchSize,
 					})
 				}
+				<p class="mt-3 text-sm text-neutral-400">Label position</p>
+				@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
+					Label:           "Label on left",
+					TwoWayStatePath: "isSizeExampleEnabled",
+					LabelPosition:   uiForm.ToggleSwitchLabelPositionLeft,
+				})
+				@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
+					Label:           "Label on right",
+					TwoWayStatePath: "isSizeExampleEnabled",
+					LabelPosition:   uiForm.ToggleSwitchLabelPositionRight,
+				})
 			</div>
 			<div class="flex flex-col gap-3">
 				<p class="text-sm text-neutral-400">Color variants</p>

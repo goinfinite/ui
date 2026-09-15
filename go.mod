@@ -1,12 +1,12 @@
 module github.com/goinfinite/ui
 
-go 1.26.5
+go 1.27.1
 
 require (
 	github.com/a-h/templ v0.3.1020
-	github.com/evanw/esbuild v0.28.1
+	github.com/evanw/esbuild v0.28.2
 )
 
-require golang.org/x/sys v0.47.0 // indirect
+require golang.org/x/sys v0.48.0 // indirect
 
 exclude github.com/goinfinite/ui/demo v0.0.0

@@ -1,6 +1,24 @@
 # Changelog
 
 ```log
+0.1.9 - 2026/09/15
+fix: set the demo document language to English
+fix: reject invalid inputs and count concurrent requests in jsonAjax
+test: add jsonAjax specs and start the demo server only when a suite needs it
+test: fail the performance check when a golden budget has no result
+feat: add label position setting to ToggleSwitch
+fix: drop top margin that misaligned InlineRadioGroup with sibling form controls
+fix: rescale TextArea heights to steps of 12 and soften the large size font
+fix: align TextArea action icons with the text inset and widen the gutter so lines clear them
+docs: replace goreportcard badge with sonar quality gate in README and demo
+docs: bump demo sidebar version label to 0.1.9
+chore: update go and deps
+chore: pin tool versions in mise
+feat: display liaison response messages in toast
+docs: add consumer skill file
+test: add tests.sh suite with Playwright behavioral specs for form components and axe ratchet
+test: add golden performance budgets with click-to-final-state latency specs
+
 0.1.8 - 2026/08/04
 feat: add ToggleSwitch with configurable styles and Alpine bindings
 docs: expand ToggleSwitch and component usage examples
