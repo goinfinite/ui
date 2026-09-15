@@ -2,6 +2,7 @@
 
 ```log
 0.1.9 - 2026/09/15
+fix: set the demo document language to English
 fix: reject invalid inputs and count concurrent requests in jsonAjax
 test: add jsonAjax specs and start the demo server only when a suite needs it
 test: fail the performance check when a golden budget has no result
