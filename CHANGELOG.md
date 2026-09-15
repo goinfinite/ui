@@ -2,6 +2,7 @@
 
 ```log
 0.1.9 - 2026/09/15
+feat: add label position setting to ToggleSwitch
 fix: drop top margin that misaligned InlineRadioGroup with sibling form controls
 fix: rescale TextArea heights to steps of 12 and soften the large size font
 fix: align TextArea action icons with the text inset and widen the gutter so lines clear them
