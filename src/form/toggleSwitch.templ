@@ -1,0 +1,142 @@
+package uiForm
+
+const (
+	ToggleSwitchSizeXs string = "xs"
+	ToggleSwitchSizeSm string = "sm"
+	ToggleSwitchSizeMd string = "md"
+	ToggleSwitchSizeLg string = "lg"
+	ToggleSwitchSizeXl string = "xl"
+)
+
+type ToggleSwitchSettings struct {
+	Label           string
+	TwoWayStatePath string
+
+	// OptionalFields
+	CustomValue                 string
+	FocusRingColor              string
+	InputId                     string
+	InputName                   string
+	IsDisabled                  bool
+	IsRequired                  bool
+	Size                        string
+	TextColor                  string
+	ThumbBackgroundColor       string
+	ThumbBorderColor           string
+	TrackBackgroundColor       string
+	TrackCheckedBackgroundColor string
+}
+
+// ToggleSwitch supports two Alpine.js binding modes:
+//
+// Boolean mode:
+// Set TwoWayStatePath to a boolean property and leave CustomValue empty.
+// Example: x-data="{enabled: false}", TwoWayStatePath: "enabled".
+//
+// Array mode:
+// Set TwoWayStatePath to an array property and set CustomValue to one item.
+// Alpine.js adds the value when checked and removes it when unchecked.
+// Render one switch for each item, using the same path and a different value.
+// Example: x-data="{channels: ['email']}", TwoWayStatePath: "channels",
+// CustomValue: "sms".
+//
+// Set InputName to include the bound state in form submission.
+templ ToggleSwitch(componentSettings ToggleSwitchSettings) {
+	<!-- ToggleSwitch -->
+	{{ trackSizeClasses := "h-6 w-11" }}
+	{{ thumbSizeClasses := "after:h-5 after:w-5" }}
+	{{ labelTextSize := "text-sm" }}
+	switch componentSettings.Size {
+		case ToggleSwitchSizeXs:
+			{{ trackSizeClasses = "h-4 w-7" }}
+			{{ thumbSizeClasses = "after:h-3 after:w-3" }}
+			{{ labelTextSize = "text-xs" }}
+		case ToggleSwitchSizeSm:
+			{{ trackSizeClasses = "h-5 w-9" }}
+			{{ thumbSizeClasses = "after:h-4 after:w-4" }}
+		case ToggleSwitchSizeMd:
+			{{ trackSizeClasses = "h-6 w-11" }}
+			{{ thumbSizeClasses = "after:h-5 after:w-5" }}
+		case ToggleSwitchSizeLg:
+			{{ trackSizeClasses = "h-7 w-13" }}
+			{{ thumbSizeClasses = "after:h-6 after:w-6" }}
+			{{ labelTextSize = "text-lg" }}
+		case ToggleSwitchSizeXl:
+			{{ trackSizeClasses = "h-8 w-15" }}
+			{{ thumbSizeClasses = "after:h-7 after:w-7" }}
+			{{ labelTextSize = "text-xl" }}
+	}
+	{{ trackBackgroundColor := "bg-neutral-50/10" }}
+	if componentSettings.TrackBackgroundColor != "" {
+		{{ trackBackgroundColor = "bg-" + componentSettings.TrackBackgroundColor }}
+	}
+	{{ trackCheckedBackgroundColor := "peer-checked:bg-secondary-500" }}
+	if componentSettings.TrackCheckedBackgroundColor != "" {
+		{{ trackCheckedBackgroundColor = "peer-checked:bg-" + componentSettings.TrackCheckedBackgroundColor }}
+	}
+	{{ thumbBackgroundColor := "after:bg-white" }}
+	if componentSettings.ThumbBackgroundColor != "" {
+		{{ thumbBackgroundColor = "after:bg-" + componentSettings.ThumbBackgroundColor }}
+	}
+	{{ thumbBorderColor := "after:border-neutral-50/20" }}
+	if componentSettings.ThumbBorderColor != "" {
+		{{ thumbBorderColor = "after:border-" + componentSettings.ThumbBorderColor }}
+	}
+	{{ focusRingColor := "secondary-500/50" }}
+	if componentSettings.FocusRingColor != "" {
+		{{ focusRingColor = componentSettings.FocusRingColor }}
+	}
+	{{ textColor := "text-neutral-100" }}
+	if componentSettings.TextColor != "" {
+		{{ textColor = "text-" + componentSettings.TextColor }}
+	}
+	{{ labelClasses := "inline-flex cursor-pointer select-none items-center" }}
+	if componentSettings.IsDisabled {
+		{{ labelClasses = "inline-flex cursor-not-allowed select-none items-center opacity-50" }}
+	}
+	{{ trackClasses := "peer relative " + trackSizeClasses + " rounded-full " + trackBackgroundColor + " transition-colors " + trackCheckedBackgroundColor + " peer-focus-visible:ring-2 peer-focus-visible:ring-" + focusRingColor }}
+	{{ thumbClasses := "after:absolute after:start-[2px] after:top-0.5 " + thumbSizeClasses + " after:rounded-full after:border " + thumbBorderColor + " " + thumbBackgroundColor + " after:transition-all after:content-[''] peer-checked:after:translate-x-full" }}
+	if componentSettings.InputName != "" && componentSettings.CustomValue == "" {
+		<input
+			type="hidden"
+			name={ componentSettings.InputName }
+			if componentSettings.TwoWayStatePath != "" {
+				x-model={ componentSettings.TwoWayStatePath }
+			}
+			if componentSettings.IsDisabled {
+				disabled
+			}
+		/>
+	}
+	<label class={ labelClasses + " " + textColor + " " + labelTextSize }>
+		<input
+			type="checkbox"
+			if componentSettings.InputId != "" {
+				id={ componentSettings.InputId }
+			}
+			if componentSettings.CustomValue != "" && componentSettings.InputName != "" {
+				name={ componentSettings.InputName }
+			}
+			if componentSettings.TwoWayStatePath != "" {
+				x-model={ componentSettings.TwoWayStatePath }
+			}
+			if componentSettings.CustomValue != "" {
+				value={ componentSettings.CustomValue }
+			}
+			if componentSettings.IsDisabled {
+				disabled
+			}
+			if componentSettings.IsRequired {
+				required
+			}
+			class="peer sr-only"
+		/>
+		<div class={ trackClasses + " " + thumbClasses }></div>
+		<span class="ml-2">
+			{ componentSettings.Label }
+			if componentSettings.IsRequired {
+				<span class="text-red-700">*</span>
+			}
+		</span>
+	</label>
+}

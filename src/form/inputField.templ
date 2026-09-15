@@ -144,14 +144,14 @@ templ InputField(componentSettings InputFieldSettings) {
 				}
 				if componentSettings.HintDisplay == InputTypeHintDisplayTooltip && (componentSettings.HintValue != "" || componentSettings.HintStatePath != "") {
 					<!-- HintDisplayTooltip -->
-					<div class="group relative shrink-0 px-2">
+					<div class="group/tooltip relative shrink-0 px-2">
 						<i class="ph-bold ph-info text-sm text-neutral-400 transition-colors hover:text-neutral-100"></i>
 						{{ initialTooltipBackgroundColor := "neutral-800/95" }}
 						if componentSettings.HintDisplayTooltipBackgroundColor != "" {
 							{{ initialTooltipBackgroundColor = componentSettings.HintDisplayTooltipBackgroundColor }}
 						}
 						<div
-							class={ "invisible absolute flex right-0 z-10 mt-1.5 min-w-32 max-w-128 rounded border border-neutral-50/10 bg-" + initialTooltipBackgroundColor + " p-2 text-xs text-neutral-100 opacity-0 shadow-md transition-all group-hover:visible group-hover:opacity-100 select-none" }
+							class={ "invisible absolute flex right-0 z-10 mt-1.5 min-w-32 max-w-128 rounded border border-neutral-50/10 bg-" + initialTooltipBackgroundColor + " p-2 text-xs text-neutral-100 opacity-0 shadow-md transition-all group-hover/tooltip:visible group-hover/tooltip:opacity-100 select-none" }
 							if componentSettings.HintStatePath != "" {
 								x-text={ componentSettings.HintStatePath }
 							}

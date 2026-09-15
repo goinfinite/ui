@@ -46,7 +46,7 @@ func Accordion(componentSettings AccordionSettings) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		for _, item := range componentSettings.Items {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<!-- AccordionItem --> <details class=\"border-b-1 open:bg-neutral-50/7.5 hover:bg-neutral-50/7.5 group border-neutral-50/5 bg-neutral-50/5 p-3 transition-all duration-300 first:rounded-t last:rounded-b last:border-b-0\"><summary class=\"relative flex cursor-pointer list-none items-center gap-1.5 pr-8 text-neutral-50/80 focus-visible:outline-none [&::-webkit-details-marker]:hidden\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<!-- AccordionItem --> <details class=\"border-b-1 open:bg-neutral-50/7.5 hover:bg-neutral-50/7.5 group/accordion border-neutral-50/5 bg-neutral-50/5 p-3 transition-all duration-300 first:rounded-t last:rounded-b last:border-b-0\"><summary class=\"relative flex cursor-pointer list-none items-center gap-1.5 pr-8 text-neutral-50/80 focus-visible:outline-none [&::-webkit-details-marker]:hidden\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -87,7 +87,7 @@ func Accordion(componentSettings AccordionSettings) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</span> <i class=\"ph-bold ph-plus absolute right-0 top-1.5 text-xs transition duration-300 group-open:rotate-45\"></i></summary><div class=\"flex w-full flex-col gap-5 px-2 py-4\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</span> <i class=\"ph-bold ph-plus absolute right-0 top-1.5 text-xs transition duration-300 group-open/accordion:rotate-45\"></i></summary><div class=\"flex w-full flex-col gap-5 px-2 py-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
