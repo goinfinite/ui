@@ -3,8 +3,8 @@
 # @usage        tests/tests.sh [list] [--level=<fast|standard|exhaustive>] [--feature=<name>[,<name>...]] [--scope=<name>[,<name>...]]
 # @output       Per-node progress on stdout, failures on stderr, final RESULT line, exit 0 pass / 1 failure / 2 runner error.
 # @requires     bash v4+, node v24+, curl, timeout, go
-# @version      0.2.0
-# @updated      2026-09-14
+# @version      0.3.0
+# @updated      2026-09-15
 # @see          .agents/skills/design-testing-strategy/SKILL.md
 set -euo pipefail
 
@@ -51,10 +51,11 @@ startDemoServer() {
 }
 
 waitForDemoServer() {
-	local demoUrl="$1"
+	local demoUrl="$1" demoServerPid="$2"
 	local readyDeadline=$((SECONDS + 10))
 	while [ "$SECONDS" -lt "$readyDeadline" ]; do
-		if curl -s -o /dev/null "$demoUrl/index.html"; then
+		if kill -0 "$demoServerPid" 2>/dev/null &&
+			curl -fs -o /dev/null "$demoUrl/index.html"; then
 			return 0
 		fi
 		sleep 0.2
@@ -74,6 +75,16 @@ selectRegisteredNodes() {
 		exit 2
 	fi
 	echo "$selection"
+}
+
+selectionRequiresDemo() {
+	local selection="$1"
+	while IFS=$'\t' read -r _ _ nodeRequiresDemo; do
+		if [ "$nodeRequiresDemo" = "true" ]; then
+			return 0
+		fi
+	done <<<"$selection"
+	return 1
 }
 
 runNode() {
@@ -113,17 +124,20 @@ if [ "$listMode" = "true" ]; then
 fi
 
 selectedNodes="$(selectRegisteredNodes "${registryFilters[@]}")"
-demoPort="${UI_TEST_PORT:-8377}"
-demoServerPid=$(startDemoServer "$demoPort")
-export DEMO_URL="http://localhost:$demoPort"
-trap 'kill "$demoServerPid" 2>/dev/null || true' EXIT
-waitForDemoServer "$DEMO_URL"
+
+if selectionRequiresDemo "$selectedNodes"; then
+	demoPort="${UI_TEST_PORT:-8377}"
+	demoServerPid=$(startDemoServer "$demoPort")
+	export DEMO_URL="http://localhost:$demoPort"
+	trap 'kill "$demoServerPid" 2>/dev/null || true' EXIT
+	waitForDemoServer "$DEMO_URL" "$demoServerPid"
+fi
 
 startedAt=$SECONDS
 passedCount=0
 timeoutCount=0
 totalCount=0
-while IFS=$'\t' read -r nodeLabel nodeCommand; do
+while IFS=$'\t' read -r nodeLabel nodeCommand _; do
 	totalCount=$((totalCount + 1))
 	exitCode=0
 	runNode "$nodeLabel" "$nodeCommand" || exitCode=$?

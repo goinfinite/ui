@@ -6,6 +6,13 @@ const budgets = yaml.load(readFileSync(new URL("../golden.yaml", import.meta.url
 
 let fatalReached = false;
 
+for (const metric of Object.keys(budgets)) {
+  if (!(metric in results)) {
+    console.error(`FATAL ${metric}: no performance result recorded`);
+    fatalReached = true;
+  }
+}
+
 for (const [metric, elapsedMs] of Object.entries(results)) {
   const budget = budgets[metric];
   if (!budget) {

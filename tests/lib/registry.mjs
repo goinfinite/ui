@@ -64,7 +64,8 @@ function printList(nodes) {
 
 function printSelection(nodes) {
   for (const node of nodes) {
-    console.log(`${node.feature}:${node.scope}/${node.level}\t${node.run}`);
+    const label = `${node.feature}:${node.scope}/${node.level}`;
+    console.log(`${label}\t${node.run}\t${node.requires_demo === true}`);
   }
 }
 

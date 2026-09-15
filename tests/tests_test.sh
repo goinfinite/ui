@@ -3,8 +3,8 @@
 # @usage        bash tests/tests_test.sh
 # @output       PASS lines per assertion; exits 1 on the first failure.
 # @requires     bash v4+
-# @version      0.1.0
-# @updated      2026-09-14
+# @version      0.2.0
+# @updated      2026-09-15
 set -euo pipefail
 
 source "$(dirname "$0")/tests.sh"
@@ -42,3 +42,15 @@ assertEquals "builds registry filters" "--level=fast --feature=form,toolset " "$
 
 filters="$(buildRegistryFilters "" "" "")"
 assertEquals "empty filters produce no arguments" "" "$filters"
+
+demoRequired="false"
+if selectionRequiresDemo $'form:ui/fast\trun smoke\ttrue'; then
+	demoRequired="true"
+fi
+assertEquals "detects a demo-requiring selection" "true" "$demoRequired"
+
+demoRequired="false"
+if selectionRequiresDemo $'runner:unit/fast\trun unit\tfalse'; then
+	demoRequired="true"
+fi
+assertEquals "ignores a selection with no demo requirement" "false" "$demoRequired"
