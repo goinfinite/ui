@@ -1,0 +1,17 @@
+demo.navigation-lcp:
+  baseline_p50_ms: 260
+  info_ms: 600
+  warn_ms: 1500
+  relative_warn_percent: 50
+
+form.textarea-expand:
+  baseline_p50_ms: 165
+  info_ms: 250
+  warn_ms: 400
+  relative_warn_percent: 20
+
+form.select-dropdown-open:
+  baseline_p50_ms: 20
+  info_ms: 60
+  warn_ms: 150
+  relative_warn_percent: 50

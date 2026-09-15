@@ -1,0 +1,27 @@
+version: 1
+levels: [fast, standard, exhaustive]
+features:
+  runner:
+    - scope: unit
+      level: fast
+      run: bash tests/tests_test.sh && bash tests/ui/run_test.sh
+  toolset:
+    - scope: unit
+      level: fast
+      run: go test ./src/toolset/...
+  form:
+    - scope: ui
+      level: fast
+      run: tests/ui/run.sh smoke
+    - scope: ui
+      level: standard
+      run: tests/ui/run.sh standard
+    - scope: accessibility
+      level: standard
+      run: tests/ui/run.sh a11y
+    - scope: performance
+      level: standard
+      run: tests/ui/run.sh performance && node tests/lib/checkPerformance.mjs
+    - scope: ui
+      level: exhaustive
+      run: tests/ui/run.sh cross-browser

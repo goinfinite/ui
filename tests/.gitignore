@@ -1,0 +1,4 @@
+node_modules/
+performance-results.json
+test-results/
+playwright-report/

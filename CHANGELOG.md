@@ -2,10 +2,17 @@
 
 ```log
 0.1.8 - 2026/09/14
+fix: drop top margin that misaligned InlineRadioGroup with sibling form controls
+fix: rescale TextArea heights to steps of 12 and soften the large size font
+fix: align TextArea action icons with the text inset and widen the gutter so lines clear them
+docs: replace goreportcard badge with sonar quality gate in README and demo
+docs: bump demo sidebar version label to 0.1.8
 chore: update go and deps
 chore: pin tool versions in mise
 feat: display liaison response messages in toast
 docs: add consumer skill file
+test: add tests.sh suite with Playwright behavioral specs for form components and axe ratchet
+test: add golden performance budgets with click-to-final-state latency specs
 
 0.1.7 - 2026/07/27
 chore: bump go and templ deps

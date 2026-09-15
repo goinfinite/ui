@@ -15,11 +15,11 @@ Single-line text input with configurable type (text, email, number, date, passwo
 
 ## Multi-line Text Area
 
-Multi-line text input component with configurable rows and full support for form submission and state binding.
+Multi-line text input with five height steps (h-12/24/36/48/60), expand-to-3x toggle, and floating action icons (expand, copy, clear) anchored to the text line.
 
 **Flow:**
 
-1. `src/form/textArea.templ` — Component definition with TextAreaSettings struct
+1. `src/form/textArea.templ` — Component definition with TextAreaSettings struct; heights and icon positions supplied mutually exclusively via Alpine `:class`
 2. `src/form/textArea_templ.go` — Compiled output rendering textarea element with styling and Alpine.js integration
 
 ---
@@ -230,5 +230,21 @@ Build-time HTML generation showcasing all UI components with usage examples and 
 1. `demo/demo.go` — Entrypoint that renders DemoIndex() templ component and writes to index.html
 2. `demo/demo.templ` — Full demo page structure with component usage examples, sidebar navigation, and styling
 3. `src/import/import.templ` — DemoIndex imports HeadTagsFull() for CDN resources
+
+---
+
+## Test Suite
+
+Single entry point for all verification: Go units, Playwright behavioral specs against the demo, axe ratchet, and golden performance budgets.
+
+**Flow:**
+
+1. `tests/tests.sh` — Contract entry point: registry selection, demo server lifecycle, cumulative levels, exit 0/1/2
+2. `tests/registry.yaml` — Explicit feature:scope/level registry; trusted input
+3. `tests/lib/registry.mjs` — Registry reader for list and select modes
+4. `tests/lib/serveDemo.mjs` — Static localhost server for docs/
+5. `tests/lib/checkPerformance.mjs` — Compares measured latencies against `tests/golden.yaml` tiers
+6. `tests/ui/run.sh` — Playwright tier runner (smoke, standard, a11y, performance, cross-browser)
+7. `tests/ui/specs/` — Behavioral specs by feature: form, a11y, performance
 
 ---
