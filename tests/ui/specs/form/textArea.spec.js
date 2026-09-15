@@ -68,14 +68,14 @@ test.describe("TextArea", () => {
 
   test("@smoke expand toggle grows the box and collapse restores it", async ({ page }) => {
     await toggleExpand(page, 0);
-    await expectStableHeight(page, 0, 432);
+    await expectStableHeight(page, 0, expandedHeightPx);
     await toggleExpand(page, 0);
     await expectStableHeight(page, 0, collapsedHeightPx);
   });
 
   test("read-only instance expands without a state path", async ({ page }) => {
     await toggleExpand(page, 1);
-    await expectStableHeight(page, 1, 432);
+    await expectStableHeight(page, 1, expandedHeightPx);
   });
 
   test("floating icons sit on the first text line when empty", async ({ page }) => {
