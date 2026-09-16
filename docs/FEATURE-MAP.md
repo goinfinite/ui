@@ -99,7 +99,7 @@ Interactive button component with customizable label, icons (left/right using Ph
 
 ## Range Slider
 
-Input range slider control with min/max constraints, step values, and bidirectional Alpine.js state binding for numeric input.
+Input range slider control with min/max constraints, step values, bidirectional Alpine.js state binding for numeric input, optional tick marks, and accessible names for single and dual thumbs.
 
 **Flow:**
 
@@ -257,7 +257,7 @@ Single entry point for all verification: Go units, Playwright behavioral specs a
 3. `tests/lib/registry.mjs` — Registry reader for list and select modes
 4. `tests/lib/serveDemo.mjs` — Static localhost server for docs/
 5. `tests/lib/checkPerformance.mjs` — Compares measured latencies against `tests/golden.yaml` tiers
-6. `tests/ui/run.sh` — Playwright mode runner (smoke, standard, a11y, performance, toolset, cross-browser, toolset-cross-browser)
-7. `tests/ui/specs/` — Behavioral specs by feature: form, toolset, a11y, performance
+6. `tests/ui/run.sh` — Playwright mode runner (smoke, standard, a11y, performance, toolset, control, cross-browser, toolset-cross-browser, control-cross-browser)
+7. `tests/ui/specs/` — Behavioral specs by feature: form, control, toolset, a11y, performance
 
 ---

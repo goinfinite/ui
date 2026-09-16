@@ -1,6 +1,9 @@
 # Changelog
 
 ```log
+0.2.0 - 2026/09/16
+feat: add range slider tick marks and accessible thumb names
+
 0.1.9 - 2026/09/15
 fix: set the demo document language to English
 fix: reject invalid inputs and count concurrent requests in jsonAjax
