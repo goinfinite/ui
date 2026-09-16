@@ -41,6 +41,10 @@ templ SelectInput(componentSettings SelectInputSettings) {
 		{{ selectState = "{isOpen: false}" }}
 		{{ selectValueStatePath = componentSettings.TwoWayStatePath }}
 	}
+	{{ onChangeFuncSuffix := "" }}
+	if componentSettings.OnChangeFunc != "" {
+		{{ onChangeFuncSuffix = "; " + componentSettings.OnChangeFunc }}
+	}
 	<!-- SelectInput -->
 	<div x-data={ selectState } class="relative w-full">
 		{{ labelValueOptionsScriptId := componentSettings.InputName + "LabelValueOptions" }}
@@ -57,9 +61,6 @@ templ SelectInput(componentSettings SelectInputSettings) {
 					name={ componentSettings.InputName }
 				}
 				x-model:value={ selectValueStatePath }
-				if componentSettings.OnChangeFunc != "" {
-					@change={ componentSettings.OnChangeFunc }
-				}
 			/>
 		}
 		<div class="flex w-full flex-col">
@@ -92,10 +93,10 @@ templ SelectInput(componentSettings SelectInputSettings) {
 					if len(componentSettings.LabelValueOptions) > 0 {
 						{{ selectedLabelText = `JSON.parse(document.getElementById('` + labelValueOptionsScriptId + `').textContent).find(option => option.value == ` + selectValueStatePath + `)?.label` }}
 					}
-					<div
-						x-text={ selectedLabelText + " || '" + componentSettings.Label + "'" }
-						class="w-full overflow-hidden text-ellipsis"
-					></div>
+					<div class="w-full overflow-hidden text-ellipsis">
+						<span x-show={ selectedLabelText } x-text={ selectedLabelText }></span>
+						<span x-show={ "!(" + selectedLabelText + ")" }>{ componentSettings.Label }</span>
+					</div>
 					<div class="flex items-center gap-2.5 text-neutral-100/60">
 						<!-- SelectDropdownIcon -->
 						<i class="ph-bold ph-caret-down pt-0.5 text-sm transition-transform hover:text-neutral-300 group-focus-within:text-neutral-300 group-hover:text-neutral-300" :class="isOpen ? 'rotate-180' : ''"></i>
@@ -103,7 +104,7 @@ templ SelectInput(componentSettings SelectInputSettings) {
 							<!-- SelectClearIcon -->
 							<i
 								x-show={ selectValueStatePath + " !== ''" }
-								@click.stop.prevent={ selectValueStatePath + " = ''; isOpen = false" }
+								@click.stop.prevent={ selectValueStatePath + " = ''; isOpen = false" + onChangeFuncSuffix }
 								class="ph-bold ph-x-circle text-lg hover:text-neutral-300"
 							></i>
 						}
@@ -138,33 +139,54 @@ templ SelectInput(componentSettings SelectInputSettings) {
 					class={ "absolute left-0 z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border border-neutral-50/5 bg-" + initialDropdownBackgroundColor + " shadow-lg hover:border-neutral-50/30" }
 					x-show="isOpen"
 					@click.away="isOpen = false"
+					@click="isOpen = false"
+					@change={ selectValueStatePath + " = $event.target.value; isOpen = false" + onChangeFuncSuffix }
 					x-transition
 				>
-					{{ dropdownClasses := "cursor-pointer px-3 py-2 transition-colors hover:bg-neutral-50/5 border-neutral-50/5 border-t first:border-t-0" }}
-					{{ dropdownSelectedClasses := "bg-neutral-50/10 border-y !border-neutral-50/10" }}
+					{{ dropdownClasses := "transition-colors hover:bg-neutral-50/5 border-neutral-50/5 border-t first:border-t-0" }}
+					{{ dropdownSelectedClasses := "has-checked:bg-neutral-50/10 has-checked:border-y has-checked:!border-neutral-50/10" }}
+					{{ optionLabelClasses := "flex w-full cursor-pointer items-center px-3 py-2" }}
 					if componentSettings.ShouldIncludeBlankOption {
-						<li class={ dropdownClasses } @click={ selectValueStatePath + " = ''; isOpen = false" }>--</li>
+						<li class={ dropdownClasses + " " + dropdownSelectedClasses }>
+							<label class={ optionLabelClasses }>
+								<input
+									type="radio"
+									value=""
+									:checked={ selectValueStatePath + " === $el.value" }
+									class="sr-only"
+								/>
+								<span>--</span>
+							</label>
+						</li>
 					}
 					for _, option := range componentSettings.FlatOptions {
-						<li
-							class={ dropdownClasses }
-							@click={ selectValueStatePath + " = '" + option + "'; isOpen = false" }
-							:class={ selectValueStatePath + " === '" + option + "' && '" + dropdownSelectedClasses + "'" }
-						>
-							{ option }
+						<li class={ dropdownClasses + " " + dropdownSelectedClasses }>
+							<label class={ optionLabelClasses }>
+								<input
+									type="radio"
+									value={ option }
+									:checked={ selectValueStatePath + " === $el.value" }
+									class="sr-only"
+								/>
+								<span>{ option }</span>
+							</label>
 						</li>
 					}
 					for _, option := range componentSettings.LabelValueOptions {
-						<li
-							class={ dropdownClasses }
-							@click={ selectValueStatePath + " = '" + option.Value + "'; isOpen = false" }
-							:class={ selectValueStatePath + " === '" + option.Value + "' && '" + dropdownSelectedClasses + "'" }
-						>
-							if option.LabelHtml != nil {
-								@option.LabelHtml
-							} else {
-								{ option.Label }
-							}
+						<li class={ dropdownClasses + " " + dropdownSelectedClasses }>
+							<label class={ optionLabelClasses }>
+								<input
+									type="radio"
+									value={ option.Value }
+									:checked={ selectValueStatePath + " === $el.value" }
+									class="sr-only"
+								/>
+								if option.LabelHtml != nil {
+									@option.LabelHtml
+								} else {
+									<span>{ option.Label }</span>
+								}
+							</label>
 						</li>
 					}
 				</ul>

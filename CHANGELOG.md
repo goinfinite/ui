@@ -2,6 +2,7 @@
 
 ```log
 0.2.0 - 2026/09/16
+fix: escape selectInput option values and run OnChangeFunc on change
 test: add range slider control specs and register the control suite
 feat: add range slider tick marks and accessible thumb names
 

@@ -686,7 +686,7 @@ templ SelectInputDemo() {
 	Label:     "Country",
 
 	// OptionalFields
-	FlatOptions: []string{"Argentina", "Brazil", "Chile"},
+	FlatOptions: []string{"Argentina", "Brazil", "Chile", "Côte d'Ivoire"},
 	TwoWayStatePath:          "country",
 	ShouldIncludeBlankOption: true,
 })` }
@@ -705,7 +705,7 @@ templ SelectInputDemo() {
 				@uiForm.SelectInput(uiForm.SelectInputSettings{
 					InputName:                "country",
 					Label:                    "Country",
-					FlatOptions:              []string{"Argentina", "Brazil", "Chile"},
+					FlatOptions:              []string{"Argentina", "Brazil", "Chile", "Côte d'Ivoire"},
 					TwoWayStatePath:          "country",
 					ShouldIncludeBlankOption: true,
 				})
@@ -909,6 +909,51 @@ templ SelectInputDemo() {
 						HintDisplay:              uiForm.InputTypeHintDisplayTooltip,
 					})
 				</div>
+			</div>
+		</div>
+		<div class="my-10 grid gap-10 md:grid-cols-2" x-data="{country: 'Brazil', changeCount: 0, onCountryChange() { this.changeCount++ }}">
+			<div class="flex flex-col gap-4">
+				<div class="flex flex-col gap-2">
+					<div class="flex items-center gap-2">
+						@UsageTitle("/form/selectInput.templ")
+						<span class="text-sm text-neutral-400">(w/OnChangeFunc)</span>
+					</div>
+					<pre class={ DemoPreCodeClasses }>
+						<code>
+							{ `@uiForm.SelectInput(uiForm.SelectInputSettings{
+	InputName: "country",
+	Label:     "Country",
+
+	// OptionalFields
+	FlatOptions:              []string{"Argentina", "Brazil", "Chile"},
+	TwoWayStatePath:          "country",
+	ShouldIncludeBlankOption: true,
+	OnChangeFunc:             "onCountryChange()",
+})` }
+						</code>
+					</pre>
+				</div>
+				<div class="flex flex-col gap-2">
+					<h5 class="text-sm font-bold">Alpine.js Parent State <i>(x-data)</i></h5>
+					<pre class={ DemoPreCodeClasses }>
+						<code>{ `<div x-data="{country: '` }<span x-text="country"></span>{ `', changeCount: ` }<span x-text="changeCount"></span>{ `, onCountryChange() { this.changeCount++ }}"></div>` }</code>
+					</pre>
+				</div>
+			</div>
+			<div class="flex flex-col gap-3">
+				<h4 class="text-lg font-bold">Live Example</h4>
+				<p class="text-sm text-neutral-400">The function runs when the selection changes. Clear the field to see it run again.</p>
+				@uiForm.SelectInput(uiForm.SelectInputSettings{
+					InputName:                "country",
+					Label:                    "Country",
+					FlatOptions:              []string{"Argentina", "Brazil", "Chile"},
+					TwoWayStatePath:          "country",
+					ShouldIncludeBlankOption: true,
+					OnChangeFunc:             "onCountryChange()",
+				})
+				<p class="text-sm text-neutral-400">
+					Change count: <span class="font-bold" x-text="changeCount"></span>
+				</p>
 			</div>
 		</div>
 	</div>
