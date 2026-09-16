@@ -2,6 +2,7 @@
 
 ```log
 0.2.0 - 2026/09/16
+fix: make range slider thumbs draggable
 test: add hint accessibility specs
 fix: make form hint tooltips keyboard and touch accessible
 feat: add hints to TextArea
