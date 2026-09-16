@@ -10,8 +10,20 @@ function trackOf(slider) {
   return slider.locator("xpath=..");
 }
 
-function thumbOf(slider) {
-  return trackOf(slider).locator("div.cursor-pointer").first();
+function thumbOf(slider, index = 0) {
+  return trackOf(slider).locator("div.cursor-pointer").nth(index);
+}
+
+async function dragThumb(page, slider, index, deltaX) {
+  await page.locator('body > div[style*="z-index: 9999"]').waitFor({ state: "hidden" });
+  await slider.scrollIntoViewIfNeeded();
+  const thumbBox = await thumbOf(slider, index).boundingBox();
+  const startX = thumbBox.x + thumbBox.width / 2;
+  const startY = thumbBox.y + thumbBox.height / 2;
+  await page.mouse.move(startX, startY);
+  await page.mouse.down();
+  await page.mouse.move(startX + deltaX, startY, { steps: 5 });
+  await page.mouse.up();
 }
 
 function tickMarksOf(slider) {
@@ -41,6 +53,25 @@ test.describe("RangeSlider", () => {
     await expect(page.getByRole("slider", { name: "Maximum price" })).toHaveCount(1);
     await expect(page.getByRole("slider", { name: "Lower value" })).toHaveCount(1);
     await expect(page.getByRole("slider", { name: "Upper value" })).toHaveCount(1);
+  });
+
+  test("@control dragging the thumb changes the bound value", async ({ page }) => {
+    const slider = sliderByLabel(page, "Value").first();
+    await expect(slider).toHaveValue("50");
+    await dragThumb(page, slider, 0, 60);
+    expect(Number(await slider.inputValue())).toBeGreaterThan(50);
+  });
+
+  test("@control dragging each dual thumb changes its own bound value", async ({ page }) => {
+    const lowerSlider = sliderByLabel(page, "Minimum price");
+    const upperSlider = sliderByLabel(page, "Maximum price");
+    await expect(lowerSlider).toHaveValue("25");
+    await expect(upperSlider).toHaveValue("75");
+    await dragThumb(page, lowerSlider, 0, 40);
+    expect(Number(await lowerSlider.inputValue())).toBeGreaterThan(25);
+    await expect(upperSlider).toHaveValue("75");
+    await dragThumb(page, upperSlider, 1, -40);
+    expect(Number(await upperSlider.inputValue())).toBeLessThan(75);
   });
 
   test("@control focusing the input reveals the focus ring", async ({ page }) => {
