@@ -2,6 +2,9 @@
 
 ```log
 0.2.0 - 2026/09/16
+fix: make form hint tooltips keyboard and touch accessible
+feat: add hints to TextArea
+docs: add hint examples to the demo
 fix: escape selectInput option values and run OnChangeFunc on change
 test: add range slider control specs and register the control suite
 feat: add range slider tick marks and accessible thumb names

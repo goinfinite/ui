@@ -23,14 +23,12 @@ async function firstLineCenter(page, index) {
 }
 
 async function firstIconCenter(page, index) {
-  const icons = page.locator(`${textAreaSection} fieldset`).nth(index).locator("div.absolute");
-  await icons.evaluate((el) => el.style.setProperty("display", "flex", "important"));
-  const center = await icons.locator("i").first().evaluate((icon) => {
+  const fieldset = page.locator(`${textAreaSection} fieldset`).nth(index);
+  await fieldset.locator("textarea").hover();
+  return fieldset.locator(".ph-arrows-out").first().evaluate((icon) => {
     const rect = icon.getBoundingClientRect();
     return rect.top + rect.height / 2;
   });
-  await icons.evaluate((el) => el.style.removeProperty("display"));
-  return center;
 }
 
 async function heightOf(page, index) {

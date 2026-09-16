@@ -1,0 +1,92 @@
+package uiForm
+
+import (
+	"fmt"
+	"sync/atomic"
+)
+
+const (
+	InputHintDisplayTooltip     string = "tooltip"
+	InputHintDisplayDescription string = "description"
+
+	InputHintSizeSm string = "sm"
+	InputHintSizeLg string = "lg"
+
+	InputHintIconStylePlain string = "plain"
+	InputHintIconStyleBoxed string = "boxed"
+)
+
+type InputHintSettings struct {
+	Value                  string
+	StatePath              string
+	TooltipBackgroundColor string
+	Size                   string
+	IconStyle              string
+}
+
+var inputHintTooltipIdCounter atomic.Uint64
+
+func generateInputHintTooltipId() string {
+	return fmt.Sprintf("input-hint-tooltip-%d", inputHintTooltipIdCounter.Add(1))
+}
+
+func shouldRenderInputHintTooltip(hintDisplay, hintValue, hintStatePath string) bool {
+	return hintDisplay == InputHintDisplayTooltip && (hintValue != "" || hintStatePath != "")
+}
+
+func shouldRenderInputHintDescription(hintDisplay string) bool {
+	return hintDisplay == InputHintDisplayDescription
+}
+
+templ InputHintTooltip(componentSettings InputHintSettings) {
+	{{ tooltipId := generateInputHintTooltipId() }}
+	{{ triggerClasses := "group/tooltip relative shrink-0 inline-flex items-center" }}
+	{{ iconClasses := "ph-bold ph-info text-lg text-neutral-400 transition-colors hover:text-neutral-100" }}
+	if componentSettings.Size == InputHintSizeSm {
+		{{ triggerClasses += " px-2" }}
+		{{ iconClasses = "ph-bold ph-info text-sm text-neutral-400 transition-colors hover:text-neutral-100" }}
+	}
+	if componentSettings.IconStyle == InputHintIconStyleBoxed {
+		{{ iconClasses = "ph-bold ph-info text-base border-1 rounded border-neutral-50/5 bg-neutral-50/5 p-1 text-neutral-100 transition-colors hover:border-neutral-50/30 hover:bg-neutral-50/20" }}
+	}
+	<!-- HintDisplayTooltip -->
+	<div
+		class={ triggerClasses }
+		tabindex="0"
+		role="note"
+		aria-describedby={ tooltipId }
+		@click.stop
+		@keydown.enter.stop.prevent
+		@keydown.space.stop.prevent
+	>
+		<i class={ iconClasses } aria-hidden="true"></i>
+		{{ tooltipBackgroundColor := "neutral-800/95" }}
+		if componentSettings.TooltipBackgroundColor != "" {
+			{{ tooltipBackgroundColor = componentSettings.TooltipBackgroundColor }}
+		}
+		<div
+			id={ tooltipId }
+			role="tooltip"
+			class={ "invisible absolute right-0 z-10 mt-1.5 min-w-32 max-w-128 rounded border border-neutral-50/10 bg-" + tooltipBackgroundColor + " p-2 text-xs text-neutral-100 opacity-0 shadow-md transition-all group-hover/tooltip:visible group-hover/tooltip:opacity-100 group-focus-within/tooltip:visible group-focus-within/tooltip:opacity-100 select-none" }
+			if componentSettings.StatePath != "" {
+				x-text={ componentSettings.StatePath }
+			}
+		>
+			if componentSettings.Value != "" {
+				{ componentSettings.Value }
+			}
+		</div>
+	</div>
+}
+
+templ InputHintDescription(componentSettings InputHintSettings) {
+	<!-- HintDisplayDescription -->
+	<div class="my-1 px-1 text-xs text-neutral-400">
+		if componentSettings.Value != "" {
+			{ componentSettings.Value }
+		}
+		if componentSettings.StatePath != "" {
+			<span x-text={ componentSettings.StatePath }></span>
+		}
+	</div>
+}

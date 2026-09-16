@@ -12,9 +12,6 @@ const (
 	InputTypeText     string = "text"
 	InputTypeTime     string = "time"
 	InputTypeUrl      string = "url"
-
-	InputTypeHintDisplayTooltip     string = "tooltip"
-	InputTypeHintDisplayDescription string = "description"
 )
 
 type InputFieldSettings struct {
@@ -39,6 +36,7 @@ type InputFieldSettings struct {
 	HintStatePath                     string
 	HintDisplay                       string
 	HintDisplayTooltipBackgroundColor string
+	HintIconStyle                     string
 }
 
 templ InputField(componentSettings InputFieldSettings) {
@@ -142,38 +140,22 @@ templ InputField(componentSettings InputFieldSettings) {
 						}
 					</div>
 				}
-				if componentSettings.HintDisplay == InputTypeHintDisplayTooltip && (componentSettings.HintValue != "" || componentSettings.HintStatePath != "") {
-					<!-- HintDisplayTooltip -->
-					<div class="group/tooltip relative shrink-0 px-2">
-						<i class="ph-bold ph-info text-sm text-neutral-400 transition-colors hover:text-neutral-100"></i>
-						{{ initialTooltipBackgroundColor := "neutral-800/95" }}
-						if componentSettings.HintDisplayTooltipBackgroundColor != "" {
-							{{ initialTooltipBackgroundColor = componentSettings.HintDisplayTooltipBackgroundColor }}
-						}
-						<div
-							class={ "invisible absolute flex right-0 z-10 mt-1.5 min-w-32 max-w-128 rounded border border-neutral-50/10 bg-" + initialTooltipBackgroundColor + " p-2 text-xs text-neutral-100 opacity-0 shadow-md transition-all group-hover/tooltip:visible group-hover/tooltip:opacity-100 select-none" }
-							if componentSettings.HintStatePath != "" {
-								x-text={ componentSettings.HintStatePath }
-							}
-						>
-							if componentSettings.HintValue != "" {
-								{ componentSettings.HintValue }
-							}
-						</div>
-					</div>
+				if shouldRenderInputHintTooltip(componentSettings.HintDisplay, componentSettings.HintValue, componentSettings.HintStatePath) {
+					@InputHintTooltip(InputHintSettings{
+						Value:                  componentSettings.HintValue,
+						StatePath:              componentSettings.HintStatePath,
+						TooltipBackgroundColor: componentSettings.HintDisplayTooltipBackgroundColor,
+						Size:                   InputHintSizeSm,
+						IconStyle:              componentSettings.HintIconStyle,
+					})
 				}
 			</div>
 		</fieldset>
-		if componentSettings.HintDisplay == InputTypeHintDisplayDescription {
-			<!-- HintDisplayDescription -->
-			<div class="my-1 px-1 text-xs text-neutral-400">
-				if componentSettings.HintValue != "" {
-					{ componentSettings.HintValue }
-				}
-				if componentSettings.HintStatePath != "" {
-					<span x-text={ componentSettings.HintStatePath }></span>
-				}
-			</div>
+		if shouldRenderInputHintDescription(componentSettings.HintDisplay) {
+			@InputHintDescription(InputHintSettings{
+				Value:     componentSettings.HintValue,
+				StatePath: componentSettings.HintStatePath,
+			})
 		}
 	</div>
 }
