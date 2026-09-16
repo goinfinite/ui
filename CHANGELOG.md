@@ -2,6 +2,7 @@
 
 ```log
 0.2.0 - 2026/09/16
+test: add hint accessibility specs
 fix: make form hint tooltips keyboard and touch accessible
 feat: add hints to TextArea
 docs: add hint examples to the demo
