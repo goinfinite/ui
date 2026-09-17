@@ -2,6 +2,7 @@
 
 ```log
 0.2.0 - 2026/09/16
+test: serve demo assets from a local cache to stop CDN stalls
 fix: sync range slider values and make select and text area controls accessible
 test: add range slider drag specs
 fix: make range slider thumbs draggable
