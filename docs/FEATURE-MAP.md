@@ -9,18 +9,20 @@ Single-line text input with configurable type (text, email, number, date, passwo
 **Flow:**
 
 1. `src/form/inputField.templ` — Component definition with InputFieldSettings struct exposing InputType, Label, TwoWayStatePath, Value, and optional affixes
-2. `src/form/inputField_templ.go` — Compiled templ output rendering HTML input with Alpine.js binding and Tailwind styling
+2. `src/form/inputHint.templ` — Shared hint renderer for the tooltip and description display modes
+3. `src/form/inputField_templ.go` — Compiled templ output rendering HTML input with Alpine.js binding and Tailwind styling
 
 ---
 
 ## Multi-line Text Area
 
-Multi-line text input with five height steps (h-12/24/36/48/60), expand-to-3x toggle, and floating action icons (expand, copy, clear) anchored to the text line.
+Multi-line text input with five height steps (h-12/24/36/48/60), expand-to-3x toggle, floating action icons (expand, copy, clear) anchored to the text line, and optional hints rendered as a focusable tooltip or a description line.
 
 **Flow:**
 
 1. `src/form/textArea.templ` — Component definition with TextAreaSettings struct; heights and icon positions supplied mutually exclusively via Alpine `:class`
-2. `src/form/textArea_templ.go` — Compiled output rendering textarea element with styling and Alpine.js integration
+2. `src/form/inputHint.templ` — Shared hint renderer for the tooltip and description display modes
+3. `src/form/textArea_templ.go` — Compiled output rendering textarea element with styling and Alpine.js integration
 
 ---
 
@@ -31,9 +33,10 @@ Dropdown select component with support for flat string options or label-value pa
 **Flow:**
 
 1. `src/form/selectInput.templ` — Component definition with SelectInputSettings struct and SelectLabelValueOption data structure
-2. `src/form/selectInput_templ.go` — Compiled output rendering select with embedded JSON script for options and Alpine.js state management
+2. `src/form/inputHint.templ` — Shared hint renderer for the tooltip and description display modes
+3. `src/form/selectInput_templ.go` — Compiled output rendering select with native radio options, an embedded JSON script for label lookup, and Alpine.js state management
 
-Supports optional hint text rendered either as an info-icon tooltip inside the dropdown row or as a description line below the fieldset.
+Supports optional hint text rendered either as a focusable info-icon tooltip inside the dropdown row or as a description line below the fieldset.
 
 ---
 
@@ -45,9 +48,10 @@ Dropdown component that lets the user select multiple options from a flat list o
 
 1. `src/form/multiSelectInput.templ` — Component definition with MultiSelectInputSettings struct, reusing SelectLabelValueOption for label-value options
 2. `src/form/multiSelectInputState.js` — Alpine.js data component providing the dropdown toggle state
-3. `src/form/multiSelectInput_templ.go` — Compiled output rendering checkbox-based dropdown with embedded JSON script for label-value options and Alpine.js state management
+3. `src/form/inputHint.templ` — Shared hint renderer for the tooltip and description display modes
+4. `src/form/multiSelectInput_templ.go` — Compiled output rendering checkbox-based dropdown with embedded JSON script for label-value options and Alpine.js state management
 
-Form submission uses multiple checkboxes sharing the same `name` so the browser sends an array of values. Supports optional hint text rendered either as an info-icon tooltip inside the dropdown row or as a description line below the fieldset.
+Form submission uses multiple checkboxes sharing the same `name` so the browser sends an array of values. Supports optional hint text rendered either as a focusable info-icon tooltip inside the dropdown row or as a description line below the fieldset.
 
 ---
 
@@ -99,7 +103,7 @@ Interactive button component with customizable label, icons (left/right using Ph
 
 ## Range Slider
 
-Input range slider control with min/max constraints, step values, and bidirectional Alpine.js state binding for numeric input.
+Input range slider control with min/max constraints, step values, bidirectional Alpine.js state binding for numeric input, optional tick marks, and accessible names for single and dual thumbs.
 
 **Flow:**
 
@@ -255,9 +259,9 @@ Single entry point for all verification: Go units, Playwright behavioral specs a
 1. `tests/tests.sh` — Contract entry point: registry selection, demo server lifecycle, cumulative levels, exit 0/1/2
 2. `tests/registry.yaml` — Explicit feature:scope/level registry; trusted input
 3. `tests/lib/registry.mjs` — Registry reader for list and select modes
-4. `tests/lib/serveDemo.mjs` — Static localhost server for docs/
+4. `tests/lib/serveDemo.mjs` — Localhost server for docs/ that proxies external script, stylesheet, and image URLs through a fetch-once cache, keeping CDN latency out of specs
 5. `tests/lib/checkPerformance.mjs` — Compares measured latencies against `tests/golden.yaml` tiers
-6. `tests/ui/run.sh` — Playwright mode runner (smoke, standard, a11y, performance, toolset, cross-browser, toolset-cross-browser)
-7. `tests/ui/specs/` — Behavioral specs by feature: form, toolset, a11y, performance
+6. `tests/ui/run.sh` — Playwright mode runner (smoke, standard, a11y, performance, toolset, control, cross-browser, toolset-cross-browser, control-cross-browser)
+7. `tests/ui/specs/` — Behavioral specs by feature: form, control, toolset, a11y, performance
 
 ---

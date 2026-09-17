@@ -3,7 +3,7 @@
 # @usage        bash tests/ui/run_test.sh
 # @output       PASS lines per assertion; exits 1 on the first failure.
 # @requires     bash v4+
-# @version      0.2.0
+# @version      0.3.0
 # @updated      2026-09-15
 set -euo pipefail
 
@@ -31,6 +31,10 @@ assertEquals "accepts registered mode" "0" "$exitStatus"
 exitStatus=0
 (validateInvocation toolset) || exitStatus=$?
 assertEquals "accepts toolset mode" "0" "$exitStatus"
+
+exitStatus=0
+(validateInvocation control) || exitStatus=$?
+assertEquals "accepts control mode" "0" "$exitStatus"
 
 exitStatus=0
 (validateInvocation bogus-mode >/dev/null 2>&1) || exitStatus=$?

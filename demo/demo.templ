@@ -9,7 +9,7 @@ import (
 
 const (
 	DemoPreCodeClasses string = "rounded-md bg-neutral-800 p-4 text-xs text-wrap tab-2"
-	UiVersion          string = "0.1.9"
+	UiVersion          string = "0.2.0"
 )
 
 templ DemoIndex() {
@@ -26,7 +26,7 @@ templ DemoIndex() {
 			<div x-data="{isDemoSidebarCollapsed: $persist(false).as('uiDemo.isSidebarCollapsed')}">
 				@DemoNavigationSidebar()
 			</div>
-			<div class="container mx-auto flex flex-col gap-20">
+			<main class="container mx-auto flex flex-col gap-20">
 				<!-- Demo Header -->
 				<section class="flex flex-col items-center justify-between gap-4 overflow-y-auto mt-20" id="demo-header">
 					<h1 class="text-center text-5xl font-bold">Infinite UI Demo</h1>
@@ -112,7 +112,7 @@ templ DemoIndex() {
 						</div>
 					</div>
 				</section>
-			</div>
+			</main>
 			@uiDisplay.CloakLoading(uiDisplay.CloakLoadingSettings{BackgroundColor: "rgb(38, 38, 38)"})
 		</body>
 	</html>
@@ -302,7 +302,7 @@ templ InputFieldDemo() {
 						Label:           "Name",
 						TwoWayStatePath: "name",
 						HintValue:       "This is a helpful hint displayed as a description below the input.",
-						HintDisplay:     uiForm.InputTypeHintDisplayDescription,
+						HintDisplay:     uiForm.InputHintDisplayDescription,
 					})
 					@uiForm.InputField(uiForm.InputFieldSettings{
 						InputType:       uiForm.InputTypeText,
@@ -310,7 +310,19 @@ templ InputFieldDemo() {
 						Label:           "Name",
 						TwoWayStatePath: "name",
 						HintValue:       "This is a helpful hint displayed as a tooltip.",
-						HintDisplay:     uiForm.InputTypeHintDisplayTooltip,
+						HintDisplay:     uiForm.InputHintDisplayTooltip,
+					})
+				</div>
+				<div class="flex flex-col gap-2">
+					<p class="text-sm text-neutral-400">HintIconStyle</p>
+					@uiForm.InputField(uiForm.InputFieldSettings{
+						InputType:       uiForm.InputTypeText,
+						InputName:       "name",
+						Label:           "Name",
+						TwoWayStatePath: "name",
+						HintValue:       "This is a helpful hint displayed as a boxed tooltip.",
+						HintDisplay:     uiForm.InputHintDisplayTooltip,
+						HintIconStyle:   uiForm.InputHintIconStyleBoxed,
 					})
 				</div>
 			</div>
@@ -351,7 +363,7 @@ templ TextAreaDemo() {
 					</pre>
 				</div>
 			</div>
-			<div x-data="{description: ''}" class="flex flex-col gap-4">
+			<div x-data="{description: '', hintText: 'First hint text.'}" class="flex flex-col gap-4">
 				<h4 class="text-lg font-bold">Live Example</h4>
 				@uiForm.TextArea(uiForm.TextAreaSettings{
 					InputName:       "description",
@@ -365,6 +377,40 @@ templ TextAreaDemo() {
 						Label:      "Description",
 						Value:      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
 						IsReadOnly: true,
+					})
+				</div>
+				<div class="mt-4 flex flex-col gap-2">
+					<p class="text-sm text-neutral-400">HintValue & HintDisplay</p>
+					@uiForm.TextArea(uiForm.TextAreaSettings{
+						InputName:       "description",
+						Label:           "Description",
+						TwoWayStatePath: "description",
+						HintValue:       "This is a helpful hint displayed as a description below the textarea.",
+						HintDisplay:     uiForm.InputHintDisplayDescription,
+					})
+					@uiForm.TextArea(uiForm.TextAreaSettings{
+						InputName:       "description",
+						Label:           "Description",
+						TwoWayStatePath: "description",
+						HintValue:       "This is a helpful hint displayed as a tooltip.",
+						HintDisplay:     uiForm.InputHintDisplayTooltip,
+					})
+				</div>
+				<div class="mt-4 flex flex-col gap-2">
+					<p class="text-sm text-neutral-400">HintStatePath</p>
+					@uiForm.TextArea(uiForm.TextAreaSettings{
+						InputName:       "description",
+						Label:           "Description",
+						TwoWayStatePath: "description",
+						HintStatePath:   "hintText",
+						HintDisplay:     uiForm.InputHintDisplayTooltip,
+					})
+					@uiControl.Button(uiControl.ButtonSettings{
+						Label:           "Change Hint Text",
+						IconLeft:        "ph-pencil-simple",
+						OnClickFunc:     "hintText = hintText === 'First hint text.' ? 'Second hint text.' : 'First hint text.'",
+						Size:            uiControl.ButtonSizeSm,
+						BackgroundColor: "neutral-700",
 					})
 				</div>
 			</div>
@@ -686,7 +732,7 @@ templ SelectInputDemo() {
 	Label:     "Country",
 
 	// OptionalFields
-	FlatOptions: []string{"Argentina", "Brazil", "Chile"},
+	FlatOptions: []string{"Argentina", "Brazil", "Chile", "Côte d'Ivoire"},
 	TwoWayStatePath:          "country",
 	ShouldIncludeBlankOption: true,
 })` }
@@ -705,7 +751,7 @@ templ SelectInputDemo() {
 				@uiForm.SelectInput(uiForm.SelectInputSettings{
 					InputName:                "country",
 					Label:                    "Country",
-					FlatOptions:              []string{"Argentina", "Brazil", "Chile"},
+					FlatOptions:              []string{"Argentina", "Brazil", "Chile", "Côte d'Ivoire"},
 					TwoWayStatePath:          "country",
 					ShouldIncludeBlankOption: true,
 				})
@@ -721,7 +767,7 @@ templ SelectInputDemo() {
 					<pre class={ DemoPreCodeClasses }>
 						<code>
 							{ `@uiForm.SelectInput(uiForm.SelectInputSettings{
-	InputName: "country",
+	InputName: "countryCode",
 	Label:     "Country",
 
 	// OptionalFields
@@ -755,7 +801,7 @@ templ SelectInputDemo() {
 			<div class="flex flex-col">
 				<h4 class="mb-2 text-lg font-bold">Live Example</h4>
 				@uiForm.SelectInput(uiForm.SelectInputSettings{
-					InputName: "country",
+					InputName: "countryCode",
 					Label:     "Country",
 					LabelValueOptions: []uiForm.SelectLabelValueOption{
 						{
@@ -858,7 +904,7 @@ templ SelectInputDemo() {
 					<pre class={ DemoPreCodeClasses }>
 						<code>
 							{ `@uiForm.SelectInput(uiForm.SelectInputSettings{
-	InputName: "country",
+	InputName: "countryHintDescription",
 	Label:     "Country",
 
 	// OptionalFields
@@ -866,7 +912,7 @@ templ SelectInputDemo() {
 	TwoWayStatePath:          "country",
 	ShouldIncludeBlankOption: true,
 	HintValue:                "This is a helpful hint displayed as a description below the select.",
-	HintDisplay:              uiForm.InputTypeHintDisplayDescription,
+	HintDisplay:              uiForm.InputHintDisplayDescription,
 })` }
 						</code>
 					</pre>
@@ -883,7 +929,7 @@ templ SelectInputDemo() {
 				<div class="flex flex-col gap-6">
 					<p class="text-sm text-neutral-400">HintValue & HintDisplay</p>
 					@uiForm.SelectInput(uiForm.SelectInputSettings{
-						InputName: "country",
+						InputName: "countryHintDescription",
 						Label:     "Country",
 						FlatOptions: []string{
 							"Argentina",
@@ -893,10 +939,10 @@ templ SelectInputDemo() {
 						TwoWayStatePath:          "country",
 						ShouldIncludeBlankOption: true,
 						HintValue:                "This is a helpful hint displayed as a description below the select.",
-						HintDisplay:              uiForm.InputTypeHintDisplayDescription,
+						HintDisplay:              uiForm.InputHintDisplayDescription,
 					})
 					@uiForm.SelectInput(uiForm.SelectInputSettings{
-						InputName: "country",
+						InputName: "countryHintTooltip",
 						Label:     "Country",
 						FlatOptions: []string{
 							"Argentina",
@@ -906,9 +952,69 @@ templ SelectInputDemo() {
 						TwoWayStatePath:          "country",
 						ShouldIncludeBlankOption: true,
 						HintValue:                "This is a helpful hint displayed as a tooltip.",
-						HintDisplay:              uiForm.InputTypeHintDisplayTooltip,
+						HintDisplay:              uiForm.InputHintDisplayTooltip,
+					})
+					<p class="text-sm text-neutral-400">HintIconStyle</p>
+					@uiForm.SelectInput(uiForm.SelectInputSettings{
+						InputName: "countryHintBoxed",
+						Label:     "Country",
+						FlatOptions: []string{
+							"Argentina",
+							"Brazil",
+							"Chile",
+						},
+						TwoWayStatePath:          "country",
+						ShouldIncludeBlankOption: true,
+						HintValue:                "This is a helpful hint displayed as a boxed tooltip.",
+						HintDisplay:              uiForm.InputHintDisplayTooltip,
+						HintIconStyle:            uiForm.InputHintIconStyleBoxed,
 					})
 				</div>
+			</div>
+		</div>
+		<div class="my-10 grid gap-10 md:grid-cols-2" x-data="{country: 'Brazil', changeCount: 0, onCountryChange() { this.changeCount++ }}">
+			<div class="flex flex-col gap-4">
+				<div class="flex flex-col gap-2">
+					<div class="flex items-center gap-2">
+						@UsageTitle("/form/selectInput.templ")
+						<span class="text-sm text-neutral-400">(w/OnChangeFunc)</span>
+					</div>
+					<pre class={ DemoPreCodeClasses }>
+						<code>
+							{ `@uiForm.SelectInput(uiForm.SelectInputSettings{
+	InputName: "countryChange",
+	Label:     "Country",
+
+	// OptionalFields
+	FlatOptions:              []string{"Argentina", "Brazil", "Chile"},
+	TwoWayStatePath:          "country",
+	ShouldIncludeBlankOption: true,
+	OnChangeFunc:             "onCountryChange()",
+})` }
+						</code>
+					</pre>
+				</div>
+				<div class="flex flex-col gap-2">
+					<h5 class="text-sm font-bold">Alpine.js Parent State <i>(x-data)</i></h5>
+					<pre class={ DemoPreCodeClasses }>
+						<code>{ `<div x-data="{country: '` }<span x-text="country"></span>{ `', changeCount: ` }<span x-text="changeCount"></span>{ `, onCountryChange() { this.changeCount++ }}"></div>` }</code>
+					</pre>
+				</div>
+			</div>
+			<div class="flex flex-col gap-3">
+				<h4 class="text-lg font-bold">Live Example</h4>
+				<p class="text-sm text-neutral-400">The function runs when the selection changes. Clear the field to see it run again.</p>
+				@uiForm.SelectInput(uiForm.SelectInputSettings{
+					InputName:                "countryChange",
+					Label:                    "Country",
+					FlatOptions:              []string{"Argentina", "Brazil", "Chile"},
+					TwoWayStatePath:          "country",
+					ShouldIncludeBlankOption: true,
+					OnChangeFunc:             "onCountryChange()",
+				})
+				<p class="text-sm text-neutral-400">
+					Change count: <span class="font-bold" x-text="changeCount"></span>
+				</p>
 			</div>
 		</div>
 	</div>
@@ -1130,7 +1236,7 @@ templ MultiSelectInputDemo() {
 	FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
 	TwoWayStatePath: "countries",
 	HintValue:       "This is a helpful hint displayed as a description below the multi-select.",
-	HintDisplay:     uiForm.InputTypeHintDisplayDescription,
+	HintDisplay:     uiForm.InputHintDisplayDescription,
 })` }
 						</code>
 					</pre>
@@ -1152,7 +1258,7 @@ templ MultiSelectInputDemo() {
 						FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
 						TwoWayStatePath: "countries",
 						HintValue:       "This is a helpful hint displayed as a description below the multi-select.",
-						HintDisplay:     uiForm.InputTypeHintDisplayDescription,
+						HintDisplay:     uiForm.InputHintDisplayDescription,
 					})
 					@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
 						InputName:       "countries",
@@ -1160,7 +1266,17 @@ templ MultiSelectInputDemo() {
 						FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
 						TwoWayStatePath: "countries",
 						HintValue:       "This is a helpful hint displayed as a tooltip.",
-						HintDisplay:     uiForm.InputTypeHintDisplayTooltip,
+						HintDisplay:     uiForm.InputHintDisplayTooltip,
+					})
+					<p class="text-sm text-neutral-400">HintIconStyle</p>
+					@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
+						InputName:       "countries",
+						Label:           "Countries",
+						FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+						TwoWayStatePath: "countries",
+						HintValue:       "This is a helpful hint displayed as a boxed tooltip.",
+						HintDisplay:     uiForm.InputHintDisplayTooltip,
+						HintIconStyle:   uiForm.InputHintIconStyleBoxed,
 					})
 				</div>
 			</div>
@@ -1984,13 +2100,32 @@ templ RangeSliderDemo() {
 					</div>
 				</div>
 				<div class="flex w-full flex-col gap-2">
+					<p class="text-sm text-neutral-400">Track Ticks</p>
+					<div class="flex flex-col gap-3">
+						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+							ThumbValueTwoWayStatePath: "sliderValue",
+							ThumbAriaLabel:            "Ticks every 25",
+							TrackTicksEnabled:         true,
+							TrackTickStep:             "25",
+						})
+						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+							ThumbValueTwoWayStatePath: "sliderValue",
+							ThumbAriaLabel:            "Ticks every step",
+							TrackSteps:                "20",
+							TrackTicksEnabled:         true,
+						})
+					</div>
+				</div>
+				<div class="flex w-full flex-col gap-2">
 					<p class="text-sm text-neutral-400">Dual Mode</p>
 					<div x-data="{lowerValue: 25, upperValue: 75}" class="flex flex-col gap-3">
 						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
 							ThumbDualValueModeEnabled:      true,
 							ThumbBackgroundColor:           "emerald-500",
 							ThumbValueTwoWayStatePath:      "lowerValue",
+							ThumbAriaLabel:                 "Minimum price",
 							ThumbUpperValueTwoWayStatePath: "upperValue",
+							ThumbUpperAriaLabel:            "Maximum price",
 							ThumbValueBubbleEnabled:        true,
 							ThumbUpperValueBubbleEnabled:   true,
 							TrackStartValue:                "0",
@@ -2023,6 +2158,55 @@ templ RangeSliderDemo() {
 							TrackStartValueLabelEnabled:          true,
 							TrackEndValueLabelEnabled:            true,
 						})
+					</div>
+				</div>
+				<div class="flex w-full flex-col gap-2">
+					<p class="text-sm text-neutral-400">Initial State Normalization</p>
+					<div id="range-slider-initial-state-demo" x-data="{lowerValue: 80, upperValue: 20, overflowLowerValue: 150, overflowUpperValue: 20, sliderValue: 150}" class="flex flex-col gap-3">
+						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+							ThumbDualValueModeEnabled:      true,
+							ThumbValueTwoWayStatePath:      "lowerValue",
+							ThumbAriaLabel:                 "Initial minimum",
+							ThumbUpperValueTwoWayStatePath: "upperValue",
+							ThumbUpperAriaLabel:            "Initial maximum",
+							ShouldNormalizeInitialState:    true,
+							TrackStartValue:                "0",
+							TrackEndValue:                  "100",
+							TrackSteps:                     "1",
+						})
+						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+							ThumbDualValueModeEnabled:      true,
+							ThumbValueTwoWayStatePath:      "overflowLowerValue",
+							ThumbAriaLabel:                 "Overflow minimum",
+							ThumbUpperValueTwoWayStatePath: "overflowUpperValue",
+							ThumbUpperAriaLabel:            "Overflow maximum",
+							ShouldNormalizeInitialState:    true,
+							TrackStartValue:                "0",
+							TrackEndValue:                  "100",
+							TrackSteps:                     "1",
+						})
+						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+							ThumbValueTwoWayStatePath:   "sliderValue",
+							ThumbAriaLabel:              "Initial single value",
+							ShouldNormalizeInitialState: true,
+						})
+						<p class="text-sm text-neutral-400">Normalized Range: $<span x-text="lowerValue"></span> - $<span x-text="upperValue"></span>, Overflow Range: $<span x-text="overflowLowerValue"></span> - $<span x-text="overflowUpperValue"></span>, Slider: <span x-text="sliderValue"></span></p>
+					</div>
+				</div>
+				<div class="flex w-full flex-col gap-2">
+					<p class="text-sm text-neutral-400">Unnormalized Initial State</p>
+					<div id="range-slider-unnormalized-demo" x-data="{lowerValue: 80, upperValue: 20}" class="flex flex-col gap-3">
+						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+							ThumbDualValueModeEnabled:      true,
+							ThumbValueTwoWayStatePath:      "lowerValue",
+							ThumbAriaLabel:                 "Raw minimum",
+							ThumbUpperValueTwoWayStatePath: "upperValue",
+							ThumbUpperAriaLabel:            "Raw maximum",
+							TrackStartValue:                "0",
+							TrackEndValue:                  "100",
+							TrackSteps:                     "1",
+						})
+						<p class="text-sm text-neutral-400">Raw Range: $<span x-text="lowerValue"></span> - $<span x-text="upperValue"></span></p>
 					</div>
 				</div>
 			</div>

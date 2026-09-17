@@ -23,14 +23,12 @@ async function firstLineCenter(page, index) {
 }
 
 async function firstIconCenter(page, index) {
-  const icons = page.locator(`${textAreaSection} fieldset`).nth(index).locator("div.absolute");
-  await icons.evaluate((el) => el.style.setProperty("display", "flex", "important"));
-  const center = await icons.locator("i").first().evaluate((icon) => {
+  const fieldset = page.locator(`${textAreaSection} fieldset`).nth(index);
+  await fieldset.locator("textarea").hover();
+  return fieldset.locator(".ph-arrows-out").first().evaluate((icon) => {
     const rect = icon.getBoundingClientRect();
     return rect.top + rect.height / 2;
   });
-  await icons.evaluate((el) => el.style.removeProperty("display"));
-  return center;
 }
 
 async function heightOf(page, index) {
@@ -76,6 +74,18 @@ test.describe("TextArea", () => {
   test("read-only instance expands without a state path", async ({ page }) => {
     await toggleExpand(page, 1);
     await expectStableHeight(page, 1, expandedHeightPx);
+  });
+
+  test("action buttons reveal on focus and expand with the keyboard", async ({ page }) => {
+    const fieldset = page.locator(`${textAreaSection} fieldset`).first();
+    const actions = fieldset.locator("div.hidden").first();
+
+    await expect(actions).toBeHidden();
+    await fieldset.locator("textarea").focus();
+    await expect(actions).toBeVisible();
+
+    await fieldset.getByRole("button", { name: "Toggle text area height" }).press("Enter");
+    await expectStableHeight(page, 0, expandedHeightPx);
   });
 
   test("floating icons sit on the first text line when empty", async ({ page }) => {

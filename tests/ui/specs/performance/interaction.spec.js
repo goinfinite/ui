@@ -25,7 +25,7 @@ async function measureExpandLatency(page) {
     const textarea = document.querySelector("#text-area-demo textarea");
     const icons = textarea.closest("fieldset").querySelector("div.absolute");
     icons.style.setProperty("display", "flex", "important");
-    const toggle = icons.querySelector("i");
+    const toggle = icons.querySelector("button");
     const start = performance.now();
     toggle.click();
     await new Promise((resolve) => {

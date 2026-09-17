@@ -40,3 +40,12 @@ features:
       level: exhaustive
       run: tests/ui/run.sh cross-browser
       requires_demo: true
+  control:
+    - scope: ui
+      level: fast
+      run: tests/ui/run.sh control
+      requires_demo: true
+    - scope: ui
+      level: exhaustive
+      run: tests/ui/run.sh control-cross-browser
+      requires_demo: true

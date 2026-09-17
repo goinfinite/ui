@@ -43,6 +43,7 @@ type RangeSliderSettings struct {
 	ThumbLabel                           string
 	ThumbLabelOneWayStatePath            string
 	ThumbLabelIcon                       string
+	ThumbAriaLabel                       string
 	ThumbBackgroundColor                 string
 	ThumbTextColor                       string
 	ThumbShape                           string
@@ -64,6 +65,7 @@ type RangeSliderSettings struct {
 	ThumbUpperLabel                      string
 	ThumbUpperLabelOneWayStatePath       string
 	ThumbUpperLabelIcon                  string
+	ThumbUpperAriaLabel                  string
 	ThumbUpperValueBubbleEnabled         bool
 	ThumbUpperValueBubbleBackgroundColor string
 	ThumbUpperValueBubbleTextColor       string
@@ -77,6 +79,8 @@ type RangeSliderSettings struct {
 	TrackBackgroundColorVia              string
 	TrackBackgroundColorTo               string
 	TrackSteps                           string
+	TrackTicksEnabled                    bool
+	TrackTickStep                        string
 	TrackFillColor                       string
 	TrackFillColorFrom                   string
 	TrackFillColorVia                    string
@@ -93,26 +97,37 @@ type RangeSliderSettings struct {
 	TrackEndValueLabelTextColor          string
 	TrackEndValueLabelPosition           string
 	TrackEndValueLabelIcon               string
+	ShouldNormalizeInitialState          bool
+}
+
+func resolveRangeSliderThumbSizeUnit(componentSettings RangeSliderSettings) string {
+	switch componentSettings.Size {
+	case RangeSliderSizeXs:
+		return "2.5"
+	case RangeSliderSizeSm:
+		return "3.5"
+	case RangeSliderSizeLg:
+		return "5.5"
+	case RangeSliderSizeXl:
+		return "6.5"
+	}
+	return "4.5"
 }
 
 templ Thumb(componentSettings RangeSliderSettings, isUpper bool) {
-	{{ thumbSize := "w-4.5 h-4.5" }}
+	{{ thumbSizeUnit := resolveRangeSliderThumbSizeUnit(componentSettings) }}
+	{{ thumbSize := "w-" + thumbSizeUnit + " h-" + thumbSizeUnit }}
 	{{ thumbPosition := "-top-1.25" }}
 	switch componentSettings.Size {
 		case RangeSliderSizeXs:
-			{{ thumbSize = "w-2.5 h-2.5" }}
 			{{ thumbPosition = "-top-0.75" }}
 		case RangeSliderSizeSm:
-			{{ thumbSize = "w-3.5 h-3.5" }}
 			{{ thumbPosition = "-top-1.25" }}
 		case RangeSliderSizeMd:
-			{{ thumbSize = "w-4.5 h-4.5" }}
 			{{ thumbPosition = "-top-1.5" }}
 		case RangeSliderSizeLg:
-			{{ thumbSize = "w-5.5 h-5.5" }}
 			{{ thumbPosition = "-top-1.75" }}
 		case RangeSliderSizeXl:
-			{{ thumbSize = "w-6.5 h-6.5" }}
 			{{ thumbPosition = "-top-2" }}
 	}
 	<!-- Thumb -->
@@ -183,13 +198,15 @@ templ Thumb(componentSettings RangeSliderSettings, isUpper bool) {
 		{{ bubbleValue = "thumbUpperValue" }}
 	}
 	{{ hoverState := "thumbHover" }}
+	{{ focusState := "thumbFocused" }}
 	if isUpper {
 		{{ hoverState = "thumbUpperHover" }}
+		{{ focusState = "thumbUpperFocused" }}
 	}
 	<div
 		class={ "absolute select-none flex justify-center items-center " + thumbPosition + " " + thumbSize + " " + thumbShape + " " + thumbBackgroundColor + " " + thumbTextColor + " cursor-pointer shadow-md transition-transform duration-200 z-10" }
-		:style={ "'left: calc(' + " + percentValue + " + '%); transform: translateX(-50%) scale(' + (" + hoverState + " ? 1.1 : 1) + ');'" }
-		:class={ "!" + hoverState + " && 'z-30'" }
+		:style={ "'left: calc(' + " + percentValue + " + '%); transform: translateX(-50%) scale(' + (" + hoverState + " || " + focusState + " ? 1.1 : 1) + ');'" }
+		:class={ "{" + "'!z-30': " + hoverState + " || " + focusState + ", 'ring-2 ring-secondary-500/50': " + focusState + "}" }
 		@mouseenter={ hoverState + " = true" }
 		@mouseleave={ hoverState + " = false" }
 	>
@@ -353,6 +370,89 @@ templ Thumb(componentSettings RangeSliderSettings, isUpper bool) {
 	</div>
 }
 
+func resolveRangeSliderThumbAriaLabel(componentSettings RangeSliderSettings, isUpper bool) string {
+	if isUpper {
+		if componentSettings.ThumbUpperAriaLabel != "" {
+			return componentSettings.ThumbUpperAriaLabel
+		}
+		if componentSettings.ThumbUpperLabel != "" {
+			return componentSettings.ThumbUpperLabel
+		}
+		if componentSettings.ThumbLabel != "" {
+			return "Upper " + componentSettings.ThumbLabel
+		}
+		return "Upper value"
+	}
+	if componentSettings.ThumbAriaLabel != "" {
+		return componentSettings.ThumbAriaLabel
+	}
+	if componentSettings.ThumbLabel != "" {
+		return componentSettings.ThumbLabel
+	}
+	if componentSettings.ThumbDualValueModeEnabled {
+		return "Lower value"
+	}
+	return "Value"
+}
+
+func resolveRangeSliderThumbPathClamp(statePath string) string {
+	return "if (" + statePath + " < trackStartValue) " + statePath + " = trackStartValue; if (" + statePath + " > trackEndValue) " + statePath + " = trackEndValue;"
+}
+
+func resolveRangeSliderThumbWatch(statePath, localProperty, orderingPush string) string {
+	return "$watch('" + statePath + "', (newValue, oldValue) => { if (oldValue == newValue) return; if (newValue < trackStartValue) newValue = trackStartValue; if (newValue > trackEndValue) newValue = trackEndValue; " + resolveRangeSliderThumbPathClamp(statePath) + " if (" + localProperty + " != newValue) " + localProperty + " = newValue;" + orderingPush + " });"
+}
+
+func resolveRangeSliderLowerOrderingPush(componentSettings RangeSliderSettings) string {
+	if !componentSettings.ThumbDualValueModeEnabled {
+		return ""
+	}
+	orderingPush := " if (thumbValue > thumbUpperValue) { thumbUpperValue = Math.min(Number(thumbValue) + Number(trackSteps), trackEndValue);"
+	if componentSettings.ThumbUpperValueTwoWayStatePath != "" {
+		orderingPush += " if (" + componentSettings.ThumbUpperValueTwoWayStatePath + " < thumbValue) " + componentSettings.ThumbUpperValueTwoWayStatePath + " = thumbUpperValue;"
+	}
+	return orderingPush + " }"
+}
+
+func resolveRangeSliderLowerWatch(componentSettings RangeSliderSettings) string {
+	if componentSettings.ThumbValueTwoWayStatePath == "" {
+		return ""
+	}
+	return resolveRangeSliderThumbWatch(componentSettings.ThumbValueTwoWayStatePath, "thumbValue", resolveRangeSliderLowerOrderingPush(componentSettings))
+}
+
+func resolveRangeSliderUpperOrderingPush(componentSettings RangeSliderSettings) string {
+	if !componentSettings.ThumbDualValueModeEnabled {
+		return ""
+	}
+	orderingPush := " if (thumbUpperValue < thumbValue) { thumbValue = Math.max(Number(thumbUpperValue) - Number(trackSteps), trackStartValue);"
+	if componentSettings.ThumbValueTwoWayStatePath != "" {
+		orderingPush += " if (" + componentSettings.ThumbValueTwoWayStatePath + " > thumbUpperValue) " + componentSettings.ThumbValueTwoWayStatePath + " = thumbValue;"
+	}
+	return orderingPush + " }"
+}
+
+func resolveRangeSliderUpperWatch(componentSettings RangeSliderSettings) string {
+	if componentSettings.ThumbUpperValueTwoWayStatePath == "" || !componentSettings.ThumbDualValueModeEnabled {
+		return ""
+	}
+	return resolveRangeSliderThumbWatch(componentSettings.ThumbUpperValueTwoWayStatePath, "thumbUpperValue", resolveRangeSliderUpperOrderingPush(componentSettings))
+}
+
+func resolveRangeSliderInitialStateNormalization(componentSettings RangeSliderSettings) string {
+	if !componentSettings.ShouldNormalizeInitialState {
+		return ""
+	}
+	normalization := ""
+	if componentSettings.ThumbValueTwoWayStatePath != "" {
+		normalization += resolveRangeSliderThumbPathClamp(componentSettings.ThumbValueTwoWayStatePath)
+	}
+	if componentSettings.ThumbUpperValueTwoWayStatePath != "" && componentSettings.ThumbDualValueModeEnabled {
+		normalization += " " + resolveRangeSliderThumbPathClamp(componentSettings.ThumbUpperValueTwoWayStatePath)
+	}
+	return normalization + resolveRangeSliderLowerOrderingPush(componentSettings)
+}
+
 templ RangeSlider(componentSettings RangeSliderSettings) {
 	<!-- RangeSlider -->
 	{{ thumbValue := "0" }}
@@ -387,18 +487,19 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 	if componentSettings.TrackSteps != "" {
 		{{ trackSteps = componentSettings.TrackSteps }}
 	}
-	{{ alpineData := "{thumbValue: " + thumbValue + ", trackStartValue: " + trackStartValue + ", trackEndValue: " + trackEndValue + ", trackSteps: " + trackSteps + ", thumbHover: false, clampPercent(percent) { return Math.min(Math.max(percent, 0), 100); }, get thumbValuePercent() { return this.clampPercent((this.thumbValue - this.trackStartValue) / (this.trackEndValue - this.trackStartValue) * 100); }" }}
+	{{ trackTickStep := trackSteps }}
+	if componentSettings.TrackTickStep != "" {
+		{{ trackTickStep = componentSettings.TrackTickStep }}
+	}
+	{{ alpineData := "{thumbValue: " + thumbValue + ", trackStartValue: " + trackStartValue + ", trackEndValue: " + trackEndValue + ", trackSteps: " + trackSteps + ", thumbHover: false, thumbFocused: false, clampPercent(percent) { return Math.min(Math.max(percent, 0), 100); }, get thumbValuePercent() { return this.clampPercent((this.thumbValue - this.trackStartValue) / (this.trackEndValue - this.trackStartValue) * 100); }" }}
 	if componentSettings.ThumbDualValueModeEnabled {
-		{{ alpineData += ", thumbUpperValue: " + thumbUpperValue + ", thumbUpperHover: false, get thumbUpperValuePercent() { return this.clampPercent((this.thumbUpperValue - this.trackStartValue) / (this.trackEndValue - this.trackStartValue) * 100); }" }}
+		{{ alpineData += ", thumbUpperValue: " + thumbUpperValue + ", thumbUpperHover: false, thumbUpperFocused: false, get thumbUpperValuePercent() { return this.clampPercent((this.thumbUpperValue - this.trackStartValue) / (this.trackEndValue - this.trackStartValue) * 100); }, get thumbMidPercent() { return (this.thumbValuePercent + this.thumbUpperValuePercent) / 2; }" }}
+	}
+	if componentSettings.TrackTicksEnabled {
+		{{ alpineData += ", trackTickStep: " + trackTickStep + ", get trackTickPercents() { const step = Number(this.trackTickStep); const start = Number(this.trackStartValue); const end = Number(this.trackEndValue); if (!(step > 0) || !(end > start)) return []; const tickCount = Math.floor((end - start) / step); if (!(tickCount > 0) || tickCount > 200) return []; const percents = []; for (let index = 0; index <= tickCount; index++) { percents.push(this.clampPercent((index * step) / (end - start) * 100)); } return percents; }" }}
 	}
 	{{ alpineData += "}" }}
-	{{ alpineWatch := "" }}
-	if componentSettings.ThumbValueTwoWayStatePath != "" {
-		{{ alpineWatch = "$watch('" + componentSettings.ThumbValueTwoWayStatePath + "', (newValue, oldValue) => { if (oldValue == newValue) return; if (newValue < trackStartValue) newValue = trackStartValue; if (newValue > trackEndValue) newValue = trackEndValue; if (thumbValue != newValue) thumbValue = newValue; });" }}
-	}
-	if componentSettings.ThumbUpperValueTwoWayStatePath != "" {
-		{{ alpineWatch += "$watch('" + componentSettings.ThumbUpperValueTwoWayStatePath + "', (newValue, oldValue) => { if (oldValue == newValue) return; if (newValue < trackStartValue) newValue = trackStartValue; if (newValue > trackEndValue) newValue = trackEndValue; if (thumbUpperValue != newValue) thumbUpperValue = newValue; });" }}
-	}
+	{{ alpineWatch := resolveRangeSliderLowerWatch(componentSettings) + resolveRangeSliderUpperWatch(componentSettings) + resolveRangeSliderInitialStateNormalization(componentSettings) }}
 	{{ mainDivMinHeight := 6 }}
 	switch componentSettings.Size {
 		case RangeSliderSizeXs:
@@ -490,6 +591,7 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 				}
 				<div class={ trackBackgroundColor + " flex items-center relative rounded-full w-full " + trackHeight }>
 					<!-- RangeInputs -->
+					{{ rangeInputHeight := "h-" + resolveRangeSliderThumbSizeUnit(componentSettings) }}
 					{{ rangeInputHoverHeight := 7 }}
 					switch componentSettings.Size {
 						case RangeSliderSizeXs:
@@ -507,10 +609,13 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 						{{ rangeInputHoverHeight = rangeInputHoverHeight * 2 }}
 					}
 					{{ rangeInputHoverHeightStr := strconv.Itoa(rangeInputHoverHeight) }}
-					{{ rangeInputClasses := "absolute z-20 h-1.5 w-full cursor-pointer appearance-none opacity-0" }}
+					{{ rangeInputClasses := "absolute z-40 " + rangeInputHeight + " w-full cursor-pointer appearance-none opacity-0" }}
 					{{ inputEvent := "if (thumbValue <= trackStartValue) thumbValue = trackStartValue; if (thumbValue >= trackEndValue) thumbValue = trackEndValue;" }}
 					if componentSettings.ThumbDualValueModeEnabled {
-						{{ inputEvent += "if (thumbUpperValue <= thumbValue) thumbUpperValue = Number(thumbValue) + Number(trackSteps);" }}
+						{{ inputEvent += "if (thumbUpperValue <= thumbValue) thumbUpperValue = Math.min(Number(thumbValue) + Number(trackSteps), trackEndValue);" }}
+						if componentSettings.ThumbUpperValueTwoWayStatePath != "" {
+							{{ inputEvent += componentSettings.ThumbUpperValueTwoWayStatePath + " = thumbUpperValue;" }}
+						}
 					}
 					if componentSettings.ThumbValueTwoWayStatePath != "" {
 						{{ inputEvent += componentSettings.ThumbValueTwoWayStatePath + " = thumbValue" }}
@@ -518,10 +623,13 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 					<input
 						type="range"
 						class={ rangeInputClasses }
+						aria-label={ resolveRangeSliderThumbAriaLabel(componentSettings, false) }
 						:min="trackStartValue"
 						:max="trackEndValue"
 						:step="trackSteps"
 						x-model.number:value="thumbValue"
+						@focus="thumbFocused = true"
+						@blur="thumbFocused = false"
 						@mouseenter="thumbHover = true"
 						@mouseleave="thumbHover = false"
 						@input.debounce.100ms={ inputEvent }
@@ -529,26 +637,29 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 							:class={ "thumbHover && '!h-" + rangeInputHoverHeightStr + "'" }
 						}
 						if componentSettings.ThumbDualValueModeEnabled {
-							:style="'pointer-events: ' + (thumbHover ? 'auto' : 'none');"
+							:style="'clip-path: inset(0 ' + (100 - thumbMidPercent) + '% 0 0)'"
 						}
 					/>
 					if componentSettings.ThumbDualValueModeEnabled {
 						<!-- RangeInputUpper -->
-						{{ inputEvent := "if (thumbUpperValue <= trackStartValue) thumbUpperValue = trackStartValue; if (thumbUpperValue >= trackEndValue) thumbUpperValue = trackEndValue; if (thumbUpperValue <= thumbValue) thumbUpperValue = Number(thumbValue) + Number(trackSteps);" }}
+						{{ inputEvent := "if (thumbUpperValue <= trackStartValue) thumbUpperValue = trackStartValue; if (thumbUpperValue >= trackEndValue) thumbUpperValue = trackEndValue; if (thumbUpperValue <= thumbValue) thumbUpperValue = Math.min(Number(thumbValue) + Number(trackSteps), trackEndValue);" }}
 						if componentSettings.ThumbUpperValueTwoWayStatePath != "" {
 							{{ inputEvent += componentSettings.ThumbUpperValueTwoWayStatePath + " = thumbUpperValue" }}
 						}
 						<input
 							type="range"
 							class={ rangeInputClasses }
+							aria-label={ resolveRangeSliderThumbAriaLabel(componentSettings, true) }
 							:min="trackStartValue"
 							:max="trackEndValue"
 							:step="trackSteps"
 							x-model.number:value="thumbUpperValue"
+							@focus="thumbUpperFocused = true"
+							@blur="thumbUpperFocused = false"
 							@mouseenter="thumbUpperHover = true"
 							@mouseleave="thumbUpperHover = false"
 							@input.debounce.100ms={ inputEvent }
-							:style="'pointer-events: ' + (thumbUpperHover ? 'auto' : 'none');"
+							:style="'clip-path: inset(0 0 0 ' + thumbMidPercent + '%)'"
 							if componentSettings.ThumbUpperValueBubbleEnabled {
 								:class={ "thumbUpperHover && '!h-" + rangeInputHoverHeightStr + "'" }
 							}
@@ -578,6 +689,17 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 						{{ trackFillStyle = "'left: ' + thumbValuePercent + '%; right: ' + (100 - thumbUpperValuePercent) + '%'" }}
 					}
 					<div class={ trackFillClass } x-bind:style={ trackFillStyle }></div>
+					<!-- TrackTicks -->
+					if componentSettings.TrackTicksEnabled {
+						<div aria-hidden="true" class="absolute inset-0">
+							<template x-for="percent in trackTickPercents" :key="percent">
+								<span
+									class="absolute top-1/2 h-2.5 w-0.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-neutral-50/50"
+									:style="'left: ' + percent + '%'"
+								></span>
+							</template>
+						</div>
+					}
 					@Thumb(componentSettings, false)
 					if componentSettings.ThumbDualValueModeEnabled {
 						<!-- ThumbUpper -->

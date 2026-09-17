@@ -1,7 +1,5 @@
 {
   "button-name": 11,
   "color-contrast": 81,
-  "label": 27,
-  "landmark-one-main": 1,
-  "region": 132
+  "landmark-complementary-is-top-level": 1
 }

@@ -12,17 +12,25 @@ type TextAreaSettings struct {
 	Label string
 
 	// OptionalFields
-	InputId         string
-	InputName       string
-	Size            string
-	TwoWayStatePath string
-	Value           string
-	IsCode          bool
-	IsReadOnly      bool
-	IsRequired      bool
+	InputId                           string
+	InputName                         string
+	Size                              string
+	TwoWayStatePath                   string
+	Value                             string
+	IsCode                            bool
+	IsReadOnly                        bool
+	IsRequired                        bool
+	HintValue                         string
+	HintStatePath                     string
+	HintDisplay                       string
+	HintDisplayTooltipBackgroundColor string
 }
 
 templ TextArea(componentSettings TextAreaSettings) {
+	{{ textAreaRef := componentSettings.InputId }}
+	if textAreaRef == "" {
+		{{ textAreaRef = "textAreaInput" }}
+	}
 	<!-- TextArea -->
 	<fieldset
 		class="bg-neutral-50/7.5 relative -mt-2 w-full rounded border border-neutral-50/5 transition-colors autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30"
@@ -43,6 +51,7 @@ templ TextArea(componentSettings TextAreaSettings) {
 				<span class="text-red-700">*</span>
 			}
 		</legend>
+		{{ textAreaHasHintTooltip := shouldRenderInputHintTooltip(componentSettings.HintDisplay, componentSettings.HintValue, componentSettings.HintStatePath) }}
 		{{ textAreaClasses := "placeholder-text-opacity-80" }}
 		if componentSettings.TwoWayStatePath == "" && componentSettings.Value == "" {
 			{{ textAreaClasses = "placeholder-text-opacity-0" }}
@@ -87,12 +96,12 @@ templ TextArea(componentSettings TextAreaSettings) {
 			{{ textAreaDynamicClasses += `, 'pt-2': !` + componentSettings.TwoWayStatePath }}
 		}
 		{{ textAreaDynamicClasses += `}` }}
-		<div class="relative">
+		<div class="group/textarea relative">
 			<textarea
 				if componentSettings.InputId != "" {
 					id={ componentSettings.InputId }
-					x-ref={ componentSettings.InputId }
 				}
+				x-ref={ textAreaRef }
 				if componentSettings.InputName != "" {
 					name={ componentSettings.InputName }
 				}
@@ -116,36 +125,56 @@ templ TextArea(componentSettings TextAreaSettings) {
 				{{ textAreaIconsPositionClasses = "" }}
 			}
 			<div
-				class={ "absolute right-2 " + textAreaIconsPositionClasses + " hidden flex-col gap-1 text-base transition-all hover:flex active:flex peer-hover:flex" }
+				class={ "absolute right-2 " + textAreaIconsPositionClasses + " flex flex-col items-end gap-1 text-base transition-all" }
 				if componentSettings.TwoWayStatePath != "" {
 					:class={ `{'top-2': !` + componentSettings.TwoWayStatePath + `, 'top-0': ` + componentSettings.TwoWayStatePath + `}` }
 				}
 			>
-				{{ floatingIconsClasses := "ph-bold border-1 active:bg-secondary-500 cursor-pointer rounded border-neutral-50/5 bg-neutral-50/5 p-1 text-neutral-100 hover:border-neutral-50/30 hover:bg-neutral-50/20" }}
-				<i
-					class={ floatingIconsClasses + " ph-arrows-out" }
-					:class="isTextAreaExpanded ? 'ph-arrows-in' : 'ph-arrows-out'"
-					@click.prevent="isTextAreaExpanded = !isTextAreaExpanded"
-				></i>
-				if componentSettings.IsReadOnly || componentSettings.TwoWayStatePath != "" {
-					<i
-						class={ floatingIconsClasses + " ph-clipboard-text" }
-						if componentSettings.TwoWayStatePath != "" {
-							@click.prevent={ "navigator.clipboard.writeText(" + componentSettings.TwoWayStatePath + ")" }
-						} else {
-							if componentSettings.InputId != "" {
-								@click.prevent={ "$refs." + componentSettings.InputId + ".select(); document.execCommand('copy')" }
+				if textAreaHasHintTooltip {
+					@InputHintTooltip(InputHintSettings{
+						Value:                  componentSettings.HintValue,
+						StatePath:              componentSettings.HintStatePath,
+						TooltipBackgroundColor: componentSettings.HintDisplayTooltipBackgroundColor,
+						IconStyle:              InputHintIconStyleBoxed,
+					})
+				}
+				<div class="hidden flex-col gap-1 group-hover/textarea:flex group-focus-within/textarea:flex">
+					{{ floatingIconsClasses := "ph-bold border-1 active:bg-secondary-500 cursor-pointer rounded border-neutral-50/5 bg-neutral-50/5 p-1 text-neutral-100 hover:border-neutral-50/30 hover:bg-neutral-50/20" }}
+					<button
+						type="button"
+						aria-label="Toggle text area height"
+						class={ floatingIconsClasses + " ph-arrows-out" }
+						:class="isTextAreaExpanded ? 'ph-arrows-in' : 'ph-arrows-out'"
+						@click.prevent="isTextAreaExpanded = !isTextAreaExpanded"
+					></button>
+					if componentSettings.IsReadOnly || componentSettings.TwoWayStatePath != "" {
+						<button
+							type="button"
+							aria-label="Copy text area content"
+							class={ floatingIconsClasses + " ph-clipboard-text" }
+							if componentSettings.TwoWayStatePath != "" {
+								@click.prevent={ "navigator.clipboard.writeText(" + componentSettings.TwoWayStatePath + ")" }
+							} else {
+								@click.prevent={ "$refs." + textAreaRef + ".select(); document.execCommand('copy')" }
 							}
-						}
-					></i>
-				}
-				if componentSettings.TwoWayStatePath != "" {
-					<i
-						class={ floatingIconsClasses + " ph-x-circle" }
-						@click.prevent={ componentSettings.TwoWayStatePath + " = ''" }
-					></i>
-				}
+						></button>
+					}
+					if componentSettings.TwoWayStatePath != "" {
+						<button
+							type="button"
+							aria-label="Clear text area content"
+							class={ floatingIconsClasses + " ph-x-circle" }
+							@click.prevent={ componentSettings.TwoWayStatePath + " = ''" }
+						></button>
+					}
+				</div>
 			</div>
 		</div>
 	</fieldset>
+	if shouldRenderInputHintDescription(componentSettings.HintDisplay) {
+		@InputHintDescription(InputHintSettings{
+			Value:     componentSettings.HintValue,
+			StatePath: componentSettings.HintStatePath,
+		})
+	}
 }

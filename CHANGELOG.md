@@ -1,6 +1,24 @@
 # Changelog
 
 ```log
+0.2.0 - 2026/09/16
+fix: restrict the demo asset proxy to approved hosts
+refactor: remove the unused selectInput InputId setting
+feat: normalize range slider initial two-way state
+test: bound demo proxy retries and survive asset fetch failures
+docs: describe the demo asset proxy in the context files
+test: serve demo assets from a local cache to stop CDN stalls
+fix: sync range slider values and make select and text area controls accessible
+test: add range slider drag specs
+fix: make range slider thumbs draggable
+test: add hint accessibility specs
+fix: make form hint tooltips keyboard and touch accessible
+feat: add hints to TextArea
+docs: add hint examples to the demo
+fix: escape selectInput option values and run OnChangeFunc on change
+test: add range slider control specs and register the control suite
+feat: add range slider tick marks and accessible thumb names
+
 0.1.9 - 2026/09/15
 fix: set the demo document language to English
 fix: reject invalid inputs and count concurrent requests in jsonAjax
