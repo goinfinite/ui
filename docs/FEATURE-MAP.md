@@ -259,7 +259,7 @@ Single entry point for all verification: Go units, Playwright behavioral specs a
 1. `tests/tests.sh` — Contract entry point: registry selection, demo server lifecycle, cumulative levels, exit 0/1/2
 2. `tests/registry.yaml` — Explicit feature:scope/level registry; trusted input
 3. `tests/lib/registry.mjs` — Registry reader for list and select modes
-4. `tests/lib/serveDemo.mjs` — Static localhost server for docs/
+4. `tests/lib/serveDemo.mjs` — Localhost server for docs/ that proxies external script, stylesheet, and image URLs through a fetch-once cache, keeping CDN latency out of specs
 5. `tests/lib/checkPerformance.mjs` — Compares measured latencies against `tests/golden.yaml` tiers
 6. `tests/ui/run.sh` — Playwright mode runner (smoke, standard, a11y, performance, toolset, control, cross-browser, toolset-cross-browser, control-cross-browser)
 7. `tests/ui/specs/` — Behavioral specs by feature: form, control, toolset, a11y, performance
