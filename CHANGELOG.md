@@ -2,6 +2,7 @@
 
 ```log
 0.2.0 - 2026/09/16
+refactor: remove the unused selectInput InputId setting
 feat: normalize range slider initial two-way state
 test: bound demo proxy retries and survive asset fetch failures
 docs: describe the demo asset proxy in the context files
