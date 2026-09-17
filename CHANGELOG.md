@@ -2,6 +2,7 @@
 
 ```log
 0.2.0 - 2026/09/16
+fix: restrict the demo asset proxy to approved hosts
 refactor: remove the unused selectInput InputId setting
 feat: normalize range slider initial two-way state
 test: bound demo proxy retries and survive asset fetch failures

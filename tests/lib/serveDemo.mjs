@@ -7,6 +7,14 @@ const docsRoot = fileURLToPath(new URL("../../docs/", import.meta.url));
 const assetCacheRoot = fileURLToPath(new URL("../.cache/demo-assets/", import.meta.url));
 const listenPort = Number(process.argv[2] ?? 8377);
 const proxyPrefix = "/proxy/";
+const approvedAssetHosts = new Set([
+  "cdn.jsdelivr.net",
+  "fonts.googleapis.com",
+  "fonts.gstatic.com",
+  "img.shields.io",
+  "sonarcloud.io",
+  "ui.demo.goinfinite.net",
+]);
 const cacheFillAttempts = 2;
 const cacheFillTimeoutMs = 8000;
 
@@ -94,7 +102,10 @@ async function readCachedAsset(cachePath) {
 async function fetchExternalAsset(externalUrl) {
   for (let attempt = 1; attempt <= cacheFillAttempts; attempt++) {
     try {
-      const upstream = await fetch(externalUrl, { signal: AbortSignal.timeout(cacheFillTimeoutMs) });
+      const upstream = await fetch(externalUrl, {
+        redirect: "manual",
+        signal: AbortSignal.timeout(cacheFillTimeoutMs),
+      });
       if (upstream.ok) {
         return upstream;
       }
@@ -120,9 +131,27 @@ async function fillAssetCache(externalUrl, cachePath) {
   return { body, contentType };
 }
 
+function parseApprovedAssetUrl(externalUrl) {
+  let assetUrl;
+  try {
+    assetUrl = new URL(externalUrl);
+  } catch {
+    return null;
+  }
+  const hasCredentials = assetUrl.username !== "" || assetUrl.password !== "";
+  if (assetUrl.protocol !== "https:" || hasCredentials || !approvedAssetHosts.has(assetUrl.host)) {
+    return null;
+  }
+  return assetUrl;
+}
+
 async function serveProxiedAsset(request, response) {
   const proxyRequest = new URL(request.url, "http://localhost");
   const externalUrl = decodeProxyUrl(`${proxyRequest.pathname}${proxyRequest.search}`.slice(proxyPrefix.length));
+  if (parseApprovedAssetUrl(externalUrl) === null) {
+    response.writeHead(403).end("asset not approved");
+    return;
+  }
   const cacheKey = createHash("sha1").update(externalUrl).digest("hex");
   const cachePath = `${assetCacheRoot}${cacheKey}`;
   const asset = (await readCachedAsset(cachePath)) ?? (await fillAssetCache(externalUrl, cachePath));
