@@ -121,6 +121,29 @@ test.describe("RangeSlider", () => {
     await expect(rangeDisplay).toContainText("$100 - $100");
   });
 
+  test("@control initial crossed and out-of-bounds state normalizes when the setting is on", async ({ page }) => {
+    const initialSection = page.locator("#range-slider-initial-state-demo");
+    const sliders = initialSection.locator("input[type=range]");
+
+    await expect(sliders.nth(0)).toHaveValue("80");
+    await expect(sliders.nth(1)).toHaveValue("81");
+    await expect(sliders.nth(2)).toHaveValue("100");
+    await expect(sliders.nth(3)).toHaveValue("100");
+    await expect(sliders.nth(4)).toHaveValue("100");
+    await expect(initialSection.locator("p")).toContainText("$80 - $81");
+    await expect(initialSection.locator("p")).toContainText("$100 - $100");
+    await expect(initialSection.locator("p")).toContainText("Slider: 100");
+  });
+
+  test("@control initial crossed state stays untouched when the setting is off", async ({ page }) => {
+    const unnormalizedSection = page.locator("#range-slider-unnormalized-demo");
+    const sliders = unnormalizedSection.locator("input[type=range]");
+
+    await expect(sliders.nth(0)).toHaveValue("80");
+    await expect(sliders.nth(1)).toHaveValue("20");
+    await expect(unnormalizedSection.locator("p")).toContainText("$80 - $20");
+  });
+
   test("@control focusing the input reveals the focus ring", async ({ page }) => {
     const slider = sliderByLabel(page, "Value").first();
     const thumb = thumbOf(slider);

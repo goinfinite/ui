@@ -2160,6 +2160,55 @@ templ RangeSliderDemo() {
 						})
 					</div>
 				</div>
+				<div class="flex w-full flex-col gap-2">
+					<p class="text-sm text-neutral-400">Initial State Normalization</p>
+					<div id="range-slider-initial-state-demo" x-data="{lowerValue: 80, upperValue: 20, overflowLowerValue: 150, overflowUpperValue: 20, sliderValue: 150}" class="flex flex-col gap-3">
+						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+							ThumbDualValueModeEnabled:      true,
+							ThumbValueTwoWayStatePath:      "lowerValue",
+							ThumbAriaLabel:                 "Initial minimum",
+							ThumbUpperValueTwoWayStatePath: "upperValue",
+							ThumbUpperAriaLabel:            "Initial maximum",
+							ShouldNormalizeInitialState:    true,
+							TrackStartValue:                "0",
+							TrackEndValue:                  "100",
+							TrackSteps:                     "1",
+						})
+						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+							ThumbDualValueModeEnabled:      true,
+							ThumbValueTwoWayStatePath:      "overflowLowerValue",
+							ThumbAriaLabel:                 "Overflow minimum",
+							ThumbUpperValueTwoWayStatePath: "overflowUpperValue",
+							ThumbUpperAriaLabel:            "Overflow maximum",
+							ShouldNormalizeInitialState:    true,
+							TrackStartValue:                "0",
+							TrackEndValue:                  "100",
+							TrackSteps:                     "1",
+						})
+						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+							ThumbValueTwoWayStatePath:   "sliderValue",
+							ThumbAriaLabel:              "Initial single value",
+							ShouldNormalizeInitialState: true,
+						})
+						<p class="text-sm text-neutral-400">Normalized Range: $<span x-text="lowerValue"></span> - $<span x-text="upperValue"></span>, Overflow Range: $<span x-text="overflowLowerValue"></span> - $<span x-text="overflowUpperValue"></span>, Slider: <span x-text="sliderValue"></span></p>
+					</div>
+				</div>
+				<div class="flex w-full flex-col gap-2">
+					<p class="text-sm text-neutral-400">Unnormalized Initial State</p>
+					<div id="range-slider-unnormalized-demo" x-data="{lowerValue: 80, upperValue: 20}" class="flex flex-col gap-3">
+						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+							ThumbDualValueModeEnabled:      true,
+							ThumbValueTwoWayStatePath:      "lowerValue",
+							ThumbAriaLabel:                 "Raw minimum",
+							ThumbUpperValueTwoWayStatePath: "upperValue",
+							ThumbUpperAriaLabel:            "Raw maximum",
+							TrackStartValue:                "0",
+							TrackEndValue:                  "100",
+							TrackSteps:                     "1",
+						})
+						<p class="text-sm text-neutral-400">Raw Range: $<span x-text="lowerValue"></span> - $<span x-text="upperValue"></span></p>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>

@@ -105,6 +105,7 @@ type RangeSliderSettings struct {
 	TrackEndValueLabelTextColor          string
 	TrackEndValueLabelPosition           string
 	TrackEndValueLabelIcon               string
+	ShouldNormalizeInitialState          bool
 }
 
 func resolveRangeSliderThumbSizeUnit(componentSettings RangeSliderSettings) string {
@@ -282,7 +283,7 @@ func Thumb(componentSettings RangeSliderSettings, isUpper bool) templ.Component 
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue("'left: calc(' + " + percentValue + " + '%); transform: translateX(-50%) scale(' + (" + hoverState + " || " + focusState + " ? 1.1 : 1) + ');'")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 207, Col: 154}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 208, Col: 154}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
 		if templ_7745c5c3_Err != nil {
@@ -295,7 +296,7 @@ func Thumb(componentSettings RangeSliderSettings, isUpper bool) templ.Component 
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.ResolveAttributeValue("{" + "'!z-30': " + hoverState + " || " + focusState + ", 'ring-2 ring-secondary-500/50': " + focusState + "}")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 208, Col: 121}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 209, Col: 121}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5)
 		if templ_7745c5c3_Err != nil {
@@ -308,7 +309,7 @@ func Thumb(componentSettings RangeSliderSettings, isUpper bool) templ.Component 
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.ResolveAttributeValue(hoverState + " = true")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 209, Col: 38}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 210, Col: 38}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
 		if templ_7745c5c3_Err != nil {
@@ -321,7 +322,7 @@ func Thumb(componentSettings RangeSliderSettings, isUpper bool) templ.Component 
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.ResolveAttributeValue(hoverState + " = false")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 210, Col: 39}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 211, Col: 39}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
 		if templ_7745c5c3_Err != nil {
@@ -428,7 +429,7 @@ func Thumb(componentSettings RangeSliderSettings, isUpper bool) templ.Component 
 				var templ_7745c5c3_Var12 string
 				templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.ResolveAttributeValue(thumbLabelPath)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 247, Col: 28}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 248, Col: 28}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var12)
 				if templ_7745c5c3_Err != nil {
@@ -446,7 +447,7 @@ func Thumb(componentSettings RangeSliderSettings, isUpper bool) templ.Component 
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(thumbLabel)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 250, Col: 16}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 251, Col: 16}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
@@ -662,7 +663,7 @@ func Thumb(componentSettings RangeSliderSettings, isUpper bool) templ.Component 
 			var templ_7745c5c3_Var16 string
 			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.ResolveAttributeValue(bubbleValue)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 364, Col: 24}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 365, Col: 24}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var16)
 			if templ_7745c5c3_Err != nil {
@@ -675,7 +676,7 @@ func Thumb(componentSettings RangeSliderSettings, isUpper bool) templ.Component 
 			var templ_7745c5c3_Var17 string
 			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.ResolveAttributeValue(hoverState + " = true")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 365, Col: 40}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 366, Col: 40}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var17)
 			if templ_7745c5c3_Err != nil {
@@ -688,7 +689,7 @@ func Thumb(componentSettings RangeSliderSettings, isUpper bool) templ.Component 
 			var templ_7745c5c3_Var18 string
 			templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.ResolveAttributeValue(hoverState + " = false")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 366, Col: 41}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 367, Col: 41}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var18)
 			if templ_7745c5c3_Err != nil {
@@ -732,38 +733,62 @@ func resolveRangeSliderThumbAriaLabel(componentSettings RangeSliderSettings, isU
 	return "Value"
 }
 
+func resolveRangeSliderThumbPathClamp(statePath string) string {
+	return "if (" + statePath + " < trackStartValue) " + statePath + " = trackStartValue; if (" + statePath + " > trackEndValue) " + statePath + " = trackEndValue;"
+}
+
 func resolveRangeSliderThumbWatch(statePath, localProperty, orderingPush string) string {
-	return "$watch('" + statePath + "', (newValue, oldValue) => { if (oldValue == newValue) return; if (newValue < trackStartValue) newValue = trackStartValue; if (newValue > trackEndValue) newValue = trackEndValue; if (" + statePath + " < trackStartValue) " + statePath + " = trackStartValue; if (" + statePath + " > trackEndValue) " + statePath + " = trackEndValue; if (" + localProperty + " != newValue) " + localProperty + " = newValue;" + orderingPush + " });"
+	return "$watch('" + statePath + "', (newValue, oldValue) => { if (oldValue == newValue) return; if (newValue < trackStartValue) newValue = trackStartValue; if (newValue > trackEndValue) newValue = trackEndValue; " + resolveRangeSliderThumbPathClamp(statePath) + " if (" + localProperty + " != newValue) " + localProperty + " = newValue;" + orderingPush + " });"
+}
+
+func resolveRangeSliderLowerOrderingPush(componentSettings RangeSliderSettings) string {
+	if !componentSettings.ThumbDualValueModeEnabled {
+		return ""
+	}
+	orderingPush := " if (thumbValue > thumbUpperValue) { thumbUpperValue = Math.min(Number(thumbValue) + Number(trackSteps), trackEndValue);"
+	if componentSettings.ThumbUpperValueTwoWayStatePath != "" {
+		orderingPush += " if (" + componentSettings.ThumbUpperValueTwoWayStatePath + " < thumbValue) " + componentSettings.ThumbUpperValueTwoWayStatePath + " = thumbUpperValue;"
+	}
+	return orderingPush + " }"
 }
 
 func resolveRangeSliderLowerWatch(componentSettings RangeSliderSettings) string {
 	if componentSettings.ThumbValueTwoWayStatePath == "" {
 		return ""
 	}
-	orderingPush := ""
-	if componentSettings.ThumbDualValueModeEnabled {
-		orderingPush = " if (thumbValue > thumbUpperValue) { thumbUpperValue = Math.min(Number(thumbValue) + Number(trackSteps), trackEndValue);"
-		if componentSettings.ThumbUpperValueTwoWayStatePath != "" {
-			orderingPush += " if (" + componentSettings.ThumbUpperValueTwoWayStatePath + " < thumbValue) " + componentSettings.ThumbUpperValueTwoWayStatePath + " = thumbUpperValue;"
-		}
-		orderingPush += " }"
+	return resolveRangeSliderThumbWatch(componentSettings.ThumbValueTwoWayStatePath, "thumbValue", resolveRangeSliderLowerOrderingPush(componentSettings))
+}
+
+func resolveRangeSliderUpperOrderingPush(componentSettings RangeSliderSettings) string {
+	if !componentSettings.ThumbDualValueModeEnabled {
+		return ""
 	}
-	return resolveRangeSliderThumbWatch(componentSettings.ThumbValueTwoWayStatePath, "thumbValue", orderingPush)
+	orderingPush := " if (thumbUpperValue < thumbValue) { thumbValue = Math.max(Number(thumbUpperValue) - Number(trackSteps), trackStartValue);"
+	if componentSettings.ThumbValueTwoWayStatePath != "" {
+		orderingPush += " if (" + componentSettings.ThumbValueTwoWayStatePath + " > thumbUpperValue) " + componentSettings.ThumbValueTwoWayStatePath + " = thumbValue;"
+	}
+	return orderingPush + " }"
 }
 
 func resolveRangeSliderUpperWatch(componentSettings RangeSliderSettings) string {
-	if componentSettings.ThumbUpperValueTwoWayStatePath == "" {
+	if componentSettings.ThumbUpperValueTwoWayStatePath == "" || !componentSettings.ThumbDualValueModeEnabled {
 		return ""
 	}
-	orderingPush := ""
-	if componentSettings.ThumbDualValueModeEnabled {
-		orderingPush = " if (thumbUpperValue < thumbValue) { thumbValue = Math.max(Number(thumbUpperValue) - Number(trackSteps), trackStartValue);"
-		if componentSettings.ThumbValueTwoWayStatePath != "" {
-			orderingPush += " if (" + componentSettings.ThumbValueTwoWayStatePath + " > thumbUpperValue) " + componentSettings.ThumbValueTwoWayStatePath + " = thumbValue;"
-		}
-		orderingPush += " }"
+	return resolveRangeSliderThumbWatch(componentSettings.ThumbUpperValueTwoWayStatePath, "thumbUpperValue", resolveRangeSliderUpperOrderingPush(componentSettings))
+}
+
+func resolveRangeSliderInitialStateNormalization(componentSettings RangeSliderSettings) string {
+	if !componentSettings.ShouldNormalizeInitialState {
+		return ""
 	}
-	return resolveRangeSliderThumbWatch(componentSettings.ThumbUpperValueTwoWayStatePath, "thumbUpperValue", orderingPush)
+	normalization := ""
+	if componentSettings.ThumbValueTwoWayStatePath != "" {
+		normalization += resolveRangeSliderThumbPathClamp(componentSettings.ThumbValueTwoWayStatePath)
+	}
+	if componentSettings.ThumbUpperValueTwoWayStatePath != "" && componentSettings.ThumbDualValueModeEnabled {
+		normalization += " " + resolveRangeSliderThumbPathClamp(componentSettings.ThumbUpperValueTwoWayStatePath)
+	}
+	return normalization + resolveRangeSliderLowerOrderingPush(componentSettings)
 }
 
 func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
@@ -835,7 +860,7 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 			alpineData += ", trackTickStep: " + trackTickStep + ", get trackTickPercents() { const step = Number(this.trackTickStep); const start = Number(this.trackStartValue); const end = Number(this.trackEndValue); if (!(step > 0) || !(end > start)) return []; const tickCount = Math.floor((end - start) / step); if (!(tickCount > 0) || tickCount > 200) return []; const percents = []; for (let index = 0; index <= tickCount; index++) { percents.push(this.clampPercent((index * step) / (end - start) * 100)); } return percents; }"
 		}
 		alpineData += "}"
-		alpineWatch := resolveRangeSliderLowerWatch(componentSettings) + resolveRangeSliderUpperWatch(componentSettings)
+		alpineWatch := resolveRangeSliderLowerWatch(componentSettings) + resolveRangeSliderUpperWatch(componentSettings) + resolveRangeSliderInitialStateNormalization(componentSettings)
 		mainDivMinHeight := 6
 		switch componentSettings.Size {
 		case RangeSliderSizeXs:
@@ -877,7 +902,7 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 		var templ_7745c5c3_Var22 string
 		templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.ResolveAttributeValue(alpineData)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 496, Col: 21}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 521, Col: 21}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var22)
 		if templ_7745c5c3_Err != nil {
@@ -890,7 +915,7 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 		var templ_7745c5c3_Var23 string
 		templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.ResolveAttributeValue(alpineWatch)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 497, Col: 22}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 522, Col: 22}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var23)
 		if templ_7745c5c3_Err != nil {
@@ -1111,7 +1136,7 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 		var templ_7745c5c3_Var32 string
 		templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.ResolveAttributeValue(resolveRangeSliderThumbAriaLabel(componentSettings, false))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 601, Col: 77}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 626, Col: 77}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var32)
 		if templ_7745c5c3_Err != nil {
@@ -1124,7 +1149,7 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 		var templ_7745c5c3_Var33 string
 		templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.ResolveAttributeValue(inputEvent)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 610, Col: 40}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 635, Col: 40}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var33)
 		if templ_7745c5c3_Err != nil {
@@ -1142,7 +1167,7 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 			var templ_7745c5c3_Var34 string
 			templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.ResolveAttributeValue("thumbHover && '!h-" + rangeInputHoverHeightStr + "'")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 612, Col: 69}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 637, Col: 69}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var34)
 			if templ_7745c5c3_Err != nil {
@@ -1201,7 +1226,7 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 			var templ_7745c5c3_Var37 string
 			templ_7745c5c3_Var37, templ_7745c5c3_Err = templ.ResolveAttributeValue(resolveRangeSliderThumbAriaLabel(componentSettings, true))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 627, Col: 77}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 652, Col: 77}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var37)
 			if templ_7745c5c3_Err != nil {
@@ -1214,7 +1239,7 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 			var templ_7745c5c3_Var38 string
 			templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.ResolveAttributeValue(inputEvent)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 636, Col: 41}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 661, Col: 41}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var38)
 			if templ_7745c5c3_Err != nil {
@@ -1232,7 +1257,7 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 				var templ_7745c5c3_Var39 string
 				templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.ResolveAttributeValue("thumbUpperHover && '!h-" + rangeInputHoverHeightStr + "'")
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 639, Col: 75}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 664, Col: 75}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var39)
 				if templ_7745c5c3_Err != nil {
@@ -1307,7 +1332,7 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 		var templ_7745c5c3_Var42 string
 		templ_7745c5c3_Var42, templ_7745c5c3_Err = templ.ResolveAttributeValue(trackFillStyle)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 666, Col: 64}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 691, Col: 64}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var42)
 		if templ_7745c5c3_Err != nil {

@@ -97,6 +97,7 @@ type RangeSliderSettings struct {
 	TrackEndValueLabelTextColor          string
 	TrackEndValueLabelPosition           string
 	TrackEndValueLabelIcon               string
+	ShouldNormalizeInitialState          bool
 }
 
 func resolveRangeSliderThumbSizeUnit(componentSettings RangeSliderSettings) string {
@@ -394,38 +395,62 @@ func resolveRangeSliderThumbAriaLabel(componentSettings RangeSliderSettings, isU
 	return "Value"
 }
 
+func resolveRangeSliderThumbPathClamp(statePath string) string {
+	return "if (" + statePath + " < trackStartValue) " + statePath + " = trackStartValue; if (" + statePath + " > trackEndValue) " + statePath + " = trackEndValue;"
+}
+
 func resolveRangeSliderThumbWatch(statePath, localProperty, orderingPush string) string {
-	return "$watch('" + statePath + "', (newValue, oldValue) => { if (oldValue == newValue) return; if (newValue < trackStartValue) newValue = trackStartValue; if (newValue > trackEndValue) newValue = trackEndValue; if (" + statePath + " < trackStartValue) " + statePath + " = trackStartValue; if (" + statePath + " > trackEndValue) " + statePath + " = trackEndValue; if (" + localProperty + " != newValue) " + localProperty + " = newValue;" + orderingPush + " });"
+	return "$watch('" + statePath + "', (newValue, oldValue) => { if (oldValue == newValue) return; if (newValue < trackStartValue) newValue = trackStartValue; if (newValue > trackEndValue) newValue = trackEndValue; " + resolveRangeSliderThumbPathClamp(statePath) + " if (" + localProperty + " != newValue) " + localProperty + " = newValue;" + orderingPush + " });"
+}
+
+func resolveRangeSliderLowerOrderingPush(componentSettings RangeSliderSettings) string {
+	if !componentSettings.ThumbDualValueModeEnabled {
+		return ""
+	}
+	orderingPush := " if (thumbValue > thumbUpperValue) { thumbUpperValue = Math.min(Number(thumbValue) + Number(trackSteps), trackEndValue);"
+	if componentSettings.ThumbUpperValueTwoWayStatePath != "" {
+		orderingPush += " if (" + componentSettings.ThumbUpperValueTwoWayStatePath + " < thumbValue) " + componentSettings.ThumbUpperValueTwoWayStatePath + " = thumbUpperValue;"
+	}
+	return orderingPush + " }"
 }
 
 func resolveRangeSliderLowerWatch(componentSettings RangeSliderSettings) string {
 	if componentSettings.ThumbValueTwoWayStatePath == "" {
 		return ""
 	}
-	orderingPush := ""
-	if componentSettings.ThumbDualValueModeEnabled {
-		orderingPush = " if (thumbValue > thumbUpperValue) { thumbUpperValue = Math.min(Number(thumbValue) + Number(trackSteps), trackEndValue);"
-		if componentSettings.ThumbUpperValueTwoWayStatePath != "" {
-			orderingPush += " if (" + componentSettings.ThumbUpperValueTwoWayStatePath + " < thumbValue) " + componentSettings.ThumbUpperValueTwoWayStatePath + " = thumbUpperValue;"
-		}
-		orderingPush += " }"
+	return resolveRangeSliderThumbWatch(componentSettings.ThumbValueTwoWayStatePath, "thumbValue", resolveRangeSliderLowerOrderingPush(componentSettings))
+}
+
+func resolveRangeSliderUpperOrderingPush(componentSettings RangeSliderSettings) string {
+	if !componentSettings.ThumbDualValueModeEnabled {
+		return ""
 	}
-	return resolveRangeSliderThumbWatch(componentSettings.ThumbValueTwoWayStatePath, "thumbValue", orderingPush)
+	orderingPush := " if (thumbUpperValue < thumbValue) { thumbValue = Math.max(Number(thumbUpperValue) - Number(trackSteps), trackStartValue);"
+	if componentSettings.ThumbValueTwoWayStatePath != "" {
+		orderingPush += " if (" + componentSettings.ThumbValueTwoWayStatePath + " > thumbUpperValue) " + componentSettings.ThumbValueTwoWayStatePath + " = thumbValue;"
+	}
+	return orderingPush + " }"
 }
 
 func resolveRangeSliderUpperWatch(componentSettings RangeSliderSettings) string {
-	if componentSettings.ThumbUpperValueTwoWayStatePath == "" {
+	if componentSettings.ThumbUpperValueTwoWayStatePath == "" || !componentSettings.ThumbDualValueModeEnabled {
 		return ""
 	}
-	orderingPush := ""
-	if componentSettings.ThumbDualValueModeEnabled {
-		orderingPush = " if (thumbUpperValue < thumbValue) { thumbValue = Math.max(Number(thumbUpperValue) - Number(trackSteps), trackStartValue);"
-		if componentSettings.ThumbValueTwoWayStatePath != "" {
-			orderingPush += " if (" + componentSettings.ThumbValueTwoWayStatePath + " > thumbUpperValue) " + componentSettings.ThumbValueTwoWayStatePath + " = thumbValue;"
-		}
-		orderingPush += " }"
+	return resolveRangeSliderThumbWatch(componentSettings.ThumbUpperValueTwoWayStatePath, "thumbUpperValue", resolveRangeSliderUpperOrderingPush(componentSettings))
+}
+
+func resolveRangeSliderInitialStateNormalization(componentSettings RangeSliderSettings) string {
+	if !componentSettings.ShouldNormalizeInitialState {
+		return ""
 	}
-	return resolveRangeSliderThumbWatch(componentSettings.ThumbUpperValueTwoWayStatePath, "thumbUpperValue", orderingPush)
+	normalization := ""
+	if componentSettings.ThumbValueTwoWayStatePath != "" {
+		normalization += resolveRangeSliderThumbPathClamp(componentSettings.ThumbValueTwoWayStatePath)
+	}
+	if componentSettings.ThumbUpperValueTwoWayStatePath != "" && componentSettings.ThumbDualValueModeEnabled {
+		normalization += " " + resolveRangeSliderThumbPathClamp(componentSettings.ThumbUpperValueTwoWayStatePath)
+	}
+	return normalization + resolveRangeSliderLowerOrderingPush(componentSettings)
 }
 
 templ RangeSlider(componentSettings RangeSliderSettings) {
@@ -474,7 +499,7 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 		{{ alpineData += ", trackTickStep: " + trackTickStep + ", get trackTickPercents() { const step = Number(this.trackTickStep); const start = Number(this.trackStartValue); const end = Number(this.trackEndValue); if (!(step > 0) || !(end > start)) return []; const tickCount = Math.floor((end - start) / step); if (!(tickCount > 0) || tickCount > 200) return []; const percents = []; for (let index = 0; index <= tickCount; index++) { percents.push(this.clampPercent((index * step) / (end - start) * 100)); } return percents; }" }}
 	}
 	{{ alpineData += "}" }}
-	{{ alpineWatch := resolveRangeSliderLowerWatch(componentSettings) + resolveRangeSliderUpperWatch(componentSettings) }}
+	{{ alpineWatch := resolveRangeSliderLowerWatch(componentSettings) + resolveRangeSliderUpperWatch(componentSettings) + resolveRangeSliderInitialStateNormalization(componentSettings) }}
 	{{ mainDivMinHeight := 6 }}
 	switch componentSettings.Size {
 		case RangeSliderSizeXs:
