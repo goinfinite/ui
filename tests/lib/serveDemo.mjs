@@ -7,8 +7,8 @@ const docsRoot = fileURLToPath(new URL("../../docs/", import.meta.url));
 const assetCacheRoot = fileURLToPath(new URL("../.cache/demo-assets/", import.meta.url));
 const listenPort = Number(process.argv[2] ?? 8377);
 const proxyPrefix = "/proxy/";
-const cacheFillAttempts = 3;
-const cacheFillTimeoutMs = 15000;
+const cacheFillAttempts = 2;
+const cacheFillTimeoutMs = 8000;
 
 const contentTypes = {
   ".css": "text/css",
@@ -40,22 +40,22 @@ function decodeProxyUrl(proxyPath) {
 }
 
 function rewriteTagUrl(tag) {
-  const urlMatch = tag.match(/\b(src|href)="(https?:\/\/[^"]+)"/);
+  const urlMatch = tag.match(/\b(src|href)="(https?:\/\/[^"]{1,4096})"/);
   if (urlMatch === null) {
     return tag;
   }
-  return tag.replace(urlMatch[2], () => encodeProxyUrl(urlMatch[2])).replace(/ integrity="[^"]*"/, "");
+  return tag.replace(urlMatch[2], () => encodeProxyUrl(urlMatch[2])).replace(/ integrity="[^"]{0,4096}"/, "");
 }
 
 function rewriteExternalAssetUrls(html) {
   return html
-    .replace(/<script\b[^>]*>/g, rewriteTagUrl)
-    .replace(/<link\b[^>]*>/g, rewriteTagUrl)
-    .replace(/<img\b[^>]*>/g, rewriteTagUrl);
+    .replace(/<script\b[^>]{0,4096}>/g, rewriteTagUrl)
+    .replace(/<link\b[^>]{0,4096}>/g, rewriteTagUrl)
+    .replace(/<img\b[^>]{0,4096}>/g, rewriteTagUrl);
 }
 
 function rewriteAbsoluteCssUrls(css) {
-  return css.replace(/url\((https?:\/\/[^)]+)\)/g, (_match, externalUrl) => `url(${encodeProxyUrl(externalUrl)})`);
+  return css.replace(/url\((https?:\/\/[^)]{1,4096})\)/g, (_match, externalUrl) => `url(${encodeProxyUrl(externalUrl)})`);
 }
 
 async function serveFile(request, response) {
@@ -138,7 +138,12 @@ await mkdir(assetCacheRoot, { recursive: true });
 
 createServer((request, response) => {
   if (request.url?.startsWith(proxyPrefix)) {
-    serveProxiedAsset(request, response);
+    serveProxiedAsset(request, response).catch(() => {
+      if (!response.headersSent) {
+        response.writeHead(502);
+      }
+      response.end("asset unavailable");
+    });
     return;
   }
   serveFile(request, response);
