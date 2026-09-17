@@ -47,22 +47,10 @@ templ SelectInput(componentSettings SelectInputSettings) {
 		{{ onChangeFuncSuffix = "; " + componentSettings.OnChangeFunc }}
 	}
 	<!-- SelectInput -->
-	<div x-data={ selectState } class="relative w-full">
+	<div x-data={ selectState } class="relative w-full" @keydown.escape.window="isOpen = false">
 		{{ labelValueOptionsScriptId := componentSettings.InputName + "LabelValueOptions" }}
 		if len(componentSettings.LabelValueOptions) > 0 {
 			@templ.JSONScript(labelValueOptionsScriptId, componentSettings.LabelValueOptions)
-		}
-		if componentSettings.InputName != "" {
-			<input
-				type="hidden"
-				if componentSettings.InputId != "" {
-					id={ componentSettings.InputId }
-				}
-				if componentSettings.InputName != "" {
-					name={ componentSettings.InputName }
-				}
-				x-model:value={ selectValueStatePath }
-			/>
 		}
 		<div class="flex w-full flex-col">
 			<fieldset
@@ -85,6 +73,11 @@ templ SelectInput(componentSettings SelectInputSettings) {
 				<!-- SelectField -->
 				<div
 					class="group flex w-full cursor-pointer items-center justify-between px-2 pb-2 text-sm text-neutral-100"
+					tabindex="0"
+					role="button"
+					:aria-expanded="isOpen"
+					@keydown.enter.prevent="isOpen = !isOpen"
+					@keydown.space.prevent="isOpen = !isOpen"
 					if componentSettings.TwoWayStatePath != "" {
 						:class={ `!` + componentSettings.TwoWayStatePath + ` && 'pt-2'` }
 					}
@@ -130,7 +123,7 @@ templ SelectInput(componentSettings SelectInputSettings) {
 					x-show="isOpen"
 					@click.away="isOpen = false"
 					@click="isOpen = false"
-					@change={ selectValueStatePath + " = $event.target.value; isOpen = false" + onChangeFuncSuffix }
+					@change={ selectValueStatePath + " = $event.target.value" + onChangeFuncSuffix }
 					x-transition
 				>
 					{{ dropdownClasses := "transition-colors hover:bg-neutral-50/5 border-neutral-50/5 border-t first:border-t-0" }}
@@ -141,8 +134,10 @@ templ SelectInput(componentSettings SelectInputSettings) {
 							<label class={ optionLabelClasses }>
 								<input
 									type="radio"
+									name={ componentSettings.InputName }
 									value=""
 									:checked={ selectValueStatePath + " === $el.value" }
+									@click.stop
 									class="sr-only"
 								/>
 								<span>--</span>
@@ -154,8 +149,10 @@ templ SelectInput(componentSettings SelectInputSettings) {
 							<label class={ optionLabelClasses }>
 								<input
 									type="radio"
+									name={ componentSettings.InputName }
 									value={ option }
 									:checked={ selectValueStatePath + " === $el.value" }
+									@click.stop
 									class="sr-only"
 								/>
 								<span>{ option }</span>
@@ -167,8 +164,10 @@ templ SelectInput(componentSettings SelectInputSettings) {
 							<label class={ optionLabelClasses }>
 								<input
 									type="radio"
+									name={ componentSettings.InputName }
 									value={ option.Value }
 									:checked={ selectValueStatePath + " === $el.value" }
+									@click.stop
 									class="sr-only"
 								/>
 								if option.LabelHtml != nil {

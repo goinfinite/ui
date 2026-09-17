@@ -30,6 +30,16 @@ function tickMarksOf(slider) {
   return trackOf(slider).locator('div[aria-hidden="true"] > span');
 }
 
+async function writeExternalState(page, values) {
+  await page.evaluate((state) => {
+    const dualModeRoot = document.querySelector('#range-slider-demo div[x-data^="{lowerValue"]');
+    const alpineData = window.Alpine.$data(dualModeRoot);
+    for (const [property, value] of Object.entries(state)) {
+      alpineData[property] = value;
+    }
+  }, values);
+}
+
 test.describe("RangeSlider", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(`/index.html#${sliderSection.slice(1)}`);
@@ -72,6 +82,43 @@ test.describe("RangeSlider", () => {
     await expect(upperSlider).toHaveValue("75");
     await dragThumb(page, upperSlider, 1, -40);
     expect(Number(await upperSlider.inputValue())).toBeLessThan(75);
+  });
+
+  test("@control lower thumb crossing the upper clamps and syncs both bound values", async ({ page }) => {
+    const lowerSlider = sliderByLabel(page, "Minimum price");
+    const upperSlider = sliderByLabel(page, "Maximum price");
+
+    await lowerSlider.focus();
+    await page.keyboard.press("End");
+
+    await expect(lowerSlider).toHaveValue("100");
+    await expect(upperSlider).toHaveValue("100");
+    await expect(page.locator(`${sliderSection} p`, { hasText: "Price Range" })).toContainText(
+      "$100 - $100",
+    );
+  });
+
+  test("@control external state writes keep both thumbs ordered", async ({ page }) => {
+    const lowerSlider = sliderByLabel(page, "Minimum price");
+    const upperSlider = sliderByLabel(page, "Maximum price");
+    const rangeDisplay = page.locator(`${sliderSection} p`, { hasText: "Price Range" });
+
+    await page.waitForFunction(() => window.Alpine !== undefined);
+
+    await writeExternalState(page, { lowerValue: 90 });
+    await expect(lowerSlider).toHaveValue("90");
+    await expect(upperSlider).toHaveValue("91");
+    await expect(rangeDisplay).toContainText("$90 - $91");
+
+    await writeExternalState(page, { upperValue: 10 });
+    await expect(upperSlider).toHaveValue("10");
+    await expect(lowerSlider).toHaveValue("9");
+    await expect(rangeDisplay).toContainText("$9 - $10");
+
+    await writeExternalState(page, { lowerValue: 150 });
+    await expect(lowerSlider).toHaveValue("100");
+    await expect(upperSlider).toHaveValue("100");
+    await expect(rangeDisplay).toContainText("$100 - $100");
   });
 
   test("@control focusing the input reveals the focus ring", async ({ page }) => {

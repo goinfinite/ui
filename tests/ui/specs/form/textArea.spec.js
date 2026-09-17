@@ -76,6 +76,18 @@ test.describe("TextArea", () => {
     await expectStableHeight(page, 1, expandedHeightPx);
   });
 
+  test("action buttons reveal on focus and expand with the keyboard", async ({ page }) => {
+    const fieldset = page.locator(`${textAreaSection} fieldset`).first();
+    const actions = fieldset.locator("div.hidden").first();
+
+    await expect(actions).toBeHidden();
+    await fieldset.locator("textarea").focus();
+    await expect(actions).toBeVisible();
+
+    await fieldset.getByRole("button", { name: "Toggle text area height" }).press("Enter");
+    await expectStableHeight(page, 0, expandedHeightPx);
+  });
+
   test("floating icons sit on the first text line when empty", async ({ page }) => {
     await expect
       .poll(

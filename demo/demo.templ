@@ -9,7 +9,7 @@ import (
 
 const (
 	DemoPreCodeClasses string = "rounded-md bg-neutral-800 p-4 text-xs text-wrap tab-2"
-	UiVersion          string = "0.1.9"
+	UiVersion          string = "0.2.0"
 )
 
 templ DemoIndex() {
@@ -767,7 +767,7 @@ templ SelectInputDemo() {
 					<pre class={ DemoPreCodeClasses }>
 						<code>
 							{ `@uiForm.SelectInput(uiForm.SelectInputSettings{
-	InputName: "country",
+	InputName: "countryCode",
 	Label:     "Country",
 
 	// OptionalFields
@@ -801,7 +801,7 @@ templ SelectInputDemo() {
 			<div class="flex flex-col">
 				<h4 class="mb-2 text-lg font-bold">Live Example</h4>
 				@uiForm.SelectInput(uiForm.SelectInputSettings{
-					InputName: "country",
+					InputName: "countryCode",
 					Label:     "Country",
 					LabelValueOptions: []uiForm.SelectLabelValueOption{
 						{
@@ -904,7 +904,7 @@ templ SelectInputDemo() {
 					<pre class={ DemoPreCodeClasses }>
 						<code>
 							{ `@uiForm.SelectInput(uiForm.SelectInputSettings{
-	InputName: "country",
+	InputName: "countryHintDescription",
 	Label:     "Country",
 
 	// OptionalFields
@@ -929,7 +929,7 @@ templ SelectInputDemo() {
 				<div class="flex flex-col gap-6">
 					<p class="text-sm text-neutral-400">HintValue & HintDisplay</p>
 					@uiForm.SelectInput(uiForm.SelectInputSettings{
-						InputName: "country",
+						InputName: "countryHintDescription",
 						Label:     "Country",
 						FlatOptions: []string{
 							"Argentina",
@@ -942,7 +942,7 @@ templ SelectInputDemo() {
 						HintDisplay:              uiForm.InputHintDisplayDescription,
 					})
 					@uiForm.SelectInput(uiForm.SelectInputSettings{
-						InputName: "country",
+						InputName: "countryHintTooltip",
 						Label:     "Country",
 						FlatOptions: []string{
 							"Argentina",
@@ -956,7 +956,7 @@ templ SelectInputDemo() {
 					})
 					<p class="text-sm text-neutral-400">HintIconStyle</p>
 					@uiForm.SelectInput(uiForm.SelectInputSettings{
-						InputName: "country",
+						InputName: "countryHintBoxed",
 						Label:     "Country",
 						FlatOptions: []string{
 							"Argentina",
@@ -982,7 +982,7 @@ templ SelectInputDemo() {
 					<pre class={ DemoPreCodeClasses }>
 						<code>
 							{ `@uiForm.SelectInput(uiForm.SelectInputSettings{
-	InputName: "country",
+	InputName: "countryChange",
 	Label:     "Country",
 
 	// OptionalFields
@@ -1005,7 +1005,7 @@ templ SelectInputDemo() {
 				<h4 class="text-lg font-bold">Live Example</h4>
 				<p class="text-sm text-neutral-400">The function runs when the selection changes. Clear the field to see it run again.</p>
 				@uiForm.SelectInput(uiForm.SelectInputSettings{
-					InputName:                "country",
+					InputName:                "countryChange",
 					Label:                    "Country",
 					FlatOptions:              []string{"Argentina", "Brazil", "Chile"},
 					TwoWayStatePath:          "country",

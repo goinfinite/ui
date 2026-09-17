@@ -2,11 +2,14 @@ import { test, expect } from "@playwright/test";
 
 const selectSection = "#select-input-demo";
 
+function checkedRadioOf(page, name) {
+  return page.locator(`${selectSection} input[type=radio][name=${name}]:checked`);
+}
+
 test.describe("SelectInput", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(`/index.html#${selectSection.slice(1)}`);
-    const hiddenInput = page.locator(`${selectSection} input[type=hidden]`).first();
-    await expect(hiddenInput).toHaveValue("Brazil");
+    await expect(checkedRadioOf(page, "country")).toHaveValue("Brazil");
   });
 
   test("@smoke dropdown opens, selects an option and closes", async ({ page }) => {
@@ -19,14 +22,12 @@ test.describe("SelectInput", () => {
     await options.getByText("Argentina", { exact: true }).click();
     await expect(options).toBeHidden();
 
-    const hiddenInput = page.locator(`${selectSection} input[type=hidden]`).first();
-    await expect(hiddenInput).toHaveValue("Argentina");
+    await expect(checkedRadioOf(page, "country")).toHaveValue("Argentina");
   });
 
   test("@smoke clear button empties the selection", async ({ page }) => {
     await page.locator(`${selectSection} .ph-x-circle`).first().click();
-    const hiddenInput = page.locator(`${selectSection} input[type=hidden]`).first();
-    await expect(hiddenInput).toHaveValue("");
+    await expect(page.locator(`${selectSection} input[type=radio][name=country][value=""]`)).toBeChecked();
   });
 
   test("@smoke option value with an apostrophe selects and highlights", async ({ page }) => {
@@ -38,17 +39,44 @@ test.describe("SelectInput", () => {
     await apostropheOption.click();
     await expect(options).toBeHidden();
 
-    const hiddenInput = page.locator(`${selectSection} input[type=hidden]`).first();
-    await expect(hiddenInput).toHaveValue("Côte d'Ivoire");
-    await expect(trigger).toContainText("Côte d'Ivoire");
     await expect(apostropheOption.locator("input[type=radio]")).toBeChecked();
+    await expect(trigger).toContainText("Côte d'Ivoire");
     await expect(apostropheOption).toHaveCSS("background-color", "rgba(250, 250, 250, 0.1)");
+  });
+
+  test("@smoke trigger opens with the keyboard and closes with Escape", async ({ page }) => {
+    const trigger = page.locator(`${selectSection} [role=button]`).first();
+    const options = page.locator(`${selectSection} ul`).first();
+
+    await trigger.focus();
+    await page.keyboard.press("Enter");
+    await expect(options).toBeVisible();
+
+    await page.keyboard.press("Escape");
+    await expect(options).toBeHidden();
+  });
+
+  test("@smoke arrow keys move through the named radio group and Escape closes", async ({ page }) => {
+    const trigger = page.locator(`${selectSection} [role=button]`).first();
+    const options = page.locator(`${selectSection} ul`).first();
+    await trigger.click();
+    await expect(options).toBeVisible();
+
+    await page.locator(`${selectSection} input[type=radio][name=country][value="Brazil"]`).focus();
+    await page.keyboard.press("ArrowDown");
+
+    await expect(checkedRadioOf(page, "country")).toHaveValue("Chile");
+    await expect(trigger).toContainText("Chile");
+    await expect(options).toBeVisible();
+
+    await page.keyboard.press("Escape");
+    await expect(options).toBeHidden();
   });
 
   test("@smoke form submission carries one entry for the selected value", async ({ page }) => {
     const formEntries = await page.evaluate(() => {
-      const hiddenInput = document.querySelector("#select-input-demo input[type=hidden]");
-      const selectRoot = hiddenInput.parentElement;
+      const checkedRadio = document.querySelector("#select-input-demo input[type=radio][name=country]:checked");
+      const selectRoot = checkedRadio.closest("[x-data]");
       const form = document.createElement("form");
       selectRoot.parentNode.insertBefore(form, selectRoot);
       form.appendChild(selectRoot);

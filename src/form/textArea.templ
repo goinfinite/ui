@@ -27,6 +27,10 @@ type TextAreaSettings struct {
 }
 
 templ TextArea(componentSettings TextAreaSettings) {
+	{{ textAreaRef := componentSettings.InputId }}
+	if textAreaRef == "" {
+		{{ textAreaRef = "textAreaInput" }}
+	}
 	<!-- TextArea -->
 	<fieldset
 		class="bg-neutral-50/7.5 relative -mt-2 w-full rounded border border-neutral-50/5 transition-colors autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30"
@@ -96,8 +100,8 @@ templ TextArea(componentSettings TextAreaSettings) {
 			<textarea
 				if componentSettings.InputId != "" {
 					id={ componentSettings.InputId }
-					x-ref={ componentSettings.InputId }
 				}
+				x-ref={ textAreaRef }
 				if componentSettings.InputName != "" {
 					name={ componentSettings.InputName }
 				}
@@ -134,30 +138,34 @@ templ TextArea(componentSettings TextAreaSettings) {
 						IconStyle:              InputHintIconStyleBoxed,
 					})
 				}
-				<div class="hidden flex-col gap-1 group-hover/textarea:flex">
+				<div class="hidden flex-col gap-1 group-hover/textarea:flex group-focus-within/textarea:flex">
 					{{ floatingIconsClasses := "ph-bold border-1 active:bg-secondary-500 cursor-pointer rounded border-neutral-50/5 bg-neutral-50/5 p-1 text-neutral-100 hover:border-neutral-50/30 hover:bg-neutral-50/20" }}
-					<i
+					<button
+						type="button"
+						aria-label="Toggle text area height"
 						class={ floatingIconsClasses + " ph-arrows-out" }
 						:class="isTextAreaExpanded ? 'ph-arrows-in' : 'ph-arrows-out'"
 						@click.prevent="isTextAreaExpanded = !isTextAreaExpanded"
-					></i>
+					></button>
 					if componentSettings.IsReadOnly || componentSettings.TwoWayStatePath != "" {
-						<i
+						<button
+							type="button"
+							aria-label="Copy text area content"
 							class={ floatingIconsClasses + " ph-clipboard-text" }
 							if componentSettings.TwoWayStatePath != "" {
 								@click.prevent={ "navigator.clipboard.writeText(" + componentSettings.TwoWayStatePath + ")" }
 							} else {
-								if componentSettings.InputId != "" {
-									@click.prevent={ "$refs." + componentSettings.InputId + ".select(); document.execCommand('copy')" }
-								}
+								@click.prevent={ "$refs." + textAreaRef + ".select(); document.execCommand('copy')" }
 							}
-						></i>
+						></button>
 					}
 					if componentSettings.TwoWayStatePath != "" {
-						<i
+						<button
+							type="button"
+							aria-label="Clear text area content"
 							class={ floatingIconsClasses + " ph-x-circle" }
 							@click.prevent={ componentSettings.TwoWayStatePath + " = ''" }
-						></i>
+						></button>
 					}
 				</div>
 			</div>
