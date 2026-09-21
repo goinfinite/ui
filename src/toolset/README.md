@@ -12,7 +12,13 @@ Call the utilities through the `UiToolset` object.
 - `UiToolset.ResolveApiResponseDisplay(apiResponse, httpStatusCode)`: Resolves the message and outcome (`success`, `partialSuccess`, or `error`) from an Infinite API response envelope.
 - `UiToolset.ToggleLoadingOverlay()`: Toggles the loading overlay element with the id `loading-overlay`.
 - `UiToolset.JsonAjax(method, url, payload, toast)`: Makes a JSON AJAX request. It shows the loading overlay and can display a toast from the response envelope.
-- `UiToolset.RegisterAlpineState()`: Registers a function to run on `alpine:init`, or immediately when Alpine is already initialized. Use it instead of raw `Alpine.data()` calls so navigation does not register the same listener twice.
+- `UiToolset.RegisterAlpineState(stateFunction)`: Registers `stateFunction` to run on `alpine:init`, or immediately when Alpine is already initialized. Call `Alpine.data()` inside the callback. Use it instead of raw `Alpine.data()` calls so navigation does not register the same listener twice.
+
+```js
+UiToolset.RegisterAlpineState(() => {
+  Alpine.data("dataTable", (settingsScriptId) => ({ ... }));
+});
+```
 
 When the Toast component is present, API responses can display messages with the recommended envelope:
 
