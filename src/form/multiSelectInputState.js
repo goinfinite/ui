@@ -12,11 +12,12 @@ UiToolset.RegisterAlpineState(() => {
       if (this.labelValueOptionsScriptId) {
         try {
           labelValueOptions = JSON.parse(
-            document.getElementById(this.labelValueOptionsScriptId)?.textContent || "[]"
+            document.getElementById(this.labelValueOptionsScriptId)
+              ?.textContent || "[]",
           );
         } catch (parseError) {
           console.error(
-            `MultiSelectInputInvalidLabelValueOptionsJson: ${parseError.message}`
+            `MultiSelectInputInvalidLabelValueOptionsJson: ${parseError.message}`,
           );
         }
       }
