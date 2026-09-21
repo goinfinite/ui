@@ -25,6 +25,7 @@ type SelectInputSettings struct {
 	OnChangeFunc                      string
 	Size                              string
 	DropdownBackgroundColor           string
+	IsDisabledOneWayStatePath         string
 	IsRequired                        bool
 	ShouldIncludeBlankOption          bool
 	HintValue                         string
@@ -34,32 +35,63 @@ type SelectInputSettings struct {
 	HintIconStyle                     string
 }
 
+func selectInputSizeClassesResolver(size string) (
+	legendClasses, triggerClasses, emptyPaddingClass string,
+) {
+	switch size {
+	case SelectInputSizeXs:
+		return "text-[0.625rem]", "px-1 pb-0.5 text-xs", "pt-0.5"
+	case SelectInputSizeSm:
+		return "text-[0.625rem]", "px-1.5 pb-1 text-xs", "pt-1"
+	case SelectInputSizeLg:
+		return "text-sm", "px-2 pb-2 text-base", "pt-2"
+	case SelectInputSizeXl:
+		return "text-base", "px-2.5 pb-2.5 text-lg", "pt-2.5"
+	}
+	return "text-xs", "px-1.5 pb-1.5 text-sm", "pt-1.5"
+}
+
 templ SelectInput(componentSettings SelectInputSettings) {
-	{{ selectState := `{isOpen: false, selectedValue: ''}` }}
+	{{ selectState := `{isOpen: false, openUpward: false, selectedValue: ''}` }}
 	{{ selectValueStatePath := "selectedValue" }}
 	if componentSettings.TwoWayStatePath != "" {
-		{{ selectState = "{isOpen: false}" }}
+		{{ selectState = "{isOpen: false, openUpward: false}" }}
 		{{ selectValueStatePath = componentSettings.TwoWayStatePath }}
 	}
+	{{ selectedCheckExpression := "String(" + selectValueStatePath + ") === $el.value" }}
 	{{ onChangeFuncSuffix := "" }}
 	if componentSettings.OnChangeFunc != "" {
 		{{ onChangeFuncSuffix = "; " + componentSettings.OnChangeFunc }}
 	}
+	{{ openUpwardExpression := "$nextTick(() => { const triggerBottom = $refs.trigger.getBoundingClientRect().bottom; openUpward = window.innerHeight - triggerBottom < $refs.dropdown.offsetHeight + 8 })" }}
+	{{ toggleExpression := "isOpen = !isOpen; if (isOpen) { " + openUpwardExpression + " }" }}
+	{{ isDisabledPath := componentSettings.IsDisabledOneWayStatePath }}
+	if isDisabledPath != "" {
+		{{ toggleExpression = "!(" + isDisabledPath + ") && (isOpen = !isOpen); if (isOpen) { " + openUpwardExpression + " }" }}
+	}
+	{{ legendSizeClasses, triggerSizeClasses, emptyPaddingClass := selectInputSizeClassesResolver(componentSettings.Size) }}
 	<!-- SelectInput -->
-	<div x-data={ selectState } class="relative w-full" @keydown.escape.window="isOpen = false">
+	<div
+		x-data={ selectState }
+		class="relative w-full"
+		@keydown.escape.window="isOpen = false"
+		if isDisabledPath != "" {
+			:class={ isDisabledPath + " && 'pointer-events-none opacity-50'" }
+		}
+	>
 		{{ labelValueOptionsScriptId := componentSettings.InputName + "LabelValueOptions" }}
 		if len(componentSettings.LabelValueOptions) > 0 {
 			@templ.JSONScript(labelValueOptionsScriptId, componentSettings.LabelValueOptions)
 		}
 		<div class="flex w-full flex-col">
 			<fieldset
-				class="bg-neutral-50/7.5 relative -mt-2 w-full rounded border border-neutral-50/5 transition-colors autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30"
+				class="bg-neutral-50/7.5 relative -mt-1.5 w-full rounded border border-neutral-50/5 transition-colors autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30"
 				if componentSettings.TwoWayStatePath != "" {
 					:class={ `!` + componentSettings.TwoWayStatePath + ` && 'mt-0'` }
 				}
 			>
 				<legend
-					class="ml-1 select-none px-1 text-xs font-bold text-neutral-50/80"
+					class={ "ml-1 select-none px-1 font-bold lowercase leading-none text-neutral-50/80 " + legendSizeClasses }
 					if componentSettings.TwoWayStatePath != "" {
 						:class={ `!` + componentSettings.TwoWayStatePath + ` && 'opacity-0 !p-0 w-0 h-0'` }
 					}
@@ -71,16 +103,20 @@ templ SelectInput(componentSettings SelectInputSettings) {
 				</legend>
 				<!-- SelectField -->
 				<div
-					class="group flex w-full cursor-pointer items-center justify-between px-2 pb-2 text-sm text-neutral-100"
+					x-ref="trigger"
+					class={ "group flex w-full cursor-pointer items-center justify-between text-neutral-100 " + triggerSizeClasses }
 					tabindex="0"
 					role="button"
 					:aria-expanded="isOpen"
-					@keydown.enter.prevent="isOpen = !isOpen"
-					@keydown.space.prevent="isOpen = !isOpen"
+					@keydown.enter.prevent={ toggleExpression }
+					@keydown.space.prevent={ toggleExpression }
 					if componentSettings.TwoWayStatePath != "" {
-						:class={ `!` + componentSettings.TwoWayStatePath + ` && 'pt-2'` }
+						:class={ `!` + componentSettings.TwoWayStatePath + ` && '` + emptyPaddingClass + `'` }
 					}
-					@click="isOpen = !isOpen"
+					if isDisabledPath != "" {
+						:aria-disabled={ isDisabledPath }
+					}
+					@click={ toggleExpression }
 				>
 					{{ selectedLabelText := selectValueStatePath }}
 					if len(componentSettings.LabelValueOptions) > 0 {
@@ -88,7 +124,7 @@ templ SelectInput(componentSettings SelectInputSettings) {
 					}
 					<div class="w-full overflow-hidden text-ellipsis">
 						<span x-show={ selectedLabelText } x-text={ selectedLabelText }></span>
-						<span x-show={ "!(" + selectedLabelText + ")" }>{ componentSettings.Label }</span>
+						<span class="lowercase" x-show={ "!(" + selectedLabelText + ")" }>{ componentSettings.Label }</span>
 					</div>
 					<div class="flex items-center gap-2.5 text-neutral-100/60">
 						<!-- SelectDropdownIcon -->
@@ -118,7 +154,9 @@ templ SelectInput(componentSettings SelectInputSettings) {
 					{{ initialDropdownBackgroundColor = componentSettings.DropdownBackgroundColor }}
 				}
 				<ul
-					class={ "absolute left-0 z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border border-neutral-50/5 bg-" + initialDropdownBackgroundColor + " shadow-lg hover:border-neutral-50/30" }
+					x-ref="dropdown"
+					class={ "absolute left-0 z-10 max-h-60 w-full overflow-auto rounded-md border border-neutral-50/5 bg-" + initialDropdownBackgroundColor + " shadow-lg hover:border-neutral-50/30" }
+					:class={ "openUpward ? 'bottom-full mb-1' : 'mt-1'" }
 					x-show="isOpen"
 					@click.away="isOpen = false"
 					@click="isOpen = false"
@@ -135,7 +173,10 @@ templ SelectInput(componentSettings SelectInputSettings) {
 									type="radio"
 									name={ componentSettings.InputName }
 									value=""
-									:checked={ selectValueStatePath + " === $el.value" }
+									:checked={ selectedCheckExpression }
+									if isDisabledPath != "" {
+										:disabled={ isDisabledPath }
+									}
 									@click.stop
 									class="sr-only"
 								/>
@@ -150,7 +191,10 @@ templ SelectInput(componentSettings SelectInputSettings) {
 									type="radio"
 									name={ componentSettings.InputName }
 									value={ option }
-									:checked={ selectValueStatePath + " === $el.value" }
+									:checked={ selectedCheckExpression }
+									if isDisabledPath != "" {
+										:disabled={ isDisabledPath }
+									}
 									@click.stop
 									class="sr-only"
 								/>
@@ -165,7 +209,10 @@ templ SelectInput(componentSettings SelectInputSettings) {
 									type="radio"
 									name={ componentSettings.InputName }
 									value={ option.Value }
-									:checked={ selectValueStatePath + " === $el.value" }
+									:checked={ selectedCheckExpression }
+									if isDisabledPath != "" {
+										:disabled={ isDisabledPath }
+									}
 									@click.stop
 									class="sr-only"
 								/>
