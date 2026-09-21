@@ -89,6 +89,9 @@ templ InputField(componentSettings InputFieldSettings) {
 				}
 				<input
 					type={ componentSettings.InputType }
+					if componentSettings.InputId == "" && componentSettings.Label != "" {
+						aria-label={ componentSettings.Label }
+					}
 					if componentSettings.InputNumberMin != "" {
 						min={ componentSettings.InputNumberMin }
 					}

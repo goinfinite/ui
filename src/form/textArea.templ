@@ -101,6 +101,9 @@ templ TextArea(componentSettings TextAreaSettings) {
 				if componentSettings.InputId != "" {
 					id={ componentSettings.InputId }
 				}
+				if componentSettings.InputId == "" && componentSettings.Label != "" {
+					aria-label={ componentSettings.Label }
+				}
 				x-ref={ textAreaRef }
 				if componentSettings.InputName != "" {
 					name={ componentSettings.InputName }
