@@ -1,43 +1,36 @@
 # [Infinite UI](https://github.com/goinfinite/ui) &middot; [![Demo](https://img.shields.io/badge/demo-233876)](https://ui.demo.goinfinite.net/) [![/r/goinfinite](https://img.shields.io/badge/%2Fr%2Fgoinfinite-FF4500?logo=reddit&logoColor=ffffff)](https://www.reddit.com/r/goinfinite/) [![Discussions](https://img.shields.io/badge/discussions-751A3D?logo=github)](https://github.com/orgs/goinfinite/discussions) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=goinfinite_ui&metric=alert_status)](https://sonarcloud.io/project/overview?id=goinfinite_ui) [![License](https://img.shields.io/badge/license-MIT-teal.svg)](https://github.com/goinfinite/ui/blob/main/LICENSE.md)
 
-Infinite UI is a collection of reusable components for building elegant user interfaces in Go with [a-h/templ](https://github.com/a-h/templ), [Alpine.js](https://github.com/alpinejs/alpine), [Tailwind CSS](https://github.com/tailwindlabs/tailwindcss), [Phosphor Icons](https://phosphoricons.com/) and the occasional additional JavaScript libraries when necessary.
+Infinite UI is a collection of reusable components for building elegant user interfaces in Go with [a-h/templ](https://github.com/a-h/templ), [Alpine.js](https://github.com/alpinejs/alpine), [Tailwind CSS](https://tailwindcss.com) via [UnoCSS](https://unocss.dev/integrations/runtime), and [Phosphor Icons](https://phosphoricons.com/). It standardizes the common cases and leaves the custom cases open.
 
-The library is engineered for developer efficiency and ease of implementation, offering a balance between standardization and customization to accelerate development workflows while maintaining high-quality, responsive interfaces.
+> [!TIP]
+> **Working with an AI agent?** Point it to [`SKILL.md`](SKILL.md) before it writes code that imports Infinite UI. The skill routes the agent to the right package and its README.
 
-## Features
-
-- **Reusable Components**: A set of pre-built components that can be easily integrated into your projects.
-- **Responsive Design**: Components are designed to be responsive and work well on various screen sizes.
-- **Lightweight**: Built with performance in mind, ensuring fast load times and smooth interactions.
-- **HTMX Ready**: Although not required, Infinite UI is designed to work well with HTMX.
+> [!IMPORTANT]
+> **Human Reviewed**: AI models assist development, but senior developers review every line for coherence, readability, and maintainability.
 
 ## Installation
 
-To use Infinite UI in your project, you can install it using Go modules. Run the following command in your terminal:
+Infinite UI requires Go 1.27.1 or later. Install it with:
 
 ```bash
 go get github.com/goinfinite/ui@latest
 ```
 
-After installing Infinite UI, make sure your `<head>` component is including [Alpine.js](https://alpinejs.dev/essentials/installation), [Tailwind CSS](https://unocss.dev/integrations/runtime) and [Phosphor Icons](https://github.com/phosphor-icons/homepage?tab=readme-ov-file#vanilla-web).
+Your `<head>` must load Alpine.js, a Tailwind-compatible CSS engine, and Phosphor Icons. Use `@uiImport.HeadTagsMinimal()` or `@uiImport.HeadTagsFull()`; the full variant adds Google Fonts, HTMX, and the JavaScript toolset. Granular variants exist for each subset.
 
-One way to install the necessary scripts and styles is to use the `@uiImport.HeadTagsMinimal()` or `@uiImport.HeadTagsFull()` components. The only difference between the two is that `HeadTagsFull()` also includes [Google Fonts](https://fonts.google.com/) and [HTMX](https://htmx.org/).
+Put the custom `primary` and `secondary` colors in the `window.__unocss` theme config on the page, in a plain `<script>` before the head tags. A `tailwind.config.js` file has no effect on the UnoCSS runtime.
 
-If you haven't yet installed the template engine `a-h/templ`, you can do so by running the following command:
+If you have not installed the template engine yet:
 
 ```bash
 go get github.com/a-h/templ
 ```
 
+See [CHANGELOG.md](CHANGELOG.md) for release history.
+
 ## Usage
 
-Infinite UI components are designed with a consistent interface pattern. Each component accepts a settings struct that contains all configuration options.
-
-The settings structs are organized with required fields at the top, followed by optional fields (separated by a comment line). This approach eliminates the need for pointers, which aren't well-supported in templ.
-
-Component settings may accept constant values from predefined types or simple string values depending on the component's requirements.
-
-### Usage Example
+Every component accepts one settings struct. Required fields come first, then a comment line, then the optional fields. This avoids pointers, which templ does not support well.
 
 ```go
 @uiForm.InputField(uiForm.InputFieldSettings{
@@ -48,99 +41,25 @@ Component settings may accept constant values from predefined types or simple st
 })
 ```
 
-### Styling
+Components connect to Alpine.js state through their `*StatePath` fields:
 
-Infinite UI components are designed with a neutral color palette using reduced opacity values (e.g., `bg-neutral-50/10`). This approach ensures compatibility across various design systems.
+- A `TwoWayStatePath` field binds with `x-model`.
+- A `OneWayStatePath` field binds with `x-bind`.
 
-For hover and other states, please configure your Tailwind CSS with custom `primary` and `secondary` color schemes:
+The path names a property in the nearest `x-data` object. Use dot notation for nested objects and bracket notation for arrays.
 
-- Follow the [Tailwind CSS color customization guide](https://tailwindcss.com/docs/colors#customizing-your-colors);
-- If you're using alternative atomic CSS engines like UnoCSS, please refer to their specific configuration documentation.
+Components run functions on events through their `On*Func` fields. The value is a full call, for example `OnClickFunc: "myFunction('Hello World!')"` or `OnClickFunc: "myFunction()"`. The function can live in the parent `x-data` object, on `window`, or on `document`.
 
-### Alpine.js States
+Components use a neutral color palette with reduced opacity values, for example `bg-neutral-50/10`. This keeps them compatible with any design system that provides `primary` and `secondary` colors.
 
-Components leverage Alpine.js for state management by offering:
+HTMX is optional. Components work without it; the data table falls back to `fetch`.
 
-- `TwoWayStatePath`: Path for bidirectional data binding using `x-model` directive;
-- `OneWayStatePath`: Path for read-only data binding using `x-bind` directive;
+## Packages
 
-These common settings struct fields allow you to connect component states to your application's data model seamlessly. The path is a string representing the x-data object property to bind to.
+Each package has its own README with the component list and usage snippets:
 
-For example, `x-data="{ name: 'John' }"` would use `OneWayStatePath: "name"` or `TwoWayStatePath: "name"`.
-
-- For nested objects, use dot notation: `x-data="{ user: { name: 'John' } }"` would use `OneWayStatePath: "user.name"` or `TwoWayStatePath: "user.name"`;
-- For arrays, use bracket notation: `x-data="{ users: ['John', 'Jane'] }"` would use `OneWayStatePath: "users[0]"` or `TwoWayStatePath: "users[0]"`;
-
-### Function Calling
-
-Components can execute functions when specific events occur. These functions can be defined within the parent component's x-data object or broader scopes like `window` or `document`.
-
-Two patterns are available for function invocation, depending on component requirements:
-
-1. **`Func` suffix fields** (e.g., `OnClickFunc`, `OnChangeFunc`):
-
-- Functions must include parameters or empty parentheses;
-- Example: `OnClickFunc: "myFunction('Hello World!')"` or `OnClickFunc: "myFunction()"`;
-- Suitable when you need to specify exact parameters during event triggers.
-
-2. **`FuncName` suffix fields** (e.g., `OnClickFuncName`, `OnChangeFuncName`):
-
-- Specify only the function name without parameters;
-- Example: `OnClickFuncName: "myFunction"`;
-- The component will automatically pass appropriate parameters;
-- Refer to component documentation for parameter requirements.
-
-The `On` prefix (e.g., `OnClick`, `OnChange`) indicates event-driven execution, though function calling is not limited to events in all components.
-
-### HTMX Ready
-
-Infinite UI does not require HTMX to function, but it is designed to work well with it. HTMX is a JavaScript library that allows you to make AJAX requests and update parts of your page without reloading the entire page.
-
-Form submissions done with HTMX usually utilize the `FormData` object to send form data to the server. Infinite UI allows you to set the `InputName` field to specify the keys of the `FormData` object. There is also `InputId` but `id` attributes are not required for form submissions, it's for locating the element in the DOM if necessary.
-
-### JavaScript Toolset
-
-The JavaScript toolset is a collection of utility files. It is included in the `@uiImport.HeadTagsFullJs()` component or you can include it manually using `@uiImport.HeadTagsToolset()`.
-
-To use the toolset, you can access it through the `UiToolset` object or `window.UiToolset` object.
-
-- `UiToolset.CreateRandomPassword()`: Creates a random password of length 16 characters.
-- `UiToolset.ResolveApiResponseDisplay(apiResponse, httpStatusCode)`: Resolves the message and outcome (`success`, `partialSuccess`, or `error`) from an Infinite API response envelope.
-- `UiToolset.ToggleLoadingOverlay()`: Toggles the loading overlay element with the id `loading-overlay`.
-- `UiToolset.JsonAjax()`: Makes a JSON AJAX request to the specified URL.¹
-- `UiToolset.RegisterAlpineState()`: Registers a function to be called when Alpine.js is initialized or when it is already initialized. Useful for avoiding registering repeated addEventListeners for the same method, like when transiting through pages.
-
-_¹Available when Alpine.js was already initialized._
-
-When the Toast component is present, Infinite API responses can provide
-automatic messages using the recommended envelope:
-
-```json
-{
-    "status": 200,
-    "readableMessage": "Operation completed successfully.",
-    "body": {}
-}
-```
-
-`readableMessage` is a string. `body` can contain any JSON value. Toast
-styling is selected from the HTTP status. A `humanReadableMessage` object
-with `error`, `partialSuccess`, and `success` fields is also supported.
-`readableMessage` takes precedence when it is not empty. Otherwise the
-matching `humanReadableMessage` field is used. A string `body` is the last
-fallback. The toast stays hidden when the response carries no message.
-
-### Go(lang) Toolset
-
-Besides the JavaScript toolset, Infinite UI also provides a Go(lang) toolset to address common UI related tasks.
-
-#### Minifier
-
-Based on [esbuild](https://github.com/evanw/esbuild), the minifier is a tool to minify JavaScript and CSS content. Use the MinifierSettings struct if the defaults are breaking your code.
-
-- `Minifier(MinifierSettings)`: Minifies JavaScript and CSS content.
-- `MinifierJs(unminifiedContent)`: Minifier but takes a string as input and returns a string.
-- `MinifierCss(unminifiedContent)`: MinifierJs but for CSS content.
-- `MinifierTemplate(MinifierSettings)`: Minifier but returns a templ.Component instead of a string.
-- `MinifierJsTemplate(unminifiedContent)`: MinifierJs but returns a templ.Component.
-- `MinifierCssTemplate(unminifiedContent)`: MinifierCss but returns a templ.Component.
+- **[Form](src/form/README.md)** — text, choice, and switch inputs.
+- **[Control](src/control/README.md)** — buttons and sliders.
+- **[Display](src/display/README.md)** — alerts, modals, tags, toasts, and page chrome.
+- **[Structural](src/structural/README.md)** — the server-driven data table, filter bar, pagination, and sidebar.
+- **[Toolset](src/toolset/README.md)** — the JavaScript `UiToolset` and the Go minifier.
