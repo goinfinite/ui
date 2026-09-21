@@ -2,6 +2,13 @@
 
 ```log
 0.2.1 - 2026/09/18
+fix: abort superseded data table refreshes
+fix: close the modal on a backdrop press, not a panel drag
+fix: lowercase the state-bound tag labels
+fix: label form inputs and textareas for screen readers
+fix: label the demo radios and drop the duplicate modal id
+test: exclude structural specs from the form and cross-browser suites
+docs: show the RegisterAlpineState callback in the toolset README
 feat: render a default search box in the data table
 refactor: rename the data table query url template setting
 refactor: rename the data table column render callback to CellRenderer
