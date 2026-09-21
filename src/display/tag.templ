@@ -192,7 +192,7 @@ templ Tag(componentSettings TagSettings) {
 				<span class="lowercase">{ componentSettings.OuterLeftLabel }</span>
 			}
 			if componentSettings.OuterLeftLabelOneWayStatePath != "" {
-				<span x-text={ componentSettings.OuterLeftLabelOneWayStatePath }></span>
+				<span class="lowercase" x-text={ componentSettings.OuterLeftLabelOneWayStatePath }></span>
 			}
 		</div>
 		<div class={ "flex items-center w-fit " + initialInnerClasses }>
@@ -203,7 +203,7 @@ templ Tag(componentSettings TagSettings) {
 				<span class="lowercase">{ componentSettings.InnerLabel }</span>
 			}
 			if componentSettings.InnerLabelOneWayStatePath != "" {
-				<span x-text={ componentSettings.InnerLabelOneWayStatePath }></span>
+				<span class="lowercase" x-text={ componentSettings.InnerLabelOneWayStatePath }></span>
 			}
 		</div>
 		if componentSettings.OuterRightIcon != "" || componentSettings.OuterRightLabel != "" || componentSettings.OuterRightLabelOneWayStatePath != "" {
@@ -224,7 +224,7 @@ templ Tag(componentSettings TagSettings) {
 					<span class="lowercase">{ componentSettings.OuterRightLabel }</span>
 				}
 				if componentSettings.OuterRightLabelOneWayStatePath != "" {
-					<span x-text={ componentSettings.OuterRightLabelOneWayStatePath }></span>
+					<span class="lowercase" x-text={ componentSettings.OuterRightLabelOneWayStatePath }></span>
 				}
 			</div>
 		}
