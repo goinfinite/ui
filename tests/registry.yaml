@@ -49,3 +49,24 @@ features:
       level: exhaustive
       run: tests/ui/run.sh control-cross-browser
       requires_demo: true
+  structural:
+    - scope: unit
+      level: fast
+      run: go test ./src/structural/...
+      requires_demo: false
+    - scope: ui
+      level: fast
+      run: tests/ui/run.sh structural-smoke
+      requires_demo: true
+    - scope: ui
+      level: standard
+      run: tests/ui/run.sh structural
+      requires_demo: true
+    - scope: accessibility
+      level: standard
+      run: tests/ui/run.sh structural-a11y
+      requires_demo: true
+    - scope: ui
+      level: exhaustive
+      run: tests/ui/run.sh structural-cross-browser
+      requires_demo: true

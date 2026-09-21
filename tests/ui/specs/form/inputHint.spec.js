@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 const inputFieldSection = "#input-field-demo";
 const selectSection = "#select-input-demo";
@@ -6,7 +6,9 @@ const multiSelectSection = "#multi-select-input-demo";
 const textAreaSection = "#text-area-demo";
 
 async function tooltipFor(trigger) {
-  return trigger.page().locator(`#${await trigger.getAttribute("aria-describedby")}`);
+  return trigger
+    .page()
+    .locator(`#${await trigger.getAttribute("aria-describedby")}`);
 }
 
 test.describe("InputHint", () => {
@@ -15,7 +17,9 @@ test.describe("InputHint", () => {
     await page.waitForFunction(() => window.Alpine !== undefined);
   });
 
-  test("@smoke input field tooltip reveals when reached by keyboard", async ({ page }) => {
+  test("@smoke input field tooltip reveals when reached by keyboard", async ({
+    page,
+  }) => {
     const trigger = page.locator(`${inputFieldSection} [role=note]`).first();
     const input = trigger.locator("xpath=ancestor::fieldset").locator("input");
     const tooltip = await tooltipFor(trigger);
@@ -26,10 +30,14 @@ test.describe("InputHint", () => {
 
     await expect(trigger).toBeFocused();
     await expect(tooltip).toBeVisible();
-    await expect(tooltip).toContainText("This is a helpful hint displayed as a tooltip.");
+    await expect(tooltip).toContainText(
+      "This is a helpful hint displayed as a tooltip.",
+    );
   });
 
-  test("@smoke select tooltip opens on tap without opening the dropdown", async ({ page }) => {
+  test("@smoke select tooltip opens on tap without opening the dropdown", async ({
+    page,
+  }) => {
     const trigger = page.locator(`${selectSection} [role=note]`).first();
     const dropdown = page.locator(`${selectSection} ul`).first();
     const tooltip = await tooltipFor(trigger);
@@ -47,10 +55,14 @@ test.describe("InputHint", () => {
     await trigger.focus();
 
     await expect(tooltip).toBeVisible();
-    await expect(tooltip).toContainText("This is a helpful hint displayed as a tooltip.");
+    await expect(tooltip).toContainText(
+      "This is a helpful hint displayed as a tooltip.",
+    );
   });
 
-  test("@smoke multi-select tooltip trigger does not toggle the dropdown from the keyboard", async ({ page }) => {
+  test("@smoke multi-select tooltip trigger does not toggle the dropdown from the keyboard", async ({
+    page,
+  }) => {
     const trigger = page.locator(`${multiSelectSection} [role=note]`).first();
     const dropdown = page.locator(`${multiSelectSection} ul`).first();
 
@@ -62,10 +74,14 @@ test.describe("InputHint", () => {
     await expect(dropdown).toBeHidden();
   });
 
-  test("@smoke textarea description hint renders below the field", async ({ page }) => {
+  test("@smoke textarea description hint renders below the field", async ({
+    page,
+  }) => {
     const hint = page
       .locator(textAreaSection)
-      .getByText("This is a helpful hint displayed as a description below the textarea.");
+      .getByText(
+        "This is a helpful hint displayed as a description below the textarea.",
+      );
 
     await expect(hint).toBeVisible();
   });
@@ -77,10 +93,14 @@ test.describe("InputHint", () => {
     await trigger.focus();
 
     await expect(tooltip).toBeVisible();
-    await expect(tooltip).toContainText("This is a helpful hint displayed as a tooltip.");
+    await expect(tooltip).toContainText(
+      "This is a helpful hint displayed as a tooltip.",
+    );
   });
 
-  test("textarea hint text bound to a state path updates at runtime", async ({ page }) => {
+  test("textarea hint text bound to a state path updates at runtime", async ({
+    page,
+  }) => {
     const trigger = page.locator(`${textAreaSection} [role=note]`).nth(1);
     const tooltip = await tooltipFor(trigger);
     const changeButton = page

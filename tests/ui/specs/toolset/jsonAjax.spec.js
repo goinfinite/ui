@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 async function openToolsetPage(page) {
   await page.goto("/index.html");
@@ -10,7 +10,9 @@ test.describe("JsonAjax", () => {
     await openToolsetPage(page);
   });
 
-  test("@toolset GET with a nonempty payload rejects without calling fetch", async ({ page }) => {
+  test("@toolset GET with a nonempty payload rejects without calling fetch", async ({
+    page,
+  }) => {
     const rejection = await page.evaluate(async () => {
       let fetchCallCount = 0;
       window.fetch = () => {
@@ -18,7 +20,12 @@ test.describe("JsonAjax", () => {
         return Promise.resolve();
       };
       try {
-        await window.UiToolset.JsonAjax("GET", "/resource", { filter: "x" }, false);
+        await window.UiToolset.JsonAjax(
+          "GET",
+          "/resource",
+          { filter: "x" },
+          false,
+        );
       } catch (error) {
         return { message: error.message, fetchCallCount };
       }
@@ -31,7 +38,9 @@ test.describe("JsonAjax", () => {
     });
   });
 
-  test("@toolset a non-boolean shouldDisplayToast rejects without calling fetch", async ({ page }) => {
+  test("@toolset a non-boolean shouldDisplayToast rejects without calling fetch", async ({
+    page,
+  }) => {
     const rejection = await page.evaluate(async () => {
       let fetchCallCount = 0;
       window.fetch = () => {
@@ -52,7 +61,9 @@ test.describe("JsonAjax", () => {
     });
   });
 
-  test("@toolset a finished request hides the loading overlay", async ({ page }) => {
+  test("@toolset a finished request hides the loading overlay", async ({
+    page,
+  }) => {
     const overlayStates = await page.evaluate(async () => {
       const overlay = document.getElementById("loading-overlay");
       const overlayIsShown = () => overlay.classList.contains("htmx-request");
@@ -75,7 +86,9 @@ test.describe("JsonAjax", () => {
     });
   });
 
-  test("@toolset the loading overlay stays until the last concurrent request finishes", async ({ page }) => {
+  test("@toolset the loading overlay stays until the last concurrent request finishes", async ({
+    page,
+  }) => {
     const overlayStates = await page.evaluate(async () => {
       const overlay = document.getElementById("loading-overlay");
       const overlayIsShown = () => overlay.classList.contains("htmx-request");
@@ -96,8 +109,18 @@ test.describe("JsonAjax", () => {
         json: async () => ({ body: {} }),
       });
 
-      const firstRequest = window.UiToolset.JsonAjax("POST", "/first", {}, false);
-      const secondRequest = window.UiToolset.JsonAjax("POST", "/second", {}, false);
+      const firstRequest = window.UiToolset.JsonAjax(
+        "POST",
+        "/first",
+        {},
+        false,
+      );
+      const secondRequest = window.UiToolset.JsonAjax(
+        "POST",
+        "/second",
+        {},
+        false,
+      );
       const shownDuringBoth = overlayIsShown();
       resolveFirst(response());
       await firstRequest;

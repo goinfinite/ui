@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from "node:fs";
-import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { expect, test } from "@playwright/test";
 
 const baselinePath = new URL("../../a11y-baseline.json", import.meta.url);
 
@@ -26,7 +26,9 @@ function findRegressions(current, baseline) {
   return regressions;
 }
 
-test("@a11y axe violations do not grow past the recorded baseline", async ({ page }) => {
+test("@a11y axe violations do not grow past the recorded baseline", async ({
+  page,
+}) => {
   await page.goto("/index.html");
   await page.waitForFunction(() => document.fonts.ready);
   await page.waitForFunction(() =>
@@ -38,7 +40,7 @@ test("@a11y axe violations do not grow past the recorded baseline", async ({ pag
   const current = countViolations(await new AxeBuilder({ page }).analyze());
 
   if (process.env.UPDATE_A11Y_BASELINE === "1") {
-    writeFileSync(baselinePath, JSON.stringify(current, null, 2) + "\n");
+    writeFileSync(baselinePath, `${JSON.stringify(current, null, 2)}\n`);
     return;
   }
 

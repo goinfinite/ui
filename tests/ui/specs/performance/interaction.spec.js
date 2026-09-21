@@ -1,7 +1,10 @@
 import { writeFileSync } from "node:fs";
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
-const resultsPath = new URL("../../../performance-results.json", import.meta.url);
+const resultsPath = new URL(
+  "../../../performance-results.json",
+  import.meta.url,
+);
 const warmupRunCount = 1;
 const measuredRunCount = 3;
 const expandedHeightPx = 432;
@@ -30,7 +33,10 @@ async function measureExpandLatency(page) {
     toggle.click();
     await new Promise((resolve) => {
       const poll = () => {
-        if (Math.abs(textarea.getBoundingClientRect().height - targetHeightPx) < 1) resolve();
+        if (
+          Math.abs(textarea.getBoundingClientRect().height - targetHeightPx) < 1
+        )
+          resolve();
         else requestAnimationFrame(poll);
       };
       poll();
@@ -63,7 +69,9 @@ async function measureDropdownOpenLatency(page) {
   });
 }
 
-test("@perf interaction latencies are measured and reported", async ({ page }) => {
+test("@perf interaction latencies are measured and reported", async ({
+  page,
+}) => {
   await page.addInitScript(() => {
     window.__lcpMs = 0;
     new PerformanceObserver((records) => {
@@ -81,7 +89,9 @@ test("@perf interaction latencies are measured and reported", async ({ page }) =
 
   const lcpMs = Math.round(await page.evaluate(() => window.__lcpMs));
   const expandMs = await measureSamples(() => measureExpandLatency(page));
-  const dropdownMs = await measureSamples(() => measureDropdownOpenLatency(page));
+  const dropdownMs = await measureSamples(() =>
+    measureDropdownOpenLatency(page),
+  );
 
   expect(lcpMs).toBeGreaterThan(0);
   expect(expandMs).toBeGreaterThan(0);
@@ -89,7 +99,7 @@ test("@perf interaction latencies are measured and reported", async ({ page }) =
 
   writeFileSync(
     resultsPath,
-    JSON.stringify(
+    `${JSON.stringify(
       {
         "demo.navigation-lcp": lcpMs,
         "form.textarea-expand": expandMs,
@@ -97,6 +107,6 @@ test("@perf interaction latencies are measured and reported", async ({ page }) =
       },
       null,
       2,
-    ) + "\n",
+    )}\n`,
   );
 });

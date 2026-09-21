@@ -3,7 +3,9 @@ import { fileURLToPath } from "node:url";
 import yaml from "js-yaml";
 
 const levelRank = { fast: 1, standard: 2, exhaustive: 3 };
-const registryPath = fileURLToPath(new URL("../registry.yaml", import.meta.url));
+const registryPath = fileURLToPath(
+  new URL("../registry.yaml", import.meta.url),
+);
 
 function fail(message) {
   console.error(`registry: ${message} (try: tests.sh list)`);
@@ -16,7 +18,10 @@ function parseFilters(argv) {
     const separator = arg.indexOf("=");
     const key = arg.slice(0, separator).replace(/^-{1,2}/, "");
     if (!(key in filters)) fail(`unknown argument: ${arg}`);
-    filters[key] = arg.slice(separator + 1).split(",").map((value) => value.trim());
+    filters[key] = arg
+      .slice(separator + 1)
+      .split(",")
+      .map((value) => value.trim());
   }
   return filters;
 }
@@ -25,7 +30,11 @@ function validateFilters(registry, filters) {
   const featureEntries = Object.entries(registry.features);
   const known = {
     level: new Set(registry.levels),
-    scope: new Set(featureEntries.flatMap(([, entries]) => entries.map((entry) => entry.scope))),
+    scope: new Set(
+      featureEntries.flatMap(([, entries]) =>
+        entries.map((entry) => entry.scope),
+      ),
+    ),
     feature: new Set(featureEntries.map(([feature]) => feature)),
   };
   for (const [key, values] of Object.entries(filters)) {
@@ -47,7 +56,9 @@ function selectMatchingNodes(registry, filters, defaultRank) {
     }
   }
   return nodes.sort((left, right) =>
-    `${left.feature}:${left.scope}/${left.level}`.localeCompare(`${right.feature}:${right.scope}/${right.level}`),
+    `${left.feature}:${left.scope}/${left.level}`.localeCompare(
+      `${right.feature}:${right.scope}/${right.level}`,
+    ),
   );
 }
 
@@ -58,7 +69,9 @@ function printList(nodes) {
     console.log(`${label.padEnd(36)} ${node.run}`);
   }
   if (nodes.some((node) => node.provisional)) {
-    console.error("* provisional: implementation-coupled suite awaiting refactoring");
+    console.error(
+      "* provisional: implementation-coupled suite awaiting refactoring",
+    );
   }
 }
 
@@ -70,7 +83,8 @@ function printSelection(nodes) {
 }
 
 const [command, ...argv] = process.argv.slice(2);
-if (!["list", "select"].includes(command ?? "")) fail(`unknown command: ${command}`);
+if (!["list", "select"].includes(command ?? ""))
+  fail(`unknown command: ${command}`);
 
 const registry = yaml.load(readFileSync(registryPath, "utf8"));
 const filters = parseFilters(argv);

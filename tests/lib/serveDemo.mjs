@@ -1,10 +1,12 @@
-import { createServer } from "node:http";
 import { createHash, randomUUID } from "node:crypto";
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
+import { createServer } from "node:http";
 import { fileURLToPath } from "node:url";
 
 const docsRoot = fileURLToPath(new URL("../../docs/", import.meta.url));
-const assetCacheRoot = fileURLToPath(new URL("../.cache/demo-assets/", import.meta.url));
+const assetCacheRoot = fileURLToPath(
+  new URL("../.cache/demo-assets/", import.meta.url),
+);
 const listenPort = Number(process.argv[2] ?? 8377);
 const proxyPrefix = "/proxy/";
 const approvedAssetHosts = new Set([
@@ -52,7 +54,9 @@ function rewriteTagUrl(tag) {
   if (urlMatch === null) {
     return tag;
   }
-  return tag.replace(urlMatch[2], () => encodeProxyUrl(urlMatch[2])).replace(/ integrity="[^"]{0,4096}"/, "");
+  return tag
+    .replace(urlMatch[2], () => encodeProxyUrl(urlMatch[2]))
+    .replace(/ integrity="[^"]{0,4096}"/, "");
 }
 
 function rewriteExternalAssetUrls(html) {
@@ -63,14 +67,21 @@ function rewriteExternalAssetUrls(html) {
 }
 
 function rewriteAbsoluteCssUrls(css) {
-  return css.replace(/url\((https?:\/\/[^)]{1,4096})\)/g, (_match, externalUrl) => `url(${encodeProxyUrl(externalUrl)})`);
+  return css.replace(
+    /url\((https?:\/\/[^)]{1,4096})\)/g,
+    (_match, externalUrl) => `url(${encodeProxyUrl(externalUrl)})`,
+  );
 }
 
 async function serveFile(request, response) {
   let fileName = "";
   try {
-    const requestPath = decodeURIComponent(new URL(request.url, "http://localhost").pathname);
-    fileName = requestPath.endsWith("/") ? `${requestPath}index.html` : requestPath;
+    const requestPath = decodeURIComponent(
+      new URL(request.url, "http://localhost").pathname,
+    );
+    fileName = requestPath.endsWith("/")
+      ? `${requestPath}index.html`
+      : requestPath;
   } catch {
     response.writeHead(400).end("bad request");
     return;
@@ -81,7 +92,9 @@ async function serveFile(request, response) {
   }
   try {
     const fileBody = await readFile(`${docsRoot}${fileName}`);
-    const body = fileName.endsWith(".html") ? rewriteExternalAssetUrls(fileBody.toString("utf8")) : fileBody;
+    const body = fileName.endsWith(".html")
+      ? rewriteExternalAssetUrls(fileBody.toString("utf8"))
+      : fileBody;
     response.writeHead(200, { "content-type": contentTypeOf(fileName) });
     response.end(body);
   } catch {
@@ -109,9 +122,7 @@ async function fetchExternalAsset(externalUrl) {
       if (upstream.ok) {
         return upstream;
       }
-    } catch {
-      continue;
-    }
+    } catch {}
   }
   return null;
 }
@@ -121,9 +132,12 @@ async function fillAssetCache(externalUrl, cachePath) {
   if (upstream === null) {
     return null;
   }
-  const contentType = upstream.headers.get("content-type") ?? "application/octet-stream";
+  const contentType =
+    upstream.headers.get("content-type") ?? "application/octet-stream";
   const rawBody = Buffer.from(await upstream.arrayBuffer());
-  const body = contentType.includes("text/css") ? Buffer.from(rewriteAbsoluteCssUrls(rawBody.toString("utf8"))) : rawBody;
+  const body = contentType.includes("text/css")
+    ? Buffer.from(rewriteAbsoluteCssUrls(rawBody.toString("utf8")))
+    : rawBody;
   const temporaryPath = `${cachePath}.${randomUUID()}.tmp`;
   await writeFile(temporaryPath, body);
   await rename(temporaryPath, cachePath);
@@ -139,7 +153,11 @@ function parseApprovedAssetUrl(externalUrl) {
     return null;
   }
   const hasCredentials = assetUrl.username !== "" || assetUrl.password !== "";
-  if (assetUrl.protocol !== "https:" || hasCredentials || !approvedAssetHosts.has(assetUrl.host)) {
+  if (
+    assetUrl.protocol !== "https:" ||
+    hasCredentials ||
+    !approvedAssetHosts.has(assetUrl.host)
+  ) {
     return null;
   }
   return assetUrl;
@@ -147,14 +165,18 @@ function parseApprovedAssetUrl(externalUrl) {
 
 async function serveProxiedAsset(request, response) {
   const proxyRequest = new URL(request.url, "http://localhost");
-  const externalUrl = decodeProxyUrl(`${proxyRequest.pathname}${proxyRequest.search}`.slice(proxyPrefix.length));
+  const externalUrl = decodeProxyUrl(
+    `${proxyRequest.pathname}${proxyRequest.search}`.slice(proxyPrefix.length),
+  );
   if (parseApprovedAssetUrl(externalUrl) === null) {
     response.writeHead(403).end("asset not approved");
     return;
   }
   const cacheKey = createHash("sha1").update(externalUrl).digest("hex");
   const cachePath = `${assetCacheRoot}${cacheKey}`;
-  const asset = (await readCachedAsset(cachePath)) ?? (await fillAssetCache(externalUrl, cachePath));
+  const asset =
+    (await readCachedAsset(cachePath)) ??
+    (await fillAssetCache(externalUrl, cachePath));
   if (asset === null) {
     response.writeHead(502).end("asset unavailable");
     return;
