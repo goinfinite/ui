@@ -44,7 +44,7 @@ type SelectInputSettings struct {
 }
 
 func selectInputSizeClassesResolver(size string) (
-	legendClasses string, triggerClasses string, emptyPaddingClass string,
+	legendClasses, triggerClasses, emptyPaddingClass string,
 ) {
 	switch size {
 	case SelectInputSizeXs:
