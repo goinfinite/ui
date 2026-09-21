@@ -182,8 +182,8 @@ templ Modal(componentSettings ModalSettings) {
 		x-transition
 		x-cloak
 		un-cloak
-		if componentSettings.IsVisibleTwoWayStatePath != "" {
-			@click.self={ componentSettings.IsVisibleTwoWayStatePath + " = false" }
+		if componentSettings.IsVisibleTwoWayStatePath != "" && !componentSettings.IsUncloseable {
+			@click.self={ componentSettings.IsVisibleTwoWayStatePath + " = false;" + componentSettings.OnCloseFunc }
 		}
 	>
 		{{ modalInternalState := "" }}
