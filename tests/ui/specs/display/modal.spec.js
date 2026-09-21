@@ -49,6 +49,36 @@ test.describe("Modal", () => {
     await expect(modal).toBeHidden();
   });
 
+  test("dragging from the panel to the backdrop keeps the modal open", async ({
+    page,
+  }) => {
+    await page
+      .locator(modalSection)
+      .getByRole("button", { name: "Blue", exact: true })
+      .click();
+    const modal = backdropWith(page, "Blue Backdrop Modal");
+    await expect(modal).toBeVisible();
+
+    const panel = modal.locator("div.relative.flex.flex-col").first();
+    const panelBox = await panel.boundingBox();
+    const backdropBox = await modal.boundingBox();
+    await page.mouse.move(
+      panelBox.x + panelBox.width / 2,
+      panelBox.y + panelBox.height / 2,
+    );
+    await page.mouse.down();
+    await page.mouse.move(backdropBox.x + 5, backdropBox.y + 5);
+    await page.mouse.up();
+
+    await expect
+      .poll(() =>
+        modal.evaluate(
+          (element) => Alpine.$data(element).isBlueBackdropModalVisible,
+        ),
+      )
+      .toBe(true);
+  });
+
   test("backdrop close runs the close callback", async ({ page }) => {
     await page
       .locator(modalSection)
