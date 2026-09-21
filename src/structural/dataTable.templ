@@ -65,6 +65,7 @@ templ DataTable[Row any](componentSettings DataTableSettings[Row]) {
 	<div
 		class="flex flex-col overflow-hidden rounded-md border border-neutral-50/10 bg-neutral-50/2.5"
 		x-data={ templ.JSFuncCall("dataTable", settingsScriptId) }
+		hx-sync="this:replace"
 		if componentSettings.Id != "" {
 			id={ componentSettings.Id }
 		}

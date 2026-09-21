@@ -20,6 +20,7 @@ UiToolset.RegisterAlpineState(() => {
     refreshTimeoutId: null,
     refreshEventHandlers: [],
     rootElement: null,
+    refreshAbortController: null,
 
     tableRegion() {
       return this.rootElement.querySelector("[data-ui-data-table]");
@@ -172,9 +173,10 @@ UiToolset.RegisterAlpineState(() => {
       return `${baseUrl}?${allPairs.join("&")}`;
     },
 
-    async fetchTableRegion(refreshUrl) {
+    async fetchTableRegion(refreshUrl, abortSignal) {
       const response = await fetch(refreshUrl, {
         headers: { "HX-Request": "true" },
+        signal: abortSignal,
       });
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
@@ -190,7 +192,7 @@ UiToolset.RegisterAlpineState(() => {
       if (!freshTableRegion) {
         throw new Error("Response is missing the data-ui-data-table fragment");
       }
-      this.tableRegion().replaceWith(freshTableRegion);
+      return freshTableRegion;
     },
 
     async refresh() {
@@ -198,6 +200,9 @@ UiToolset.RegisterAlpineState(() => {
         return;
       }
       clearTimeout(this.refreshTimeoutId);
+      this.refreshAbortController?.abort();
+      const abortController = new AbortController();
+      this.refreshAbortController = abortController;
       this.isLoading = true;
       this.hasRefreshError = false;
       const refreshUrl = this.buildRefreshUrl();
@@ -210,18 +215,35 @@ UiToolset.RegisterAlpineState(() => {
             select: "[data-ui-data-table]",
             swap: "outerHTML",
           });
+          if (abortController.signal.aborted) {
+            return;
+          }
           if (!this.hasRefreshError) {
             this.liveMessage = "Table refreshed";
           }
           return;
         }
-        await this.fetchTableRegion(refreshUrl);
+        const freshTableRegion = await this.fetchTableRegion(
+          refreshUrl,
+          abortController.signal,
+        );
+        if (abortController.signal.aborted) {
+          return;
+        }
+        this.tableRegion().replaceWith(freshTableRegion);
         this.liveMessage = "Table refreshed";
       } catch (refreshError) {
+        if (abortController.signal.aborted) {
+          return;
+        }
         this.hasRefreshError = true;
-        console.error(`DataTableRefreshFailed: ${refreshError.message}`);
+        console.error(
+          `DataTableRefreshFailed: ${refreshError?.message ?? refreshError}`,
+        );
       } finally {
-        this.isLoading = false;
+        if (!abortController.signal.aborted) {
+          this.isLoading = false;
+        }
       }
     },
 
@@ -263,12 +285,13 @@ UiToolset.RegisterAlpineState(() => {
       }
       this.rootElement.removeEventListener(
         "htmx:responseError",
-        this.htmxResponseErrorHandler,
+        this.htmxErrorHandler,
       );
       this.rootElement.removeEventListener(
         "htmx:sendError",
-        this.htmxResponseErrorHandler,
+        this.htmxErrorHandler,
       );
+      this.refreshAbortController?.abort();
       clearTimeout(this.refreshTimeoutId);
     },
 
@@ -317,17 +340,17 @@ UiToolset.RegisterAlpineState(() => {
             : `${this.selectedRowIds.length} rows selected`;
       });
 
-      this.htmxResponseErrorHandler = () => {
+      this.htmxErrorHandler = () => {
         this.hasRefreshError = true;
         this.isLoading = false;
       };
       this.rootElement.addEventListener(
         "htmx:responseError",
-        this.htmxResponseErrorHandler,
+        this.htmxErrorHandler,
       );
       this.rootElement.addEventListener(
         "htmx:sendError",
-        this.htmxResponseErrorHandler,
+        this.htmxErrorHandler,
       );
     },
   }));
