@@ -2,6 +2,7 @@
 
 ```log
 0.2.1 - 2026/09/18
+feat: add an aria label setting to the button
 chore: adopt biome for JavaScript, CSS, and SVG lint and formatting
 docs: box the live example state readouts in the demo
 feat: add data table row and column styling, search box alignment, and checkbox shape, size, and color settings
