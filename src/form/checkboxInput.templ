@@ -1,0 +1,184 @@
+package uiForm
+
+const (
+	CheckboxInputShapeSquare   string = "square"
+	CheckboxInputShapeRounded  string = "rounded"
+	CheckboxInputShapeCircular string = "circular"
+
+	CheckboxInputSizeXs string = "xs"
+	CheckboxInputSizeSm string = "sm"
+	CheckboxInputSizeMd string = "md"
+	CheckboxInputSizeLg string = "lg"
+	CheckboxInputSizeXl string = "xl"
+
+	CheckboxInputLabelPositionLeft  string = "left"
+	CheckboxInputLabelPositionRight string = "right"
+)
+
+type CheckboxInputSettings struct {
+	// OptionalFields
+	AriaLabel                    string
+	CheckedColor                 string
+	FocusRingColor               string
+	IndeterminateOneWayStatePath string
+	InputId                      string
+	InputName                    string
+	IsChecked                    bool
+	IsCheckedOneWayStatePath     string
+	IsDisabled                   bool
+	IsDisabledOneWayStatePath    string
+	IsRequired                   bool
+	Label                        string
+	LabelPosition                string
+	OnChangeFunc                 string
+	Shape                        string
+	Size                         string
+	TextColor                    string
+	TwoWayStatePath              string
+	UncheckedColor               string
+	Value                        string
+}
+
+func checkboxInputSizeClassesResolver(size string) (
+	boxClasses, iconClasses, labelClasses string,
+) {
+	switch size {
+	case CheckboxInputSizeXs:
+		return "h-3.5 w-3.5", "text-[0.5rem]", "text-xs"
+	case CheckboxInputSizeSm:
+		return "h-4 w-4", "text-[0.625rem]", "text-xs"
+	case CheckboxInputSizeLg:
+		return "h-6 w-6", "text-sm", "text-base"
+	case CheckboxInputSizeXl:
+		return "h-7 w-7", "text-base", "text-lg"
+	}
+	return "h-5 w-5", "text-xs", "text-sm"
+}
+
+func checkboxInputShapeClassResolver(shape string) string {
+	switch shape {
+	case CheckboxInputShapeSquare:
+		return "rounded-none"
+	case CheckboxInputShapeCircular:
+		return "rounded-full"
+	}
+	return "rounded"
+}
+
+templ CheckboxInput(componentSettings CheckboxInputSettings) {
+	{{ boxSizeClasses, iconSizeClasses, labelSizeClasses := checkboxInputSizeClassesResolver(componentSettings.Size) }}
+	{{ shapeClass := checkboxInputShapeClassResolver(componentSettings.Shape) }}
+	{{ checkedColor := "secondary-500" }}
+	if componentSettings.CheckedColor != "" {
+		{{ checkedColor = componentSettings.CheckedColor }}
+	}
+	{{ uncheckedColor := "neutral-50/20" }}
+	if componentSettings.UncheckedColor != "" {
+		{{ uncheckedColor = componentSettings.UncheckedColor }}
+	}
+	{{ focusRingColor := checkedColor }}
+	if componentSettings.FocusRingColor != "" {
+		{{ focusRingColor = componentSettings.FocusRingColor }}
+	}
+	{{ textColor := "text-neutral-50" }}
+	if componentSettings.TextColor != "" {
+		{{ textColor = componentSettings.TextColor }}
+	}
+	{{ labelPosition := CheckboxInputLabelPositionRight }}
+	if componentSettings.LabelPosition != "" {
+		{{ labelPosition = componentSettings.LabelPosition }}
+	}
+	{{ labelPositionClasses := "" }}
+	if labelPosition == CheckboxInputLabelPositionLeft {
+		{{ labelPositionClasses = "flex-row-reverse" }}
+	}
+	{{ isDisabledPath := componentSettings.IsDisabledOneWayStatePath }}
+	{{ labelStateClasses := "cursor-pointer" }}
+	if componentSettings.IsDisabled {
+		{{ labelStateClasses = "cursor-not-allowed opacity-50" }}
+	}
+	{{
+		boxClasses := "flex shrink-0 items-center justify-center border-2 bg-transparent text-transparent transition-colors " +
+			boxSizeClasses + " " + shapeClass + " border-" + uncheckedColor +
+			" peer-checked:border-" + checkedColor + " peer-checked:text-" + checkedColor +
+			" peer-focus-visible:ring-2 peer-focus-visible:ring-" + focusRingColor
+	}}
+	{{ indeterminatePath := componentSettings.IndeterminateOneWayStatePath }}
+	{{ checkedEffect := "" }}
+	if componentSettings.IsCheckedOneWayStatePath != "" {
+		{{ checkedEffect = "$el.checked = !!(" + componentSettings.IsCheckedOneWayStatePath + ")" }}
+	}
+	if indeterminatePath != "" {
+		if checkedEffect != "" {
+			{{ checkedEffect += "; " }}
+		}
+		{{ checkedEffect += "$el.indeterminate = !!(" + indeterminatePath + ")" }}
+	}
+	<!-- CheckboxInput -->
+	<label
+		class={ "relative inline-flex w-fit select-none items-center gap-2 " + labelPositionClasses + " " + labelStateClasses }
+		if isDisabledPath != "" {
+			:class={ isDisabledPath + " && 'cursor-not-allowed opacity-50'" }
+		}
+	>
+		<input
+			type="checkbox"
+			if componentSettings.InputId != "" {
+				id={ componentSettings.InputId }
+			}
+			if componentSettings.InputName != "" {
+				name={ componentSettings.InputName }
+			}
+			if componentSettings.Value != "" {
+				value={ componentSettings.Value }
+			}
+			if componentSettings.AriaLabel != "" {
+				aria-label={ componentSettings.AriaLabel }
+			}
+			if componentSettings.IsRequired {
+				required
+			}
+			if componentSettings.IsDisabled {
+				disabled
+			}
+			if isDisabledPath != "" {
+				:disabled={ isDisabledPath }
+			}
+			if componentSettings.IsChecked {
+				checked
+			}
+			class="peer absolute inset-0 h-full w-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
+			if componentSettings.TwoWayStatePath != "" {
+				x-model={ componentSettings.TwoWayStatePath }
+			}
+			if checkedEffect != "" {
+				x-effect={ checkedEffect }
+			}
+			if componentSettings.OnChangeFunc != "" {
+				@change={ componentSettings.OnChangeFunc }
+			}
+		/>
+		<span
+			class={ boxClasses }
+			if indeterminatePath != "" {
+				:class={ indeterminatePath + " && '!border-" + checkedColor + " !text-" + checkedColor + "'" }
+			}
+		>
+			if indeterminatePath != "" {
+				<i class={ "ph-bold ph-check " + iconSizeClasses } x-show={ "!(" + indeterminatePath + ")" }></i>
+				<i class={ "ph-bold ph-minus " + iconSizeClasses } x-show={ indeterminatePath }></i>
+			}
+			if indeterminatePath == "" {
+				<i class={ "ph-bold ph-check " + iconSizeClasses }></i>
+			}
+		</span>
+		if componentSettings.Label != "" {
+			<span class={ labelSizeClasses + " " + textColor }>
+				{ componentSettings.Label }
+				if componentSettings.IsRequired {
+					<span class="text-red-700">*</span>
+				}
+			</span>
+		}
+	</label>
+}
