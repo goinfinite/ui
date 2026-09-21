@@ -5,11 +5,14 @@ import (
 	uiDisplay "github.com/goinfinite/ui/src/display"
 	uiForm "github.com/goinfinite/ui/src/form"
 	uiImport "github.com/goinfinite/ui/src/import"
+	uiStructural "github.com/goinfinite/ui/src/structural"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
 const (
-	DemoPreCodeClasses string = "rounded-md bg-neutral-800 p-4 text-xs text-wrap tab-2"
-	UiVersion          string = "0.2.0"
+	DemoPreCodeClasses   string = "rounded-md bg-neutral-800 p-4 text-xs text-wrap tab-2"
+	DemoLiveStateClasses string = "rounded-md border border-amber-400/30 bg-amber-400/10 px-3 py-2 font-mono text-xs text-amber-100"
+	UiVersion            string = "0.2.1"
 )
 
 templ DemoIndex() {
@@ -54,7 +57,7 @@ templ DemoIndex() {
 					</div>
 				</section>
 				<!-- Main Content -->
-				<section class="flex flex-col gap-30 overflow-x-auto overflow-y-hidden p-4" id="main-content">
+				<section class="flex flex-col gap-30 p-4" id="main-content">
 					<div class="flex flex-col gap-10">
 						<!-- uiForm -->
 						<div id="ui-form-section" class="flex flex-col gap-2">
@@ -66,13 +69,14 @@ templ DemoIndex() {
 							</p>
 						</div>
 						<div class="*:border-t *:border-neutral-800 *:py-20 flex flex-col">
-							@InputFieldDemo()
-							@TextAreaDemo()
-							@RadioInputDemo()
-							@ToggleSwitchDemo()
+							@CheckboxInputDemo()
 							@InlineRadioGroupDemo()
-							@SelectInputDemo()
+							@InputFieldDemo()
 							@MultiSelectInputDemo()
+							@RadioInputDemo()
+							@SelectInputDemo()
+							@TextAreaDemo()
+							@ToggleSwitchDemo()
 						</div>
 					</div>
 					<!-- uiDisplay -->
@@ -86,11 +90,11 @@ templ DemoIndex() {
 							</p>
 						</div>
 						<div class="*:border-t *:border-neutral-800 *:py-20 flex flex-col">
-							@AlertDemo()
 							@AccordionDemo()
+							@AlertDemo()
+							@CloakLoadingDemo()
 							@LoadingOverlayDemo()
 							@ModalDemo()
-							@CloakLoadingDemo()
 							@SidebarDemo()
 							@TagDemo()
 							@ToastDemo()
@@ -111,6 +115,22 @@ templ DemoIndex() {
 							@RangeSliderDemo()
 						</div>
 					</div>
+					<!-- uiStructural -->
+					<div class="flex flex-col gap-10">
+						<div id="ui-structural-section" class="flex flex-col gap-2">
+							<h2 class="text-3xl font-bold">
+								{ `@uiStructural` }
+							</h2>
+							<p class="text-sm text-neutral-400">
+								uiStructural is a collection of components for navigating and displaying structured data.
+							</p>
+						</div>
+						<div class="*:border-t *:border-neutral-800 *:py-20 flex flex-col">
+							@DataTableDemo()
+							@FilterBarDemo()
+							@PaginationDemo()
+						</div>
+					</div>
 				</section>
 			</main>
 			@uiDisplay.CloakLoading(uiDisplay.CloakLoadingSettings{BackgroundColor: "rgb(38, 38, 38)"})
@@ -119,13 +139,13 @@ templ DemoIndex() {
 }
 
 templ DemoNavigationSidebar() {
-	@uiDisplay.Sidebar(uiDisplay.SidebarSettings{
+	@uiStructural.Sidebar(uiStructural.SidebarSettings{
 		MiddleContent:              DemoNavigationContent(),
 		HeaderContent:              DemoNavigationHeader(),
 		BackgroundColor:            "bg-neutral-800/50",
 		IsCollapsedTwoWayStatePath: "isDemoSidebarCollapsed",
 		Width:                      "w-46",
-		AttachmentMode:             uiDisplay.SidebarAttachmentModeFixed,
+		AttachmentMode:             uiStructural.SidebarAttachmentModeFixed,
 	})
 }
 
@@ -173,28 +193,45 @@ templ DemoNavItem(label, targetId, icon string) {
 	</li>
 }
 
+templ DemoNavSection(label string) {
+	<li
+		class="select-none px-3 pb-1 pt-4 text-xs font-bold text-neutral-400"
+		:class="{'hidden': isDemoSidebarCollapsed}"
+	>
+		{ label }
+	</li>
+}
+
 templ DemoNavigationContent() {
 	<ul
 		class="flex flex-col gap-0.5 py-4"
 		:class="isDemoSidebarCollapsed && 'gap-2 items-center'"
 	>
-		@DemoNavItem("InputField", "input-field-demo", "ph-text-aa")
-		@DemoNavItem("TextArea", "text-area-demo", "ph-text-align-left")
-		@DemoNavItem("RadioInput", "radio-input-demo", "ph-radio-button")
-		@DemoNavItem("ToggleSwitch", "toggle-switch-demo", "ph-toggle-right")
+		@DemoNavSection("@uiForm")
+		@DemoNavItem("CheckboxInput", "checkbox-input-demo", "ph-check-square")
 		@DemoNavItem("InlineRadioGroup", "inline-radio-group-demo", "ph-selection")
-		@DemoNavItem("SelectInput", "select-input-demo", "ph-caret-down")
+		@DemoNavItem("InputField", "input-field-demo", "ph-text-aa")
 		@DemoNavItem("MultiSelectInput", "multi-select-input-demo", "ph-list-checks")
-		@DemoNavItem("Alert", "alert-demo", "ph-warning")
+		@DemoNavItem("RadioInput", "radio-input-demo", "ph-radio-button")
+		@DemoNavItem("SelectInput", "select-input-demo", "ph-caret-down")
+		@DemoNavItem("TextArea", "text-area-demo", "ph-text-align-left")
+		@DemoNavItem("ToggleSwitch", "toggle-switch-demo", "ph-toggle-right")
+		@DemoNavSection("@uiDisplay")
 		@DemoNavItem("Accordion", "accordion-demo", "ph-list")
+		@DemoNavItem("Alert", "alert-demo", "ph-warning")
+		@DemoNavItem("CloakLoading", "cloak-loading-demo", "ph-eye-slash")
 		@DemoNavItem("LoadingOverlay", "loading-overlay-demo", "ph-spinner")
 		@DemoNavItem("Modal", "modal-demo", "ph-square")
-		@DemoNavItem("CloakLoading", "cloak-loading-demo", "ph-eye-slash")
 		@DemoNavItem("Sidebar", "sidebar-demo", "ph-sidebar")
 		@DemoNavItem("Tag", "tag-demo", "ph-tag")
 		@DemoNavItem("Toast", "toast-demo", "ph-bell")
+		@DemoNavSection("@uiControl")
 		@DemoNavItem("Button", "button-demo", "ph-cursor")
 		@DemoNavItem("RangeSlider", "range-slider-demo", "ph-sliders")
+		@DemoNavSection("@uiStructural")
+		@DemoNavItem("DataTable", "data-table-demo", "ph-table")
+		@DemoNavItem("FilterBar", "filter-bar-demo", "ph-funnel")
+		@DemoNavItem("Pagination", "pagination-demo", "ph-caret-double-right")
 	</ul>
 }
 
@@ -210,6 +247,144 @@ templ UsageTitle(componentPath string) {
 			<i class="ph-bold ph-arrow-square-out text-sm text-neutral-400"></i>
 		</h4>
 	</a>
+}
+
+templ CheckboxInputDemo() {
+	<div class="flex flex-col gap-4" id="checkbox-input-demo">
+		<div class="flex flex-col gap-2">
+			<h3 class="text-xl font-bold">.CheckboxInput</h3>
+			<p class="text-sm text-neutral-400">
+				A checkbox selects one value, bound to a boolean or an array state path.
+			</p>
+		</div>
+		<div class="grid gap-10 md:grid-cols-2">
+			<div class="flex flex-col gap-4">
+				<div class="flex flex-col gap-2">
+					@UsageTitle("/form/checkboxInput.templ")
+					<pre class={ DemoPreCodeClasses }>
+						<code>
+							{ `@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+	Label:           "Accept the terms",
+	TwoWayStatePath: "hasAcceptedTerms",
+
+	// OptionalFields
+	InputName: "hasAcceptedTerms",
+	Shape:     uiForm.CheckboxInputShapeRounded,
+})` }
+						</code>
+					</pre>
+				</div>
+				<div class="flex flex-col gap-2">
+					<h5 class="text-sm font-bold">Alpine.js Parent State <i>(x-data)</i></h5>
+					<pre class={ DemoPreCodeClasses }>
+						<code>
+							{ `<div x-data="{hasAcceptedTerms: false}"></div>
+<div x-data="{selectedFruits: ['apple']}"></div>` }
+						</code>
+					</pre>
+				</div>
+			</div>
+			<div class="flex flex-col gap-6">
+				<h4 class="text-lg font-bold">Live Examples</h4>
+				<div
+					x-data="{hasAcceptedTerms: false}"
+					class="flex flex-col gap-3"
+				>
+					<h5 class="text-sm font-bold">Boolean state</h5>
+					@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+						Label:           "Accept the terms",
+						InputName:       "hasAcceptedTerms",
+						TwoWayStatePath: "hasAcceptedTerms",
+					})
+					<p class={ DemoLiveStateClasses }>
+						Value: <span x-text="hasAcceptedTerms"></span>
+					</p>
+				</div>
+				<div
+					x-data="{selectedFruits: ['apple'], fruitOptions: ['apple', 'banana', 'orange']}"
+					class="flex flex-col gap-3"
+				>
+					<h5 class="text-sm font-bold">Indeterminate state</h5>
+					@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+						Label:                        "Select all",
+						IndeterminateOneWayStatePath: "selectedFruits.length > 0 && selectedFruits.length < fruitOptions.length",
+						IsCheckedOneWayStatePath:     "selectedFruits.length === fruitOptions.length",
+						OnChangeFunc:                 "selectedFruits = selectedFruits.length === fruitOptions.length ? [] : [...fruitOptions]",
+					})
+					for _, fruitOption := range []string{"apple", "banana", "orange"} {
+						@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+							Label:           fruitOption,
+							TwoWayStatePath: "selectedFruits",
+							Value:           fruitOption,
+						})
+					}
+					<p class={ DemoLiveStateClasses }>
+						Values: <span x-text="selectedFruits"></span>
+					</p>
+				</div>
+			</div>
+		</div>
+		<div
+			x-data="{isCheckboxExampleEnabled: false}"
+			class="grid gap-10 md:grid-cols-2"
+		>
+			<div class="flex flex-col gap-3">
+				<p class="text-sm text-neutral-400">Shapes</p>
+				for _, checkboxShape := range []string{uiForm.CheckboxInputShapeSquare, uiForm.CheckboxInputShapeRounded, uiForm.CheckboxInputShapeCircular} {
+					@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+						Label:           checkboxShape,
+						TwoWayStatePath: "isCheckboxExampleEnabled",
+						Shape:           checkboxShape,
+					})
+				}
+				<p class="mt-3 text-sm text-neutral-400">Sizes</p>
+				for _, checkboxSize := range []string{uiForm.CheckboxInputSizeXs, uiForm.CheckboxInputSizeSm, uiForm.CheckboxInputSizeMd, uiForm.CheckboxInputSizeLg, uiForm.CheckboxInputSizeXl} {
+					@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+						Label:           checkboxSize,
+						TwoWayStatePath: "isCheckboxExampleEnabled",
+						Size:            checkboxSize,
+					})
+				}
+			</div>
+			<div class="flex flex-col gap-3">
+				<p class="text-sm text-neutral-400">Label position</p>
+				@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+					Label:           "Label on the left",
+					LabelPosition:   uiForm.CheckboxInputLabelPositionLeft,
+					TwoWayStatePath: "isCheckboxExampleEnabled",
+				})
+				<p class="mt-3 text-sm text-neutral-400">States</p>
+				@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+					Label:     "Checked",
+					IsChecked: true,
+				})
+				@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+					Label:      "Disabled",
+					IsDisabled: true,
+				})
+				@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+					Label:      "Checked and disabled",
+					IsChecked:  true,
+					IsDisabled: true,
+				})
+				@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+					Label:      "Required",
+					IsRequired: true,
+				})
+				<p class="mt-3 text-sm text-neutral-400">Checked colors</p>
+				@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+					CheckedColor: "primary-500",
+					Label:        "Primary",
+					IsChecked:    true,
+				})
+				@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+					CheckedColor: "emerald-500",
+					Label:        "Emerald",
+					IsChecked:    true,
+				})
+			</div>
+		</div>
+	</div>
 }
 
 templ InputFieldDemo() {
@@ -525,7 +700,7 @@ templ ToggleSwitchDemo() {
 						TwoWayStatePath: "isNotificationsEnabled",
 						InputName:       "notificationsEnabled",
 					})
-					<p class="text-sm text-neutral-400">
+					<p class={ DemoLiveStateClasses }>
 						Value: <span x-text="isNotificationsEnabled"></span>
 					</p>
 				</div>
@@ -548,7 +723,7 @@ templ ToggleSwitchDemo() {
 						InputId:         "channel-sms",
 						InputName:       "channels",
 					})
-					<p class="text-sm text-neutral-400">
+					<p class={ DemoLiveStateClasses }>
 						Values: <span x-text="selectedChannels"></span>
 					</p>
 				</div>
@@ -1012,8 +1187,8 @@ templ SelectInputDemo() {
 					ShouldIncludeBlankOption: true,
 					OnChangeFunc:             "onCountryChange()",
 				})
-				<p class="text-sm text-neutral-400">
-					Change count: <span class="font-bold" x-text="changeCount"></span>
+				<p class={ DemoLiveStateClasses }>
+					Change count: <span x-text="changeCount"></span>
 				</p>
 			</div>
 		</div>
@@ -1476,6 +1651,29 @@ templ TagDemo() {
 						})
 					</div>
 				</div>
+				<div x-data="{showRemovableTag: true}" class="flex flex-col gap-2">
+					<p class="text-sm text-neutral-400">OnRemoveFunc</p>
+					<div class="flex flex-row flex-wrap items-center gap-2">
+						<span x-show="showRemovableTag">
+							@uiDisplay.Tag(uiDisplay.TagSettings{
+								Size:                 uiDisplay.TagSizeSm,
+								OuterBackgroundColor: "neutral-50/10",
+								OuterRingColor:       "neutral-50/20",
+								OuterTextColor:       "neutral-50",
+								OuterLeftLabel:       "Status: running",
+								OnRemoveFunc:         "showRemovableTag = false",
+								RemoveButtonLabel:    "Remove status filter",
+							})
+						</span>
+						@uiControl.Button(uiControl.ButtonSettings{
+							Label:                    "Restore",
+							IconLeft:                 "ph-arrow-counter-clockwise",
+							IsVisibleOneWayStatePath: "!showRemovableTag",
+							OnClickFunc:              "showRemovableTag = true",
+							Size:                     uiControl.ButtonSizeSm,
+						})
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -1662,7 +1860,7 @@ templ ButtonDemo() {
 							IsFullWidth:               true,
 						})
 						<div class="flex flex-row items-center gap-2">
-							<p class="flex gap-2 text-sm text-neutral-400">
+							<p class={ DemoLiveStateClasses }>
 								Count: <span x-text="clickCount"></span>
 							</p>
 							@uiControl.Button(uiControl.ButtonSettings{
@@ -1752,10 +1950,10 @@ templ SidebarDemo() {
 				</p>
 			</div>
 			<div class="flex flex-col gap-2">
-				@UsageTitle("/display/sidebar.templ")
+				@UsageTitle("/structural/sidebar.templ")
 				<pre class={ DemoPreCodeClasses }>
 					<code>
-						{ `@uiDisplay.Sidebar(uiDisplay.SidebarSettings{
+						{ `@uiStructural.Sidebar(uiStructural.SidebarSettings{
 	MiddleContent: SidebarDemoMiddle(),
 
 	// OptionalFields
@@ -1866,7 +2064,7 @@ templ SidebarDemo() {
 					</div>
 				</div>
 				<div class="h-128 flex-none overflow-hidden rounded-md border border-neutral-800">
-					@uiDisplay.Sidebar(uiDisplay.SidebarSettings{
+					@uiStructural.Sidebar(uiStructural.SidebarSettings{
 						MiddleContent:                 SidebarDemoMiddle(),
 						HeaderContent:                 SidebarDemoHeader(),
 						FooterContent:                 SidebarDemoFooter(),
@@ -1925,7 +2123,7 @@ templ RangeSliderDemo() {
 					@uiControl.RangeSlider(uiControl.RangeSliderSettings{
 						ThumbValueTwoWayStatePath: "sliderValue",
 					})
-					<p class="text-sm text-neutral-400">Value: <span x-text="sliderValue"></span></p>
+					<p class={ DemoLiveStateClasses }>Value: <span x-text="sliderValue"></span></p>
 				</div>
 				<div class="flex w-full flex-col gap-2">
 					<p class="text-sm text-neutral-400">RangeSliderSizeXs to RangeSliderSizeXl</p>
@@ -2134,7 +2332,7 @@ templ RangeSliderDemo() {
 							TrackStartValueLabelEnabled:    true,
 							TrackEndValueLabelEnabled:      true,
 						})
-						<p class="text-sm text-neutral-400">Price Range: $<span x-text="lowerValue"></span> - $<span x-text="upperValue"></span></p>
+						<p class={ DemoLiveStateClasses }>Price Range: $<span x-text="lowerValue"></span> - $<span x-text="upperValue"></span></p>
 						@uiControl.RangeSlider(uiControl.RangeSliderSettings{
 							ThumbShape:                           uiControl.RangeSliderThumbShapePipe,
 							ThumbDualValueModeEnabled:            true,
@@ -2190,7 +2388,7 @@ templ RangeSliderDemo() {
 							ThumbAriaLabel:              "Initial single value",
 							ShouldNormalizeInitialState: true,
 						})
-						<p class="text-sm text-neutral-400">Normalized Range: $<span x-text="lowerValue"></span> - $<span x-text="upperValue"></span>, Overflow Range: $<span x-text="overflowLowerValue"></span> - $<span x-text="overflowUpperValue"></span>, Slider: <span x-text="sliderValue"></span></p>
+						<p class={ DemoLiveStateClasses }>Normalized Range: $<span x-text="lowerValue"></span> - $<span x-text="upperValue"></span>, Overflow Range: $<span x-text="overflowLowerValue"></span> - $<span x-text="overflowUpperValue"></span>, Slider: <span x-text="sliderValue"></span></p>
 					</div>
 				</div>
 				<div class="flex w-full flex-col gap-2">
@@ -2206,7 +2404,7 @@ templ RangeSliderDemo() {
 							TrackEndValue:                  "100",
 							TrackSteps:                     "1",
 						})
-						<p class="text-sm text-neutral-400">Raw Range: $<span x-text="lowerValue"></span> - $<span x-text="upperValue"></span></p>
+						<p class={ DemoLiveStateClasses }>Raw Range: $<span x-text="lowerValue"></span> - $<span x-text="upperValue"></span></p>
 					</div>
 				</div>
 			</div>
@@ -2512,6 +2710,7 @@ templ ModalDemo() {
 					isSmallRadiusModalVisible: false,
 					isLargeRadiusModalVisible: false,
 					isXLRadiusModalVisible: false,
+					isUncloseableModalVisible: false,
 				}"
 			>
 				<div class="flex flex-row flex-wrap items-start gap-10">
@@ -2666,6 +2865,17 @@ templ ModalDemo() {
 							})
 						</div>
 					</div>
+					<div class="flex flex-col gap-2">
+						<p class="text-sm text-neutral-400">Uncloseable</p>
+						<div class="flex flex-wrap gap-2">
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "Open",
+								OnClickFunc:     "isUncloseableModalVisible = true",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "red-600",
+							})
+						</div>
+					</div>
 				</div>
 				<!-- Basic Modal -->
 				@uiDisplay.Modal(uiDisplay.ModalSettings{
@@ -2673,6 +2883,7 @@ templ ModalDemo() {
 					TitleOneWayStatePath:     "modalTitle",
 					SizeTwoWayStatePath:      "modalSize",
 					IsVisibleTwoWayStatePath: "isModalVisible",
+					OnCloseFunc:              "modalTitle = 'Closed by backdrop click'",
 				})
 				<!-- Background Color Variations -->
 				@uiDisplay.Modal(uiDisplay.ModalSettings{
@@ -2773,6 +2984,14 @@ templ ModalDemo() {
 					BorderRadius:             "xl",
 					IsVisibleTwoWayStatePath: "isXLRadiusModalVisible",
 				})
+				<!-- Uncloseable Modal -->
+				@uiDisplay.Modal(uiDisplay.ModalSettings{
+					MiddleContent:            UncloseableModalDemoContent(),
+					Title:                    "Uncloseable Modal",
+					Size:                     uiDisplay.ModalSizeMd,
+					IsUncloseable:            true,
+					IsVisibleTwoWayStatePath: "isUncloseableModalVisible",
+				})
 			</div>
 		</div>
 	</div>
@@ -2804,6 +3023,22 @@ templ ModalDemoContent() {
 				IconLeft:        "ph-info",
 				Size:            uiControl.ButtonSizeSm,
 				BackgroundColor: "neutral-50/10",
+			})
+		</div>
+	</div>
+}
+
+templ UncloseableModalDemoContent() {
+	<div class="flex flex-col gap-4" id="uncloseable-modal-demo-content">
+		<p class="text-neutral-300">
+			This modal hides the close button and ignores backdrop clicks. Use the button below to close it.
+		</p>
+		<div class="flex flex-wrap gap-2">
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "Close Modal",
+				OnClickFunc:     "isUncloseableModalVisible = false",
+				Size:            uiControl.ButtonSizeSm,
+				BackgroundColor: "primary-500",
 			})
 		</div>
 	</div>
@@ -2983,4 +3218,648 @@ templ AlertDemo() {
 			</div>
 		</div>
 	</div>
+}
+
+templ DemoServerTextCell(value string) {
+	<span class="text-neutral-300">{ value }</span>
+}
+
+templ DemoServerStatusCell(status string) {
+	{{ variationClasses := "bg-emerald-500/20 text-emerald-100" }}
+	if status != "running" {
+		{{ variationClasses = "bg-neutral-500/20 text-neutral-300" }}
+	}
+	<span class={ "rounded-full px-2 py-0.5 text-xs font-bold " + variationClasses }>{ status }</span>
+}
+
+templ DemoServerPlainTextCell(value string) {
+	{ value }
+}
+
+templ PaginationDemo() {
+	<div class="flex flex-col gap-4" id="pagination-demo">
+		<div class="flex flex-row flex-wrap items-center gap-x-20 gap-y-10">
+			<div class="flex flex-col gap-2">
+				<h3 class="text-xl font-bold">.Pagination</h3>
+				<p class="text-sm text-neutral-400">
+					Pagination splits records into pages and lets the user move between them.
+				</p>
+			</div>
+			<div class="flex flex-col gap-2">
+				@UsageTitle("/structural/pagination.templ")
+				<pre class={ DemoPreCodeClasses }>
+					<code>
+						{ `@uiStructural.Pagination(uiStructural.PaginationSettings{
+	PageNumberTwoWayStatePath:   "pageNumber",
+	ItemsPerPageTwoWayStatePath: "itemsPerPage",
+	ItemsTotal:                  240,
+	PagesTotal:                  24,
+
+	// OptionalFields
+	OnChangeFunc: "changeCount = changeCount + 1",
+})` }
+					</code>
+				</pre>
+			</div>
+		</div>
+		<div class="flex flex-col gap-4" x-data="{pageNumber: 2, itemsPerPage: 10, changeCount: 0}">
+			<h4 class="mb-2 text-lg font-bold">Live Example</h4>
+			<div class="rounded-md border border-neutral-800 p-4">
+				@uiStructural.Pagination(uiStructural.PaginationSettings{
+					PageNumberTwoWayStatePath:   "pageNumber",
+					ItemsPerPageTwoWayStatePath: "itemsPerPage",
+					ItemsTotal:                  240,
+					PagesTotal:                  24,
+					OnChangeFunc:                "changeCount = changeCount + 1",
+				})
+			</div>
+			<p class={ DemoLiveStateClasses } id="pagination-demo-state">
+				pageNumber: <span x-text="pageNumber"></span>
+				· itemsPerPage: <span x-text="itemsPerPage"></span>
+				· OnChangeFunc calls: <span x-text="changeCount"></span>
+			</p>
+		</div>
+	</div>
+}
+
+templ FilterBarDemo() {
+	<div
+		class="flex flex-col gap-4"
+		id="filter-bar-demo"
+		x-data="{filterValues: {name: '', status: 'running', cpu: {min: '', max: ''}}, changeCount: 0}"
+	>
+		<div class="flex flex-row flex-wrap items-center gap-x-20 gap-y-10">
+			<div class="flex flex-col gap-2">
+				<h3 class="text-xl font-bold">.FilterBar</h3>
+				<p class="text-sm text-neutral-400">
+					A filter bar renders one editor per declared filter and shows the active filters as removable chips.
+				</p>
+			</div>
+			<div class="flex flex-col gap-2">
+				@UsageTitle("/structural/filterBar.templ")
+				<pre class={ DemoPreCodeClasses }>
+					<code>
+						{ `@uiStructural.FilterBar(uiStructural.FilterBarSettings{
+	Filters: []uiStructural.FilterSettings{
+		{Key: "name", Label: "Name", Type: uiStructural.FilterTypeTextContains},
+		{Key: "status", Label: "Status", Type: uiStructural.FilterTypeEnumSelect, Options: statusOptions},
+		{Key: "cpu", Label: "CPU", Type: uiStructural.FilterTypeNumberRange},
+	},
+	ValuesTwoWayStatePath: "filterValues",
+
+	// OptionalFields
+	OnChangeFunc: "changeCount = changeCount + 1",
+})` }
+					</code>
+				</pre>
+			</div>
+		</div>
+		<div class="flex flex-col gap-4">
+			<h4 class="mb-2 text-lg font-bold">Live Example</h4>
+			<div class="rounded-md border border-neutral-800 p-4">
+				@uiStructural.FilterBar(uiStructural.FilterBarSettings{
+					Filters:               buildDemoRecordFilters(),
+					ValuesTwoWayStatePath: "filterValues",
+					OnChangeFunc:          "changeCount = changeCount + 1",
+				})
+			</div>
+			<p class={ DemoLiveStateClasses } id="filter-bar-demo-state">
+				Values: <span x-text="JSON.stringify(filterValues)"></span>
+				· OnChangeFunc calls: <span x-text="changeCount"></span>
+			</p>
+		</div>
+	</div>
+}
+
+templ DataTableExampleHeader(title, description, usageCode string) {
+	<div class="flex flex-col gap-1">
+		<h5 class="text-base font-bold">{ title }</h5>
+		<p class="text-sm text-neutral-400">{ description }</p>
+	</div>
+	<div class="flex flex-col gap-2">
+		@UsageTitle("/structural/dataTable.templ")
+		<pre class={ DemoPreCodeClasses }>
+			<code>{ usageCode }</code>
+		</pre>
+	</div>
+}
+
+templ DataTableExampleCard(title, description, usageCode string, content templ.Component) {
+	<div class="flex flex-col gap-4">
+		@DataTableExampleHeader(title, description, usageCode)
+		@content
+	</div>
+}
+
+templ DataTableColumnConfigExample() {
+	{{
+		columnSettings := buildDemoStaticTableSettings(
+			"data-table-demo-columns",
+			"Column configuration table pagination",
+			buildDemoColumnShowcaseColumns(),
+			dataTableDemoRecords[:4],
+		)
+	}}
+	{{
+		columnUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
+	Columns: []uiStructural.DataTableColumnSettings[Record]{
+		{Label: "Name", SortKey: "name", WidthPercent: 20, Render: nameCell},
+		{Label: "Description", MaxWidthClass: "max-w-72 truncate", Render: descriptionCell},
+		{Label: "Status", Alignment: uiStructural.DataTableAlignmentCenter, WidthPercent: 15, Render: statusCell},
+		{Label: "CPU cores", SortKey: "cpuCores", Alignment: uiStructural.DataTableAlignmentRight, WidthPercent: 12, Render: cpuCell},
+		{Label: "Created at", MinWidthClass: "min-w-28", Render: createdAtCell},
+	},
+	Rows: records,
+})`
+	}}
+	@DataTableExampleCard(
+		"Column Configuration",
+		"A column sets its alignment, width, and sortability. WidthPercent shares the row width, MaxWidthClass caps a long cell, and MinWidthClass holds a floor. A column with a SortKey renders a sort button; one without renders plain text.",
+		columnUsage,
+		uiStructural.DataTable(columnSettings),
+	)
+}
+
+templ DataTableRowsConfigExample() {
+	{{
+		rowsSettings := buildDemoStaticTableSettings(
+			"data-table-demo-rows",
+			"Rows configuration table pagination",
+			buildDemoPlainTableColumns(),
+			dataTableDemoRecords[:4],
+		)
+	}}
+	{{
+		rowsSettings.RowIdResolver = func(record DemoServerRecord) string { return record.Id }
+		rowsSettings.RowLabelResolver = func(record DemoServerRecord) string { return record.Name }
+		rowsSettings.CheckboxShape = uiForm.CheckboxInputShapeRounded
+		rowsSettings.CheckboxSize = uiForm.CheckboxInputSizeSm
+		rowsSettings.CheckboxCheckedColor = "emerald-500"
+	}}
+	{{
+		rowsUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
+	Columns:              columns,
+	Rows:                 records,
+	RowIdResolver:        func(record Record) string { return record.Id },
+	RowLabelResolver:     func(record Record) string { return record.Name },
+	CheckboxShape:        uiForm.CheckboxInputShapeRounded,
+	CheckboxSize:         uiForm.CheckboxInputSizeSm,
+	CheckboxCheckedColor: "emerald-500",
+})`
+	}}
+	@DataTableExampleCard(
+		"Rows Configuration",
+		"RowIdResolver adds the selection column and identifies each row. RowLabelResolver names the row checkbox for screen readers. CheckboxShape, CheckboxSize, and CheckboxCheckedColor change the selection checkbox. Select a row to see the emerald checkbox and the selection count.",
+		rowsUsage,
+		uiStructural.DataTable(rowsSettings),
+	)
+}
+
+templ DataTableFiltersExample() {
+	{{
+		filterSettings := buildDemoStaticTableSettings(
+			"data-table-demo-filters",
+			"Filters table pagination",
+			buildDemoPlainTableColumns(),
+			dataTableDemoRecords[:5],
+		)
+	}}
+	{{
+		filterSettings.Filters = buildDemoRecordFilters()
+		filterSettings.InitialFilterValues = map[string]any{"status": "running"}
+	}}
+	{{
+		filtersUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
+	Columns:             columns,
+	Rows:                records,
+	Filters:             filters,
+	InitialFilterValues: map[string]any{"status": "running"},
+})`
+	}}
+	@DataTableExampleCard(
+		"Filters",
+		"Each filter renders an editor and an active chip. InitialFilterValues seeds the starting values. A filter change updates the chips and the filter values.",
+		filtersUsage,
+		uiStructural.DataTable(filterSettings),
+	)
+}
+
+templ DataTableSearchBoxExample() {
+	{{
+		searchSettings := buildDemoStaticTableSettings(
+			"data-table-demo-search",
+			"Search box table pagination",
+			buildDemoPlainTableColumns(),
+			dataTableDemoRecords[:5],
+		)
+	}}
+	{{
+		searchSettings.SearchBox = uiForm.InputField(uiForm.InputFieldSettings{
+			InputType:       uiForm.InputTypeText,
+			InputName:       "search",
+			Label:           "Search records",
+			TwoWayStatePath: "searchQuery",
+		})
+		searchSettings.InitialSearchQuery = "alpha"
+		searchSettings.SearchBoxAlignment = uiStructural.DataTableAlignmentCenter
+	}}
+	{{
+		searchUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
+	Columns:            columns,
+	Rows:               records,
+	SearchBox:          searchInput,
+	InitialSearchQuery: "alpha",
+	SearchBoxAlignment: uiStructural.DataTableAlignmentCenter,
+})`
+	}}
+	@DataTableExampleCard(
+		"Search Box",
+		"The SearchBox slot renders in the toolbar and binds to the searchQuery state. InitialSearchQuery seeds the starting text. SearchBoxAlignment places the box left, center, or right.",
+		searchUsage,
+		uiStructural.DataTable(searchSettings),
+	)
+}
+
+templ DataTableHeaderActionsExample() {
+	{{
+		headerSettings := buildDemoStaticTableSettings(
+			"data-table-demo-header-actions",
+			"Header actions table pagination",
+			buildDemoPlainTableColumns(),
+			dataTableDemoRecords[:4],
+		)
+	}}
+	{{
+		headerSettings.HeaderActions = uiControl.Button(uiControl.ButtonSettings{
+			Label:       "Sync",
+			IconLeft:    "ph-arrows-clockwise",
+			OnClickFunc: "$dispatch('demo:header-action')",
+			Size:        uiControl.ButtonSizeSm,
+		})
+	}}
+	{{
+		headerUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
+	Columns: columns,
+	Rows:    records,
+	HeaderActions: uiControl.Button(uiControl.ButtonSettings{
+		Label:       "Sync",
+		IconLeft:    "ph-arrows-clockwise",
+		OnClickFunc: "$dispatch('demo:header-action')",
+		Size:        uiControl.ButtonSizeSm,
+	}),
+})`
+	}}
+	<div class="flex flex-col gap-4" x-data="{headerActionCount: 0}">
+		@DataTableExampleHeader(
+			"Header Actions",
+			"HeaderActions renders in the toolbar. The button here dispatches an event the panel counts.",
+			headerUsage,
+		)
+		<div @demo:header-action.window="headerActionCount++">
+			@uiStructural.DataTable(headerSettings)
+		</div>
+		<p class={ DemoLiveStateClasses }>
+			Header action clicks: <span x-text="headerActionCount"></span>
+		</p>
+	</div>
+}
+
+templ DataTableBulkActionsExample() {
+	{{
+		bulkSettings := buildDemoStaticTableSettings(
+			"data-table-demo-bulk-actions",
+			"Bulk actions table pagination",
+			buildDemoPlainTableColumns(),
+			dataTableDemoRecords[:4],
+		)
+	}}
+	{{
+		bulkSettings.RowIdResolver = func(record DemoServerRecord) string { return record.Id }
+		bulkSettings.RowLabelResolver = func(record DemoServerRecord) string { return record.Name }
+		bulkSettings.BulkActions = uiControl.Button(uiControl.ButtonSettings{
+			Label:           "Archive",
+			IconLeft:        "ph-archive",
+			OnClickFunc:     "selectedRowIds = []",
+			Size:            uiControl.ButtonSizeSm,
+			BackgroundColor: "red-500/20",
+			TextColor:       "red-200",
+		})
+	}}
+	{{
+		bulkUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
+	Columns: columns,
+	Rows:    records,
+	RowIdResolver: func(record Record) string { return record.Id },
+	BulkActions: uiControl.Button(uiControl.ButtonSettings{
+		Label:           "Archive",
+		IconLeft:        "ph-archive",
+		OnClickFunc:     "selectedRowIds = []",
+		Size:            uiControl.ButtonSizeSm,
+		BackgroundColor: "red-500/20",
+		TextColor:       "red-200",
+	}),
+})`
+	}}
+	@DataTableExampleCard(
+		"Bulk Actions",
+		"BulkActions renders in the toolbar only while at least one row is selected. Select a row to reveal the action.",
+		bulkUsage,
+		uiStructural.DataTable(bulkSettings),
+	)
+}
+
+templ DataTableStylingExample() {
+	{{
+		stylingSettings := buildDemoStaticTableSettings(
+			"data-table-demo-styling",
+			"Styling table pagination",
+			buildDemoStylingColumns(),
+			dataTableDemoRecords[:4],
+		)
+	}}
+	{{
+		stylingSettings.HeaderClass = "bg-neutral-50/5"
+		stylingSettings.IsStriped = true
+		stylingSettings.RowClassResolver = func(record DemoServerRecord) string {
+			if record.Status != "running" {
+				return "text-neutral-400"
+			}
+			return ""
+		}
+	}}
+	{{
+		stylingUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
+	Columns: []uiStructural.DataTableColumnSettings[Record]{
+		{Label: "Name", CellClass: "font-bold", Render: nameCell},
+		{Label: "Status", Render: statusCell},
+		{Label: "CPU cores", Alignment: uiStructural.DataTableAlignmentRight, Render: cpuCell},
+	},
+	Rows: records,
+
+	// OptionalFields
+	HeaderClass: "bg-neutral-50/5",
+	IsStriped:   true,
+	RowClassResolver: func(record Record) string {
+		if record.Status != "running" {
+			return "text-neutral-400"
+		}
+		return ""
+	},
+})`
+	}}
+	@DataTableExampleCard(
+		"Row and Column Styling",
+		"HeaderClass paints the header row. IsStriped adds a zebra stripe. CellClass styles one column, and RowClassResolver styles each row from its data. A cell component that sets its own color overrides the row color.",
+		stylingUsage,
+		uiStructural.DataTable(stylingSettings),
+	)
+}
+
+templ DataTableAppearanceExample() {
+	{{
+		comfortableSettings := buildDemoStaticTableSettings(
+			"data-table-demo-comfortable",
+			"Comfortable table pagination",
+			buildDemoPlainTableColumns(),
+			dataTableDemoRecords[:3],
+		)
+	}}
+	{{
+		denseSettings := buildDemoStaticTableSettings(
+			"data-table-demo-dense",
+			"Dense table pagination",
+			buildDemoPlainTableColumns(),
+			dataTableDemoRecords[:3],
+		)
+	}}
+	{{
+		denseSettings.Density = uiStructural.DataTableDensityDense
+		denseSettings.HeaderTextCase = uiStructural.DataTableHeaderTextCaseUpper
+	}}
+	{{
+		appearanceUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
+	Columns:        columns,
+	Rows:           records,
+	Density:        uiStructural.DataTableDensityDense,
+	HeaderTextCase: uiStructural.DataTableHeaderTextCaseUpper,
+})`
+	}}
+	<div class="flex flex-col gap-4">
+		@DataTableExampleHeader(
+			"Density and Header Text Case",
+			"Density changes the cell padding. HeaderTextCase changes the header capitalization. Both tables use the same columns and rows.",
+			appearanceUsage,
+		)
+		<div class="grid gap-6 lg:grid-cols-2">
+			<div class="flex flex-col gap-2">
+				<p class="text-sm text-neutral-400">Comfortable (default) with lowercase headers</p>
+				@uiStructural.DataTable(comfortableSettings)
+			</div>
+			<div class="flex flex-col gap-2">
+				<p class="text-sm text-neutral-400">Dense with uppercase headers</p>
+				@uiStructural.DataTable(denseSettings)
+			</div>
+		</div>
+	</div>
+}
+
+templ DataTableStickyHeaderExample() {
+	{{
+		stickySettings := buildDemoStaticTableSettings(
+			"data-table-demo-sticky",
+			"Sticky header table pagination",
+			buildDemoPlainTableColumns(),
+			dataTableDemoRecords,
+		)
+	}}
+	{{ stickySettings.IsHeaderSticky = true }}
+	{{
+		stickyUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
+	Columns:        columns,
+	Rows:           records,
+	IsHeaderSticky: true,
+})`
+	}}
+	@DataTableExampleCard(
+		"Sticky Header",
+		"IsHeaderSticky pins the header and caps the scroll container, so the header stays visible while the body scrolls.",
+		stickyUsage,
+		uiStructural.DataTable(stickySettings),
+	)
+}
+
+templ DataTableDemoEmptyState() {
+	<div class="flex flex-col items-center gap-2 py-2 text-center">
+		<i class="ph-duotone ph-tray text-3xl text-neutral-400"></i>
+		<p class="text-sm font-bold text-neutral-50">No servers yet</p>
+		<p class="text-sm text-neutral-400">Create a server to see it listed here.</p>
+	</div>
+}
+
+templ DataTableEmptyStateExample() {
+	{{
+		customEmptySettings := buildDemoStaticTableSettings(
+			"data-table-demo-empty-custom",
+			"Custom empty state table pagination",
+			buildDemoPlainTableColumns(),
+			nil,
+		)
+	}}
+	{{ customEmptySettings.EmptyState = DataTableDemoEmptyState() }}
+	{{
+		defaultEmptySettings := buildDemoStaticTableSettings(
+			"data-table-demo-empty-default",
+			"Default empty state table pagination",
+			buildDemoPlainTableColumns(),
+			nil,
+		)
+	}}
+	{{
+		emptyUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
+	Columns:    columns,
+	Rows:       nil,
+	EmptyState: DataTableDemoEmptyState(),
+})`
+	}}
+	<div class="flex flex-col gap-4">
+		@DataTableExampleHeader(
+			"Empty States",
+			"With no rows the table renders the EmptyState slot. Without the slot it renders the default message.",
+			emptyUsage,
+		)
+		<div class="grid gap-6 lg:grid-cols-2">
+			<div class="flex flex-col gap-2">
+				<p class="text-sm text-neutral-400">Custom EmptyState</p>
+				@uiStructural.DataTable(customEmptySettings)
+			</div>
+			<div class="flex flex-col gap-2">
+				<p class="text-sm text-neutral-400">Default empty state</p>
+				@uiStructural.DataTable(defaultEmptySettings)
+			</div>
+		</div>
+	</div>
+}
+
+templ DataTableDemo() {
+	{{ demoTableSettings := buildDemoDataTableSettings(dataTableDemoRecords, 1, dataTableDemoItemsPerPage) }}
+	{{
+		demoTableSettings.BulkActions = uiControl.Button(uiControl.ButtonSettings{
+			Label:           "Clear selection",
+			IconLeft:        "ph-trash",
+			OnClickFunc:     "selectedRowIds = []",
+			Size:            uiControl.ButtonSizeSm,
+			BackgroundColor: "red-500/20",
+			TextColor:       "red-200",
+		})
+	}}
+	{{
+		demoTableSettings.HeaderActions = uiControl.Button(uiControl.ButtonSettings{
+			Label:       "Refresh",
+			IconLeft:    "ph-arrow-clockwise",
+			OnClickFunc: "$dispatch('refresh:data-table-demo')",
+			Size:        uiControl.ButtonSizeSm,
+		})
+	}}
+	{{ demoTableSettings.RefreshOnEvents = []string{"refresh:data-table-demo"} }}
+	{{
+		demoTableSettings.SearchBox = uiForm.InputField(uiForm.InputFieldSettings{
+			InputType:       uiForm.InputTypeText,
+			InputName:       "search",
+			Label:           "Search records",
+			TwoWayStatePath: "searchQuery",
+		})
+	}}
+	{{
+		overviewUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
+	Columns:     columns,
+	Rows:        records,
+	UrlTemplate: "/records?page={pageNumber}&sort={sortKey}&direction={sortDirection}&search={search}",
+
+	// OptionalFields
+	Filters:              filters,
+	RowIdResolver:        func(record Record) string { return record.Id },
+	SearchBox:            searchInput,
+	RefreshOnEvents:      []string{"refresh:records-table"},
+	InitialSortKey:       "name",
+	InitialSortDirection: uiStructural.DataTableSortDirectionAsc,
+})`
+	}}
+	<div class="flex flex-col gap-6" id="data-table-demo">
+		<div class="flex flex-row flex-wrap items-center gap-x-20 gap-y-10">
+			<div class="flex flex-col gap-2">
+				<h3 class="text-xl font-bold">.DataTable</h3>
+				<p class="text-sm text-neutral-400">
+					A data table renders rows from column definitions with sorting, selection, filters, search, and pagination. Every change refreshes the table from the server through the URL template. The examples below cover the full settings surface.
+				</p>
+			</div>
+			<div class="flex flex-col gap-2">
+				@UsageTitle("/structural/dataTable.templ")
+				<pre class={ DemoPreCodeClasses }>
+					<code>{ overviewUsage }</code>
+				</pre>
+			</div>
+		</div>
+		<div class="flex flex-col gap-4">
+			<div class="flex flex-col gap-1">
+				<h4 class="text-lg font-bold">Live Example</h4>
+				<p class="text-sm text-neutral-400">
+					The complete server-driven table: filters, search, sorting, selection, bulk and header actions, and pagination.
+				</p>
+			</div>
+			<div class="flex flex-col gap-4" x-data="{ isFileUrl: window.location.protocol === 'file:' }">
+				<div x-show="!isFileUrl">
+					@uiDisplay.Alert(uiDisplay.AlertSettings{
+						Title:       "This table needs a server response",
+						Description: "Every sort, filter, search, or page change sends a request. A real application returns the requested rows. This static demo serves five fixed pages from docs/assets: paging works, and sorting, filtering, and search do not change the rows.",
+						Variation:   uiDisplay.AlertVariationInfo,
+						Size:        uiDisplay.AlertSizeMd,
+					})
+				</div>
+				<div x-show="isFileUrl" style="display: none">
+					@uiDisplay.Alert(uiDisplay.AlertSettings{
+						Title:       "Open this page through a web server",
+						Description: "Browsers block refresh requests from file:// pages, so the table cannot page or refresh here. Serve the docs folder over HTTP and open the served URL.",
+						Variation:   uiDisplay.AlertVariationWarning,
+						Size:        uiDisplay.AlertSizeMd,
+					})
+				</div>
+				@uiToolset.MinifierTemplateJs(&dataTableDemoRoutingScript)
+				@uiStructural.DataTable(demoTableSettings)
+			</div>
+		</div>
+		<div class="flex flex-col gap-4">
+			<div class="flex flex-col gap-1">
+				<h4 class="text-lg font-bold">Advanced Examples</h4>
+				<p class="text-sm text-neutral-400">
+					The panels below hold static tables. They send no requests, so you can inspect the layout and the configuration without a server. Open a panel to see the settings and the rendered result.
+				</p>
+			</div>
+			@uiDisplay.Accordion(uiDisplay.AccordionSettings{
+				Items: []uiDisplay.AccordionItemSettings{
+					{Title: "Column Configuration", Icon: "ph-columns", Content: DataTableColumnConfigExample()},
+					{Title: "Rows Configuration", Icon: "ph-list-numbers", Content: DataTableRowsConfigExample()},
+					{Title: "Filters", Icon: "ph-funnel", Content: DataTableFiltersExample()},
+					{Title: "Search Box", Icon: "ph-magnifying-glass", Content: DataTableSearchBoxExample()},
+					{Title: "Header Actions", Icon: "ph-wrench", Content: DataTableHeaderActionsExample()},
+					{Title: "Bulk Actions", Icon: "ph-checks", Content: DataTableBulkActionsExample()},
+					{Title: "Row and Column Styling", Icon: "ph-paint-brush", Content: DataTableStylingExample()},
+					{Title: "Density and Header Text Case", Icon: "ph-text-aa", Content: DataTableAppearanceExample()},
+					{Title: "Sticky Header", Icon: "ph-arrow-line-down", Content: DataTableStickyHeaderExample()},
+					{Title: "Empty States", Icon: "ph-tray", Content: DataTableEmptyStateExample()},
+				},
+			})
+		</div>
+	</div>
+}
+
+templ DataTableRefreshFragment(pageNumber uint, itemsPerPage uiStructural.DataTablePageSize) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<title>DataTable Refresh Fragment</title>
+		</head>
+		<body>
+			@uiStructural.DataTable(buildDemoDataTableSettings(dataTableDemoRecords, pageNumber, itemsPerPage))
+		</body>
+	</html>
 }
