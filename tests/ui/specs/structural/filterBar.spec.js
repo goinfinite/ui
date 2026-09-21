@@ -52,6 +52,13 @@ test.describe("FilterBar @structural", () => {
     ).toBeVisible();
   });
 
+  test("@smoke number range chip shows the maximum alone", async ({ page }) => {
+    await page.locator(`${filterBarSection} input[name=cpuMax]`).fill("8");
+    await expect(
+      page.locator(filterBarSection).getByText("CPU: ≤ 8"),
+    ).toBeVisible();
+  });
+
   test("@smoke enum select updates the chip", async ({ page }) => {
     await page.locator(`${filterBarSection} [role=button]`).click();
     await page

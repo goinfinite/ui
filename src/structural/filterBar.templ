@@ -1,0 +1,137 @@
+package uiStructural
+
+import (
+	_ "embed"
+	"strconv"
+
+	uiControl "github.com/goinfinite/ui/src/control"
+	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiForm "github.com/goinfinite/ui/src/form"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+//go:embed filterBarState.js
+var filterBarAlpineState string
+
+const (
+	FilterKindTextContains string = "textContains"
+	FilterKindEnumSelect   string = "enumSelect"
+	FilterKindNumberRange  string = "numberRange"
+	FilterKindDateRange    string = "dateRange"
+)
+
+type FilterSettings struct {
+	Key   string
+	Label string
+	Kind  string
+
+	// OptionalFields
+	Options        []uiForm.SelectLabelValueOption
+	QueryParamName string
+}
+
+type FilterBarSettings struct {
+	Filters               []FilterSettings
+	ValuesTwoWayStatePath string
+
+	// OptionalFields
+	EnumSelectRadioGroupNamePrefix string
+	OnChangeFunc                   string
+}
+
+templ FilterBar(componentSettings FilterBarSettings) {
+	@uiToolset.MinifierTemplateJs(&filterBarAlpineState)
+	{{ valuesPath := componentSettings.ValuesTwoWayStatePath }}
+	{{ onChangeSuffix := "" }}
+	if componentSettings.OnChangeFunc != "" {
+		{{ onChangeSuffix = "; " + componentSettings.OnChangeFunc }}
+	}
+	<div class="flex flex-col gap-2" x-data={ templ.JSFuncCall("filterBar", valuesPath) }>
+		<div class="flex flex-wrap items-end gap-2">
+			for _, filter := range componentSettings.Filters {
+				switch filter.Kind {
+					case FilterKindTextContains:
+						<div
+							class="w-44"
+							if componentSettings.OnChangeFunc != "" {
+								@input={ componentSettings.OnChangeFunc }
+							}
+						>
+							@uiForm.InputField(uiForm.InputFieldSettings{
+								InputType:       uiForm.InputTypeText,
+								InputName:       filter.Key,
+								Label:           filter.Label,
+								TwoWayStatePath: valuesPath + "." + filter.Key,
+							})
+						</div>
+					case FilterKindEnumSelect:
+						<div class="w-44">
+							@uiForm.SelectInput(uiForm.SelectInputSettings{
+								InputName:                componentSettings.EnumSelectRadioGroupNamePrefix + filter.Key,
+								Label:                    filter.Label,
+								LabelValueOptions:        filter.Options,
+								OnChangeFunc:             componentSettings.OnChangeFunc,
+								ShouldIncludeBlankOption: true,
+								TwoWayStatePath:          valuesPath + "." + filter.Key,
+							})
+						</div>
+					case FilterKindNumberRange, FilterKindDateRange:
+						{{ inputType := uiForm.InputTypeNumber }}
+						if filter.Kind == FilterKindDateRange {
+							{{ inputType = uiForm.InputTypeDate }}
+						}
+						<div
+							class="flex items-end gap-1"
+							if componentSettings.OnChangeFunc != "" {
+								@input={ componentSettings.OnChangeFunc }
+							}
+						>
+							<div class="w-28">
+								@uiForm.InputField(uiForm.InputFieldSettings{
+									InputType:       inputType,
+									InputName:       filter.Key + "Min",
+									Label:           filter.Label + " min",
+									TwoWayStatePath: valuesPath + "." + filter.Key + ".min",
+								})
+							</div>
+							<div class="w-28">
+								@uiForm.InputField(uiForm.InputFieldSettings{
+									InputType:       inputType,
+									InputName:       filter.Key + "Max",
+									Label:           filter.Label + " max",
+									TwoWayStatePath: valuesPath + "." + filter.Key + ".max",
+								})
+							</div>
+						</div>
+				}
+			}
+			<div class="ml-auto">
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:                    "Clear filters",
+					IconLeft:                 "ph-broom",
+					IsVisibleOneWayStatePath: "hasActiveFilters()",
+					OnClickFunc:              "resetAllFilters()" + onChangeSuffix,
+					Size:                     uiControl.ButtonSizeSm,
+					TextColor:                "neutral-300",
+				})
+			</div>
+		</div>
+		<div class="flex flex-wrap items-center gap-1.5">
+			for _, filter := range componentSettings.Filters {
+				{{ filterKey := strconv.Quote(filter.Key) }}
+				<span x-show={ "isFilterActive(" + filterKey + ")" }>
+					@uiDisplay.Tag(uiDisplay.TagSettings{
+						Size:                          uiDisplay.TagSizeSm,
+						OuterBackgroundColor:          "neutral-50/10",
+						OuterRingColor:                "neutral-50/20",
+						OuterTextColor:                "neutral-50",
+						OuterLeftLabel:                filter.Label + ": ",
+						OuterLeftLabelOneWayStatePath: "resolveFilterChipLabel(" + filterKey + ")",
+						OnRemoveFunc:                  "resetFilter(" + filterKey + ")" + onChangeSuffix,
+						RemoveButtonLabel:             "Remove " + filter.Label + " filter",
+					})
+				</span>
+			}
+		</div>
+	</div>
+}
