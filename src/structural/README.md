@@ -1,0 +1,125 @@
+# Structural
+
+Structural layer of Infinite UI. It composes form and display components into page-level structures. Part of [Infinite UI](../../README.md).
+
+## DataTable
+
+`@uiStructural.DataTable` renders rows from your data and refreshes them from your server. Every sort, page, filter, or search change requests the URL template you provide. The table uses `htmx.ajax` when HTMX is present and falls back to `fetch` otherwise.
+
+The component requires a server that answers each request. The static demo serves fixed pages, so sorting, filtering, and search update the request only. Serve it over HTTP; browsers block refresh requests from `file://` pages.
+
+```go
+@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
+    Columns: columns,
+    Rows:    records,
+    UrlTemplate: "/records?page=" + uiStructural.DataTableUrlPlaceholderPageNumber +
+        "&sort=" + uiStructural.DataTableUrlPlaceholderSortKey +
+        "&direction=" + uiStructural.DataTableUrlPlaceholderSortDirection +
+        "&search=" + uiStructural.DataTableUrlPlaceholderSearch,
+
+    // OptionalFields
+    Filters:              filters,
+    RowIdResolver:        func(record Record) string { return record.Id },
+    SearchBox:            searchInput,
+    RefreshOnEvents:      []string{"refresh:records-table"},
+    InitialSortKey:       "name",
+    InitialSortDirection: uiStructural.DataTableSortDirectionAsc,
+})
+```
+
+Each column takes a `Label`, a `Render` function, and optional `SortKey`, `Alignment`, `WidthPercent`, width classes, and `CellClass`. `Alignment` takes a `DataTableAlignment` value: `DataTableAlignmentLeft`, `DataTableAlignmentCenter`, or `DataTableAlignmentRight`. `HeaderTextCase` takes a `DataTableHeaderTextCase` value: `DataTableHeaderTextCaseLower` (the default) or `DataTableHeaderTextCaseUpper`. `Density` takes a `DataTableDensity` value: `DataTableDensityComfortable` (the default) or `DataTableDensityDense`. `InitialSortDirection` takes a `DataTableSortDirection` value: `DataTableSortDirectionAsc` or `DataTableSortDirectionDesc`. `ItemsPerPage` and each entry in `ItemsPerPageOptions` are `DataTablePageSize` values. Set `PaginationAriaLabel` when a page holds more than one table, so each pagination landmark keeps a unique name.
+
+The `Initial*` fields seed the client state at render time: `InitialFilterValues`, `InitialSearchQuery`, `InitialSortKey`, and `InitialSortDirection`. The server renders the matching rows. `PageNumber` and `ItemsPerPage` also seed the client, but the component reads them to render the pagination readout.
+
+`HeaderClass` adds classes to the header row, `CellClass` adds classes to one column's cells, `RowClassResolver` returns classes for each row from its data, and `IsStriped` adds a zebra stripe. These classes append to elements that already carry base utilities, so when two utilities set the same property the generated stylesheet order decides the winner, not the field order. A cell component that sets its own color wins over the row color, so use `RowClassResolver` for cells that leave the color to the row. When `IsHeaderSticky` is set, the sticky header paints its own background, so a `HeaderClass` background does not show. `SearchBoxAlignment` takes a `DataTableAlignment` value and places the search slot left (the default), center, or right within the toolbar. `CheckboxShape` accepts `uiForm.CheckboxInputShapeSquare` (the default), `uiForm.CheckboxInputShapeRounded`, or `uiForm.CheckboxInputShapeCircular`; `CheckboxSize` accepts the `uiForm.CheckboxInputSize*` values and defaults to the medium size; `CheckboxCheckedColor` and `CheckboxUncheckedColor` take a color token and default to `secondary-500` and `neutral-50/20`.
+
+The URL template uses fixed placeholders. Build it from the `DataTableUrlPlaceholder*` constants and name the query keys:
+
+```go
+UrlTemplate: "/records?page=" + uiStructural.DataTableUrlPlaceholderPageNumber +
+    "&size=" + uiStructural.DataTableUrlPlaceholderItemsPerPage +
+    "&sort=" + uiStructural.DataTableUrlPlaceholderSortKey +
+    "&direction=" + uiStructural.DataTableUrlPlaceholderSortDirection +
+    "&q=" + uiStructural.DataTableUrlPlaceholderSearch
+```
+
+Filter values append to the URL as `key=value` pairs. Number and date ranges append as `keyMin` and `keyMax`. Empty values are omitted. Set `QueryParamName` on a filter to send a different query key.
+
+The server response must contain one element with the `data-ui-data-table` attribute. The component swaps only that element, so the filter bar, search box, and selection stay in place.
+
+Client state lives in the component root: `pageNumber`, `itemsPerPage`, `sortKey`, `sortDirection`, `searchQuery`, `filterValues`, and `selectedRowIds`. The search slot and the bulk action slot bind to those paths.
+
+`RefreshOnEvents` lists window event names. Dispatching one of them refreshes the table. This matches the form-to-display refresh pattern.
+
+A failed refresh shows an inline error row with a retry button. A refresh in flight dims the table and disables the controls.
+
+Pass filter keys, state paths, and the URL template from code, never from request data. The component embeds them into client-side expressions. `HeaderClass`, `CellClass`, the `RowClassResolver` result, `CheckboxCheckedColor`, and `CheckboxUncheckedColor` become HTML class attributes, so keep untrusted data out of them too.
+
+## FilterBar
+
+Standalone filter bar. It renders one editor per declared filter and shows active filters as removable chips.
+
+```go
+@uiStructural.FilterBar(uiStructural.FilterBarSettings{
+    Filters: []uiStructural.FilterSettings{
+        {Key: "name", Label: "Name", Type: uiStructural.FilterTypeTextContains},
+        {Key: "status", Label: "Status", Type: uiStructural.FilterTypeEnumSelect, Options: statusOptions},
+        {Key: "cpu", Label: "CPU", Type: uiStructural.FilterTypeNumberRange},
+    },
+    ValuesTwoWayStatePath: "filterValues",
+
+    // OptionalFields
+    OnChangeFunc: "refreshTable()",
+})
+```
+
+- `Type` accepts `FilterTypeTextContains`, `FilterTypeEnumSelect`, `FilterTypeNumberRange`, or `FilterTypeDateRange`.
+- Enum filters read `Options`. Range filters write `{min, max}` objects under the filter key.
+- A chip appears when its filter holds a value. The chip remove button clears that filter.
+- The clear-all button appears when any filter is active.
+- Set `EnumSelectInputNamePrefix` when a page holds more than one filter bar with the same enum keys, so each enum dropdown keeps its own radio group. The DataTable prefixes it with the table id.
+
+## Pagination
+
+Page controls with a readout, a page-number strip, and an items-per-page selector.
+
+```go
+@uiStructural.Pagination(uiStructural.PaginationSettings{
+    PageNumberTwoWayStatePath:   "pageNumber",
+    ItemsPerPageTwoWayStatePath: "itemsPerPage",
+    ItemsTotal:                  240,
+    PagesTotal:                  24,
+
+    // OptionalFields
+    OnChangeFunc: "requestRefresh()",
+})
+```
+
+- The readout follows the state paths. It shows the current range and the total.
+- The strip shows the first page, the last page, the pages around the current one, and ellipses for gaps. The current page carries `aria-current="page"`.
+- `ItemsPerPageOptions` overrides the default page sizes.
+- Set `ItemsPerPageInputName` when a page holds more than one pagination bound to the same state path, so the two items-per-page radio groups stay independent.
+- `IsDisabledOneWayStatePath` disables every control while the path is truthy.
+- `AriaLabel` names the navigation landmark. Set a distinct label when a page holds more than one pagination.
+
+## Sidebar
+
+Vertical navigation panel. It renders inline or fixed, and it can collapse or slide off canvas.
+
+```go
+@uiStructural.Sidebar(uiStructural.SidebarSettings{
+    MiddleContent: SidebarNavigation(),
+
+    // OptionalFields
+    HeaderContent:                 SidebarHeader(),
+    FooterContent:                 SidebarFooter(),
+    IsCollapsedTwoWayStatePath:    "isSidebarCollapsed",
+    AttachmentMode:                uiStructural.SidebarAttachmentModeInline,
+    Side:                          uiStructural.SidebarSideLeft,
+})
+```
+
+- `BackgroundColor` takes a full Tailwind class, for example `"bg-neutral-800/50"`, unlike the color tokens other components take.
+- `AttachmentMode` accepts `SidebarAttachmentModeInline` or `SidebarAttachmentModeFixed`.
+- `IsOffCanvas` and `IsOffCanvasTwoWayStatePath` slide the panel over the content.
+- `Width` sets the expanded width.
