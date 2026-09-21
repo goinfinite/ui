@@ -11,6 +11,7 @@ staticcheck = "2026.2.1"
 shellcheck = "0.11.0"
 "go:golang.org/x/tools/gopls" = "v0.23.0"
 "go:github.com/a-h/templ/cmd/templ" = "v0.3.1020"
+"npm:@biomejs/biome" = "2.5.13"
 
 # Test suite tooling (tests/tests.sh). Not used by the product.
 node = "24.18.0"
