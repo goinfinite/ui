@@ -68,7 +68,7 @@ func InputField(componentSettings InputFieldSettings) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!-- InputField --><div class=\"flex w-full flex-col\"><fieldset class=\"bg-neutral-50/7.5 relative -mt-2 w-full rounded border border-neutral-50/5 transition-colors autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!-- InputField --><div class=\"flex w-full flex-col\"><fieldset class=\"bg-neutral-50/7.5 relative -mt-1.5 w-full rounded border border-neutral-50/5 transition-colors autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -91,7 +91,7 @@ func InputField(componentSettings InputFieldSettings) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "><legend class=\"ml-1 select-none px-1 text-xs font-bold text-neutral-50/80\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "><legend class=\"ml-1 select-none px-1 text-xs font-bold lowercase leading-none text-neutral-50/80\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -165,7 +165,7 @@ func InputField(componentSettings InputFieldSettings) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if componentSettings.AffixLeftValue != "" || componentSettings.AffixLeftStatePath != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<!-- LeftAffix --> <div class=\"shrink-0 rounded-l border-r border-neutral-50/5 bg-neutral-50/5 p-2 text-sm text-neutral-400\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<!-- LeftAffix --> <div class=\"shrink-0 rounded-l border-r border-neutral-50/5 bg-neutral-50/5 p-1.5 text-sm text-neutral-400\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -175,9 +175,9 @@ func InputField(componentSettings InputFieldSettings) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var6 string
-				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.TwoWayStatePath + ` && '-mt-2'`)
+				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.TwoWayStatePath + ` && '-mt-1.5'`)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputField.templ`, Line: 73, Col: 65}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputField.templ`, Line: 73, Col: 67}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
 				if templ_7745c5c3_Err != nil {
@@ -227,7 +227,7 @@ func InputField(componentSettings InputFieldSettings) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		inputClasses := "w-full bg-transparent placeholder-text-neutral-50 placeholder-text-opacity-80 outline-none focus:outline-none p-2 pt-0 text-sm peer"
+		inputClasses := "w-full bg-transparent placeholder-text-neutral-50 placeholder-text-opacity-80 outline-none focus:outline-none p-1.5 pt-0 text-sm placeholder:lowercase peer"
 		if componentSettings.IsReadOnly {
 			inputClasses += " text-neutral-400 cursor-not-allowed"
 		} else {
@@ -436,9 +436,9 @@ func InputField(componentSettings InputFieldSettings) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var20 string
-			templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.ResolveAttributeValue(`!` + componentSettings.TwoWayStatePath + ` && 'pt-2'`)
+			templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.ResolveAttributeValue(`!` + componentSettings.TwoWayStatePath + ` && 'pt-1.5'`)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputField.templ`, Line: 121, Col: 69}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputField.templ`, Line: 121, Col: 71}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var20)
 			if templ_7745c5c3_Err != nil {
@@ -460,7 +460,7 @@ func InputField(componentSettings InputFieldSettings) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if componentSettings.AffixRightValue != "" || componentSettings.AffixRightStatePath != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "<!-- RightAffix --> <div class=\"shrink-0 rounded-r border-l border-neutral-50/5 bg-neutral-50/5 p-2 text-sm text-neutral-400\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "<!-- RightAffix --> <div class=\"shrink-0 rounded-r border-l border-neutral-50/5 bg-neutral-50/5 p-1.5 text-sm text-neutral-400\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -470,9 +470,9 @@ func InputField(componentSettings InputFieldSettings) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var21 string
-				templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.TwoWayStatePath + ` && '-mt-2'`)
+				templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.TwoWayStatePath + ` && '-mt-1.5'`)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputField.templ`, Line: 132, Col: 65}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputField.templ`, Line: 132, Col: 67}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var21)
 				if templ_7745c5c3_Err != nil {
