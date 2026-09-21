@@ -3301,9 +3301,9 @@ templ FilterBarDemo() {
 					<code>
 						{ `@uiStructural.FilterBar(uiStructural.FilterBarSettings{
 	Filters: []uiStructural.FilterSettings{
-		{Key: "name", Label: "Name", Type: uiStructural.FilterTypeTextContains},
-		{Key: "status", Label: "Status", Type: uiStructural.FilterTypeEnumSelect, Options: statusOptions},
-		{Key: "cpu", Label: "CPU", Type: uiStructural.FilterTypeNumberRange},
+		{Key: "name", Label: "Name", Kind: uiStructural.FilterKindTextContains},
+		{Key: "status", Label: "Status", Kind: uiStructural.FilterKindEnumSelect, Options: statusOptions},
+		{Key: "cpu", Label: "CPU", Kind: uiStructural.FilterKindNumberRange},
 	},
 	ValuesTwoWayStatePath: "filterValues",
 
@@ -3363,11 +3363,11 @@ templ DataTableColumnConfigExample() {
 	{{
 		columnUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
 	Columns: []uiStructural.DataTableColumnSettings[Record]{
-		{Label: "Name", SortKey: "name", WidthPercent: 20, Render: nameCell},
-		{Label: "Description", MaxWidthClass: "max-w-72 truncate", Render: descriptionCell},
-		{Label: "Status", Alignment: uiStructural.DataTableAlignmentCenter, WidthPercent: 15, Render: statusCell},
-		{Label: "CPU cores", SortKey: "cpuCores", Alignment: uiStructural.DataTableAlignmentRight, WidthPercent: 12, Render: cpuCell},
-		{Label: "Created at", MinWidthClass: "min-w-28", Render: createdAtCell},
+		{Label: "Name", SortKey: "name", WidthPercent: 20, CellRenderer: nameCell},
+		{Label: "Description", MaxWidthClass: "max-w-72 truncate", CellRenderer: descriptionCell},
+		{Label: "Status", Alignment: uiStructural.DataTableAlignmentCenter, WidthPercent: 15, CellRenderer: statusCell},
+		{Label: "CPU cores", SortKey: "cpuCores", Alignment: uiStructural.DataTableAlignmentRight, WidthPercent: 12, CellRenderer: cpuCell},
+		{Label: "Created at", MinWidthClass: "min-w-28", CellRenderer: createdAtCell},
 	},
 	Rows: records,
 })`
@@ -3454,27 +3454,25 @@ templ DataTableSearchBoxExample() {
 		)
 	}}
 	{{
-		searchSettings.SearchBox = uiForm.InputField(uiForm.InputFieldSettings{
-			InputType:       uiForm.InputTypeText,
-			InputName:       "search",
-			Label:           "Search records",
-			TwoWayStatePath: "searchQuery",
-		})
+		searchSettings.QueryUrlTemplate = "assets/dataTableDemoRefresh.html?search=" +
+			uiStructural.DataTableUrlPlaceholderSearch
 		searchSettings.InitialSearchQuery = "alpha"
 		searchSettings.SearchBoxAlignment = uiStructural.DataTableAlignmentCenter
 	}}
 	{{
 		searchUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
-	Columns:            columns,
-	Rows:               records,
-	SearchBox:          searchInput,
+	Columns:          columns,
+	Rows:             records,
+	QueryUrlTemplate: "/records?search={search}",
+
+	// OptionalFields
 	InitialSearchQuery: "alpha",
 	SearchBoxAlignment: uiStructural.DataTableAlignmentCenter,
 })`
 	}}
 	@DataTableExampleCard(
 		"Search Box",
-		"The SearchBox slot renders in the toolbar and binds to the searchQuery state. InitialSearchQuery seeds the starting text. SearchBoxAlignment places the box left, center, or right.",
+		"The table renders a default search box when the query template carries the search placeholder. InitialSearchQuery seeds the starting text. SearchBoxAlignment places the box left, center, or right. Pass SearchBox to replace the default box.",
 		searchUsage,
 		uiStructural.DataTable(searchSettings),
 	)
@@ -3590,9 +3588,9 @@ templ DataTableStylingExample() {
 	{{
 		stylingUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
 	Columns: []uiStructural.DataTableColumnSettings[Record]{
-		{Label: "Name", CellClass: "font-bold", Render: nameCell},
-		{Label: "Status", Render: statusCell},
-		{Label: "CPU cores", Alignment: uiStructural.DataTableAlignmentRight, Render: cpuCell},
+		{Label: "Name", CellClass: "font-bold", CellRenderer: nameCell},
+		{Label: "Status", CellRenderer: statusCell},
+		{Label: "CPU cores", Alignment: uiStructural.DataTableAlignmentRight, CellRenderer: cpuCell},
 	},
 	Rows: records,
 
@@ -3762,23 +3760,14 @@ templ DataTableDemo() {
 	}}
 	{{ demoTableSettings.RefreshOnEvents = []string{"refresh:data-table-demo"} }}
 	{{
-		demoTableSettings.SearchBox = uiForm.InputField(uiForm.InputFieldSettings{
-			InputType:       uiForm.InputTypeText,
-			InputName:       "search",
-			Label:           "Search records",
-			TwoWayStatePath: "searchQuery",
-		})
-	}}
-	{{
 		overviewUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
-	Columns:     columns,
-	Rows:        records,
-	UrlTemplate: "/records?page={pageNumber}&sort={sortKey}&direction={sortDirection}&search={search}",
+	Columns:          columns,
+	Rows:             records,
+	QueryUrlTemplate: "/records?page={pageNumber}&sort={sortKey}&direction={sortDirection}&search={search}",
 
 	// OptionalFields
 	Filters:              filters,
 	RowIdResolver:        func(record Record) string { return record.Id },
-	SearchBox:            searchInput,
 	RefreshOnEvents:      []string{"refresh:records-table"},
 	InitialSortKey:       "name",
 	InitialSortDirection: uiStructural.DataTableSortDirectionAsc,

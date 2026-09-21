@@ -67,17 +67,17 @@ func buildDemoServerRecords() []DemoServerRecord {
 
 func buildDemoRecordFilters() []uiStructural.FilterSettings {
 	return []uiStructural.FilterSettings{
-		{Key: "name", Label: "Name", Type: uiStructural.FilterTypeTextContains},
+		{Key: "name", Label: "Name", Kind: uiStructural.FilterKindTextContains},
 		{
 			Key:   "status",
 			Label: "Status",
-			Type:  uiStructural.FilterTypeEnumSelect,
+			Kind:  uiStructural.FilterKindEnumSelect,
 			Options: []uiForm.SelectLabelValueOption{
 				{Label: "running", Value: "running"},
 				{Label: "stopped", Value: "stopped"},
 			},
 		},
-		{Key: "cpu", Label: "CPU", Type: uiStructural.FilterTypeNumberRange},
+		{Key: "cpu", Label: "CPU", Kind: uiStructural.FilterKindNumberRange},
 	}
 }
 
@@ -87,14 +87,14 @@ func buildDemoServerTableColumns() []uiStructural.DataTableColumnSettings[DemoSe
 			Label:        "Name",
 			SortKey:      "name",
 			WidthPercent: 30,
-			Render: func(record DemoServerRecord) templ.Component {
+			CellRenderer: func(record DemoServerRecord) templ.Component {
 				return DemoServerTextCell(record.Name)
 			},
 		},
 		{
 			Label:        "Status",
 			WidthPercent: 20,
-			Render: func(record DemoServerRecord) templ.Component {
+			CellRenderer: func(record DemoServerRecord) templ.Component {
 				return DemoServerStatusCell(record.Status)
 			},
 		},
@@ -103,7 +103,7 @@ func buildDemoServerTableColumns() []uiStructural.DataTableColumnSettings[DemoSe
 			SortKey:      "cpuCores",
 			Alignment:    uiStructural.DataTableAlignmentRight,
 			WidthPercent: 15,
-			Render: func(record DemoServerRecord) templ.Component {
+			CellRenderer: func(record DemoServerRecord) templ.Component {
 				return DemoServerTextCell(record.CpuCores)
 			},
 		},
@@ -111,7 +111,7 @@ func buildDemoServerTableColumns() []uiStructural.DataTableColumnSettings[DemoSe
 			Label:        "Created at",
 			SortKey:      "createdAt",
 			WidthPercent: 20,
-			Render: func(record DemoServerRecord) templ.Component {
+			CellRenderer: func(record DemoServerRecord) templ.Component {
 				return DemoServerTextCell(record.CreatedAt)
 			},
 		},
@@ -122,20 +122,20 @@ func buildDemoPlainTableColumns() []uiStructural.DataTableColumnSettings[DemoSer
 	return []uiStructural.DataTableColumnSettings[DemoServerRecord]{
 		{
 			Label: "Name",
-			Render: func(record DemoServerRecord) templ.Component {
+			CellRenderer: func(record DemoServerRecord) templ.Component {
 				return DemoServerTextCell(record.Name)
 			},
 		},
 		{
 			Label: "Status",
-			Render: func(record DemoServerRecord) templ.Component {
+			CellRenderer: func(record DemoServerRecord) templ.Component {
 				return DemoServerStatusCell(record.Status)
 			},
 		},
 		{
 			Label:     "CPU cores",
 			Alignment: uiStructural.DataTableAlignmentRight,
-			Render: func(record DemoServerRecord) templ.Component {
+			CellRenderer: func(record DemoServerRecord) templ.Component {
 				return DemoServerTextCell(record.CpuCores)
 			},
 		},
@@ -148,14 +148,14 @@ func buildDemoColumnShowcaseColumns() []uiStructural.DataTableColumnSettings[Dem
 			Label:        "Name",
 			SortKey:      "name",
 			WidthPercent: 20,
-			Render: func(record DemoServerRecord) templ.Component {
+			CellRenderer: func(record DemoServerRecord) templ.Component {
 				return DemoServerTextCell(record.Name)
 			},
 		},
 		{
 			Label:         "Description",
 			MaxWidthClass: "max-w-72 truncate",
-			Render: func(record DemoServerRecord) templ.Component {
+			CellRenderer: func(record DemoServerRecord) templ.Component {
 				return DemoServerTextCell(record.Description)
 			},
 		},
@@ -163,7 +163,7 @@ func buildDemoColumnShowcaseColumns() []uiStructural.DataTableColumnSettings[Dem
 			Label:        "Status",
 			Alignment:    uiStructural.DataTableAlignmentCenter,
 			WidthPercent: 15,
-			Render: func(record DemoServerRecord) templ.Component {
+			CellRenderer: func(record DemoServerRecord) templ.Component {
 				return DemoServerStatusCell(record.Status)
 			},
 		},
@@ -172,14 +172,14 @@ func buildDemoColumnShowcaseColumns() []uiStructural.DataTableColumnSettings[Dem
 			SortKey:      "cpuCores",
 			Alignment:    uiStructural.DataTableAlignmentRight,
 			WidthPercent: 12,
-			Render: func(record DemoServerRecord) templ.Component {
+			CellRenderer: func(record DemoServerRecord) templ.Component {
 				return DemoServerTextCell(record.CpuCores)
 			},
 		},
 		{
 			Label:         "Created at",
 			MinWidthClass: "min-w-28",
-			Render: func(record DemoServerRecord) templ.Component {
+			CellRenderer: func(record DemoServerRecord) templ.Component {
 				return DemoServerTextCell(record.CreatedAt)
 			},
 		},
@@ -191,20 +191,20 @@ func buildDemoStylingColumns() []uiStructural.DataTableColumnSettings[DemoServer
 		{
 			Label:     "Name",
 			CellClass: "font-bold",
-			Render: func(record DemoServerRecord) templ.Component {
+			CellRenderer: func(record DemoServerRecord) templ.Component {
 				return DemoServerPlainTextCell(record.Name)
 			},
 		},
 		{
 			Label: "Status",
-			Render: func(record DemoServerRecord) templ.Component {
+			CellRenderer: func(record DemoServerRecord) templ.Component {
 				return DemoServerStatusCell(record.Status)
 			},
 		},
 		{
 			Label:     "CPU cores",
 			Alignment: uiStructural.DataTableAlignmentRight,
-			Render: func(record DemoServerRecord) templ.Component {
+			CellRenderer: func(record DemoServerRecord) templ.Component {
 				return DemoServerPlainTextCell(record.CpuCores)
 			},
 		},
@@ -222,24 +222,24 @@ func buildDemoDataTableSettings(
 	return uiStructural.DataTableSettings[DemoServerRecord]{
 		Columns: buildDemoServerTableColumns(),
 		Rows:    records[firstIndex:lastIndex],
-		UrlTemplate: "assets/dataTableDemoRefresh.html" +
+		QueryUrlTemplate: "assets/dataTableDemoRefresh.html" +
 			"?page=" + uiStructural.DataTableUrlPlaceholderPageNumber +
 			"&itemsPerPage=" + uiStructural.DataTableUrlPlaceholderItemsPerPage +
 			"&sort=" + uiStructural.DataTableUrlPlaceholderSortKey +
 			"&direction=" + uiStructural.DataTableUrlPlaceholderSortDirection +
 			"&search=" + uiStructural.DataTableUrlPlaceholderSearch,
-		InitialFilterValues:  map[string]any{"status": "running"},
-		Filters:              buildDemoRecordFilters(),
-		Id:                   "data-table-demo-table",
-		ItemsPerPage:         itemsPerPage,
-		ItemsPerPageOptions:  []uiStructural.DataTablePageSize{dataTableDemoItemsPerPage, uiStructural.DataTablePageSize(len(records))},
-		ItemsTotal:           uint(len(records)),
-		PageNumber:           pageNumber,
-		PagesTotal:           pagesTotal,
-		RowIdResolver:        func(record DemoServerRecord) string { return record.Id },
-		RowLabelResolver:     func(record DemoServerRecord) string { return record.Name },
-		InitialSortKey:       "name",
-		InitialSortDirection: uiStructural.DataTableSortDirectionAsc,
+		InitialFilterValues:     map[string]any{"status": "running"},
+		Filters:                 buildDemoRecordFilters(),
+		Id:                      "data-table-demo-table",
+		ItemsPerPage:            itemsPerPage,
+		ItemsPerPageSizeChoices: []uiStructural.DataTablePageSize{dataTableDemoItemsPerPage, uiStructural.DataTablePageSize(len(records))},
+		ItemsTotal:              uint(len(records)),
+		PageNumber:              pageNumber,
+		PagesTotal:              pagesTotal,
+		RowIdResolver:           func(record DemoServerRecord) string { return record.Id },
+		RowLabelResolver:        func(record DemoServerRecord) string { return record.Name },
+		InitialSortKey:          "name",
+		InitialSortDirection:    uiStructural.DataTableSortDirectionAsc,
 	}
 }
 
@@ -261,14 +261,14 @@ func buildDemoStaticTableSettings(
 	itemsPerPage := dataTableDemoStaticPageSizeResolver(itemsTotal)
 	pagesTotal := demoTablePageCountResolver(itemsTotal, itemsPerPage)
 	return uiStructural.DataTableSettings[DemoServerRecord]{
-		Columns:             columns,
-		Rows:                rows,
-		Id:                  id,
-		ItemsPerPage:        itemsPerPage,
-		ItemsPerPageOptions: []uiStructural.DataTablePageSize{itemsPerPage},
-		ItemsTotal:          itemsTotal,
-		PageNumber:          1,
-		PaginationAriaLabel: paginationAriaLabel,
-		PagesTotal:          pagesTotal,
+		Columns:                 columns,
+		Rows:                    rows,
+		Id:                      id,
+		ItemsPerPage:            itemsPerPage,
+		ItemsPerPageSizeChoices: []uiStructural.DataTablePageSize{itemsPerPage},
+		ItemsTotal:              itemsTotal,
+		PageNumber:              1,
+		PaginationAriaLabel:     paginationAriaLabel,
+		PagesTotal:              pagesTotal,
 	}
 }
