@@ -31,7 +31,7 @@ requireDemoUrl() {
 runSelectedSpecs() {
 	case "$1" in
 		smoke) npx playwright test --project=chromium --grep @smoke ;;
-		standard) npx playwright test --project=chromium --grep-invert "@smoke|@a11y|@perf|@toolset|@control" ;;
+		standard) npx playwright test --project=chromium --grep-invert "@smoke|@a11y|@perf|@toolset|@control|@structural" ;;
 		a11y) npx playwright test --project=chromium --grep @a11y ;;
 		performance) npx playwright test --project=chromium --grep @perf ;;
 		toolset) npx playwright test --project=chromium --grep @toolset ;;
@@ -42,7 +42,7 @@ runSelectedSpecs() {
 		cross-browser)
 			# WebKit is defined in playwright.config.js but needs system libraries
 			# this host lacks; enable it with --project=webkit where they exist.
-			npx playwright test --project=firefox --grep-invert "@a11y|@perf|@toolset|@control"
+			npx playwright test --project=firefox --grep-invert "@a11y|@perf|@toolset|@control|@structural"
 			;;
 		toolset-cross-browser) npx playwright test --project=firefox --grep @toolset ;;
 		control-cross-browser) npx playwright test --project=firefox --grep @control ;;
