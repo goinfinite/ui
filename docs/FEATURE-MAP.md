@@ -190,7 +190,7 @@ Standalone filter bar that renders one editor per declared filter (text contains
 **Flow:**
 
 1. `src/structural/filterBar.templ` — Component definition with FilterBarSettings and FilterSettings; renders editors and chips bound to a values object
-2. `src/structural/filterBar.go` — Alpine expression builders for chip values, chip visibility, single-filter reset, and clear-all
+2. `src/structural/filterBarState.js` — Alpine component with chip visibility, chip label, single-filter reset, clear-all, and any-active helpers
 3. `src/display/tag.templ` — Removable Tag variant used for the chips
 4. `src/structural/filterBar_templ.go` — Compiled output
 
@@ -198,7 +198,7 @@ Standalone filter bar that renders one editor per declared filter (text contains
 
 ## Data Table
 
-Generic server-driven table taking column definitions and rows. Adds sortable headers, row selection with bulk actions, the filter bar, a search slot, header action slots, a pagination footer, loading and error states, and refresh from a URL template. Uses `htmx.ajax` when HTMX is present and a `fetch` fallback otherwise.
+Generic server-driven table taking column definitions and rows. Adds sortable headers, row selection with bulk actions, the filter bar, a default search box, header action slots, a pagination footer, loading and error states, and refresh from a query URL template. Uses `htmx.ajax` when HTMX is present and a `fetch` fallback otherwise.
 
 **Flow:**
 
