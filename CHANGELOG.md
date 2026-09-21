@@ -1,6 +1,38 @@
 # Changelog
 
 ```log
+0.2.1 - 2026/09/18
+chore: adopt biome for JavaScript, CSS, and SVG lint and formatting
+docs: box the live example state readouts in the demo
+feat: add data table row and column styling, search box alignment, and checkbox shape, size, and color settings
+fix: keep the checkbox and toggle switch label at its content width
+refactor: suffix the data table row callback fields with resolver
+refactor: prefix the data table initial state settings with initial
+docs: capitalize the data table advanced example titles
+feat: add checkbox input with shapes, sizes, colors, and indeterminate state
+fix: use the checkbox input for the data table row selection
+fix: open the select input dropdown upward when there is no room below
+fix: compact the pagination buttons and keep extra small icon buttons at 24px
+feat: add a data table header text case setting and lowercase the sortable headers
+fix: apply the select input size setting and compact the items per page control
+docs: order the demo components alphabetically and label the sidebar sections
+refactor: return errors from the demo generator and name its artifacts
+fix: run the modal close callback on a backdrop click
+fix: stop the backdrop click from closing an uncloseable modal
+docs: split the README into one README per package
+docs: state the data table server requirement in the demo and README
+fix: serve the requested page in the data table demo
+fix: show page numbers with the current page marked in pagination
+fix: scale the tag remove icon and show one sort icon per table header
+fix: lowercase buttons, labels, and table headers and shorten form controls
+test: exercise table filters, search, and page numbers end to end
+docs: describe the structural components in the context files
+feat: add data table with server-driven refresh
+feat: add filter bar with removable chips
+feat: add pagination
+feat: add removable tag variant
+refactor: move sidebar to the structural package
+
 0.2.0 - 2026/09/16
 fix: restrict the demo asset proxy to approved hosts
 refactor: remove the unused selectInput InputId setting
