@@ -2,6 +2,13 @@
 
 ```log
 0.2.1 - 2026/09/18
+feat: render a default search box in the data table
+refactor: rename the data table query url template setting
+refactor: rename the data table column render callback to CellRenderer
+refactor: rename the data table items per page size choices setting
+refactor: derive the data table id from its configuration only
+refactor: rename the filter settings type field to kind
+refactor: move the filter bar expressions to an alpine state
 feat: add an aria label setting to the button
 chore: adopt biome for JavaScript, CSS, and SVG lint and formatting
 docs: box the live example state readouts in the demo
