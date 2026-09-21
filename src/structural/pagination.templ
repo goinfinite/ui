@@ -1,0 +1,136 @@
+package uiStructural
+
+import (
+	_ "embed"
+	"strconv"
+
+	uiControl "github.com/goinfinite/ui/src/control"
+	uiForm "github.com/goinfinite/ui/src/form"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+//go:embed paginationState.js
+var paginationAlpineState string
+
+type PaginationSettings struct {
+	PageNumberTwoWayStatePath   string
+	ItemsPerPageTwoWayStatePath string
+	ItemsTotal                  uint
+	PagesTotal                  uint
+
+	// OptionalFields
+	AriaLabel                  string
+	IsDisabledOneWayStatePath string
+	ItemsPerPageInputName     string
+	ItemsPerPageSizeChoices   []uint
+	OnChangeFunc              string
+}
+
+templ Pagination(componentSettings PaginationSettings) {
+	@uiToolset.MinifierTemplateJs(&paginationAlpineState)
+	{{ pageNumberPath := componentSettings.PageNumberTwoWayStatePath }}
+	{{ itemsPerPagePath := componentSettings.ItemsPerPageTwoWayStatePath }}
+	{{ itemsPerPageSizeChoices := componentSettings.ItemsPerPageSizeChoices }}
+	if len(itemsPerPageSizeChoices) == 0 {
+		{{ itemsPerPageSizeChoices = paginationDefaultItemsPerPageSizeChoices }}
+	}
+	{{ itemsPerPageSizeChoiceLabels := []string{} }}
+	for _, sizeChoice := range itemsPerPageSizeChoices {
+		{{ itemsPerPageSizeChoiceLabels = append(itemsPerPageSizeChoiceLabels, strconv.FormatUint(uint64(sizeChoice), 10)) }}
+	}
+	{{ onChangeSuffix := "" }}
+	if componentSettings.OnChangeFunc != "" {
+		{{ onChangeSuffix = "; " + componentSettings.OnChangeFunc }}
+	}
+	{{ pagesTotal := strconv.FormatUint(uint64(componentSettings.PagesTotal), 10) }}
+	{{ disabledSuffix := "" }}
+	if componentSettings.IsDisabledOneWayStatePath != "" {
+		{{ disabledSuffix = componentSettings.IsDisabledOneWayStatePath + " || " }}
+	}
+	{{ ariaLabel := "Pagination" }}
+	if componentSettings.AriaLabel != "" {
+		{{ ariaLabel = componentSettings.AriaLabel }}
+	}
+	{{ itemsPerPageInputName := componentSettings.ItemsPerPageInputName }}
+	if itemsPerPageInputName == "" {
+		{{ itemsPerPageInputName = "itemsPerPage-" + itemsPerPagePath }}
+	}
+	<nav
+		aria-label={ ariaLabel }
+		class="flex flex-wrap items-center justify-between gap-3 px-3 py-2 text-sm text-neutral-400"
+	>
+		<p class="select-none" x-text={ paginationReadoutExpressionBuilder(pageNumberPath, itemsPerPagePath, componentSettings.ItemsTotal) }></p>
+		<div class="flex items-center gap-0.5">
+			@uiControl.Button(uiControl.ButtonSettings{
+				AriaLabel:                 "First page",
+				IconLeft:                  "ph-caret-double-left",
+				IsDisabledOneWayStatePath: disabledSuffix + pageNumberPath + " <= 1",
+				OnClickFunc:               pageNumberPath + " = 1" + onChangeSuffix,
+				Size:                      uiControl.ButtonSizeXs,
+				TooltipContent:            "First page",
+				TooltipPosition:           uiControl.ButtonTooltipPositionTop,
+			})
+			@uiControl.Button(uiControl.ButtonSettings{
+				AriaLabel:                 "Previous page",
+				IconLeft:                  "ph-caret-left",
+				IsDisabledOneWayStatePath: disabledSuffix + pageNumberPath + " <= 1",
+				OnClickFunc:               pageNumberPath + " = Math.max(1, " + pageNumberPath + " - 1)" + onChangeSuffix,
+				Size:                      uiControl.ButtonSizeXs,
+				TooltipContent:            "Previous page",
+				TooltipPosition:           uiControl.ButtonTooltipPositionTop,
+			})
+			<template
+				x-for={ "pageItem in UiToolset.PaginationPageStripBuilder(" + pageNumberPath + ", " + pagesTotal + ")" }
+				:key="pageItem.key"
+			>
+				<span>
+					<template x-if="pageItem.pageNumber === null">
+						<span class="px-1.5 text-sm leading-none text-neutral-400">…</span>
+					</template>
+					<template x-if="pageItem.pageNumber !== null">
+						<button
+							type="button"
+							class="min-w-6 cursor-pointer rounded border-0 bg-transparent px-1 py-[5px] text-sm font-bold leading-none text-neutral-400 transition-all hover:bg-neutral-50/12.5 hover:text-neutral-50"
+							:class={ pageNumberPath + " === pageItem.pageNumber && '!bg-neutral-50/15 !text-neutral-50'" }
+							:aria-current={ pageNumberPath + " === pageItem.pageNumber && 'page'" }
+							if componentSettings.IsDisabledOneWayStatePath != "" {
+								:disabled={ componentSettings.IsDisabledOneWayStatePath }
+							}
+							@click={ pageNumberPath + " = pageItem.pageNumber" + onChangeSuffix }
+							x-text="pageItem.label"
+						></button>
+					</template>
+				</span>
+			</template>
+			@uiControl.Button(uiControl.ButtonSettings{
+				AriaLabel:                 "Next page",
+				IconLeft:                  "ph-caret-right",
+				IsDisabledOneWayStatePath: disabledSuffix + pageNumberPath + " >= " + pagesTotal,
+				OnClickFunc:               pageNumberPath + " = Math.min(" + pagesTotal + ", " + pageNumberPath + " + 1)" + onChangeSuffix,
+				Size:                      uiControl.ButtonSizeXs,
+				TooltipContent:            "Next page",
+				TooltipPosition:           uiControl.ButtonTooltipPositionTop,
+			})
+			@uiControl.Button(uiControl.ButtonSettings{
+				AriaLabel:                 "Last page",
+				IconLeft:                  "ph-caret-double-right",
+				IsDisabledOneWayStatePath: disabledSuffix + pageNumberPath + " >= " + pagesTotal,
+				OnClickFunc:               pageNumberPath + " = " + pagesTotal + onChangeSuffix,
+				Size:                      uiControl.ButtonSizeXs,
+				TooltipContent:            "Last page",
+				TooltipPosition:           uiControl.ButtonTooltipPositionTop,
+			})
+		</div>
+		<div class="w-36">
+			@uiForm.SelectInput(uiForm.SelectInputSettings{
+				InputName:                 itemsPerPageInputName,
+				Label:                     "Items per page",
+				FlatOptions:               itemsPerPageSizeChoiceLabels,
+				IsDisabledOneWayStatePath: componentSettings.IsDisabledOneWayStatePath,
+				OnChangeFunc:              pageNumberPath + " = 1" + onChangeSuffix,
+				Size:                      uiForm.SelectInputSizeSm,
+				TwoWayStatePath:           itemsPerPagePath,
+			})
+		</div>
+	</nav>
+}
