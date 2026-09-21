@@ -38,6 +38,8 @@ type TagSettings struct {
 	OuterRightLabelOneWayStatePath string
 	OuterRightOnClickFunc          string
 	OuterRadius                    string
+	OnRemoveFunc                   string
+	RemoveButtonLabel              string
 	InnerIcon                      string
 	InnerLabel                     string
 	InnerLabelOneWayStatePath      string
@@ -187,7 +189,7 @@ templ Tag(componentSettings TagSettings) {
 				<i class={ "ph-bold " + componentSettings.OuterLeftIcon + " text-lg" }></i>
 			}
 			if componentSettings.OuterLeftLabel != "" {
-				{ componentSettings.OuterLeftLabel }
+				<span class="lowercase">{ componentSettings.OuterLeftLabel }</span>
 			}
 			if componentSettings.OuterLeftLabelOneWayStatePath != "" {
 				<span x-text={ componentSettings.OuterLeftLabelOneWayStatePath }></span>
@@ -198,7 +200,7 @@ templ Tag(componentSettings TagSettings) {
 				<i class={ "ph-bold " + componentSettings.InnerIcon + " text-lg" }></i>
 			}
 			if componentSettings.InnerLabel != "" {
-				{ componentSettings.InnerLabel }
+				<span class="lowercase">{ componentSettings.InnerLabel }</span>
 			}
 			if componentSettings.InnerLabelOneWayStatePath != "" {
 				<span x-text={ componentSettings.InnerLabelOneWayStatePath }></span>
@@ -219,12 +221,40 @@ templ Tag(componentSettings TagSettings) {
 					<i class={ "ph-bold " + componentSettings.OuterRightIcon + " text-lg" }></i>
 				}
 				if componentSettings.OuterRightLabel != "" {
-					{ componentSettings.OuterRightLabel }
+					<span class="lowercase">{ componentSettings.OuterRightLabel }</span>
 				}
 				if componentSettings.OuterRightLabelOneWayStatePath != "" {
 					<span x-text={ componentSettings.OuterRightLabelOneWayStatePath }></span>
 				}
 			</div>
+		}
+		if componentSettings.OnRemoveFunc != "" {
+			{{ removeButtonLabel := "Remove" }}
+			if componentSettings.RemoveButtonLabel != "" {
+				{{ removeButtonLabel = componentSettings.RemoveButtonLabel }}
+			}
+			{{ removeIconSize := "text-base" }}
+			switch componentSettings.Size {
+				case TagSizeXs:
+					{{ removeIconSize = "text-xs" }}
+				case TagSizeSm:
+					{{ removeIconSize = "text-sm" }}
+				case TagSizeMd:
+					{{ removeIconSize = "text-base" }}
+				case TagSizeLg:
+					{{ removeIconSize = "text-lg" }}
+				case TagSizeXl:
+					{{ removeIconSize = "text-xl" }}
+			}
+			<button
+				type="button"
+				class="-m-1.5 flex cursor-pointer items-center border-0 bg-transparent p-1.5 hover:opacity-80"
+				aria-label={ removeButtonLabel }
+				title={ removeButtonLabel }
+				@click={ componentSettings.OnRemoveFunc }
+			>
+				<i class={ "ph-bold ph-x leading-none " + removeIconSize }></i>
+			</button>
 		}
 	</div>
 }
