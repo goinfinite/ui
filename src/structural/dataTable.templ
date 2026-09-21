@@ -1,0 +1,244 @@
+package uiStructural
+
+import (
+	_ "embed"
+	"strconv"
+	"strings"
+
+	uiControl "github.com/goinfinite/ui/src/control"
+	uiForm "github.com/goinfinite/ui/src/form"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+//go:embed dataTableState.js
+var dataTableAlpineState string
+
+templ DataTableDefaultEmptyState() {
+	No records found.
+}
+
+templ DataTableDefaultSearchBox() {
+	@uiForm.InputField(uiForm.InputFieldSettings{
+		InputType:       uiForm.InputTypeText,
+		InputName:       "search",
+		Label:           "Search",
+		TwoWayStatePath: "searchQuery",
+	})
+}
+
+templ DataTable[Row any](componentSettings DataTableSettings[Row]) {
+	@uiToolset.MinifierTemplateJs(&dataTableAlpineState)
+	{{ tableId := componentSettings.idResolver() }}
+	{{ settingsScriptId := tableId + "-settings" }}
+	{{ cellPaddingClasses := componentSettings.cellPaddingClassesResolver() }}
+	{{ headerPaddingClasses := componentSettings.headerPaddingClassesResolver() }}
+	{{ headerTextCaseClass := componentSettings.headerTextCaseClassResolver() }}
+	{{ headerRowClasses := "border-b border-neutral-50/10 text-xs " + headerTextCaseClass + " text-neutral-400" }}
+	if componentSettings.HeaderClass != "" {
+		{{ headerRowClasses = headerRowClasses + " " + componentSettings.HeaderClass }}
+	}
+	{{ checkboxShape := componentSettings.checkboxShapeResolver() }}
+	{{ searchBoxJustifyClass := componentSettings.SearchBoxAlignment.justifyClassResolver() }}
+	{{ searchBoxComponent := componentSettings.SearchBox }}
+	if searchBoxComponent == nil && strings.Contains(componentSettings.QueryUrlTemplate, DataTableUrlPlaceholderSearch) {
+		{{ searchBoxComponent = DataTableDefaultSearchBox() }}
+	}
+	{{ rowStripeClasses := componentSettings.rowStripeClassesResolver() }}
+	{{ stickyHeaderClasses := "" }}
+	if componentSettings.IsHeaderSticky {
+		{{ stickyHeaderClasses = " sticky top-0 z-10 bg-neutral-900" }}
+	}
+	{{ scrollContainerClasses := "overflow-x-auto" }}
+	if componentSettings.IsHeaderSticky {
+		{{ scrollContainerClasses = "max-h-128 overflow-auto" }}
+	}
+	{{ hasSelection := componentSettings.RowIdResolver != nil }}
+	{{ columnCount := len(componentSettings.Columns) }}
+	if hasSelection {
+		{{ columnCount = columnCount + 1 }}
+	}
+	{{ itemsPerPageSizeChoices := componentSettings.itemsPerPageSizeChoicesResolver() }}
+	{{ itemsPerPage := componentSettings.itemsPerPageResolver(itemsPerPageSizeChoices) }}
+	{{ pageNumber := componentSettings.pageNumberResolver() }}
+	{{ paginationAriaLabel := componentSettings.paginationAriaLabelResolver() }}
+	@templ.JSONScript(settingsScriptId, componentSettings.clientSettingsResolver(itemsPerPage, pageNumber))
+	<div
+		class="flex flex-col overflow-hidden rounded-md border border-neutral-50/10 bg-neutral-50/2.5"
+		x-data={ templ.JSFuncCall("dataTable", settingsScriptId) }
+		if componentSettings.Id != "" {
+			id={ componentSettings.Id }
+		}
+	>
+		if len(componentSettings.Filters) > 0 {
+			<div class="border-b border-neutral-50/10 p-2">
+				@FilterBar(FilterBarSettings{
+					Filters:                        componentSettings.Filters,
+					ValuesTwoWayStatePath:          "filterValues",
+					EnumSelectRadioGroupNamePrefix: tableId + "-",
+					OnChangeFunc:                   "resetPageAndRefresh()",
+				})
+			</div>
+		}
+		if searchBoxComponent != nil || componentSettings.HeaderActions != nil || componentSettings.BulkActions != nil {
+			<div class="flex flex-wrap items-center justify-between gap-2 border-b border-neutral-50/10 p-2">
+				<div class={ "flex flex-1 flex-wrap items-center gap-2 " + searchBoxJustifyClass }>
+					if searchBoxComponent != nil {
+						<div class="w-72" @input="resetPageAndRefresh()">
+							@searchBoxComponent
+						</div>
+					}
+					<span
+						class="text-xs text-neutral-400"
+						x-show="selectedRowIds.length > 0"
+						x-text="selectedRowIds.length + ' selected'"
+					></span>
+				</div>
+				<div class="flex items-center gap-2">
+					if componentSettings.BulkActions != nil {
+						<div class="flex items-center gap-2" x-show="selectedRowIds.length > 0">
+							@componentSettings.BulkActions
+						</div>
+					}
+					if componentSettings.HeaderActions != nil {
+						@componentSettings.HeaderActions
+					}
+					<i class="ph-bold ph-circle-notch animate-spin text-lg text-neutral-400" x-show="isLoading"></i>
+				</div>
+			</div>
+		}
+		<p class="sr-only" aria-live="polite" x-text="liveMessage"></p>
+		<div data-ui-data-table>
+			<div x-show="!hasRefreshError">
+				<div class={ scrollContainerClasses } :class="{ 'pointer-events-none opacity-50': isLoading }">
+					<table class="w-full border-collapse text-sm">
+						<thead>
+							<tr class={ headerRowClasses }>
+								if hasSelection {
+									<th scope="col" class={ "w-10 text-left " + headerPaddingClasses + stickyHeaderClasses }>
+										@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+											AriaLabel:                    "Select all rows on this page",
+											CheckedColor:                 componentSettings.CheckboxCheckedColor,
+											IndeterminateOneWayStatePath: "isCurrentPagePartiallySelected()",
+											IsCheckedOneWayStatePath:     "isCurrentPageFullySelected()",
+											IsDisabledOneWayStatePath:    "isLoading",
+											OnChangeFunc:                 "toggleCurrentPageSelection()",
+											Shape:                        checkboxShape,
+											Size:                         componentSettings.checkboxSizeResolver(),
+											UncheckedColor:               componentSettings.CheckboxUncheckedColor,
+										})
+									</th>
+								}
+								for _, column := range componentSettings.Columns {
+									{{ alignmentClass := column.Alignment.alignmentClassResolver() }}
+									<th
+										scope="col"
+										class={ headerPaddingClasses + " font-bold " + alignmentClass + stickyHeaderClasses + " " + column.MinWidthClass + " " + column.MaxWidthClass }
+										if column.WidthPercent > 0 {
+											style={ "width:" + strconv.Itoa(int(column.WidthPercent)) + "%" }
+										}
+										if column.SortKey != "" {
+											:aria-sort={ "ariaSortFor(" + strconv.Quote(column.SortKey) + ")" }
+										}
+									>
+										if column.SortKey == "" {
+											<span>{ column.Label }</span>
+										}
+										if column.SortKey != "" {
+											{{ justifyClass := column.Alignment.justifyClassResolver() }}
+											<button
+												type="button"
+												class={ "group flex w-full items-center gap-1 border-0 bg-transparent p-0 hover:text-neutral-100 disabled:cursor-not-allowed " + headerTextCaseClass + " " + justifyClass }
+												@click={ "toggleSort(" + strconv.Quote(column.SortKey) + ")" }
+												:disabled="isLoading"
+											>
+												{ column.Label }
+												<i aria-hidden="true" class="ph-bold shrink-0 text-xs leading-none" :class={ "sortIconClassFor(" + strconv.Quote(column.SortKey) + ")" }></i>
+											</button>
+										}
+									</th>
+								}
+							</tr>
+						</thead>
+						<tbody>
+							if len(componentSettings.Rows) == 0 {
+								{{ emptyStateComponent := componentSettings.EmptyState }}
+								if emptyStateComponent == nil {
+									{{ emptyStateComponent = DataTableDefaultEmptyState() }}
+								}
+								<tr>
+									<td colspan={ strconv.Itoa(columnCount) } class="p-8 text-center text-neutral-400">
+										@emptyStateComponent
+									</td>
+								</tr>
+							}
+							for _, row := range componentSettings.Rows {
+								{{ rowId := "" }}
+								if componentSettings.RowIdResolver != nil {
+									{{ rowId = componentSettings.RowIdResolver(row) }}
+								}
+								{{ rowLabel := rowId }}
+								if componentSettings.RowLabelResolver != nil {
+									{{ rowLabel = componentSettings.RowLabelResolver(row) }}
+								}
+								{{ rowClasses := "border-b border-neutral-50/5 last:border-b-0 hover:bg-neutral-50/10 " + rowStripeClasses }}
+								if componentSettings.RowClassResolver != nil {
+									{{ rowClasses = rowClasses + " " + componentSettings.RowClassResolver(row) }}
+								}
+								<tr class={ rowClasses }>
+									if hasSelection {
+										<td class={ cellPaddingClasses }>
+											@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+												AriaLabel:                 rowLabel,
+												CheckedColor:              componentSettings.CheckboxCheckedColor,
+												IsDisabledOneWayStatePath: "isLoading",
+												Shape:                     checkboxShape,
+												Size:                      componentSettings.checkboxSizeResolver(),
+												TwoWayStatePath:           "selectedRowIds",
+												UncheckedColor:            componentSettings.CheckboxUncheckedColor,
+												Value:                     rowId,
+											})
+										</td>
+									}
+									for _, column := range componentSettings.Columns {
+										{{ alignmentClass := column.Alignment.alignmentClassResolver() }}
+										<td
+											class={ cellPaddingClasses + " " + alignmentClass + " " + column.MinWidthClass + " " + column.MaxWidthClass + " " + column.CellClass }
+											if column.WidthPercent > 0 {
+												style={ "width:" + strconv.Itoa(int(column.WidthPercent)) + "%" }
+											}
+										>
+											@column.CellRenderer(row)
+										</td>
+									}
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div x-show="hasRefreshError" style="display: none" class="flex flex-col items-center gap-3 p-8 text-center">
+				<i class="ph-bold ph-warning-circle text-2xl text-red-400"></i>
+				<p class="text-sm text-neutral-400">Could not refresh the table.</p>
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:       "Retry",
+					IconLeft:    "ph-arrow-clockwise",
+					OnClickFunc: "refresh()",
+					Size:        uiControl.ButtonSizeSm,
+				})
+			</div>
+			<div class="border-t border-neutral-50/10">
+				@Pagination(PaginationSettings{
+					PageNumberTwoWayStatePath:   "pageNumber",
+					ItemsPerPageTwoWayStatePath: "itemsPerPage",
+					ItemsTotal:                  componentSettings.ItemsTotal,
+					PagesTotal:                  componentSettings.PagesTotal,
+					AriaLabel:                   paginationAriaLabel,
+					IsDisabledOneWayStatePath:   "isLoading",
+					ItemsPerPageInputName:       tableId + "-itemsPerPage",
+					ItemsPerPageSizeChoices:     itemsPerPageSizeChoices,
+					OnChangeFunc:                "requestRefresh()",
+				})
+			</div>
+		</div>
+	</div>
+}
