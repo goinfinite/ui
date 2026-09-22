@@ -2,6 +2,8 @@
 
 ```log
 0.2.1 - 2026/09/18
+fix: label inputs and textareas even when an input id is set
+test: wait for the data table refresh before asserting the error is hidden
 fix: run the browser specs without npx
 fix: reject demo requests that escape the docs root
 fix: use a strong hash for the demo asset cache
