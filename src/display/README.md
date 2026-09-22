@@ -98,6 +98,8 @@ Composite label with an outer ring and an inner background.
 ```
 
 - `OuterLeft*`, `OuterRight*`, and `Inner*` fields take an icon, a static label, or a `*OneWayStatePath` for live text.
+- `InnerValueOneWayStatePath` binds a live value in the inner segment without the lowercase transform, for client-side value tags: set a static `OuterLeftLabel` as the label and the path as the value.
+- `Size` accepts `TagSizeTiny` through `TagSizeXl`; `TagSizeTiny` renders a dense layout for table cells.
 - Set `OnRemoveFunc` to render a removable chip. `RemoveButtonLabel` names the remove button.
 - `OuterBackgroundColor`, `OuterRingColor`, and `OuterTextColor` accept color tokens, for example `"neutral-50/10"`.
 

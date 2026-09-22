@@ -1,11 +1,12 @@
 package uiDisplay
 
 const (
-	TagSizeXs string = "xs"
-	TagSizeSm string = "sm"
-	TagSizeMd string = "md"
-	TagSizeLg string = "lg"
-	TagSizeXl string = "xl"
+	TagSizeTiny string = "tiny"
+	TagSizeXs   string = "xs"
+	TagSizeSm   string = "sm"
+	TagSizeMd   string = "md"
+	TagSizeLg   string = "lg"
+	TagSizeXl   string = "xl"
 
 	TagRingThicknessXs string = "xs"
 	TagRingThicknessSm string = "sm"
@@ -43,6 +44,7 @@ type TagSettings struct {
 	InnerIcon                      string
 	InnerLabel                     string
 	InnerLabelOneWayStatePath      string
+	InnerValueOneWayStatePath      string
 	InnerBackgroundColor           string
 	InnerTextColor                 string
 	InnerRadius                    string
@@ -52,6 +54,8 @@ templ Tag(componentSettings TagSettings) {
 	<!-- Tag -->
 	{{ initialOuterSizeClasses := "text-base p-1.25 gap-1.25" }}
 	switch componentSettings.Size {
+		case TagSizeTiny:
+			{{ initialOuterSizeClasses = "text-[0.625rem] p-0.25 gap-0.25" }}
 		case TagSizeXs:
 			{{ initialOuterSizeClasses = "text-xs p-0.75 gap-0.75" }}
 		case TagSizeSm:
@@ -63,35 +67,37 @@ templ Tag(componentSettings TagSettings) {
 		case TagSizeXl:
 			{{ initialOuterSizeClasses = "text-xl p-1.25 gap-1.25" }}
 	}
-	{{ initialOuterRingThickness := "ring-2" }}
+	{{ initialOuterBorderWidthClass := "border-2" }}
 	if componentSettings.OuterRingThickness != "" {
 		switch componentSettings.OuterRingThickness {
 			case TagRingThicknessXs:
-				{{ initialOuterRingThickness = "ring-1" }}
+				{{ initialOuterBorderWidthClass = "border" }}
 			case TagRingThicknessSm:
-				{{ initialOuterRingThickness = "ring-1.5" }}
+				{{ initialOuterBorderWidthClass = "border-[1.5px]" }}
 			case TagRingThicknessMd:
-				{{ initialOuterRingThickness = "ring-2" }}
+				{{ initialOuterBorderWidthClass = "border-2" }}
 			case TagRingThicknessLg:
-				{{ initialOuterRingThickness = "ring-2.5" }}
+				{{ initialOuterBorderWidthClass = "border-[2.5px]" }}
 			case TagRingThicknessXl:
-				{{ initialOuterRingThickness = "ring-3" }}
+				{{ initialOuterBorderWidthClass = "border-[3px]" }}
 		}
 	} else {
 		switch componentSettings.Size {
+			case TagSizeTiny:
+				{{ initialOuterBorderWidthClass = "border" }}
 			case TagSizeXs:
-				{{ initialOuterRingThickness = "ring-1" }}
+				{{ initialOuterBorderWidthClass = "border" }}
 			case TagSizeSm:
-				{{ initialOuterRingThickness = "ring-1.5" }}
+				{{ initialOuterBorderWidthClass = "border-[1.5px]" }}
 			case TagSizeMd:
-				{{ initialOuterRingThickness = "ring-2" }}
+				{{ initialOuterBorderWidthClass = "border-2" }}
 			case TagSizeLg:
-				{{ initialOuterRingThickness = "ring-2.5" }}
+				{{ initialOuterBorderWidthClass = "border-[2.5px]" }}
 			case TagSizeXl:
-				{{ initialOuterRingThickness = "ring-3" }}
+				{{ initialOuterBorderWidthClass = "border-[3px]" }}
 		}
 	}
-	{{ initialOuterSizeClasses += " " + initialOuterRingThickness }}
+	{{ initialOuterSizeClasses += " " + initialOuterBorderWidthClass }}
 	{{ initialOuterRingColor := "secondary-500" }}
 	{{ initialOuterBackgroundColor := "secondary-500" }}
 	if componentSettings.OuterRingColor != "" {
@@ -126,12 +132,14 @@ templ Tag(componentSettings TagSettings) {
 	}
 	{{
 	initialOuterClasses := initialOuterSizeClasses + " " +
-		" ring-" + initialOuterRingColor + " bg-" + initialOuterBackgroundColor +
+		" border-" + initialOuterRingColor + " bg-" + initialOuterBackgroundColor +
 		" text-" + initialOuterTextColor +
 		" " + initialOuterRadius
 	}}
 	{{ initialInnerSizeClasses := "text-base p-1.5 gap-1.5" }}
 	switch componentSettings.Size {
+		case TagSizeTiny:
+			{{ initialInnerSizeClasses = "text-[0.625rem] p-0.5 gap-0.5" }}
 		case TagSizeXs:
 			{{ initialInnerSizeClasses = "text-xs p-1 gap-1" }}
 		case TagSizeSm:
@@ -174,6 +182,11 @@ templ Tag(componentSettings TagSettings) {
 		" text-" + initialInnerTextColor +
 		" " + initialInnerRadius
 	}}
+	{{ iconSizeClasses := "text-lg" }}
+	switch componentSettings.Size {
+		case TagSizeTiny:
+			{{ iconSizeClasses = "text-sm" }}
+	}
 	<div class={ "flex items-center w-fit " + initialOuterClasses }>
 		{{ outerLeftItemsClasses := "flex items-center gap-0.75" }}
 		if componentSettings.OuterLeftOnClickFunc != "" {
@@ -186,7 +199,7 @@ templ Tag(componentSettings TagSettings) {
 			}
 		>
 			if componentSettings.OuterLeftIcon != "" {
-				<i class={ "ph-bold " + componentSettings.OuterLeftIcon + " text-lg" }></i>
+				<i class={ "ph-bold " + componentSettings.OuterLeftIcon + " " + iconSizeClasses }></i>
 			}
 			if componentSettings.OuterLeftLabel != "" {
 				<span class="lowercase">{ componentSettings.OuterLeftLabel }</span>
@@ -197,13 +210,16 @@ templ Tag(componentSettings TagSettings) {
 		</div>
 		<div class={ "flex items-center w-fit " + initialInnerClasses }>
 			if componentSettings.InnerIcon != "" {
-				<i class={ "ph-bold " + componentSettings.InnerIcon + " text-lg" }></i>
+				<i class={ "ph-bold " + componentSettings.InnerIcon + " " + iconSizeClasses }></i>
 			}
 			if componentSettings.InnerLabel != "" {
 				<span class="lowercase">{ componentSettings.InnerLabel }</span>
 			}
 			if componentSettings.InnerLabelOneWayStatePath != "" {
 				<span class="lowercase" x-text={ componentSettings.InnerLabelOneWayStatePath }></span>
+			}
+			if componentSettings.InnerValueOneWayStatePath != "" {
+				<span x-text={ componentSettings.InnerValueOneWayStatePath }></span>
 			}
 		</div>
 		if componentSettings.OuterRightIcon != "" || componentSettings.OuterRightLabel != "" || componentSettings.OuterRightLabelOneWayStatePath != "" {
@@ -218,7 +234,7 @@ templ Tag(componentSettings TagSettings) {
 				}
 			>
 				if componentSettings.OuterRightIcon != "" {
-					<i class={ "ph-bold " + componentSettings.OuterRightIcon + " text-lg" }></i>
+					<i class={ "ph-bold " + componentSettings.OuterRightIcon + " " + iconSizeClasses }></i>
 				}
 				if componentSettings.OuterRightLabel != "" {
 					<span class="lowercase">{ componentSettings.OuterRightLabel }</span>
@@ -234,7 +250,11 @@ templ Tag(componentSettings TagSettings) {
 				{{ removeButtonLabel = componentSettings.RemoveButtonLabel }}
 			}
 			{{ removeIconSize := "text-base" }}
+			{{ removeButtonPaddingClasses := "-m-1.5 p-1.5" }}
 			switch componentSettings.Size {
+				case TagSizeTiny:
+					{{ removeIconSize = "text-[0.625rem]" }}
+					{{ removeButtonPaddingClasses = "-m-0.5 p-0.5" }}
 				case TagSizeXs:
 					{{ removeIconSize = "text-xs" }}
 				case TagSizeSm:
@@ -248,7 +268,7 @@ templ Tag(componentSettings TagSettings) {
 			}
 			<button
 				type="button"
-				class="-m-1.5 flex cursor-pointer items-center border-0 bg-transparent p-1.5 hover:opacity-80"
+				class={ "flex cursor-pointer items-center border-0 bg-transparent hover:opacity-80 " + removeButtonPaddingClasses }
 				aria-label={ removeButtonLabel }
 				title={ removeButtonLabel }
 				@click={ componentSettings.OnRemoveFunc }
