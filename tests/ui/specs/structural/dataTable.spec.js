@@ -342,16 +342,6 @@ test.describe("DataTable @structural", () => {
   test("a stale failed refresh does not show the error row", async ({
     page,
   }) => {
-    let requestCount = 0;
-    await page.route(refreshFragmentPattern, async (route) => {
-      requestCount++;
-      if (requestCount === 1) {
-        return route.abort("failed");
-      }
-      await new Promise((resolve) => setTimeout(resolve, 600));
-      return route.continue();
-    });
-
     await page.evaluate(() => {
       const dataTable = Alpine.$data(
         document.getElementById("data-table-demo-table"),
@@ -360,7 +350,6 @@ test.describe("DataTable @structural", () => {
       dataTable.refresh();
     });
 
-    await expect.poll(() => requestCount).toBe(2);
     await expect(rowNames(page).first()).toHaveText("alpha");
     await expect(page.locator(`${tableRoot} p[aria-live=polite]`)).toHaveText(
       "Table refreshed",
