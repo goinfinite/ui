@@ -209,7 +209,7 @@ func TextArea(componentSettings TextAreaSettings) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		if componentSettings.InputId == "" && componentSettings.Label != "" {
+		if componentSettings.Label != "" {
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, " aria-label=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
