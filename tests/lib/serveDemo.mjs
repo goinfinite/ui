@@ -1,9 +1,12 @@
 import { createHash, randomUUID } from "node:crypto";
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { createServer } from "node:http";
+import { resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const docsRoot = fileURLToPath(new URL("../../docs/", import.meta.url));
+const docsRoot = resolve(
+  fileURLToPath(new URL("../../docs/", import.meta.url)),
+);
 const assetCacheRoot = fileURLToPath(
   new URL("../.cache/demo-assets/", import.meta.url),
 );
@@ -86,12 +89,16 @@ async function serveFile(request, response) {
     response.writeHead(400).end("bad request");
     return;
   }
-  if (fileName.includes("..")) {
+  const resolvedPath = resolve(docsRoot, `.${fileName}`);
+  if (
+    resolvedPath !== docsRoot &&
+    !resolvedPath.startsWith(`${docsRoot}${sep}`)
+  ) {
     response.writeHead(400).end("bad request");
     return;
   }
   try {
-    const fileBody = await readFile(`${docsRoot}${fileName}`);
+    const fileBody = await readFile(resolvedPath);
     const body = fileName.endsWith(".html")
       ? rewriteExternalAssetUrls(fileBody.toString("utf8"))
       : fileBody;
@@ -172,7 +179,7 @@ async function serveProxiedAsset(request, response) {
     response.writeHead(403).end("asset not approved");
     return;
   }
-  const cacheKey = createHash("sha1").update(externalUrl).digest("hex");
+  const cacheKey = createHash("sha256").update(externalUrl).digest("hex");
   const cachePath = `${assetCacheRoot}${cacheKey}`;
   const asset =
     (await readCachedAsset(cachePath)) ??
