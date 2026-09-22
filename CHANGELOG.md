@@ -1,6 +1,11 @@
 # Changelog
 
 ```log
+0.2.2 - 2026/09/22
+docs: document the demo server start and stop for agent-browser
+test: raise the select dropdown open golden baseline to 50ms
+test: assert the stale refresh outcome without request counts
+
 0.2.1 - 2026/09/18
 fix: serve demo files only from canonical paths under the docs root
 fix: label inputs and textareas even when an input id is set
