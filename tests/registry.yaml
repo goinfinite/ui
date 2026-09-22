@@ -6,6 +6,11 @@ features:
       level: fast
       run: bash tests/tests_test.sh && bash tests/ui/run_test.sh
       requires_demo: false
+  display:
+    - scope: unit
+      level: fast
+      run: go test ./src/display/...
+      requires_demo: false
   toolset:
     - scope: unit
       level: fast
@@ -20,6 +25,10 @@ features:
       run: tests/ui/run.sh toolset-cross-browser
       requires_demo: true
   form:
+    - scope: unit
+      level: fast
+      run: go test ./src/form/...
+      requires_demo: false
     - scope: ui
       level: fast
       run: tests/ui/run.sh smoke
