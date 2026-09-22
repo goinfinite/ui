@@ -55,6 +55,19 @@ Form submission uses multiple checkboxes sharing the same `name` so the browser 
 
 ---
 
+## Checkbox Input
+
+Checkbox that selects one value, bound to a boolean or an array Alpine.js state, with configurable shapes, sizes, colors, label position, and disabled state.
+
+**Flow:**
+
+1. `src/form/checkboxInput.templ` — Component definition with CheckboxInputSettings for binding, shape, size, colors, indeterminate, disabled, and label position
+2. `src/form/checkboxInput_templ.go` — Compiled output rendering the native input, the styled box, and the check or dash icon
+
+The check renders through color inheritance: the box carries the checked color and the icon inherits it. The indeterminate state is set on the native input through `x-effect` and renders as a dash.
+
+---
+
 ## Toggle Switch
 
 Switch component that binds either a boolean Alpine.js state or a custom value in an Alpine.js array, with configurable sizes, colors, required state, and disabled state.
@@ -107,7 +120,7 @@ Input range slider control with min/max constraints, step values, bidirectional 
 
 **Flow:**
 
-1. `src/control/rangeSlider.templ` — Component definition with RangeSliderSettings struct supporting TwoWayStatePath
+1. `src/control/rangeSlider.templ` — Component definition with RangeSliderSettings struct supporting single and dual thumb state paths
 2. `src/control/rangeSlider_templ.go` — Compiled output rendering input[type="range"] with custom styling and state binding
 
 ---
@@ -140,19 +153,61 @@ Collapsible vertical sidebar panel for navigation with sections and state manage
 
 **Flow:**
 
-1. `src/display/sidebar.templ` — Component definition with SidebarSettings struct
-2. `src/display/sidebar_templ.go` — Compiled output rendering sidebar with Alpine.js state and collapsible sections
+1. `src/structural/sidebar.templ` — Component definition with SidebarSettings struct
+2. `src/structural/sidebar_templ.go` — Compiled output rendering sidebar with Alpine.js state and collapsible sections
 
 ---
 
 ## Tag/Badge
 
-Small label/badge component for categorization and tagging with customizable size, color, and optional icons.
+Small label/badge component for categorization and tagging with customizable size, color, optional icons, and an optional remove button for filter chips.
 
 **Flow:**
 
-1. `src/display/tag.templ` — Component definition with TagSettings struct
+1. `src/display/tag.templ` — Component definition with TagSettings struct; `OnRemoveFunc` renders a named remove button
 2. `src/display/tag_templ.go` — Compiled output rendering small badge element with Tailwind styling
+
+---
+
+## Pagination
+
+Page controls with a live readout, a page-number strip, first/previous/next/last buttons, and an items-per-page selector. Binds the page number and page size to Alpine.js state paths and calls `OnChangeFunc` after every change.
+
+**Flow:**
+
+1. `src/structural/pagination.templ` — Component definition with PaginationSettings; renders the readout, page-number strip, buttons, and items-per-page selector
+2. `src/structural/pagination.go` — Builds the readout expression from the state paths and item total
+3. `src/structural/paginationState.js` — Builds the page-number strip from the current page and page total, marking the current page with `aria-current`
+4. `src/structural/pagination_test.go` — Table-driven tests for the readout expression
+5. `src/structural/pagination_templ.go` — Compiled output rendering the navigation landmark
+
+---
+
+## Filter Bar
+
+Standalone filter bar that renders one editor per declared filter (text contains, enum select, number range, date range), shows active filters as removable chips, and resets everything with clear-all.
+
+**Flow:**
+
+1. `src/structural/filterBar.templ` — Component definition with FilterBarSettings and FilterSettings; renders editors and chips bound to a values object
+2. `src/structural/filterBarState.js` — Alpine component with chip visibility, chip label, single-filter reset, clear-all, and any-active helpers
+3. `src/display/tag.templ` — Removable Tag variant used for the chips
+4. `src/structural/filterBar_templ.go` — Compiled output
+
+---
+
+## Data Table
+
+Generic server-driven table taking column definitions and rows. Adds sortable headers, row selection with bulk actions, the filter bar, a default search box, header action slots, a pagination footer, loading and error states, and refresh from a query URL template. Uses `htmx.ajax` when HTMX is present and a `fetch` fallback otherwise.
+
+**Flow:**
+
+1. `src/structural/dataTable.templ` — Generic component (DataTable[T]) with DataTableSettings and DataTableColumnSettings; renders the filter bar, toolbar, table region, error row, and pagination
+2. `src/structural/dataTable.go` — DataTableSettings and DataTableColumnSettings types with their methods (client settings, id, page size, pagination label, density, header case, checkbox shape, checkbox size, row stripe), the named density/alignment/sort-direction/header-text-case/page-size types, and the URL placeholder constants. The alignment type carries the column alignment and justify class methods. The `Initial*` fields seed client state; `HeaderClass`, `CellClass`, `RowClassResolver`, and `IsStriped` carry styling; `CheckboxCheckedColor` and `CheckboxUncheckedColor` carry the selection color
+3. `src/structural/dataTableState.js` — Alpine data component: builds the refresh URL from the template, debounces refreshes, swaps the region carrying `data-ui-data-table`, and owns selection and sort helpers
+4. `src/structural/pagination.templ` — Table footer pagination
+5. `src/structural/filterBar.templ` — Table filter bar
+6. `src/structural/dataTable_templ.go` — Compiled output
 
 ---
 
@@ -183,7 +238,7 @@ Full-screen overlay with loading spinner indicator, used to block interaction du
 
 ## Cloak Loading
 
-Overlay to hide/obscure content during loading without blocking the entire viewport.
+Overlay to hide/obscure content during loading. It renders a fixed full-viewport layer and hides itself after the configured delay.
 
 **Flow:**
 
@@ -244,9 +299,11 @@ Build-time HTML generation showcasing all UI components with usage examples and 
 
 **Flow:**
 
-1. `demo/demo.go` — Entrypoint that renders DemoIndex() templ component and writes to index.html
+1. `demo/demo.go` — Entrypoint that renders DemoIndex() to docs/index.html and one data table refresh fragment per page plus an all-records fragment to docs/assets/
 2. `demo/demo.templ` — Full demo page structure with component usage examples, sidebar navigation, and styling
-3. `src/import/import.templ` — DemoIndex imports HeadTagsFull() for CDN resources
+3. `demo/data.go` — Demo record type, 25 sample rows, filter declarations, table column definitions, and the settings builder that slices one page
+4. `demo/dataTableDemoRouting.js` — Browser-side router that rewrites each refresh request to the fragment for the requested page
+5. `src/import/import.templ` — DemoIndex imports HeadTagsFull() for CDN resources
 
 ---
 
@@ -261,7 +318,7 @@ Single entry point for all verification: Go units, Playwright behavioral specs a
 3. `tests/lib/registry.mjs` — Registry reader for list and select modes
 4. `tests/lib/serveDemo.mjs` — Localhost server for docs/ that proxies external script, stylesheet, and image URLs through a fetch-once cache, keeping CDN latency out of specs
 5. `tests/lib/checkPerformance.mjs` — Compares measured latencies against `tests/golden.yaml` tiers
-6. `tests/ui/run.sh` — Playwright mode runner (smoke, standard, a11y, performance, toolset, control, cross-browser, toolset-cross-browser, control-cross-browser)
-7. `tests/ui/specs/` — Behavioral specs by feature: form, control, toolset, a11y, performance
+6. `tests/ui/run.sh` — Playwright mode runner (smoke, standard, a11y, performance, toolset, control, structural-smoke, structural, structural-a11y, cross-browser, toolset-cross-browser, control-cross-browser, structural-cross-browser)
+7. `tests/ui/specs/` — Behavioral specs by feature: form, control, structural, toolset, a11y, performance
 
 ---

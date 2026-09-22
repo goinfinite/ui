@@ -1,9 +1,11 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 const sliderSection = "#range-slider-demo";
 
 function sliderByLabel(page, label) {
-  return page.locator(`${sliderSection} input[type=range][aria-label="${label}"]`);
+  return page.locator(
+    `${sliderSection} input[type=range][aria-label="${label}"]`,
+  );
 }
 
 function trackOf(slider) {
@@ -15,7 +17,9 @@ function thumbOf(slider, index = 0) {
 }
 
 async function dragThumb(page, slider, index, deltaX) {
-  await page.locator('body > div[style*="z-index: 9999"]').waitFor({ state: "hidden" });
+  await page
+    .locator('body > div[style*="z-index: 9999"]')
+    .waitFor({ state: "hidden" });
   await slider.scrollIntoViewIfNeeded();
   const thumbBox = await thumbOf(slider, index).boundingBox();
   const startX = thumbBox.x + thumbBox.width / 2;
@@ -32,7 +36,9 @@ function tickMarksOf(slider) {
 
 async function writeExternalState(page, values) {
   await page.evaluate((state) => {
-    const dualModeRoot = document.querySelector('#range-slider-demo div[x-data^="{lowerValue"]');
+    const dualModeRoot = document.querySelector(
+      '#range-slider-demo div[x-data^="{lowerValue"]',
+    );
     const alpineData = window.Alpine.$data(dualModeRoot);
     for (const [property, value] of Object.entries(state)) {
       alpineData[property] = value;
@@ -49,30 +55,48 @@ test.describe("RangeSlider", () => {
     const slider = sliderByLabel(page, "Value").first();
     await slider.focus();
     await page.keyboard.press("ArrowRight");
-    await expect(page.locator(`${sliderSection} p`, { hasText: "Value:" }).locator("span")).toHaveText(
-      "51",
+    await expect(
+      page.locator(`${sliderSection} p`, { hasText: "Value:" }).locator("span"),
+    ).toHaveText("51");
+  });
+
+  test("@control single slider exposes the default accessible name", async ({
+    page,
+  }) => {
+    await expect(
+      page.getByRole("slider", { name: "Value", exact: true }).first(),
+    ).toBeVisible();
+  });
+
+  test("@control dual sliders expose distinct accessible names", async ({
+    page,
+  }) => {
+    await expect(
+      page.getByRole("slider", { name: "Minimum price" }),
+    ).toHaveCount(1);
+    await expect(
+      page.getByRole("slider", { name: "Maximum price" }),
+    ).toHaveCount(1);
+    await expect(page.getByRole("slider", { name: "Lower value" })).toHaveCount(
+      1,
+    );
+    await expect(page.getByRole("slider", { name: "Upper value" })).toHaveCount(
+      1,
     );
   });
 
-  test("@control single slider exposes the default accessible name", async ({ page }) => {
-    await expect(page.getByRole("slider", { name: "Value", exact: true }).first()).toBeVisible();
-  });
-
-  test("@control dual sliders expose distinct accessible names", async ({ page }) => {
-    await expect(page.getByRole("slider", { name: "Minimum price" })).toHaveCount(1);
-    await expect(page.getByRole("slider", { name: "Maximum price" })).toHaveCount(1);
-    await expect(page.getByRole("slider", { name: "Lower value" })).toHaveCount(1);
-    await expect(page.getByRole("slider", { name: "Upper value" })).toHaveCount(1);
-  });
-
-  test("@control dragging the thumb changes the bound value", async ({ page }) => {
+  test("@control dragging the thumb changes the bound value", async ({
+    page,
+  }) => {
     const slider = sliderByLabel(page, "Value").first();
     await expect(slider).toHaveValue("50");
     await dragThumb(page, slider, 0, 60);
     expect(Number(await slider.inputValue())).toBeGreaterThan(50);
   });
 
-  test("@control dragging each dual thumb changes its own bound value", async ({ page }) => {
+  test("@control dragging each dual thumb changes its own bound value", async ({
+    page,
+  }) => {
     const lowerSlider = sliderByLabel(page, "Minimum price");
     const upperSlider = sliderByLabel(page, "Maximum price");
     await expect(lowerSlider).toHaveValue("25");
@@ -84,7 +108,9 @@ test.describe("RangeSlider", () => {
     expect(Number(await upperSlider.inputValue())).toBeLessThan(75);
   });
 
-  test("@control lower thumb crossing the upper clamps and syncs both bound values", async ({ page }) => {
+  test("@control lower thumb crossing the upper clamps and syncs both bound values", async ({
+    page,
+  }) => {
     const lowerSlider = sliderByLabel(page, "Minimum price");
     const upperSlider = sliderByLabel(page, "Maximum price");
 
@@ -93,15 +119,19 @@ test.describe("RangeSlider", () => {
 
     await expect(lowerSlider).toHaveValue("100");
     await expect(upperSlider).toHaveValue("100");
-    await expect(page.locator(`${sliderSection} p`, { hasText: "Price Range" })).toContainText(
-      "$100 - $100",
-    );
+    await expect(
+      page.locator(`${sliderSection} p`, { hasText: "Price Range" }),
+    ).toContainText("$100 - $100");
   });
 
-  test("@control external state writes keep both thumbs ordered", async ({ page }) => {
+  test("@control external state writes keep both thumbs ordered", async ({
+    page,
+  }) => {
     const lowerSlider = sliderByLabel(page, "Minimum price");
     const upperSlider = sliderByLabel(page, "Maximum price");
-    const rangeDisplay = page.locator(`${sliderSection} p`, { hasText: "Price Range" });
+    const rangeDisplay = page.locator(`${sliderSection} p`, {
+      hasText: "Price Range",
+    });
 
     await page.waitForFunction(() => window.Alpine !== undefined);
 
@@ -121,7 +151,9 @@ test.describe("RangeSlider", () => {
     await expect(rangeDisplay).toContainText("$100 - $100");
   });
 
-  test("@control initial crossed and out-of-bounds state normalizes when the setting is on", async ({ page }) => {
+  test("@control initial crossed and out-of-bounds state normalizes when the setting is on", async ({
+    page,
+  }) => {
     const initialSection = page.locator("#range-slider-initial-state-demo");
     const sliders = initialSection.locator("input[type=range]");
 
@@ -135,7 +167,9 @@ test.describe("RangeSlider", () => {
     await expect(initialSection.locator("p")).toContainText("Slider: 100");
   });
 
-  test("@control initial crossed state stays untouched when the setting is off", async ({ page }) => {
+  test("@control initial crossed state stays untouched when the setting is off", async ({
+    page,
+  }) => {
     const unnormalizedSection = page.locator("#range-slider-unnormalized-demo");
     const sliders = unnormalizedSection.locator("input[type=range]");
 
@@ -144,17 +178,25 @@ test.describe("RangeSlider", () => {
     await expect(unnormalizedSection.locator("p")).toContainText("$80 - $20");
   });
 
-  test("@control focusing the input reveals the focus ring", async ({ page }) => {
+  test("@control focusing the input reveals the focus ring", async ({
+    page,
+  }) => {
     const slider = sliderByLabel(page, "Value").first();
     const thumb = thumbOf(slider);
-    const restingShadow = await thumb.evaluate((element) => getComputedStyle(element).boxShadow);
+    const restingShadow = await thumb.evaluate(
+      (element) => getComputedStyle(element).boxShadow,
+    );
     await slider.focus();
     await expect
-      .poll(() => thumb.evaluate((element) => getComputedStyle(element).boxShadow))
+      .poll(() =>
+        thumb.evaluate((element) => getComputedStyle(element).boxShadow),
+      )
       .not.toBe(restingShadow);
   });
 
-  test("@control tick marks render at the configured tick step", async ({ page }) => {
+  test("@control tick marks render at the configured tick step", async ({
+    page,
+  }) => {
     const slider = sliderByLabel(page, "Ticks every 25");
     const ticks = tickMarksOf(slider);
     await expect(ticks).toHaveCount(5);
@@ -164,10 +206,14 @@ test.describe("RangeSlider", () => {
     const firstTickCenter = firstTickBox.x + firstTickBox.width / 2;
     const lastTickCenter = lastTickBox.x + lastTickBox.width / 2;
     expect(Math.abs(firstTickCenter - trackBox.x)).toBeLessThanOrEqual(2);
-    expect(Math.abs(lastTickCenter - (trackBox.x + trackBox.width))).toBeLessThanOrEqual(2);
+    expect(
+      Math.abs(lastTickCenter - (trackBox.x + trackBox.width)),
+    ).toBeLessThanOrEqual(2);
   });
 
   test("@control tick marks fall back to the slider step", async ({ page }) => {
-    await expect(tickMarksOf(sliderByLabel(page, "Ticks every step"))).toHaveCount(6);
+    await expect(
+      tickMarksOf(sliderByLabel(page, "Ticks every step")),
+    ).toHaveCount(6);
   });
 });

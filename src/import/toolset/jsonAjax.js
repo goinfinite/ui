@@ -18,7 +18,7 @@ async function jsonAjax(
   method = "POST",
   url,
   payload = {},
-  shouldDisplayToast = true
+  shouldDisplayToast = true,
 ) {
   if (
     typeof method !== "string" ||
@@ -59,7 +59,7 @@ async function jsonAjax(
     });
 
     const contentType = response.headers.get("Content-Type");
-    if (!(contentType && contentType.includes("application/json"))) {
+    if (!contentType?.includes("application/json")) {
       throw new Error("UnexpectedResponseContentType");
     }
 
@@ -70,8 +70,7 @@ async function jsonAjax(
         responseData,
         response.status,
       );
-      const responseErrorMessage =
-        responseDisplay.message || "UnknownError";
+      const responseErrorMessage = responseDisplay.message || "UnknownError";
       const responseError = new Error(responseErrorMessage);
       responseError.apiResponse = responseData;
       responseError.httpStatusCode = response.status;

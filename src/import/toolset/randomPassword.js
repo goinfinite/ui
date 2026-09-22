@@ -7,18 +7,13 @@ function randomNumberGenerator(rangeSize) {
 
 function createRandomPassword() {
   const passwordLength = 16;
-  const letterChars =
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const letterChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const numberChars = "0123456789";
   const specialChars = "!@#$%^&*()_+";
   const allChars = letterChars + numberChars + specialChars;
 
   const passwordChars = [];
-  for (
-    let charIndex = 0;
-    charIndex < passwordLength;
-    charIndex++
-  ) {
+  for (let charIndex = 0; charIndex < passwordLength; charIndex++) {
     const randomPosition = randomNumberGenerator(allChars.length);
     passwordChars.push(allChars[randomPosition]);
   }

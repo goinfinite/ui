@@ -93,9 +93,9 @@ templ ToggleSwitch(componentSettings ToggleSwitchSettings) {
 	if componentSettings.TextColor != "" {
 		{{ textColor = "text-" + componentSettings.TextColor }}
 	}
-	{{ labelClasses := "inline-flex cursor-pointer select-none items-center gap-2" }}
+	{{ labelClasses := "inline-flex w-fit cursor-pointer select-none items-center gap-2" }}
 	if componentSettings.IsDisabled {
-		{{ labelClasses = "inline-flex cursor-not-allowed select-none items-center gap-2 opacity-50" }}
+		{{ labelClasses = "inline-flex w-fit cursor-not-allowed select-none items-center gap-2 opacity-50" }}
 	}
 	{{ trackClasses := "peer relative " + trackSizeClasses + " rounded-full " + trackBackgroundColor + " transition-colors " + trackCheckedBackgroundColor + " peer-focus-visible:ring-2 peer-focus-visible:ring-" + focusRingColor }}
 	{{ thumbClasses := "after:absolute after:start-[2px] after:top-0.5 " + thumbSizeClasses + " after:rounded-full after:border " + thumbBorderColor + " " + thumbBackgroundColor + " after:transition-all after:content-[''] peer-checked:after:translate-x-full" }}

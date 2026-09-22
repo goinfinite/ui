@@ -45,7 +45,8 @@ UiToolset.RegisterAlpineState(() => {
 document.addEventListener("htmx:afterRequest", (event) => {
   const httpResponseObject = event.detail.xhr;
   if (
-    !httpResponseObject?.getResponseHeader("Content-Type")
+    !httpResponseObject
+      ?.getResponseHeader("Content-Type")
       ?.includes("application/json")
   ) {
     return;

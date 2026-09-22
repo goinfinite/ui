@@ -1,10 +1,13 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 const toggleSection = "#toggle-switch-demo";
 const booleanStateInput = `${toggleSection} input[type=hidden][name=notificationsEnabled]`;
 
 function toggleByLabel(page, label) {
-  return page.locator(`${toggleSection} label`).filter({ hasText: label }).first();
+  return page
+    .locator(`${toggleSection} label`)
+    .filter({ hasText: label })
+    .first();
 }
 
 async function labelOffsetFromTrack(page, label) {
@@ -27,8 +30,13 @@ test.describe("ToggleSwitch", () => {
     await expect(page.locator(booleanStateInput)).toHaveValue("false");
   });
 
-  test("@smoke clicking the switch updates the bound boolean", async ({ page }) => {
-    await toggleByLabel(page, "Enable notifications").locator("div").first().click();
+  test("@smoke clicking the switch updates the bound boolean", async ({
+    page,
+  }) => {
+    await toggleByLabel(page, "Enable notifications")
+      .locator("div")
+      .first()
+      .click();
     await expect(page.locator(booleanStateInput)).toHaveValue("true");
   });
 
@@ -38,11 +46,17 @@ test.describe("ToggleSwitch", () => {
       .toBeGreaterThan(0);
   });
 
-  test("label position left renders the label before the track", async ({ page }) => {
-    await expect.poll(() => labelOffsetFromTrack(page, "Label on left")).toBeLessThan(0);
+  test("label position left renders the label before the track", async ({
+    page,
+  }) => {
+    await expect
+      .poll(() => labelOffsetFromTrack(page, "Label on left"))
+      .toBeLessThan(0);
   });
 
-  test("label position left keeps the switch at the column start", async ({ page }) => {
+  test("label position left keeps the switch at the column start", async ({
+    page,
+  }) => {
     await expect
       .poll(async () => {
         const leftPositionStart = await startEdgeOf(page, "Label on left");
@@ -50,5 +64,14 @@ test.describe("ToggleSwitch", () => {
         return Math.abs(leftPositionStart - rightPositionStart);
       })
       .toBeLessThanOrEqual(2);
+  });
+
+  test("label position left keeps the label and track together", async ({
+    page,
+  }) => {
+    const toggle = toggleByLabel(page, "Label on left");
+    const labelBox = await toggle.boundingBox();
+    const parentBox = await toggle.locator("xpath=..").boundingBox();
+    expect(labelBox.width).toBeLessThan(parentBox.width / 2);
   });
 });
