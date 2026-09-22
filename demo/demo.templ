@@ -371,6 +371,19 @@ templ CheckboxInputDemo() {
 					Label:      "Required",
 					IsRequired: true,
 				})
+				<p class="mt-3 text-sm text-neutral-400">Error states</p>
+				@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+					InputId:      "checkbox-demo-terms",
+					Label:        "Accept the terms",
+					IsInvalid:    true,
+					ErrorMessage: "You must accept the terms to continue.",
+				})
+				@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+					Label:                    "Accept the terms (bound error)",
+					TwoWayStatePath:          "isCheckboxExampleEnabled",
+					IsInvalidOneWayStatePath: "!isCheckboxExampleEnabled",
+					ErrorMessage:             "Checking the box clears this error.",
+				})
 				<p class="mt-3 text-sm text-neutral-400">Checked colors</p>
 				@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
 					CheckedColor: "primary-500",
@@ -1573,8 +1586,8 @@ templ TagDemo() {
 			<h4 class="mb-2 text-lg font-bold">Live Example</h4>
 			<div class="flex flex-row flex-wrap items-center gap-10">
 				<div class="flex flex-col gap-2">
-					<p class="text-sm text-neutral-400">TagSizeXs to TagSizeXl</p>
-					for _, tagSize := range []string{"xs", "sm", "md", "lg", "xl"} {
+					<p class="text-sm text-neutral-400">TagSizeTiny to TagSizeXl</p>
+					for _, tagSize := range []string{"tiny", "xs", "sm", "md", "lg", "xl"} {
 						@uiDisplay.Tag(uiDisplay.TagSettings{
 							OuterLeftIcon:  "ph-info",
 							OuterLeftLabel: "Info",
@@ -1650,7 +1663,7 @@ templ TagDemo() {
 				</div>
 				<div x-data="{clickCount: 0}" class="flex flex-col gap-2">
 					<p class="text-sm text-neutral-400">Side Elements OnClickFunc</p>
-					<div class="flex flex-col gap-2">
+					<div class="flex flex-row flex-wrap items-center gap-2">
 						@uiDisplay.Tag(uiDisplay.TagSettings{
 							OuterLeftIcon:             "ph-plus",
 							OuterLeftLabel:            "Add",
@@ -1660,6 +1673,10 @@ templ TagDemo() {
 							OuterRightOnClickFunc:     "if(clickCount > 0) clickCount--",
 							InnerIcon:                 "ph-hash",
 							InnerLabelOneWayStatePath: "clickCount",
+						})
+						@uiDisplay.Tag(uiDisplay.TagSettings{
+							OuterLeftLabel:            "count",
+							InnerValueOneWayStatePath: "clickCount",
 						})
 					</div>
 				</div>
