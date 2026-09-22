@@ -30,23 +30,23 @@ requireDemoUrl() {
 #
 runSelectedSpecs() {
 	case "$1" in
-		smoke) npx playwright test --project=chromium --grep @smoke ;;
-		standard) npx playwright test --project=chromium --grep-invert "@smoke|@a11y|@perf|@toolset|@control|@structural" ;;
-		a11y) npx playwright test --project=chromium --grep @a11y ;;
-		performance) npx playwright test --project=chromium --grep @perf ;;
-		toolset) npx playwright test --project=chromium --grep @toolset ;;
-		control) npx playwright test --project=chromium --grep @control ;;
-		structural-smoke) npx playwright test --project=chromium --grep "@structural.*@smoke" ;;
-		structural) npx playwright test --project=chromium --grep "@structural" --grep-invert "@smoke|@a11y" ;;
-		structural-a11y) npx playwright test --project=chromium --grep "@structural.*@a11y" ;;
+		smoke) ../node_modules/.bin/playwright test --project=chromium --grep @smoke ;;
+		standard) ../node_modules/.bin/playwright test --project=chromium --grep-invert "@smoke|@a11y|@perf|@toolset|@control|@structural" ;;
+		a11y) ../node_modules/.bin/playwright test --project=chromium --grep @a11y ;;
+		performance) ../node_modules/.bin/playwright test --project=chromium --grep @perf ;;
+		toolset) ../node_modules/.bin/playwright test --project=chromium --grep @toolset ;;
+		control) ../node_modules/.bin/playwright test --project=chromium --grep @control ;;
+		structural-smoke) ../node_modules/.bin/playwright test --project=chromium --grep "@structural.*@smoke" ;;
+		structural) ../node_modules/.bin/playwright test --project=chromium --grep "@structural" --grep-invert "@smoke|@a11y" ;;
+		structural-a11y) ../node_modules/.bin/playwright test --project=chromium --grep "@structural.*@a11y" ;;
 		cross-browser)
 			# WebKit is defined in playwright.config.js but needs system libraries
 			# this host lacks; enable it with --project=webkit where they exist.
-			npx playwright test --project=firefox --grep-invert "@a11y|@perf|@toolset|@control|@structural"
+			../node_modules/.bin/playwright test --project=firefox --grep-invert "@a11y|@perf|@toolset|@control|@structural"
 			;;
-		toolset-cross-browser) npx playwright test --project=firefox --grep @toolset ;;
-		control-cross-browser) npx playwright test --project=firefox --grep @control ;;
-		structural-cross-browser) npx playwright test --project=firefox --grep "@structural" --grep-invert "@a11y" ;;
+		toolset-cross-browser) ../node_modules/.bin/playwright test --project=firefox --grep @toolset ;;
+		control-cross-browser) ../node_modules/.bin/playwright test --project=firefox --grep @control ;;
+		structural-cross-browser) ../node_modules/.bin/playwright test --project=firefox --grep "@structural" --grep-invert "@a11y" ;;
 	esac
 }
 
