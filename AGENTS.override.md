@@ -15,3 +15,12 @@ templ generate && (cd docs && go run ../demo/*.go)
 ```
 
 `docs/index.html` is the rendered demo served at ui.demo.goinfinite.net. A change that skips this step ships stale documentation.
+
+## Local Demo Server
+
+Serve `docs/` with `tests/lib/serveDemo.mjs` when a browser check needs the demo (agent-browser, screenshots). The server rewrites external asset URLs to its `/proxy/` paths, so a plain static server would fetch assets from the CDN instead of the local cache.
+
+- Start: `(node tests/lib/serveDemo.mjs 8377 >/tmp/opencode/serveDemo.log 2>&1 &)`, then `curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1:8377/`. The answer must be `200`.
+- The `( ... & )` subshell detaches the server so it survives between tool calls. A bare `&` or `nohup ... &` gets reaped when the command returns.
+- Stop: `kill "$(pgrep -f 'serveDemo\.mjs')"`. Escape the dot so the pattern does not match the `pgrep` command itself.
+- `tests/tests.sh` starts its own server on port 8377 when a suite needs the demo, and stops it when the run ends. Do not run it while a manual server holds that port; start the manual server on another port (`node tests/lib/serveDemo.mjs 8399`) instead.
