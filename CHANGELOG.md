@@ -2,6 +2,13 @@
 
 ```log
 0.2.2 - 2026/09/22
+docs: record the v0.2.2 feature entries in the changelog
+test: raise the color contrast baseline to 84
+test: register the form and display unit test nodes
+test: rename the assertion messages to PascalCase
+docs: show the checkbox error state and tag variants in the demo
+feat: add the tag tiny size, bound inner value, and border-rendered rings
+feat: add the checkbox input error state
 docs: document the demo server start and stop for agent-browser
 test: raise the select dropdown open golden baseline to 50ms
 test: assert the stale refresh outcome without request counts
