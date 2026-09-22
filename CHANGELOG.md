@@ -2,6 +2,9 @@
 
 ```log
 0.2.1 - 2026/09/18
+fix: run the browser specs without npx
+fix: reject demo requests that escape the docs root
+fix: use a strong hash for the demo asset cache
 fix: abort superseded data table refreshes
 fix: close the modal on a backdrop press, not a panel drag
 fix: lowercase the state-bound tag labels
