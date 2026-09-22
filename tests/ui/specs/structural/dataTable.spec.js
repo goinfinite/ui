@@ -362,6 +362,9 @@ test.describe("DataTable @structural", () => {
 
     await expect.poll(() => requestCount).toBe(2);
     await expect(rowNames(page).first()).toHaveText("alpha");
+    await expect(page.locator(`${tableRoot} p[aria-live=polite]`)).toHaveText(
+      "Table refreshed",
+    );
     await expect(
       page.locator(tableRoot).getByText("Could not refresh the table."),
     ).toBeHidden();
