@@ -2,6 +2,7 @@
 
 ```log
 0.2.1 - 2026/09/18
+fix: serve demo files only from canonical paths under the docs root
 fix: label inputs and textareas even when an input id is set
 test: wait for the data table refresh before asserting the error is hidden
 fix: run the browser specs without npx

@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from "node:crypto";
-import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
+import { mkdir, readFile, realpath, rename, writeFile } from "node:fs/promises";
 import { createServer } from "node:http";
 import { resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 const docsRoot = resolve(
   fileURLToPath(new URL("../../docs/", import.meta.url)),
 );
+const canonicalDocsRoot = await realpath(docsRoot);
 const assetCacheRoot = fileURLToPath(
   new URL("../.cache/demo-assets/", import.meta.url),
 );
@@ -76,6 +77,12 @@ function rewriteAbsoluteCssUrls(css) {
   );
 }
 
+function isWithinRoot(rootPath, candidatePath) {
+  return (
+    candidatePath === rootPath || candidatePath.startsWith(`${rootPath}${sep}`)
+  );
+}
+
 async function serveFile(request, response) {
   let fileName = "";
   try {
@@ -90,15 +97,23 @@ async function serveFile(request, response) {
     return;
   }
   const resolvedPath = resolve(docsRoot, `.${fileName}`);
-  if (
-    resolvedPath !== docsRoot &&
-    !resolvedPath.startsWith(`${docsRoot}${sep}`)
-  ) {
+  if (!isWithinRoot(docsRoot, resolvedPath)) {
+    response.writeHead(400).end("bad request");
+    return;
+  }
+  let canonicalFilePath;
+  try {
+    canonicalFilePath = await realpath(resolvedPath);
+  } catch {
+    response.writeHead(404).end("not found");
+    return;
+  }
+  if (!isWithinRoot(canonicalDocsRoot, canonicalFilePath)) {
     response.writeHead(400).end("bad request");
     return;
   }
   try {
-    const fileBody = await readFile(resolvedPath);
+    const fileBody = await readFile(canonicalFilePath);
     const body = fileName.endsWith(".html")
       ? rewriteExternalAssetUrls(fileBody.toString("utf8"))
       : fileBody;
