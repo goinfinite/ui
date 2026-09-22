@@ -54,7 +54,7 @@ func TestDataTableInitialFilterValuesResolver(t *testing.T) {
 			actualValues := settings.initialFilterValuesResolver()
 			if !reflect.DeepEqual(actualValues, testCase.expectedValues) {
 				t.Errorf(
-					"initialFilterValuesResolver() = %v; want %v",
+					"InitialFilterValuesMismatch: got %v, want %v",
 					actualValues, testCase.expectedValues,
 				)
 			}
@@ -80,7 +80,7 @@ func TestDataTableClientSettingsResolver(t *testing.T) {
 	expectedQueryParamNames := map[string]string{"status": "status", "cpu": "cores"}
 	if !reflect.DeepEqual(clientSettings.FilterQueryParamNames, expectedQueryParamNames) {
 		t.Errorf(
-			"FilterQueryParamNames = %v; want %v",
+			"FilterQueryParamNamesMismatch: got %v, want %v",
 			clientSettings.FilterQueryParamNames, expectedQueryParamNames,
 		)
 	}
@@ -90,40 +90,40 @@ func TestDataTableClientSettingsResolver(t *testing.T) {
 	}
 	if !reflect.DeepEqual(clientSettings.InitialState.FilterValues, expectedFilterValues) {
 		t.Errorf(
-			"FilterValues = %v; want %v",
+			"FilterValuesMismatch: got %v, want %v",
 			clientSettings.InitialState.FilterValues, expectedFilterValues,
 		)
 	}
 	if clientSettings.InitialState.ItemsPerPage != 5 {
-		t.Errorf("ItemsPerPage = %d; want 5", clientSettings.InitialState.ItemsPerPage)
+		t.Errorf("ItemsPerPageMismatch: got %d, want 5", clientSettings.InitialState.ItemsPerPage)
 	}
 	if clientSettings.InitialState.PageNumber != 2 {
-		t.Errorf("PageNumber = %d; want 2", clientSettings.InitialState.PageNumber)
+		t.Errorf("PageNumberMismatch: got %d, want 2", clientSettings.InitialState.PageNumber)
 	}
 	if clientSettings.InitialState.SearchQuery != "alpha" {
-		t.Errorf("SearchQuery = %q; want %q", clientSettings.InitialState.SearchQuery, "alpha")
+		t.Errorf("SearchQueryMismatch: got %q, want %q", clientSettings.InitialState.SearchQuery, "alpha")
 	}
 	if clientSettings.InitialState.SortDirection != "asc" {
-		t.Errorf("SortDirection = %q; want %q", clientSettings.InitialState.SortDirection, "asc")
+		t.Errorf("SortDirectionMismatch: got %q, want %q", clientSettings.InitialState.SortDirection, "asc")
 	}
 	if clientSettings.InitialState.SortKey != "name" {
-		t.Errorf("SortKey = %q; want %q", clientSettings.InitialState.SortKey, "name")
+		t.Errorf("SortKeyMismatch: got %q, want %q", clientSettings.InitialState.SortKey, "name")
 	}
 	if clientSettings.RefreshDebounceMs != dataTableDefaultRefreshDebounceMs {
 		t.Errorf(
-			"RefreshDebounceMs = %d; want %d",
+			"RefreshDebounceMsMismatch: got %d, want %d",
 			clientSettings.RefreshDebounceMs, dataTableDefaultRefreshDebounceMs,
 		)
 	}
 	if clientSettings.QueryUrlTemplate != "/records?page={pageNumber}" {
-		t.Errorf("QueryUrlTemplate = %q; want %q", clientSettings.QueryUrlTemplate, "/records?page={pageNumber}")
+		t.Errorf("QueryUrlTemplateMismatch: got %q, want %q", clientSettings.QueryUrlTemplate, "/records?page={pageNumber}")
 	}
 
 	overrideSettings := settings
 	overrideSettings.RefreshDebounceMs = 750
 	overrideClientSettings := overrideSettings.clientSettingsResolver(5, 1)
 	if overrideClientSettings.RefreshDebounceMs != 750 {
-		t.Errorf("RefreshDebounceMs = %d; want 750", overrideClientSettings.RefreshDebounceMs)
+		t.Errorf("RefreshDebounceMsMismatch: got %d, want 750", overrideClientSettings.RefreshDebounceMs)
 	}
 }
 
@@ -144,7 +144,7 @@ func TestDataTableAlignmentClassResolver(t *testing.T) {
 			actualClassName := testCase.alignment.alignmentClassResolver()
 			if actualClassName != testCase.expectedClassName {
 				t.Errorf(
-					"alignmentClassResolver(%q) = %q; want %q",
+					"AlignmentClassMismatch(%q): got %q, want %q",
 					testCase.alignment, actualClassName, testCase.expectedClassName,
 				)
 			}
@@ -169,7 +169,7 @@ func TestDataTableJustifyClassResolver(t *testing.T) {
 			actualClassName := testCase.alignment.justifyClassResolver()
 			if actualClassName != testCase.expectedClassName {
 				t.Errorf(
-					"justifyClassResolver(%q) = %q; want %q",
+					"JustifyClassMismatch(%q): got %q, want %q",
 					testCase.alignment, actualClassName, testCase.expectedClassName,
 				)
 			}
@@ -196,7 +196,7 @@ func TestDataTableHeaderTextCaseClassResolver(t *testing.T) {
 			actualClassName := settings.headerTextCaseClassResolver()
 			if actualClassName != testCase.expectedClassName {
 				t.Errorf(
-					"headerTextCaseClassResolver(%q) = %q; want %q",
+					"HeaderTextCaseClassMismatch(%q): got %q, want %q",
 					testCase.headerTextCase, actualClassName, testCase.expectedClassName,
 				)
 			}
@@ -222,7 +222,7 @@ func TestDataTableCheckboxShapeResolver(t *testing.T) {
 			actualShape := settings.checkboxShapeResolver()
 			if actualShape != testCase.expectedShape {
 				t.Errorf(
-					"checkboxShapeResolver(%q) = %q; want %q",
+					"CheckboxShapeMismatch(%q): got %q, want %q",
 					testCase.providedShape, actualShape, testCase.expectedShape,
 				)
 			}
@@ -248,7 +248,7 @@ func TestDataTableCheckboxSizeResolver(t *testing.T) {
 			actualSize := settings.checkboxSizeResolver()
 			if actualSize != testCase.expectedSize {
 				t.Errorf(
-					"checkboxSizeResolver(%q) = %q; want %q",
+					"CheckboxSizeMismatch(%q): got %q, want %q",
 					testCase.providedSize, actualSize, testCase.expectedSize,
 				)
 			}
@@ -262,7 +262,7 @@ func TestDataTableRowStripeClassesResolver(t *testing.T) {
 	actualStripedClasses := stripedSettings.rowStripeClassesResolver()
 	if actualStripedClasses != expectedClasses {
 		t.Errorf(
-			"rowStripeClassesResolver() = %q; want %q",
+			"RowStripeClassesMismatch: got %q, want %q",
 			actualStripedClasses, expectedClasses,
 		)
 	}
@@ -270,7 +270,7 @@ func TestDataTableRowStripeClassesResolver(t *testing.T) {
 	plainSettings := DataTableSettings[dataTableTestRecord]{}
 	actualPlainClasses := plainSettings.rowStripeClassesResolver()
 	if actualPlainClasses != "" {
-		t.Errorf("rowStripeClassesResolver() = %q; want empty", actualPlainClasses)
+		t.Errorf("RowStripeClassesNotEmpty: %q", actualPlainClasses)
 	}
 }
 
@@ -300,7 +300,7 @@ func TestDataTablePaginationAriaLabelResolver(t *testing.T) {
 			actualLabel := settings.paginationAriaLabelResolver()
 			if actualLabel != testCase.expectedLabel {
 				t.Errorf(
-					"paginationAriaLabelResolver(%q) = %q; want %q",
+					"PaginationAriaLabelMismatch(%q): got %q, want %q",
 					testCase.providedLabel, actualLabel, testCase.expectedLabel,
 				)
 			}
@@ -316,7 +316,7 @@ func TestDataTableItemsPerPageSizeChoicesResolver(t *testing.T) {
 	expectedProvidedChoices := []uint{10, 20}
 	if !reflect.DeepEqual(actualProvidedChoices, expectedProvidedChoices) {
 		t.Errorf(
-			"itemsPerPageSizeChoicesResolver() = %v; want %v",
+			"ItemsPerPageSizeChoicesMismatch: got %v, want %v",
 			actualProvidedChoices, expectedProvidedChoices,
 		)
 	}
@@ -326,7 +326,7 @@ func TestDataTableItemsPerPageSizeChoicesResolver(t *testing.T) {
 	expectedDefaultChoices := paginationDefaultItemsPerPageSizeChoices
 	if !reflect.DeepEqual(actualDefaultChoices, expectedDefaultChoices) {
 		t.Errorf(
-			"itemsPerPageSizeChoicesResolver() = %v; want %v",
+			"ItemsPerPageSizeChoicesMismatch: got %v, want %v",
 			actualDefaultChoices, expectedDefaultChoices,
 		)
 	}
@@ -363,7 +363,7 @@ func TestDataTableItemsPerPageResolver(t *testing.T) {
 			)
 			if actualItemsPerPage != testCase.expectedItemsPerPage {
 				t.Errorf(
-					"itemsPerPageResolver() = %d; want %d",
+					"ItemsPerPageMismatch: got %d, want %d",
 					actualItemsPerPage, testCase.expectedItemsPerPage,
 				)
 			}
@@ -375,13 +375,13 @@ func TestDataTablePageNumberResolver(t *testing.T) {
 	defaultSettings := DataTableSettings[dataTableTestRecord]{}
 	actualDefaultPageNumber := defaultSettings.pageNumberResolver()
 	if actualDefaultPageNumber != 1 {
-		t.Errorf("pageNumberResolver() = %d; want 1", actualDefaultPageNumber)
+		t.Errorf("PageNumberMismatch: got %d, want 1", actualDefaultPageNumber)
 	}
 
 	providedSettings := DataTableSettings[dataTableTestRecord]{PageNumber: 4}
 	actualProvidedPageNumber := providedSettings.pageNumberResolver()
 	if actualProvidedPageNumber != 4 {
-		t.Errorf("pageNumberResolver() = %d; want 4", actualProvidedPageNumber)
+		t.Errorf("PageNumberMismatch: got %d, want 4", actualProvidedPageNumber)
 	}
 }
 
@@ -392,7 +392,7 @@ func TestDataTableIdResolver(t *testing.T) {
 	}
 	actualExplicitId := explicitIdSettings.idResolver()
 	if actualExplicitId != "records-table" {
-		t.Errorf("idResolver() = %q; want %q", actualExplicitId, "records-table")
+		t.Errorf("IdMismatch: got %q, want %q", actualExplicitId, "records-table")
 	}
 
 	settings := DataTableSettings[dataTableTestRecord]{
@@ -402,7 +402,7 @@ func TestDataTableIdResolver(t *testing.T) {
 	derivedId := settings.idResolver()
 	repeatedId := settings.idResolver()
 	if repeatedId != derivedId {
-		t.Errorf("idResolver() is not stable: %q != %q", repeatedId, derivedId)
+		t.Errorf("IdResolverNotStable: %q != %q", repeatedId, derivedId)
 	}
 
 	rowVariantSettings := settings
@@ -410,7 +410,7 @@ func TestDataTableIdResolver(t *testing.T) {
 	rowVariantId := rowVariantSettings.idResolver()
 	if rowVariantId != derivedId {
 		t.Errorf(
-			"idResolver() changed with different rows: %q != %q",
+			"IdChangedWithDifferentRows: %q != %q",
 			rowVariantId, derivedId,
 		)
 	}
@@ -421,7 +421,7 @@ func TestDataTableIdResolver(t *testing.T) {
 	}
 	filteredId := filteredSettings.idResolver()
 	if filteredId == derivedId {
-		t.Errorf("idResolver() collided for different filters: %q", filteredId)
+		t.Errorf("IdCollidedForDifferentFilters: %q", filteredId)
 	}
 
 	sortedSettings := settings
@@ -430,6 +430,6 @@ func TestDataTableIdResolver(t *testing.T) {
 	}
 	sortedId := sortedSettings.idResolver()
 	if sortedId == derivedId {
-		t.Errorf("idResolver() collided for different sort keys: %q", sortedId)
+		t.Errorf("IdCollidedForDifferentSortKeys: %q", sortedId)
 	}
 }

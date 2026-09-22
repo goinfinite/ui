@@ -66,7 +66,7 @@ func TestSelectInputSizeClassesResolver(t *testing.T) {
 			}
 			if strings.Join(actualClasses, "|") != strings.Join(expectedClasses, "|") {
 				t.Errorf(
-					"selectInputSizeClassesResolver(%q) = %q; want %q",
+					"SizeClassesMismatch(%q): got %q, want %q",
 					testCase.size, actualClasses, expectedClasses,
 				)
 			}
