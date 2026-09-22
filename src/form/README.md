@@ -19,6 +19,8 @@ Checkbox with a label, bound to a boolean or an array state path.
 
 `Shape` accepts `CheckboxInputShapeSquare`, `CheckboxInputShapeRounded` (the default), and `CheckboxInputShapeCircular`. `Size` accepts the `CheckboxInputSize*` constants. `CheckedColor`, `UncheckedColor`, and `FocusRingColor` set the box colors. `LabelPosition` accepts `CheckboxInputLabelPositionLeft` and `CheckboxInputLabelPositionRight`. `IsChecked`, `IsDisabled`, and `IsRequired` render static states; `IsCheckedOneWayStatePath`, `IsDisabledOneWayStatePath`, and `IndeterminateOneWayStatePath` bind them to Alpine state. `AriaLabel` names the checkbox when no visible label is present.
 
+`IsInvalid` and `IsInvalidOneWayStatePath` flag the error state: the box border turns to `ErrorColor` (default `"red-500"`), and the input carries `aria-invalid`. `ErrorMessage` and `ErrorMessageOneWayStatePath` render the message below the control; with `InputId` set, the input links to it through `aria-describedby`. When an invalid path is set, the message shows only while the path is true.
+
 ## InputField
 
 Single-line input with a floating label, optional affixes, and an optional hint.

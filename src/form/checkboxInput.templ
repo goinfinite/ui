@@ -19,6 +19,9 @@ type CheckboxInputSettings struct {
 	// OptionalFields
 	AriaLabel                    string
 	CheckedColor                 string
+	ErrorColor                   string
+	ErrorMessage                 string
+	ErrorMessageOneWayStatePath  string
 	FocusRingColor               string
 	IndeterminateOneWayStatePath string
 	InputId                      string
@@ -27,6 +30,8 @@ type CheckboxInputSettings struct {
 	IsCheckedOneWayStatePath     string
 	IsDisabled                   bool
 	IsDisabledOneWayStatePath    string
+	IsInvalid                    bool
+	IsInvalidOneWayStatePath     string
 	IsRequired                   bool
 	Label                        string
 	LabelPosition                string
@@ -65,6 +70,16 @@ func checkboxInputShapeClassResolver(shape string) string {
 	return "rounded"
 }
 
+func checkboxInputBoxBorderClassesResolver(
+	uncheckedColor, checkedColor, errorColor string,
+	isInvalid bool,
+) string {
+	if isInvalid {
+		return "border-" + errorColor + " peer-checked:border-" + errorColor
+	}
+	return "border-" + uncheckedColor + " peer-checked:border-" + checkedColor
+}
+
 templ CheckboxInput(componentSettings CheckboxInputSettings) {
 	{{ boxSizeClasses, iconSizeClasses, labelSizeClasses := checkboxInputSizeClassesResolver(componentSettings.Size) }}
 	{{ shapeClass := checkboxInputShapeClassResolver(componentSettings.Shape) }}
@@ -79,6 +94,10 @@ templ CheckboxInput(componentSettings CheckboxInputSettings) {
 	{{ focusRingColor := checkedColor }}
 	if componentSettings.FocusRingColor != "" {
 		{{ focusRingColor = componentSettings.FocusRingColor }}
+	}
+	{{ errorColor := "red-500" }}
+	if componentSettings.ErrorColor != "" {
+		{{ errorColor = componentSettings.ErrorColor }}
 	}
 	{{ textColor := "text-neutral-50" }}
 	if componentSettings.TextColor != "" {
@@ -98,12 +117,29 @@ templ CheckboxInput(componentSettings CheckboxInputSettings) {
 		{{ labelStateClasses = "cursor-not-allowed opacity-50" }}
 	}
 	{{
+		borderClasses := checkboxInputBoxBorderClassesResolver(
+			uncheckedColor, checkedColor, errorColor, componentSettings.IsInvalid,
+		)
 		boxClasses := "flex shrink-0 items-center justify-center border-2 bg-transparent text-transparent transition-colors " +
-			boxSizeClasses + " " + shapeClass + " border-" + uncheckedColor +
-			" peer-checked:border-" + checkedColor + " peer-checked:text-" + checkedColor +
+			boxSizeClasses + " " + shapeClass + " " + borderClasses +
+			" peer-checked:text-" + checkedColor +
 			" peer-focus-visible:ring-2 peer-focus-visible:ring-" + focusRingColor
 	}}
 	{{ indeterminatePath := componentSettings.IndeterminateOneWayStatePath }}
+	{{ invalidPath := componentSettings.IsInvalidOneWayStatePath }}
+	{{ hasErrorMessage := componentSettings.ErrorMessage != "" || componentSettings.ErrorMessageOneWayStatePath != "" }}
+	{{ dynamicClassExpr := "" }}
+	if indeterminatePath != "" {
+		{{ dynamicClassExpr = "(" + indeterminatePath + " ? '!border-" + checkedColor + " !text-" + checkedColor + "' : '')" }}
+	}
+	if invalidPath != "" {
+		{{ invalidClassExpr := "(" + invalidPath + " ? '!border-" + errorColor + " !peer-checked:border-" + errorColor + "' : '')" }}
+		if dynamicClassExpr == "" {
+			{{ dynamicClassExpr = invalidClassExpr }}
+		} else {
+			{{ dynamicClassExpr += " + ' ' + " + invalidClassExpr }}
+		}
+	}
 	{{ checkedEffect := "" }}
 	if componentSettings.IsCheckedOneWayStatePath != "" {
 		{{ checkedEffect = "$el.checked = !!(" + componentSettings.IsCheckedOneWayStatePath + ")" }}
@@ -115,70 +151,99 @@ templ CheckboxInput(componentSettings CheckboxInputSettings) {
 		{{ checkedEffect += "$el.indeterminate = !!(" + indeterminatePath + ")" }}
 	}
 	<!-- CheckboxInput -->
-	<label
-		class={ "relative inline-flex w-fit select-none items-center gap-2 " + labelPositionClasses + " " + labelStateClasses }
-		if isDisabledPath != "" {
-			:class={ isDisabledPath + " && 'cursor-not-allowed opacity-50'" }
-		}
-	>
-		<input
-			type="checkbox"
-			if componentSettings.InputId != "" {
-				id={ componentSettings.InputId }
-			}
-			if componentSettings.InputName != "" {
-				name={ componentSettings.InputName }
-			}
-			if componentSettings.Value != "" {
-				value={ componentSettings.Value }
-			}
-			if componentSettings.AriaLabel != "" {
-				aria-label={ componentSettings.AriaLabel }
-			}
-			if componentSettings.IsRequired {
-				required
-			}
-			if componentSettings.IsDisabled {
-				disabled
-			}
+	<div class="flex w-full flex-col gap-1">
+		<label
+			class={ "relative inline-flex w-fit select-none items-center gap-2 " + labelPositionClasses + " " + labelStateClasses }
 			if isDisabledPath != "" {
-				:disabled={ isDisabledPath }
-			}
-			if componentSettings.IsChecked {
-				checked
-			}
-			class="peer absolute inset-0 h-full w-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
-			if componentSettings.TwoWayStatePath != "" {
-				x-model={ componentSettings.TwoWayStatePath }
-			}
-			if checkedEffect != "" {
-				x-effect={ checkedEffect }
-			}
-			if componentSettings.OnChangeFunc != "" {
-				@change={ componentSettings.OnChangeFunc }
-			}
-		/>
-		<span
-			class={ boxClasses }
-			if indeterminatePath != "" {
-				:class={ indeterminatePath + " && '!border-" + checkedColor + " !text-" + checkedColor + "'" }
+				:class={ isDisabledPath + " && 'cursor-not-allowed opacity-50'" }
 			}
 		>
-			if indeterminatePath != "" {
-				<i class={ "ph-bold ph-check " + iconSizeClasses } x-show={ "!(" + indeterminatePath + ")" }></i>
-				<i class={ "ph-bold ph-minus " + iconSizeClasses } x-show={ indeterminatePath }></i>
-			}
-			if indeterminatePath == "" {
-				<i class={ "ph-bold ph-check " + iconSizeClasses }></i>
-			}
-		</span>
-		if componentSettings.Label != "" {
-			<span class={ labelSizeClasses + " " + textColor }>
-				{ componentSettings.Label }
+			<input
+				type="checkbox"
+				if componentSettings.InputId != "" {
+					id={ componentSettings.InputId }
+				}
+				if componentSettings.InputName != "" {
+					name={ componentSettings.InputName }
+				}
+				if componentSettings.Value != "" {
+					value={ componentSettings.Value }
+				}
+				if componentSettings.AriaLabel != "" {
+					aria-label={ componentSettings.AriaLabel }
+				}
+				if componentSettings.InputId != "" && hasErrorMessage {
+					aria-describedby={ componentSettings.InputId + "-error" }
+				}
 				if componentSettings.IsRequired {
-					<span class="text-red-700">*</span>
+					required
+				}
+				if componentSettings.IsDisabled {
+					disabled
+				}
+				if isDisabledPath != "" {
+					:disabled={ isDisabledPath }
+				}
+				if componentSettings.IsChecked {
+					checked
+				}
+				if componentSettings.IsInvalid {
+					aria-invalid="true"
+				}
+				if invalidPath != "" {
+					:aria-invalid={ invalidPath }
+				}
+				class="peer absolute inset-0 h-full w-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
+				if componentSettings.TwoWayStatePath != "" {
+					x-model={ componentSettings.TwoWayStatePath }
+				}
+				if checkedEffect != "" {
+					x-effect={ checkedEffect }
+				}
+				if componentSettings.OnChangeFunc != "" {
+					@change={ componentSettings.OnChangeFunc }
+				}
+			/>
+			<span
+				class={ boxClasses }
+				if dynamicClassExpr != "" {
+					:class={ dynamicClassExpr }
+				}
+			>
+				if indeterminatePath != "" {
+					<i class={ "ph-bold ph-check " + iconSizeClasses } x-show={ "!(" + indeterminatePath + ")" }></i>
+					<i class={ "ph-bold ph-minus " + iconSizeClasses } x-show={ indeterminatePath }></i>
+				}
+				if indeterminatePath == "" {
+					<i class={ "ph-bold ph-check " + iconSizeClasses }></i>
+				}
+			</span>
+			if componentSettings.Label != "" {
+				<span class={ labelSizeClasses + " " + textColor }>
+					{ componentSettings.Label }
+					if componentSettings.IsRequired {
+						<span class="text-red-700">*</span>
+					}
+				</span>
+			}
+		</label>
+		if hasErrorMessage {
+			<span
+				if componentSettings.InputId != "" {
+					id={ componentSettings.InputId + "-error" }
+				}
+				class={ "text-xs text-" + errorColor }
+				if invalidPath != "" {
+					x-show={ invalidPath }
+				}
+				if componentSettings.ErrorMessageOneWayStatePath != "" {
+					x-text={ componentSettings.ErrorMessageOneWayStatePath }
+				}
+			>
+				if componentSettings.ErrorMessage != "" && componentSettings.ErrorMessageOneWayStatePath == "" {
+					{ componentSettings.ErrorMessage }
 				}
 			</span>
 		}
-	</label>
+	</div>
 }
