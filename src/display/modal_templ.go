@@ -16,6 +16,7 @@ const (
 	ModalSizeMd   string = "md"
 	ModalSizeLg   string = "lg"
 	ModalSizeXl   string = "xl"
+	ModalSizeXxl  string = "xxl"
 	ModalSizeFull string = "full"
 
 	ModalBorderRadiusNone string = "none"
@@ -43,27 +44,41 @@ type ModalSettings struct {
 	MiddleContent templ.Component
 
 	// OptionalFields
-	Title                    string
-	TitleOneWayStatePath     string
-	HeaderContent            templ.Component
-	FooterContent            templ.Component
-	Size                     string
-	SizeTwoWayStatePath      string
-	BackdropColor            string
-	BackgroundColor          string
-	TextColor                string
-	BorderRadius             string
-	ShadowSize               string
-	RingColor                string
-	RingThickness            string
-	IsVisibleTwoWayStatePath string
-	IsUncloseable            bool
-	IsUnresizable            bool
-	OnCloseFunc              string
-	OnResizeFunc             string
+	Title                         string
+	TitleOneWayStatePath          string
+	HeaderContent                 templ.Component
+	FooterContent                 templ.Component
+	InitialSize                   string
+	CurrentSizeTwoWayStatePath    string
+	PossibleSizes                 []string
+	WidthPercent                  int
+	HeightPercent                 int
+	IsHeightContentSized          bool
+	BackdropColor                 string
+	BackgroundColor               string
+	TextColor                     string
+	BorderRadius                  string
+	ShadowSize                    string
+	RingColor                     string
+	RingThickness                 string
+	IsVisibleTwoWayStatePath      string
+	IsUncloseable                 bool
+	IsUnresizable                 bool
+	IsMiddleContentScrollDisabled bool
+	OnCloseFunc                   string
+	OnResizeFunc                  string
 }
 
-func Modal(componentSettings ModalSettings) templ.Component {
+type modalHeaderActionSettings struct {
+	CanEnlargeExpression string
+	CanReduceExpression  string
+	CloseOnClickFunc     string
+	EnlargeOnClickFunc   string
+	IconSize             string
+	ReduceOnClickFunc    string
+}
+
+func modalHeaderActionButtons(settings modalHeaderActionSettings) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -84,7 +99,77 @@ func Modal(componentSettings ModalSettings) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!-- Modal Backdrop -->")
+		if settings.CanEnlargeExpression != "" || settings.CanReduceExpression != "" || settings.CloseOnClickFunc != "" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex items-center gap-1\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if settings.CanReduceExpression != "" {
+				templ_7745c5c3_Err = uiControl.Button(uiControl.ButtonSettings{
+					IconLeft:                 "ph-arrows-in",
+					IsVisibleOneWayStatePath: settings.CanReduceExpression,
+					OnClickFunc:              settings.ReduceOnClickFunc,
+					Shape:                    uiControl.ButtonShapeCircular,
+					Size:                     settings.IconSize,
+				}).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			if settings.CanEnlargeExpression != "" {
+				templ_7745c5c3_Err = uiControl.Button(uiControl.ButtonSettings{
+					IconLeft:                 "ph-arrows-out",
+					IsVisibleOneWayStatePath: settings.CanEnlargeExpression,
+					OnClickFunc:              settings.EnlargeOnClickFunc,
+					Shape:                    uiControl.ButtonShapeCircular,
+					Size:                     settings.IconSize,
+				}).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			if settings.CloseOnClickFunc != "" {
+				templ_7745c5c3_Err = uiControl.Button(uiControl.ButtonSettings{
+					IconLeft:    "ph-x",
+					OnClickFunc: settings.CloseOnClickFunc,
+					Size:        settings.IconSize,
+					Shape:       uiControl.ButtonShapeCircular,
+				}).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		return nil
+	})
+}
+
+func Modal(componentSettings ModalSettings) templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var2 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var2 == nil {
+			templ_7745c5c3_Var2 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<!-- Modal Backdrop -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -94,7 +179,7 @@ func Modal(componentSettings ModalSettings) templ.Component {
 			backdropBackgroundColor = "bg-" + componentSettings.BackdropColor
 		}
 		backdropClasses += " " + backdropBackgroundColor
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<!-- Modal Container Classes -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<!-- Modal Container Classes -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -108,44 +193,39 @@ func Modal(componentSettings ModalSettings) templ.Component {
 			textColor = "text-" + componentSettings.TextColor
 		}
 		modalClasses += " " + backgroundColor + " " + textColor
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<!-- Modal Size -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<!-- Modal Size -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		modalSizeClassesXs := "w-full max-w-md p-3"
-		modalSizeClassesSm := "w-full max-w-lg p-3.5"
-		modalSizeClassesMd := "w-full max-w-xl p-4"
-		modalSizeClassesLg := "w-full max-w-2xl p-4.5"
-		modalSizeClassesXl := "w-full max-w-3xl p-5"
-		modalSizeClassesFull := "w-full h-full p-5.5"
-		modalSizeClasses := modalSizeClassesMd
+		possibleSizes := modalPossibleSizesResolver(componentSettings.PossibleSizes)
+		componentSettings.InitialSize = modalInitialSizeResolver(
+			componentSettings.InitialSize, possibleSizes,
+		)
+		reachableSizes := modalReachableSizesResolver(componentSettings.InitialSize, possibleSizes)
+		modalSizeClasses := modalSizeClassesResolver(
+			componentSettings.InitialSize,
+			componentSettings.WidthPercent,
+			componentSettings.HeightPercent,
+			componentSettings.IsHeightContentSized,
+		)
 		modalStandardHeaderTitleSize := "text-lg"
 		modalStandardHeaderIconSize := uiControl.ButtonSizeSm
-		if componentSettings.Size == "" {
-			componentSettings.Size = ModalSizeMd
-		}
-		switch componentSettings.Size {
-		case ModalSizeXs:
-			modalSizeClasses = modalSizeClassesXs
-		case ModalSizeSm:
-			modalSizeClasses = modalSizeClassesSm
-		case ModalSizeMd:
-			modalSizeClasses = modalSizeClassesMd
+		switch componentSettings.InitialSize {
 		case ModalSizeLg:
-			modalSizeClasses = modalSizeClassesLg
 			modalStandardHeaderTitleSize = "text-xl"
 			modalStandardHeaderIconSize = uiControl.ButtonSizeMd
 		case ModalSizeXl:
-			modalSizeClasses = modalSizeClassesXl
 			modalStandardHeaderTitleSize = "text-2xl"
 			modalStandardHeaderIconSize = uiControl.ButtonSizeMd
+		case ModalSizeXxl:
+			modalStandardHeaderTitleSize = "text-3xl"
+			modalStandardHeaderIconSize = uiControl.ButtonSizeMd
 		case ModalSizeFull:
-			modalSizeClasses = modalSizeClassesFull
 			modalStandardHeaderTitleSize = "text-3xl"
 			modalStandardHeaderIconSize = uiControl.ButtonSizeMd
 		}
 		modalClasses += " " + modalSizeClasses
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<!-- Modal Border Radius -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<!-- Modal Border Radius -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -167,7 +247,7 @@ func Modal(componentSettings ModalSettings) templ.Component {
 			borderRadiusClasses = "rounded"
 		}
 		modalClasses += " " + borderRadiusClasses
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<!-- Modal Shadow -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<!-- Modal Shadow -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -189,7 +269,7 @@ func Modal(componentSettings ModalSettings) templ.Component {
 			shadowClasses = "shadow-md"
 		}
 		modalClasses += " " + shadowClasses
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<!-- Modal Ring -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<!-- Modal Ring -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -208,263 +288,364 @@ func Modal(componentSettings ModalSettings) templ.Component {
 			case ModalRingThicknessXl:
 				ringThickness = "ring-3"
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			ringClasses = ringThickness + " ring-" + componentSettings.RingColor
 		}
 		modalClasses += " " + ringClasses
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<!-- Modal HTML -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<!-- Modal HTML -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var2 = []any{backdropClasses}
-		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var2...)
+		var templ_7745c5c3_Var3 = []any{backdropClasses}
+		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var3...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<div class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.ResolveAttributeValue(templ.CSSClasses(templ_7745c5c3_Var2).String())
+		var templ_7745c5c3_Var4 string
+		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue(templ.CSSClasses(templ_7745c5c3_Var3).String())
 		if templ_7745c5c3_Err != nil {
 			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 1, Col: 0}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if componentSettings.IsVisibleTwoWayStatePath != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, " x-show=\"")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var4 string
-			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.IsVisibleTwoWayStatePath)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 180, Col: 54}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\"")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, " x-transition x-cloak un-cloak")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		if componentSettings.IsVisibleTwoWayStatePath != "" && !componentSettings.IsUncloseable {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, " @mousedown.self=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, " x-show=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
-			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.IsVisibleTwoWayStatePath + " = false;" + componentSettings.OnCloseFunc)
+			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.IsVisibleTwoWayStatePath)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 186, Col: 109}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 225, Col: 54}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, ">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, " x-transition x-cloak un-cloak")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if componentSettings.IsVisibleTwoWayStatePath != "" && !componentSettings.IsUncloseable {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, " @mousedown.self=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var6 string
+			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.IsVisibleTwoWayStatePath + " = false;" + componentSettings.OnCloseFunc)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 231, Col: 109}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, ">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		modalInternalState := ""
-		if componentSettings.SizeTwoWayStatePath != "" {
-			modalInternalState = "{ defaultModalSize: structuredClone(" + componentSettings.SizeTwoWayStatePath + ") }"
+		isResizable := modalIsResizableResolver(
+			componentSettings.IsUnresizable,
+			componentSettings.WidthPercent,
+			componentSettings.HeightPercent,
+			reachableSizes,
+		)
+		if componentSettings.CurrentSizeTwoWayStatePath == "" && isResizable {
+			modalInternalState = "{ modalSize: '" + componentSettings.InitialSize + "' }"
+			componentSettings.CurrentSizeTwoWayStatePath = "modalSize"
 		}
-		if componentSettings.SizeTwoWayStatePath == "" && !componentSettings.IsUnresizable {
-			modalInternalState = "{ modalSize: '" + componentSettings.Size + "', defaultModalSize: '" + componentSettings.Size + "' }"
-			componentSettings.SizeTwoWayStatePath = "modalSize"
+		canEnlargeExpression := ""
+		canReduceExpression := ""
+		enlargeOnClickFunc := ""
+		reduceOnClickFunc := ""
+		if isResizable {
+			canEnlargeExpression = modalCanEnlargeExpressionBuilder(
+				componentSettings.CurrentSizeTwoWayStatePath, reachableSizes,
+			)
+			canReduceExpression = modalCanReduceExpressionBuilder(
+				componentSettings.CurrentSizeTwoWayStatePath, reachableSizes,
+			)
+			enlargeOnClickFunc = modalEnlargeExpressionBuilder(
+				componentSettings.CurrentSizeTwoWayStatePath, reachableSizes,
+			) + ";" + componentSettings.OnResizeFunc
+			reduceOnClickFunc = modalReduceExpressionBuilder(
+				componentSettings.CurrentSizeTwoWayStatePath, reachableSizes,
+			) + ";" + componentSettings.OnResizeFunc
 		}
-		var templ_7745c5c3_Var6 = []any{modalClasses}
-		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var6...)
+		closeOnClickFunc := ""
+		if componentSettings.IsVisibleTwoWayStatePath != "" && !componentSettings.IsUncloseable {
+			closeOnClickFunc = componentSettings.IsVisibleTwoWayStatePath + " = false;" + componentSettings.OnCloseFunc
+		}
+		headerActions := modalHeaderActionSettings{
+			CanEnlargeExpression: canEnlargeExpression,
+			CanReduceExpression:  canReduceExpression,
+			CloseOnClickFunc:     closeOnClickFunc,
+			EnlargeOnClickFunc:   enlargeOnClickFunc,
+			IconSize:             modalStandardHeaderIconSize,
+			ReduceOnClickFunc:    reduceOnClickFunc,
+		}
+		var templ_7745c5c3_Var7 = []any{modalClasses}
+		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var7...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<div")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<div")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if modalInternalState != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, " x-data=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, " x-data=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var7 string
-			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.ResolveAttributeValue(modalInternalState)
+			var templ_7745c5c3_Var8 string
+			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.ResolveAttributeValue(modalInternalState)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 201, Col: 31}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 285, Col: 31}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var8)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, " class=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, " class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var8 string
-		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.ResolveAttributeValue(templ.CSSClasses(templ_7745c5c3_Var6).String())
+		var templ_7745c5c3_Var9 string
+		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.ResolveAttributeValue(templ.CSSClasses(templ_7745c5c3_Var7).String())
 		if templ_7745c5c3_Err != nil {
 			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 1, Col: 0}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var8)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var9)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if componentSettings.SizeTwoWayStatePath != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, " :class=\"")
+		if componentSettings.CurrentSizeTwoWayStatePath != "" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, " :class=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var9 string
-			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.ResolveAttributeValue(`{ '` + modalSizeClassesXs + `': ` + componentSettings.SizeTwoWayStatePath + ` === 'xs', '` + modalSizeClassesSm + `': ` + componentSettings.SizeTwoWayStatePath + ` === 'sm', '` + modalSizeClassesMd + `': ` + componentSettings.SizeTwoWayStatePath + ` === 'md', '` + modalSizeClassesLg + `': ` + componentSettings.SizeTwoWayStatePath + ` === 'lg', '` + modalSizeClassesXl + `': ` + componentSettings.SizeTwoWayStatePath + ` === 'xl', '` + modalSizeClassesFull + `': ` + componentSettings.SizeTwoWayStatePath + ` === 'full' }`)
+			var templ_7745c5c3_Var10 string
+			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.ResolveAttributeValue(modalSizeClassMapExpressionBuilder(
+				componentSettings.CurrentSizeTwoWayStatePath,
+				componentSettings.WidthPercent,
+				componentSettings.HeightPercent,
+				componentSettings.IsHeightContentSized,
+			))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 205, Col: 537}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 294, Col: 5}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var9)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var10)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, ">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, ">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
+		}
+		middleContentClasses := "flex-1 overflow-y-auto"
+		if componentSettings.IsMiddleContentScrollDisabled {
+			middleContentClasses = "flex-1 min-h-0 overflow-hidden"
 		}
 		if componentSettings.HeaderContent != nil {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "<!-- ModalCustomHeader --> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "<!-- ModalCustomHeader --> <div class=\"flex items-start justify-between gap-4\"><div class=\"grow\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
+			wasCustomHeaderTitleSet := componentSettings.Title != "" || componentSettings.TitleOneWayStatePath != ""
+			if wasCustomHeaderTitleSet {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<h2 class=\"sr-only\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				if componentSettings.TitleOneWayStatePath != "" {
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, " x-text=\"")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var11 string
+					templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.TitleOneWayStatePath)
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 310, Col: 56}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var11)
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "\"")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, ">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var12 string
+				templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.Title)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 313, Col: 33}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "</h2>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
 			templ_7745c5c3_Err = componentSettings.HeaderContent.Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "</div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = modalHeaderActionButtons(headerActions).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
 		wasTitleSet := componentSettings.Title != "" || componentSettings.TitleOneWayStatePath != ""
 		if componentSettings.HeaderContent == nil && wasTitleSet {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<!-- ModalStandardHeader --> <div class=\"flex items-center justify-between border-b border-neutral-50/10 pb-2.5\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "<!-- ModalStandardHeader --> <div class=\"flex items-center justify-between border-b border-neutral-50/10 pb-2.5\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var10 = []any{modalStandardHeaderTitleSize + " font-bold"}
-			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var10...)
+			var templ_7745c5c3_Var13 = []any{modalStandardHeaderTitleSize + " font-bold"}
+			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var13...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "<h2 class=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "<h2 class=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var11 string
-			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.ResolveAttributeValue(templ.CSSClasses(templ_7745c5c3_Var10).String())
+			var templ_7745c5c3_Var14 string
+			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.ResolveAttributeValue(templ.CSSClasses(templ_7745c5c3_Var13).String())
 			if templ_7745c5c3_Err != nil {
 				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 1, Col: 0}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var11)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var14)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if componentSettings.TitleOneWayStatePath != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, " x-text=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, " x-text=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var12 string
-				templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.TitleOneWayStatePath)
+				var templ_7745c5c3_Var15 string
+				templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.TitleOneWayStatePath)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 219, Col: 54}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 328, Col: 54}
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var12)
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var15)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, ">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, ">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var13 string
-			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.Title)
+			var templ_7745c5c3_Var16 string
+			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.Title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 222, Col: 31}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 331, Col: 31}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "</h2><div class=\"flex items-center gap-1\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if componentSettings.SizeTwoWayStatePath != "" {
-				templ_7745c5c3_Err = uiControl.Button(uiControl.ButtonSettings{
-					IconLeftOneWayStatePath: componentSettings.SizeTwoWayStatePath + " === 'full' ? 'ph-arrows-in' : 'ph-arrows-out'",
-					OnClickFunc:             componentSettings.SizeTwoWayStatePath + " = " + componentSettings.SizeTwoWayStatePath + " === 'xs' ? 'sm' : " + componentSettings.SizeTwoWayStatePath + " === 'sm' ? 'md' : " + componentSettings.SizeTwoWayStatePath + " === 'md' ? 'lg' : " + componentSettings.SizeTwoWayStatePath + " === 'lg' ? 'xl' : " + componentSettings.SizeTwoWayStatePath + " === 'xl' ? 'full' : defaultModalSize;" + componentSettings.OnResizeFunc,
-					Size:                    modalStandardHeaderIconSize,
-					Shape:                   uiControl.ButtonShapeCircular,
-				}).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "</h2>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
 			}
-			if componentSettings.IsVisibleTwoWayStatePath != "" && !componentSettings.IsUncloseable {
-				templ_7745c5c3_Err = uiControl.Button(uiControl.ButtonSettings{
-					IconLeft:    "ph-x",
-					OnClickFunc: componentSettings.IsVisibleTwoWayStatePath + " = false;" + componentSettings.OnCloseFunc,
-					Size:        modalStandardHeaderIconSize,
-					Shape:       uiControl.ButtonShapeCircular,
-				}).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
+			templ_7745c5c3_Err = modalHeaderActionButtons(headerActions).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "</div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "<!-- ModalMiddleContent --><div class=\"flex-1 overflow-y-auto\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "<!-- ModalMiddleContent -->")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var17 = []any{middleContentClasses}
+		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var17...)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "<div class=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var18 string
+		templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.ResolveAttributeValue(templ.CSSClasses(templ_7745c5c3_Var17).String())
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 1, Col: 0}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var18)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -472,12 +653,12 @@ func Modal(componentSettings ModalSettings) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "</div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if componentSettings.FooterContent != nil {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "<!-- ModalCustomFooter --> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "<!-- ModalCustomFooter --> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -486,7 +667,7 @@ func Modal(componentSettings ModalSettings) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "</div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "</div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

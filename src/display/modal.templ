@@ -8,6 +8,7 @@ const (
 	ModalSizeMd   string = "md"
 	ModalSizeLg   string = "lg"
 	ModalSizeXl   string = "xl"
+	ModalSizeXxl  string = "xxl"
 	ModalSizeFull string = "full"
 
 	ModalBorderRadiusNone string = "none"
@@ -35,24 +36,71 @@ type ModalSettings struct {
 	MiddleContent templ.Component
 
 	// OptionalFields
-	Title                    string
-	TitleOneWayStatePath     string
-	HeaderContent            templ.Component
-	FooterContent            templ.Component
-	Size                     string
-	SizeTwoWayStatePath      string
-	BackdropColor            string
-	BackgroundColor          string
-	TextColor                string
-	BorderRadius             string
-	ShadowSize               string
-	RingColor                string
-	RingThickness            string
-	IsVisibleTwoWayStatePath string
-	IsUncloseable            bool
-	IsUnresizable            bool
-	OnCloseFunc              string
-	OnResizeFunc             string
+	Title                         string
+	TitleOneWayStatePath          string
+	HeaderContent                 templ.Component
+	FooterContent                 templ.Component
+	InitialSize                   string
+	CurrentSizeTwoWayStatePath    string
+	PossibleSizes                 []string
+	WidthPercent                  int
+	HeightPercent                 int
+	IsHeightContentSized          bool
+	BackdropColor                 string
+	BackgroundColor               string
+	TextColor                     string
+	BorderRadius                  string
+	ShadowSize                    string
+	RingColor                     string
+	RingThickness                 string
+	IsVisibleTwoWayStatePath      string
+	IsUncloseable                 bool
+	IsUnresizable                 bool
+	IsMiddleContentScrollDisabled bool
+	OnCloseFunc                   string
+	OnResizeFunc                  string
+}
+
+type modalHeaderActionSettings struct {
+	CanEnlargeExpression string
+	CanReduceExpression  string
+	CloseOnClickFunc     string
+	EnlargeOnClickFunc   string
+	IconSize             string
+	ReduceOnClickFunc    string
+}
+
+templ modalHeaderActionButtons(settings modalHeaderActionSettings) {
+	if settings.CanEnlargeExpression != "" || settings.CanReduceExpression != "" || settings.CloseOnClickFunc != "" {
+		<div class="flex items-center gap-1">
+			if settings.CanReduceExpression != "" {
+				@uiControl.Button(uiControl.ButtonSettings{
+					IconLeft:                 "ph-arrows-in",
+					IsVisibleOneWayStatePath: settings.CanReduceExpression,
+					OnClickFunc:              settings.ReduceOnClickFunc,
+					Shape:                    uiControl.ButtonShapeCircular,
+					Size:                     settings.IconSize,
+				})
+			}
+			if settings.CanEnlargeExpression != "" {
+				@uiControl.Button(uiControl.ButtonSettings{
+					IconLeft:                 "ph-arrows-out",
+					IsVisibleOneWayStatePath: settings.CanEnlargeExpression,
+					OnClickFunc:              settings.EnlargeOnClickFunc,
+					Shape:                    uiControl.ButtonShapeCircular,
+					Size:                     settings.IconSize,
+				})
+			}
+			if settings.CloseOnClickFunc != "" {
+				@uiControl.Button(uiControl.ButtonSettings{
+					IconLeft:    "ph-x",
+					OnClickFunc: settings.CloseOnClickFunc,
+					Size:        settings.IconSize,
+					Shape:       uiControl.ButtonShapeCircular,
+				})
+			}
+		</div>
+	}
 }
 
 templ Modal(componentSettings ModalSettings) {
@@ -76,41 +124,38 @@ templ Modal(componentSettings ModalSettings) {
 	{{ modalClasses += " " + backgroundColor + " " + textColor }}
 	<!-- Modal Size -->
 	{{
-		modalSizeClassesXs := "w-full max-w-md p-3"
-		modalSizeClassesSm := "w-full max-w-lg p-3.5"
-		modalSizeClassesMd := "w-full max-w-xl p-4"
-		modalSizeClassesLg := "w-full max-w-2xl p-4.5"
-		modalSizeClassesXl := "w-full max-w-3xl p-5"
-		modalSizeClassesFull := "w-full h-full p-5.5"
-		modalSizeClasses := modalSizeClassesMd
+		possibleSizes := modalPossibleSizesResolver(componentSettings.PossibleSizes)
+		componentSettings.InitialSize = modalInitialSizeResolver(
+			componentSettings.InitialSize, possibleSizes,
+		)
+		reachableSizes := modalReachableSizesResolver(componentSettings.InitialSize, possibleSizes)
+		modalSizeClasses := modalSizeClassesResolver(
+			componentSettings.InitialSize,
+			componentSettings.WidthPercent,
+			componentSettings.HeightPercent,
+			componentSettings.IsHeightContentSized,
+		)
 		modalStandardHeaderTitleSize := "text-lg"
 		modalStandardHeaderIconSize := uiControl.ButtonSizeSm
 	}}
-	if componentSettings.Size == "" {
-		{{ componentSettings.Size = ModalSizeMd }}
-	}
-	switch componentSettings.Size {
-		case ModalSizeXs:
-			{{ modalSizeClasses = modalSizeClassesXs }}
-		case ModalSizeSm:
-			{{ modalSizeClasses = modalSizeClassesSm }}
-		case ModalSizeMd:
-			{{ modalSizeClasses = modalSizeClassesMd }}
+	switch componentSettings.InitialSize {
 		case ModalSizeLg:
 			{{
-				modalSizeClasses = modalSizeClassesLg
 				modalStandardHeaderTitleSize = "text-xl"
 				modalStandardHeaderIconSize = uiControl.ButtonSizeMd
 			}}
 		case ModalSizeXl:
 			{{
-				modalSizeClasses = modalSizeClassesXl
 				modalStandardHeaderTitleSize = "text-2xl"
+				modalStandardHeaderIconSize = uiControl.ButtonSizeMd
+			}}
+		case ModalSizeXxl:
+			{{
+				modalStandardHeaderTitleSize = "text-3xl"
 				modalStandardHeaderIconSize = uiControl.ButtonSizeMd
 			}}
 		case ModalSizeFull:
 			{{
-				modalSizeClasses = modalSizeClassesFull
 				modalStandardHeaderTitleSize = "text-3xl"
 				modalStandardHeaderIconSize = uiControl.ButtonSizeMd
 			}}
@@ -187,27 +232,91 @@ templ Modal(componentSettings ModalSettings) {
 		}
 	>
 		{{ modalInternalState := "" }}
-		if componentSettings.SizeTwoWayStatePath != "" {
-			{{ modalInternalState = "{ defaultModalSize: structuredClone(" + componentSettings.SizeTwoWayStatePath + ") }" }}
-		}
-		if componentSettings.SizeTwoWayStatePath == "" && !componentSettings.IsUnresizable {
+		{{
+			isResizable := modalIsResizableResolver(
+				componentSettings.IsUnresizable,
+				componentSettings.WidthPercent,
+				componentSettings.HeightPercent,
+				reachableSizes,
+			)
+		}}
+		if componentSettings.CurrentSizeTwoWayStatePath == "" && isResizable {
 			{{
-				modalInternalState = "{ modalSize: '" + componentSettings.Size + "', defaultModalSize: '" + componentSettings.Size + "' }"
-				componentSettings.SizeTwoWayStatePath = "modalSize"
+				modalInternalState = "{ modalSize: '" + componentSettings.InitialSize + "' }"
+				componentSettings.CurrentSizeTwoWayStatePath = "modalSize"
 			}}
 		}
+		{{ canEnlargeExpression := "" }}
+		{{ canReduceExpression := "" }}
+		{{ enlargeOnClickFunc := "" }}
+		{{ reduceOnClickFunc := "" }}
+		if isResizable {
+			{{
+				canEnlargeExpression = modalCanEnlargeExpressionBuilder(
+					componentSettings.CurrentSizeTwoWayStatePath, reachableSizes,
+				)
+				canReduceExpression = modalCanReduceExpressionBuilder(
+					componentSettings.CurrentSizeTwoWayStatePath, reachableSizes,
+				)
+				enlargeOnClickFunc = modalEnlargeExpressionBuilder(
+					componentSettings.CurrentSizeTwoWayStatePath, reachableSizes,
+				) + ";" + componentSettings.OnResizeFunc
+				reduceOnClickFunc = modalReduceExpressionBuilder(
+					componentSettings.CurrentSizeTwoWayStatePath, reachableSizes,
+				) + ";" + componentSettings.OnResizeFunc
+			}}
+		}
+		{{ closeOnClickFunc := "" }}
+		if componentSettings.IsVisibleTwoWayStatePath != "" && !componentSettings.IsUncloseable {
+			{{ closeOnClickFunc = componentSettings.IsVisibleTwoWayStatePath + " = false;" + componentSettings.OnCloseFunc }}
+		}
+		{{
+			headerActions := modalHeaderActionSettings{
+				CanEnlargeExpression: canEnlargeExpression,
+				CanReduceExpression:  canReduceExpression,
+				CloseOnClickFunc:     closeOnClickFunc,
+				EnlargeOnClickFunc:   enlargeOnClickFunc,
+				IconSize:             modalStandardHeaderIconSize,
+				ReduceOnClickFunc:    reduceOnClickFunc,
+			}
+		}}
 		<div
 			if modalInternalState != "" {
 				x-data={ modalInternalState }
 			}
 			class={ modalClasses }
-			if componentSettings.SizeTwoWayStatePath != "" {
-				:class={ `{ '` + modalSizeClassesXs + `': ` + componentSettings.SizeTwoWayStatePath + ` === 'xs', '` + modalSizeClassesSm + `': ` + componentSettings.SizeTwoWayStatePath + ` === 'sm', '` + modalSizeClassesMd + `': ` + componentSettings.SizeTwoWayStatePath + ` === 'md', '` + modalSizeClassesLg + `': ` + componentSettings.SizeTwoWayStatePath + ` === 'lg', '` + modalSizeClassesXl + `': ` + componentSettings.SizeTwoWayStatePath + ` === 'xl', '` + modalSizeClassesFull + `': ` + componentSettings.SizeTwoWayStatePath + ` === 'full' }` }
+			if componentSettings.CurrentSizeTwoWayStatePath != "" {
+				:class={ modalSizeClassMapExpressionBuilder(
+					componentSettings.CurrentSizeTwoWayStatePath,
+					componentSettings.WidthPercent,
+					componentSettings.HeightPercent,
+					componentSettings.IsHeightContentSized,
+				) }
 			}
 		>
+			{{ middleContentClasses := "flex-1 overflow-y-auto" }}
+			if componentSettings.IsMiddleContentScrollDisabled {
+				{{ middleContentClasses = "flex-1 min-h-0 overflow-hidden" }}
+			}
 			if componentSettings.HeaderContent != nil {
 				<!-- ModalCustomHeader -->
-				@componentSettings.HeaderContent
+				<div class="flex items-start justify-between gap-4">
+					<div class="grow">
+						{{ wasCustomHeaderTitleSet := componentSettings.Title != "" || componentSettings.TitleOneWayStatePath != "" }}
+						if wasCustomHeaderTitleSet {
+							<h2
+								class="sr-only"
+								if componentSettings.TitleOneWayStatePath != "" {
+									x-text={ componentSettings.TitleOneWayStatePath }
+								}
+							>
+								{ componentSettings.Title }
+							</h2>
+						}
+						@componentSettings.HeaderContent
+					</div>
+					@modalHeaderActionButtons(headerActions)
+				</div>
 			}
 			{{ wasTitleSet := componentSettings.Title != "" || componentSettings.TitleOneWayStatePath != "" }}
 			if componentSettings.HeaderContent == nil && wasTitleSet {
@@ -221,28 +330,11 @@ templ Modal(componentSettings ModalSettings) {
 					>
 						{ componentSettings.Title }
 					</h2>
-					<div class="flex items-center gap-1">
-						if componentSettings.SizeTwoWayStatePath != "" {
-							@uiControl.Button(uiControl.ButtonSettings{
-								IconLeftOneWayStatePath: componentSettings.SizeTwoWayStatePath + " === 'full' ? 'ph-arrows-in' : 'ph-arrows-out'",
-								OnClickFunc:             componentSettings.SizeTwoWayStatePath + " = " + componentSettings.SizeTwoWayStatePath + " === 'xs' ? 'sm' : " + componentSettings.SizeTwoWayStatePath + " === 'sm' ? 'md' : " + componentSettings.SizeTwoWayStatePath + " === 'md' ? 'lg' : " + componentSettings.SizeTwoWayStatePath + " === 'lg' ? 'xl' : " + componentSettings.SizeTwoWayStatePath + " === 'xl' ? 'full' : defaultModalSize;" + componentSettings.OnResizeFunc,
-								Size:                    modalStandardHeaderIconSize,
-								Shape:                   uiControl.ButtonShapeCircular,
-							})
-						}
-						if componentSettings.IsVisibleTwoWayStatePath != "" && !componentSettings.IsUncloseable {
-							@uiControl.Button(uiControl.ButtonSettings{
-								IconLeft:    "ph-x",
-								OnClickFunc: componentSettings.IsVisibleTwoWayStatePath + " = false;" + componentSettings.OnCloseFunc,
-								Size:        modalStandardHeaderIconSize,
-								Shape:       uiControl.ButtonShapeCircular,
-							})
-						}
-					</div>
+					@modalHeaderActionButtons(headerActions)
 				</div>
 			}
 			<!-- ModalMiddleContent -->
-			<div class="flex-1 overflow-y-auto">
+			<div class={ middleContentClasses }>
 				@componentSettings.MiddleContent
 			</div>
 			if componentSettings.FooterContent != nil {
