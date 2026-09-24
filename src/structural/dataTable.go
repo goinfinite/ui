@@ -7,6 +7,7 @@ import (
 
 	"github.com/a-h/templ"
 	uiForm "github.com/goinfinite/ui/src/form"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
 type DataTableDensity string
@@ -51,13 +52,6 @@ const (
 	DataTableSortDirectionDesc DataTableSortDirection = "desc"
 )
 
-type DataTableHeaderTextCase string
-
-const (
-	DataTableHeaderTextCaseLower DataTableHeaderTextCase = "lower"
-	DataTableHeaderTextCaseUpper DataTableHeaderTextCase = "upper"
-)
-
 type DataTablePageSize uint
 
 const (
@@ -89,38 +83,40 @@ type DataTableSettings[Row any] struct {
 	Rows    []Row
 
 	// OptionalFields
-	BulkActions             templ.Component
-	CheckboxCheckedColor    string
-	CheckboxShape           string
-	CheckboxSize            string
-	CheckboxUncheckedColor  string
-	Density                 DataTableDensity
-	EmptyState              templ.Component
-	Filters                 []FilterSettings
-	HeaderActions           templ.Component
-	HeaderClass             string
-	HeaderTextCase          DataTableHeaderTextCase
-	Id                      string
-	InitialFilterValues     map[string]any
-	InitialSearchQuery      string
-	InitialSortDirection    DataTableSortDirection
-	InitialSortKey          string
-	IsHeaderSticky          bool
-	IsStriped               bool
-	ItemsPerPage            DataTablePageSize
-	ItemsPerPageSizeChoices []DataTablePageSize
-	ItemsTotal              uint
-	PageNumber              uint
-	PaginationAriaLabel     string
-	PagesTotal              uint
-	QueryUrlTemplate        string
-	RefreshDebounceMs       uint
-	RefreshOnEvents         []string
-	RowClassResolver        func(row Row) string
-	RowIdResolver           func(row Row) string
-	RowLabelResolver        func(row Row) string
-	SearchBox               templ.Component
-	SearchBoxAlignment      DataTableAlignment
+	BulkActions                      templ.Component
+	CheckboxCheckedColor             string
+	CheckboxShape                    string
+	CheckboxSize                     string
+	CheckboxUncheckedColor           string
+	Density                          DataTableDensity
+	EmptyState                       templ.Component
+	FilterDropdownBackgroundColor    string
+	Filters                          []FilterSettings
+	HeaderActions                    templ.Component
+	HeaderClass                      string
+	Id                               string
+	InitialFilterValues              map[string]any
+	InitialSearchQuery               string
+	InitialSortDirection             DataTableSortDirection
+	InitialSortKey                   string
+	IsHeaderSticky                   bool
+	IsPaginationHiddenWhenSinglePage bool
+	IsStriped                        bool
+	ItemsPerPage                     DataTablePageSize
+	ItemsPerPageSizeChoices          []DataTablePageSize
+	ItemsTotal                       uint
+	PageNumber                       uint
+	PaginationAriaLabel              string
+	PagesTotal                       uint
+	QueryUrlTemplate                 string
+	RefreshDebounceMs                uint
+	RefreshOnEvents                  []string
+	RowClassResolver                 func(row Row) string
+	RowIdResolver                    func(row Row) string
+	RowLabelResolver                 func(row Row) string
+	SearchBox                        templ.Component
+	SearchBoxAlignment               DataTableAlignment
+	TextCase                         string
 }
 
 type dataTableInitialState struct {
@@ -240,11 +236,8 @@ func (settings DataTableSettings[Row]) paginationAriaLabelResolver() string {
 	return dataTableDefaultPaginationAriaLabel
 }
 
-func (settings DataTableSettings[Row]) headerTextCaseClassResolver() string {
-	if settings.HeaderTextCase == DataTableHeaderTextCaseUpper {
-		return "uppercase"
-	}
-	return "lowercase"
+func (settings DataTableSettings[Row]) textCaseClassResolver() string {
+	return uiToolset.TextCaseClassResolver(settings.TextCase)
 }
 
 func (settings DataTableSettings[Row]) cellPaddingClassesResolver() string {

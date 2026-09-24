@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	uiForm "github.com/goinfinite/ui/src/form"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
 type dataTableTestRecord struct {
@@ -177,27 +178,28 @@ func TestDataTableJustifyClassResolver(t *testing.T) {
 	}
 }
 
-func TestDataTableHeaderTextCaseClassResolver(t *testing.T) {
+func TestDataTableTextCaseClassResolver(t *testing.T) {
 	testCases := []struct {
 		name              string
-		headerTextCase    DataTableHeaderTextCase
+		textCase          string
 		expectedClassName string
 	}{
-		{name: "lower", headerTextCase: DataTableHeaderTextCaseLower, expectedClassName: "lowercase"},
-		{name: "upper", headerTextCase: DataTableHeaderTextCaseUpper, expectedClassName: "uppercase"},
-		{name: "default", headerTextCase: "", expectedClassName: "lowercase"},
+		{name: "lower", textCase: uiToolset.TextCaseLower, expectedClassName: "lowercase"},
+		{name: "upper", textCase: uiToolset.TextCaseUpper, expectedClassName: "uppercase"},
+		{name: "capitalize", textCase: uiToolset.TextCaseCapitalize, expectedClassName: "capitalize"},
+		{name: "default", textCase: "", expectedClassName: ""},
 	}
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			settings := DataTableSettings[dataTableTestRecord]{
-				HeaderTextCase: testCase.headerTextCase,
+				TextCase: testCase.textCase,
 			}
-			actualClassName := settings.headerTextCaseClassResolver()
+			actualClassName := settings.textCaseClassResolver()
 			if actualClassName != testCase.expectedClassName {
 				t.Errorf(
-					"HeaderTextCaseClassMismatch(%q): got %q, want %q",
-					testCase.headerTextCase, actualClassName, testCase.expectedClassName,
+					"TextCaseClassMismatch(%q): got %q, want %q",
+					testCase.textCase, actualClassName, testCase.expectedClassName,
 				)
 			}
 		})
