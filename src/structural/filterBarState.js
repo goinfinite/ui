@@ -8,6 +8,9 @@ UiToolset.RegisterAlpineState(() => {
 
     isFilterActive(filterKey) {
       const filterValue = this.filterValuesObject()[filterKey];
+      if (Array.isArray(filterValue)) {
+        return filterValue.length > 0;
+      }
       if (isRangeFilterValue(filterValue)) {
         return filterValue.min !== "" || filterValue.max !== "";
       }
@@ -18,6 +21,9 @@ UiToolset.RegisterAlpineState(() => {
 
     resolveFilterChipLabel(filterKey) {
       const filterValue = this.filterValuesObject()[filterKey];
+      if (Array.isArray(filterValue)) {
+        return filterValue.join(", ");
+      }
       if (!isRangeFilterValue(filterValue)) {
         return filterValue ?? "";
       }
@@ -26,6 +32,10 @@ UiToolset.RegisterAlpineState(() => {
 
     resetFilter(filterKey) {
       const filterValue = this.filterValuesObject()[filterKey];
+      if (Array.isArray(filterValue)) {
+        this[this.valuesPath][filterKey] = [];
+        return;
+      }
       if (isRangeFilterValue(filterValue)) {
         this[this.valuesPath][filterKey] = { min: "", max: "" };
         return;
@@ -48,7 +58,11 @@ UiToolset.RegisterAlpineState(() => {
 });
 
 function isRangeFilterValue(filterValue) {
-  return filterValue !== null && typeof filterValue === "object";
+  return (
+    !Array.isArray(filterValue) &&
+    filterValue !== null &&
+    typeof filterValue === "object"
+  );
 }
 
 function rangeFilterChipLabel(rangeFilterValue) {
