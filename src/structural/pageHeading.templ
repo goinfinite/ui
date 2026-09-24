@@ -1,0 +1,95 @@
+package uiStructural
+
+import uiDisplay "github.com/goinfinite/ui/src/display"
+
+const (
+	PageHeadingLevelPage    string = "page"
+	PageHeadingLevelSection string = "section"
+)
+
+type PageHeadingSettings struct {
+	HeaderTitle string
+	Level       string
+
+	// OptionalFields
+	ActionsContent                  templ.Component
+	Description                     string
+	HeaderIcon                      string
+	HeaderIconBackgroundColor       string
+	HeaderIconBorderRadius          string
+	HeaderIconColor                 string
+	HeaderIconPaddingSize           string
+	HeaderIconPosition              string
+	HeaderSize                      string
+	HeaderSubHeading                string
+	HeaderSubHeadingColor           string
+	HeaderSubHeadingOneWayStatePath string
+	HeaderTitleColor                string
+	HeaderTitleOneWayStatePath      string
+	TextCase                        string
+	TextColor                       string
+}
+
+templ PageHeading(componentSettings PageHeadingSettings) {
+	if componentSettings.Level == "" {
+		{{ componentSettings.Level = PageHeadingLevelSection }}
+	}
+	{{ headingLevel := uiDisplay.HeaderBlockHeadingLevelTwo }}
+	{{ iconChipDefaultsApplied := false }}
+	switch componentSettings.Level {
+		case PageHeadingLevelPage:
+			{{
+				headingLevel = uiDisplay.HeaderBlockHeadingLevelOne
+				if componentSettings.HeaderSize == "" {
+					componentSettings.HeaderSize = uiDisplay.HeaderSizeXl
+				}
+				if componentSettings.HeaderIconColor == "" {
+					componentSettings.HeaderIconColor = "secondary-500"
+				}
+			}}
+		case PageHeadingLevelSection:
+			{{
+				headingLevel = uiDisplay.HeaderBlockHeadingLevelTwo
+				if componentSettings.HeaderSize == "" {
+					componentSettings.HeaderSize = uiDisplay.HeaderSizeLg
+				}
+				if componentSettings.HeaderIcon != "" {
+					iconChipDefaultsApplied = true
+				}
+			}}
+	}
+	if iconChipDefaultsApplied {
+		if componentSettings.HeaderIconBackgroundColor == "" {
+			{{ componentSettings.HeaderIconBackgroundColor = "neutral-50/10" }}
+		}
+		if componentSettings.HeaderIconPaddingSize == "" {
+			{{ componentSettings.HeaderIconPaddingSize = uiDisplay.HeaderIconPaddingSizeSm }}
+		}
+		if componentSettings.HeaderIconBorderRadius == "" {
+			{{ componentSettings.HeaderIconBorderRadius = uiDisplay.HeaderIconBorderRadiusXl }}
+		}
+	}
+	if componentSettings.Description != "" {
+		{{ componentSettings.HeaderSubHeading = componentSettings.Description }}
+	}
+	<!-- PageHeading -->
+	@uiDisplay.HeaderBlock(uiDisplay.HeaderBlockSettings{
+		ActionsContent:                  componentSettings.ActionsContent,
+		HeaderIcon:                      componentSettings.HeaderIcon,
+		HeaderIconBackgroundColor:       componentSettings.HeaderIconBackgroundColor,
+		HeaderIconBorderRadius:          componentSettings.HeaderIconBorderRadius,
+		HeaderIconColor:                 componentSettings.HeaderIconColor,
+		HeaderIconPaddingSize:           componentSettings.HeaderIconPaddingSize,
+		HeaderIconPosition:              componentSettings.HeaderIconPosition,
+		HeaderSize:                      componentSettings.HeaderSize,
+		HeaderSubHeading:                componentSettings.HeaderSubHeading,
+		HeaderSubHeadingColor:           componentSettings.HeaderSubHeadingColor,
+		HeaderSubHeadingOneWayStatePath: componentSettings.HeaderSubHeadingOneWayStatePath,
+		HeaderTitle:                     componentSettings.HeaderTitle,
+		HeaderTitleColor:                componentSettings.HeaderTitleColor,
+		HeaderTitleOneWayStatePath:      componentSettings.HeaderTitleOneWayStatePath,
+		HeadingLevel:                    headingLevel,
+		TextCase:                        componentSettings.TextCase,
+		TextColor:                       componentSettings.TextColor,
+	})
+}
