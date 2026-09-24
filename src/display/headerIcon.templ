@@ -1,0 +1,70 @@
+package uiDisplay
+
+const (
+	HeaderIconPositionLeft string = "left"
+	HeaderIconPositionTop  string = "top"
+
+	HeaderIconBorderRadiusNone string = "none"
+	HeaderIconBorderRadiusXs   string = "xs"
+	HeaderIconBorderRadiusSm   string = "sm"
+	HeaderIconBorderRadiusMd   string = "md"
+	HeaderIconBorderRadiusLg   string = "lg"
+	HeaderIconBorderRadiusXl   string = "xl"
+
+	HeaderIconPaddingSizeNone string = "none"
+	HeaderIconPaddingSizeXs   string = "xs"
+	HeaderIconPaddingSizeSm   string = "sm"
+	HeaderIconPaddingSizeMd   string = "md"
+	HeaderIconPaddingSizeLg   string = "lg"
+	HeaderIconPaddingSizeXl   string = "xl"
+)
+
+type HeaderIconSettings struct {
+	Name string
+
+	// OptionalFields
+	BackgroundColor string
+	BorderRadius    string
+	Color           string
+	PaddingSize     string
+}
+
+templ HeaderIcon(componentSettings HeaderIconSettings) {
+	{{ iconChipClasses := "ph-duotone inline-flex leading-none items-center justify-center " + componentSettings.Name }}
+	if componentSettings.Color != "" {
+		{{ iconChipClasses += " text-" + componentSettings.Color }}
+	}
+	if componentSettings.BackgroundColor != "" {
+		{{ iconChipClasses += " bg-" + componentSettings.BackgroundColor }}
+	}
+	switch componentSettings.PaddingSize {
+		case HeaderIconPaddingSizeNone:
+			{{ iconChipClasses += " p-0" }}
+		case HeaderIconPaddingSizeXs:
+			{{ iconChipClasses += " p-1" }}
+		case HeaderIconPaddingSizeSm:
+			{{ iconChipClasses += " p-1.5" }}
+		case HeaderIconPaddingSizeMd:
+			{{ iconChipClasses += " p-2" }}
+		case HeaderIconPaddingSizeLg:
+			{{ iconChipClasses += " p-2.5" }}
+		case HeaderIconPaddingSizeXl:
+			{{ iconChipClasses += " p-3" }}
+	}
+	switch componentSettings.BorderRadius {
+		case HeaderIconBorderRadiusNone:
+			{{ iconChipClasses += " rounded-none" }}
+		case HeaderIconBorderRadiusXs:
+			{{ iconChipClasses += " rounded-xs" }}
+		case HeaderIconBorderRadiusSm:
+			{{ iconChipClasses += " rounded-sm" }}
+		case HeaderIconBorderRadiusMd:
+			{{ iconChipClasses += " rounded" }}
+		case HeaderIconBorderRadiusLg:
+			{{ iconChipClasses += " rounded-lg" }}
+		case HeaderIconBorderRadiusXl:
+			{{ iconChipClasses += " rounded-xl" }}
+	}
+	<!-- HeaderIcon -->
+	<i class={ iconChipClasses }></i>
+}

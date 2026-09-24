@@ -1,0 +1,281 @@
+package uiDisplay
+
+import (
+	uiControl "github.com/goinfinite/ui/src/control"
+	uiForm "github.com/goinfinite/ui/src/form"
+)
+
+const (
+	ConfirmationDialogSizeXs  string = "xs"
+	ConfirmationDialogSizeSm  string = "sm"
+	ConfirmationDialogSizeMd  string = "md"
+	ConfirmationDialogSizeLg  string = "lg"
+	ConfirmationDialogSizeXl  string = "xl"
+	ConfirmationDialogSizeXxl string = "xxl"
+
+	confirmationTypedValueStatePath string = "typedConfirmationValue"
+)
+
+type ConfirmationDialogSettings struct {
+	IsVisibleTwoWayStatePath string
+	OnConfirmFunc            string
+
+	// OptionalFields
+	ActionsContent                    templ.Component
+	CancelButtonLabel                 string
+	CancelFunc                        string
+	ConfirmButtonIcon                 string
+	ConfirmButtonId                   string
+	ConfirmButtonLabel                string
+	HeaderContent                     templ.Component
+	HeaderIcon                        string
+	HeaderIconBackgroundColor         string
+	HeaderIconBorderRadius            string
+	HeaderIconColor                   string
+	HeaderIconPaddingSize             string
+	HeaderIconPosition                string
+	HeaderSize                        string
+	HeaderSubHeading                  string
+	HeaderSubHeadingColor             string
+	HeaderSubHeadingOneWayStatePath   string
+	HeaderTitle                       string
+	HeaderTitleColor                  string
+	HeaderTitleOneWayStatePath        string
+	IsTypeToConfirmEnabled            bool
+	IsUncloseable                     bool
+	Message                           string
+	MessageContent                    templ.Component
+	OnCloseFunc                       string
+	Size                              string
+	TargetIdStatePath                 string
+	TargetNameStatePath               string
+	TextCase                          string
+	TextColor                         string
+	TypeToConfirmExpectedValue        string
+	TypeToConfirmValueTwoWayStatePath string
+	WidthPercent                      int
+	HeightPercent                     int
+}
+
+templ confirmationDialogTargetReferences(settings ConfirmationDialogSettings, tone confirmationTone) {
+	if settings.TargetNameStatePath != "" {
+		<strong
+			x-show={ settings.TargetNameStatePath + " !== ''" }
+			x-text={ settings.TargetNameStatePath }
+			class={ "rounded-md border-2 border-dashed px-2 py-1 border-" + tone.TargetChipBorderColor }
+		></strong>
+	}
+	if settings.TargetIdStatePath != "" {
+		<strong x-show={ settings.TargetIdStatePath + " !== ''" }>
+			#<span x-text={ settings.TargetIdStatePath }></span>
+		</strong>
+	}
+}
+
+templ confirmationDialogMessage(settings ConfirmationDialogSettings, tone confirmationTone) {
+	{{ hasTargetReferences := settings.TargetNameStatePath != "" || settings.TargetIdStatePath != "" }}
+	<div class="flex flex-col gap-2">
+		<h3 class="text-pretty text-xl font-bold leading-relaxed">
+			if hasTargetReferences {
+				{ tone.QuestionWithTarget }{ " " }
+				@confirmationDialogTargetReferences(settings, tone)
+				?
+			} else {
+				{ tone.QuestionAlone }
+			}
+		</h3>
+		{{ note := tone.Note }}
+		if settings.Message != "" {
+			{{ note = settings.Message }}
+		}
+		<p>{ note }</p>
+	</div>
+}
+
+templ confirmationTypeToConfirmField(settings ConfirmationDialogSettings, typedStatePath string) {
+	{{
+		fieldLabel := confirmationTypeToConfirmFieldLabelResolver(
+			settings.TargetNameStatePath, settings.TargetIdStatePath,
+			settings.TypeToConfirmExpectedValue,
+		)
+	}}
+	<div class="w-full">
+		@uiForm.InputField(uiForm.InputFieldSettings{
+			InputType:       uiForm.InputTypeText,
+			InputName:       "typedConfirmationValue",
+			Label:           fieldLabel,
+			TwoWayStatePath: typedStatePath,
+		})
+	</div>
+}
+
+templ confirmationDialogMiddle(
+	settings ConfirmationDialogSettings, tone confirmationTone, typedStatePath string,
+) {
+	<div class="flex flex-col items-center gap-4 px-2 text-center">
+		if settings.MessageContent != nil {
+			@settings.MessageContent
+		} else {
+			@confirmationDialogMessage(settings, tone)
+		}
+		if settings.IsTypeToConfirmEnabled {
+			@confirmationTypeToConfirmField(settings, typedStatePath)
+		}
+	</div>
+}
+
+templ confirmationDialogFooter(
+	settings ConfirmationDialogSettings, tone confirmationTone,
+	typedStatePath, matchStatePath string,
+) {
+	{{ cancelButtonLabel := "No, Do Not Proceed." }}
+	if settings.CancelButtonLabel != "" {
+		{{ cancelButtonLabel = settings.CancelButtonLabel }}
+	}
+	{{ cancelFunc := settings.CancelFunc }}
+	if settings.CancelFunc == "" && settings.IsVisibleTwoWayStatePath != "" {
+		{{ cancelFunc = settings.IsVisibleTwoWayStatePath + " = false;" + settings.OnCloseFunc }}
+	}
+	{{ confirmButtonLabel := tone.ConfirmButtonLabel }}
+	if settings.ConfirmButtonLabel != "" {
+		{{ confirmButtonLabel = settings.ConfirmButtonLabel }}
+	}
+	{{ confirmButtonIcon := tone.ConfirmButtonIcon }}
+	if settings.ConfirmButtonIcon != "" {
+		{{ confirmButtonIcon = settings.ConfirmButtonIcon }}
+	}
+	{{ confirmDisabledExpression := "" }}
+	if settings.IsTypeToConfirmEnabled {
+		{{ confirmDisabledExpression = confirmationTypeToConfirmDisabledExpressionBuilder(typedStatePath, matchStatePath, settings.TypeToConfirmExpectedValue) }}
+	}
+	<div class="grid grid-cols-2 gap-4">
+		@uiControl.Button(uiControl.ButtonSettings{
+			Label:                cancelButtonLabel,
+			BackgroundColor:      "transparent",
+			BackgroundColorHover: "neutral-50/10",
+			TextColor:            "neutral-50",
+			TextColorHover:       "neutral-50",
+			RingColor:            "neutral-50/30",
+			RingColorHover:       "neutral-50/50",
+			OnClickFunc:          cancelFunc,
+			Size:                 uiControl.ButtonSizeMd,
+			IsFullWidth:          true,
+		})
+		@uiControl.Button(uiControl.ButtonSettings{
+			Id:                        settings.ConfirmButtonId,
+			Label:                     confirmButtonLabel,
+			IconLeft:                  confirmButtonIcon,
+			BackgroundColor:           tone.ConfirmButtonBackgroundColor,
+			BackgroundColorHover:      tone.ConfirmButtonBackgroundColorHover,
+			TextColor:                 "neutral-50",
+			OnClickFunc:               settings.OnConfirmFunc,
+			Size:                      uiControl.ButtonSizeMd,
+			IsFullWidth:               true,
+			IsDisabledOneWayStatePath: confirmDisabledExpression,
+		})
+	</div>
+}
+
+templ confirmationDialogHeader(settings ConfirmationDialogSettings, tone confirmationTone) {
+	@HeaderBlock(HeaderBlockSettings{
+		ActionsContent:                  settings.ActionsContent,
+		HeaderIcon:                      settings.HeaderIcon,
+		HeaderIconBackgroundColor:       settings.HeaderIconBackgroundColor,
+		HeaderIconBorderRadius:          settings.HeaderIconBorderRadius,
+		HeaderIconColor:                 settings.HeaderIconColor,
+		HeaderIconPaddingSize:           settings.HeaderIconPaddingSize,
+		HeaderIconPosition:              settings.HeaderIconPosition,
+		HeaderSize:                      settings.HeaderSize,
+		HeaderSubHeading:                settings.HeaderSubHeading,
+		HeaderSubHeadingColor:           settings.HeaderSubHeadingColor,
+		HeaderSubHeadingOneWayStatePath: settings.HeaderSubHeadingOneWayStatePath,
+		HeaderTitle:                     settings.HeaderTitle,
+		HeaderTitleColor:                settings.HeaderTitleColor,
+		HeaderTitleOneWayStatePath:      settings.HeaderTitleOneWayStatePath,
+		HeadingLevel:                    HeaderBlockHeadingLevelTwo,
+		TextCase:                        settings.TextCase,
+	})
+}
+
+templ confirmationDialog(settings ConfirmationDialogSettings, tone confirmationTone) {
+	if settings.HeaderTitle == "" {
+		{{ settings.HeaderTitle = tone.HeaderTitle }}
+	}
+	if settings.HeaderIcon == "" {
+		{{ settings.HeaderIcon = tone.HeaderIcon }}
+	}
+	if settings.HeaderIconBackgroundColor == "" {
+		{{ settings.HeaderIconBackgroundColor = tone.HeaderIconBackgroundColor }}
+	}
+	if settings.HeaderIconColor == "" {
+		{{ settings.HeaderIconColor = tone.HeaderIconColor }}
+	}
+	if settings.HeaderIconPosition == "" {
+		{{ settings.HeaderIconPosition = HeaderIconPositionTop }}
+	}
+	if settings.HeaderIconBorderRadius == "" {
+		{{ settings.HeaderIconBorderRadius = HeaderIconBorderRadiusXl }}
+	}
+	if settings.HeaderIconPaddingSize == "" {
+		{{ settings.HeaderIconPaddingSize = HeaderIconPaddingSizeLg }}
+	}
+	if settings.Size == "" {
+		{{ settings.Size = ConfirmationDialogSizeMd }}
+	}
+	{{ isHeightContentSized := settings.HeightPercent == 0 }}
+	{{ matchStatePath := confirmationTypeToConfirmMatchStatePathResolver(settings.TargetNameStatePath, settings.TargetIdStatePath) }}
+	{{ typedStatePath := confirmationTypedValueStatePath }}
+	if settings.TypeToConfirmValueTwoWayStatePath != "" {
+		{{ typedStatePath = settings.TypeToConfirmValueTwoWayStatePath }}
+	}
+	{{ dialogHeader := confirmationDialogHeader(settings, tone) }}
+	if settings.HeaderContent != nil {
+		{{ dialogHeader = settings.HeaderContent }}
+	}
+	{{ needsTypedValueState := settings.IsTypeToConfirmEnabled && settings.TypeToConfirmValueTwoWayStatePath == "" && settings.IsVisibleTwoWayStatePath != "" }}
+	{{
+		dialogContent := Modal(ModalSettings{
+			HeaderContent:            dialogHeader,
+			MiddleContent:            confirmationDialogMiddle(settings, tone, typedStatePath),
+			FooterContent:            confirmationDialogFooter(settings, tone, typedStatePath, matchStatePath),
+			InitialSize:              settings.Size,
+			WidthPercent:             settings.WidthPercent,
+			HeightPercent:            settings.HeightPercent,
+			IsHeightContentSized:     isHeightContentSized,
+			BackgroundColor:          tone.PanelBackgroundColor,
+			TextColor:                settings.TextColor,
+			IsVisibleTwoWayStatePath: settings.IsVisibleTwoWayStatePath,
+			IsUncloseable:            settings.IsUncloseable,
+			IsUnresizable:            true,
+			OnCloseFunc:              settings.OnCloseFunc,
+		})
+	}}
+	if needsTypedValueState {
+		<div
+			x-data={ "{ " + confirmationTypedValueStatePath + ": '' }" }
+			x-effect={ "if (!(" + settings.IsVisibleTwoWayStatePath + ")) " + confirmationTypedValueStatePath + " = ''" }
+		>
+			@dialogContent
+		</div>
+	} else {
+		@dialogContent
+	}
+}
+
+templ ConfirmDialog(componentSettings ConfirmationDialogSettings) {
+	@confirmationDialog(componentSettings, confirmationToneResolver(confirmationPresetConfirm))
+}
+
+templ WarningDialog(componentSettings ConfirmationDialogSettings) {
+	@confirmationDialog(componentSettings, confirmationToneResolver(confirmationPresetWarning))
+}
+
+templ CriticalDialog(componentSettings ConfirmationDialogSettings) {
+	{{ componentSettings.IsTypeToConfirmEnabled = true }}
+	@confirmationDialog(componentSettings, confirmationToneResolver(confirmationPresetCritical))
+}
+
+templ DeleteDialog(componentSettings ConfirmationDialogSettings) {
+	{{ componentSettings.IsTypeToConfirmEnabled = true }}
+	@confirmationDialog(componentSettings, confirmationToneResolver(confirmationPresetDelete))
+}
