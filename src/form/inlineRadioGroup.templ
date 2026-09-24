@@ -1,5 +1,7 @@
 package uiForm
 
+import uiToolset "github.com/goinfinite/ui/src/toolset"
+
 type InlineRadioGroupSettings struct {
 	Label         string
 	InputSettings []RadioInputSettings
@@ -8,11 +10,12 @@ type InlineRadioGroupSettings struct {
 	TwoWayStatePath string
 	InputId         string
 	InputName       string
+	TextCase        string
 }
 
 templ InlineRadioGroup(componentSettings InlineRadioGroupSettings) {
 	<!-- InlineRadioGroup -->
-	<div class="border-1 bg-neutral-50/7.5 flex h-10 flex-col rounded border-neutral-50/5 px-2">
+	<div class="border-1 bg-neutral-50/7.5 flex min-h-10 flex-col rounded border-neutral-50/5 px-2 py-2">
 		if componentSettings.InputName != "" && componentSettings.TwoWayStatePath != "" {
 			<input
 				type="hidden"
@@ -27,7 +30,7 @@ templ InlineRadioGroup(componentSettings InlineRadioGroupSettings) {
 				}
 			/>
 		}
-		<p class="-mt-2 mb-0.5 w-fit select-none text-xs font-bold text-neutral-50/80">
+		<p class={ "-mt-2 mb-0.5 w-fit select-none text-xs font-bold text-neutral-50/80 " + uiToolset.TextCaseClassResolver(componentSettings.TextCase) }>
 			{ componentSettings.Label }
 		</p>
 		<div class="flex flex-row gap-2">

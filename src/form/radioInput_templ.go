@@ -8,6 +8,8 @@ package uiForm
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
+import uiToolset "github.com/goinfinite/ui/src/toolset"
+
 const (
 	RadioInputSizeXs string = "xs"
 	RadioInputSizeSm string = "sm"
@@ -25,6 +27,7 @@ type RadioInputSettings struct {
 	InputId   string
 	InputName string
 	Size      string
+	TextCase  string
 }
 
 func RadioInput(componentSettings RadioInputSettings) templ.Component {
@@ -55,7 +58,7 @@ func RadioInput(componentSettings RadioInputSettings) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.TwoWayStatePath + ` = "` + componentSettings.StateValue + `"`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/radioInput.templ`, Line: 26, Col: 90}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/radioInput.templ`, Line: 29, Col: 90}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var2)
 		if templ_7745c5c3_Err != nil {
@@ -78,7 +81,8 @@ func RadioInput(componentSettings RadioInputSettings) templ.Component {
 		case RadioInputSizeXl:
 			labelTextSize = "text-xl"
 		}
-		var templ_7745c5c3_Var3 = []any{"flex flex-row select-none gap-1 cursor-pointer items-center " + labelTextSize}
+		textCaseClass := uiToolset.TextCaseClassResolver(componentSettings.TextCase)
+		var templ_7745c5c3_Var3 = []any{"flex flex-row select-none gap-1 cursor-pointer items-center " + labelTextSize + " " + textCaseClass}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var3...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -103,7 +107,7 @@ func RadioInput(componentSettings RadioInputSettings) templ.Component {
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.ResolveAttributeValue(`String(` + componentSettings.TwoWayStatePath + `) == "` + componentSettings.StateValue + `" && "text-secondary-500 font-bold"`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/radioInput.templ`, Line: 43, Col: 139}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/radioInput.templ`, Line: 47, Col: 139}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5)
 		if templ_7745c5c3_Err != nil {
@@ -126,7 +130,7 @@ func RadioInput(componentSettings RadioInputSettings) templ.Component {
 				var templ_7745c5c3_Var6 string
 				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.InputId)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/radioInput.templ`, Line: 49, Col: 36}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/radioInput.templ`, Line: 53, Col: 36}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
 				if templ_7745c5c3_Err != nil {
@@ -145,7 +149,7 @@ func RadioInput(componentSettings RadioInputSettings) templ.Component {
 				var templ_7745c5c3_Var7 string
 				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.InputName)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/radioInput.templ`, Line: 52, Col: 40}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/radioInput.templ`, Line: 56, Col: 40}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
 				if templ_7745c5c3_Err != nil {
@@ -164,7 +168,7 @@ func RadioInput(componentSettings RadioInputSettings) templ.Component {
 				var templ_7745c5c3_Var8 string
 				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.StateValue)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/radioInput.templ`, Line: 55, Col: 42}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/radioInput.templ`, Line: 59, Col: 42}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var8)
 				if templ_7745c5c3_Err != nil {
@@ -183,7 +187,7 @@ func RadioInput(componentSettings RadioInputSettings) templ.Component {
 				var templ_7745c5c3_Var9 string
 				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.TwoWayStatePath)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/radioInput.templ`, Line: 58, Col: 49}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/radioInput.templ`, Line: 62, Col: 49}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var9)
 				if templ_7745c5c3_Err != nil {
@@ -237,7 +241,7 @@ func RadioInput(componentSettings RadioInputSettings) templ.Component {
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.ResolveAttributeValue(`String(` + componentSettings.TwoWayStatePath + `) == "` + componentSettings.StateValue + `" ? "ph-check-circle" : "ph-circle"`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/radioInput.templ`, Line: 78, Col: 140}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/radioInput.templ`, Line: 82, Col: 140}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var12)
 		if templ_7745c5c3_Err != nil {
@@ -250,7 +254,7 @@ func RadioInput(componentSettings RadioInputSettings) templ.Component {
 		var templ_7745c5c3_Var13 string
 		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.Label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/radioInput.templ`, Line: 80, Col: 28}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/radioInput.templ`, Line: 84, Col: 28}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {

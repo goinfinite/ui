@@ -1,5 +1,7 @@
 package uiDisplay
 
+import uiToolset "github.com/goinfinite/ui/src/toolset"
+
 const (
 	TagSizeTiny string = "tiny"
 	TagSizeXs   string = "xs"
@@ -26,6 +28,7 @@ const (
 type TagSettings struct {
 	// OptionalFields
 	Size                           string
+	TextCase                       string
 	OuterRingThickness             string
 	OuterRingColor                 string
 	OuterBackgroundColor           string
@@ -52,6 +55,7 @@ type TagSettings struct {
 
 templ Tag(componentSettings TagSettings) {
 	<!-- Tag -->
+	{{ textCaseClass := uiToolset.TextCaseClassResolver(componentSettings.TextCase) }}
 	{{ initialOuterSizeClasses := "text-base p-1.25 gap-1.25" }}
 	switch componentSettings.Size {
 		case TagSizeTiny:
@@ -131,10 +135,10 @@ templ Tag(componentSettings TagSettings) {
 			{{ initialOuterRadius = "rounded-full" }}
 	}
 	{{
-	initialOuterClasses := initialOuterSizeClasses + " " +
-		" border-" + initialOuterRingColor + " bg-" + initialOuterBackgroundColor +
-		" text-" + initialOuterTextColor +
-		" " + initialOuterRadius
+		initialOuterClasses := initialOuterSizeClasses + " " +
+			" border-" + initialOuterRingColor + " bg-" + initialOuterBackgroundColor +
+			" text-" + initialOuterTextColor +
+			" " + initialOuterRadius
 	}}
 	{{ initialInnerSizeClasses := "text-base p-1.5 gap-1.5" }}
 	switch componentSettings.Size {
@@ -177,10 +181,10 @@ templ Tag(componentSettings TagSettings) {
 			{{ initialInnerRadius = "rounded-full" }}
 	}
 	{{
-	initialInnerClasses := initialInnerSizeClasses + " " +
-		"bg-" + initialInnerBackgroundColor +
-		" text-" + initialInnerTextColor +
-		" " + initialInnerRadius
+		initialInnerClasses := initialInnerSizeClasses + " " +
+			"bg-" + initialInnerBackgroundColor +
+			" text-" + initialInnerTextColor +
+			" " + initialInnerRadius
 	}}
 	{{ iconSizeClasses := "text-lg" }}
 	switch componentSettings.Size {
@@ -202,10 +206,10 @@ templ Tag(componentSettings TagSettings) {
 				<i class={ "ph-bold " + componentSettings.OuterLeftIcon + " " + iconSizeClasses }></i>
 			}
 			if componentSettings.OuterLeftLabel != "" {
-				<span class="lowercase">{ componentSettings.OuterLeftLabel }</span>
+				<span class={ textCaseClass }>{ componentSettings.OuterLeftLabel }</span>
 			}
 			if componentSettings.OuterLeftLabelOneWayStatePath != "" {
-				<span class="lowercase" x-text={ componentSettings.OuterLeftLabelOneWayStatePath }></span>
+				<span class={ textCaseClass } x-text={ componentSettings.OuterLeftLabelOneWayStatePath }></span>
 			}
 		</div>
 		<div class={ "flex items-center w-fit " + initialInnerClasses }>
@@ -213,10 +217,10 @@ templ Tag(componentSettings TagSettings) {
 				<i class={ "ph-bold " + componentSettings.InnerIcon + " " + iconSizeClasses }></i>
 			}
 			if componentSettings.InnerLabel != "" {
-				<span class="lowercase">{ componentSettings.InnerLabel }</span>
+				<span class={ textCaseClass }>{ componentSettings.InnerLabel }</span>
 			}
 			if componentSettings.InnerLabelOneWayStatePath != "" {
-				<span class="lowercase" x-text={ componentSettings.InnerLabelOneWayStatePath }></span>
+				<span class={ textCaseClass } x-text={ componentSettings.InnerLabelOneWayStatePath }></span>
 			}
 			if componentSettings.InnerValueOneWayStatePath != "" {
 				<span x-text={ componentSettings.InnerValueOneWayStatePath }></span>
@@ -237,10 +241,10 @@ templ Tag(componentSettings TagSettings) {
 					<i class={ "ph-bold " + componentSettings.OuterRightIcon + " " + iconSizeClasses }></i>
 				}
 				if componentSettings.OuterRightLabel != "" {
-					<span class="lowercase">{ componentSettings.OuterRightLabel }</span>
+					<span class={ textCaseClass }>{ componentSettings.OuterRightLabel }</span>
 				}
 				if componentSettings.OuterRightLabelOneWayStatePath != "" {
-					<span class="lowercase" x-text={ componentSettings.OuterRightLabelOneWayStatePath }></span>
+					<span class={ textCaseClass } x-text={ componentSettings.OuterRightLabelOneWayStatePath }></span>
 				}
 			</div>
 		}

@@ -1,5 +1,7 @@
 package uiForm
 
+import uiToolset "github.com/goinfinite/ui/src/toolset"
+
 const (
 	ToggleSwitchLabelPositionLeft  string = "left"
 	ToggleSwitchLabelPositionRight string = "right"
@@ -23,10 +25,11 @@ type ToggleSwitchSettings struct {
 	IsRequired                  bool
 	LabelPosition               string
 	Size                        string
-	TextColor                  string
-	ThumbBackgroundColor       string
-	ThumbBorderColor           string
-	TrackBackgroundColor       string
+	TextCase                    string
+	TextColor                   string
+	ThumbBackgroundColor        string
+	ThumbBorderColor            string
+	TrackBackgroundColor        string
 	TrackCheckedBackgroundColor string
 }
 
@@ -93,6 +96,14 @@ templ ToggleSwitch(componentSettings ToggleSwitchSettings) {
 	if componentSettings.TextColor != "" {
 		{{ textColor = "text-" + componentSettings.TextColor }}
 	}
+	{{ textCaseClass := uiToolset.TextCaseClassResolver(componentSettings.TextCase) }}
+	{{ labelSpanClasses := "" }}
+	if componentSettings.LabelPosition == ToggleSwitchLabelPositionLeft {
+		{{ labelSpanClasses = "order-first" }}
+	}
+	if textCaseClass != "" {
+		{{ labelSpanClasses += " " + textCaseClass }}
+	}
 	{{ labelClasses := "inline-flex w-fit cursor-pointer select-none items-center gap-2" }}
 	if componentSettings.IsDisabled {
 		{{ labelClasses = "inline-flex w-fit cursor-not-allowed select-none items-center gap-2 opacity-50" }}
@@ -135,11 +146,7 @@ templ ToggleSwitch(componentSettings ToggleSwitchSettings) {
 			class="peer sr-only"
 		/>
 		<div class={ trackClasses + " " + thumbClasses }></div>
-		<span
-			if componentSettings.LabelPosition == ToggleSwitchLabelPositionLeft {
-				class="order-first"
-			}
-		>
+		<span class={ labelSpanClasses }>
 			{ componentSettings.Label }
 			if componentSettings.IsRequired {
 				<span class="text-red-700">*</span>

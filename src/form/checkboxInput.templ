@@ -1,5 +1,7 @@
 package uiForm
 
+import uiToolset "github.com/goinfinite/ui/src/toolset"
+
 const (
 	CheckboxInputShapeSquare   string = "square"
 	CheckboxInputShapeRounded  string = "rounded"
@@ -38,6 +40,7 @@ type CheckboxInputSettings struct {
 	OnChangeFunc                 string
 	Shape                        string
 	Size                         string
+	TextCase                     string
 	TextColor                    string
 	TwoWayStatePath              string
 	UncheckedColor               string
@@ -101,8 +104,9 @@ templ CheckboxInput(componentSettings CheckboxInputSettings) {
 	}
 	{{ textColor := "text-neutral-50" }}
 	if componentSettings.TextColor != "" {
-		{{ textColor = componentSettings.TextColor }}
+		{{ textColor = "text-" + componentSettings.TextColor }}
 	}
+	{{ textCaseClass := uiToolset.TextCaseClassResolver(componentSettings.TextCase) }}
 	{{ labelPosition := CheckboxInputLabelPositionRight }}
 	if componentSettings.LabelPosition != "" {
 		{{ labelPosition = componentSettings.LabelPosition }}
@@ -219,7 +223,7 @@ templ CheckboxInput(componentSettings CheckboxInputSettings) {
 				}
 			</span>
 			if componentSettings.Label != "" {
-				<span class={ labelSizeClasses + " " + textColor }>
+				<span class={ labelSizeClasses + " " + textColor + " " + textCaseClass }>
 					{ componentSettings.Label }
 					if componentSettings.IsRequired {
 						<span class="text-red-700">*</span>

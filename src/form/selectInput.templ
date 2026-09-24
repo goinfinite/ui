@@ -1,5 +1,7 @@
 package uiForm
 
+import uiToolset "github.com/goinfinite/ui/src/toolset"
+
 const (
 	SelectInputSizeXs string = "xs"
 	SelectInputSizeSm string = "sm"
@@ -24,6 +26,7 @@ type SelectInputSettings struct {
 	TwoWayStatePath                   string
 	OnChangeFunc                      string
 	Size                              string
+	TextCase                          string
 	DropdownBackgroundColor           string
 	IsDisabledOneWayStatePath         string
 	IsRequired                        bool
@@ -70,6 +73,7 @@ templ SelectInput(componentSettings SelectInputSettings) {
 		{{ toggleExpression = "!(" + isDisabledPath + ") && (isOpen = !isOpen); if (isOpen) { " + openUpwardExpression + " }" }}
 	}
 	{{ legendSizeClasses, triggerSizeClasses, emptyPaddingClass := selectInputSizeClassesResolver(componentSettings.Size) }}
+	{{ textCaseClass := uiToolset.TextCaseClassResolver(componentSettings.TextCase) }}
 	<!-- SelectInput -->
 	<div
 		x-data={ selectState }
@@ -91,7 +95,7 @@ templ SelectInput(componentSettings SelectInputSettings) {
 				}
 			>
 				<legend
-					class={ "ml-1 select-none px-1 font-bold lowercase leading-none text-neutral-50/80 " + legendSizeClasses }
+					class={ "ml-1 select-none px-1 font-bold leading-none text-neutral-50/80 " + legendSizeClasses + " " + textCaseClass }
 					if componentSettings.TwoWayStatePath != "" {
 						:class={ `!` + componentSettings.TwoWayStatePath + ` && 'opacity-0 !p-0 w-0 h-0'` }
 					}
@@ -124,7 +128,7 @@ templ SelectInput(componentSettings SelectInputSettings) {
 					}
 					<div class="w-full overflow-hidden text-ellipsis">
 						<span x-show={ selectedLabelText } x-text={ selectedLabelText }></span>
-						<span class="lowercase" x-show={ "!(" + selectedLabelText + ")" }>{ componentSettings.Label }</span>
+						<span class={ textCaseClass } x-show={ "!(" + selectedLabelText + ")" }>{ componentSettings.Label }</span>
 					</div>
 					<div class="flex items-center gap-2.5 text-neutral-100/60">
 						<!-- SelectDropdownIcon -->
