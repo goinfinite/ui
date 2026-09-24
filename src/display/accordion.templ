@@ -1,5 +1,28 @@
 package uiDisplay
 
+import (
+	"fmt"
+	"sync/atomic"
+
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+const (
+	AccordionPaddingSizeNone string = "none"
+	AccordionPaddingSizeXs   string = "xs"
+	AccordionPaddingSizeSm   string = "sm"
+	AccordionPaddingSizeMd   string = "md"
+	AccordionPaddingSizeLg   string = "lg"
+	AccordionPaddingSizeXl   string = "xl"
+
+	AccordionBorderRadiusNone string = "none"
+	AccordionBorderRadiusXs   string = "xs"
+	AccordionBorderRadiusSm   string = "sm"
+	AccordionBorderRadiusMd   string = "md"
+	AccordionBorderRadiusLg   string = "lg"
+	AccordionBorderRadiusXl   string = "xl"
+)
+
 type AccordionItemSettings struct {
 	Title   string
 	Content templ.Component
@@ -10,22 +33,109 @@ type AccordionItemSettings struct {
 
 type AccordionSettings struct {
 	Items []AccordionItemSettings
+
+	// OptionalFields
+	BackgroundColor        string
+	BorderColor            string
+	BorderRadius           string
+	ContentBackgroundColor string
+	ContentPaddingSize     string
+	IsSingleOpen           bool
+	OpenBackgroundColor    string
+	PaddingSize            string
+	TextCase               string
+	TitleColor             string
+}
+
+var accordionGroupIdCounter atomic.Uint64
+
+func generateAccordionGroupName() string {
+	return fmt.Sprintf("ui-accordion-%d", accordionGroupIdCounter.Add(1))
+}
+
+func accordionPaddingClassResolver(paddingSize string, defaultClass string) string {
+	switch paddingSize {
+	case AccordionPaddingSizeNone:
+		return "p-0"
+	case AccordionPaddingSizeXs:
+		return "p-1"
+	case AccordionPaddingSizeSm:
+		return "p-1.5"
+	case AccordionPaddingSizeMd:
+		return "p-2"
+	case AccordionPaddingSizeLg:
+		return "p-2.5"
+	case AccordionPaddingSizeXl:
+		return "p-3"
+	}
+	return defaultClass
+}
+
+func accordionEdgeRadiusClassesResolver(borderRadius string) string {
+	switch borderRadius {
+	case AccordionBorderRadiusNone:
+		return ""
+	case AccordionBorderRadiusXs:
+		return "first:rounded-t-xs last:rounded-b-xs"
+	case AccordionBorderRadiusSm:
+		return "first:rounded-t-sm last:rounded-b-sm"
+	case AccordionBorderRadiusMd:
+		return "first:rounded-t last:rounded-b"
+	case AccordionBorderRadiusLg:
+		return "first:rounded-t-lg last:rounded-b-lg"
+	case AccordionBorderRadiusXl:
+		return "first:rounded-t-xl last:rounded-b-xl"
+	}
+	return "first:rounded-t-md last:rounded-b-md"
 }
 
 templ Accordion(componentSettings AccordionSettings) {
+	{{ itemPaddingClass := accordionPaddingClassResolver(componentSettings.PaddingSize, "p-3") }}
+	{{ contentPaddingClass := accordionPaddingClassResolver(componentSettings.ContentPaddingSize, "p-4") }}
+	{{ itemEdgeRadiusClasses := accordionEdgeRadiusClassesResolver(componentSettings.BorderRadius) }}
+	{{ backgroundColorClass := "bg-neutral-50/5" }}
+	if componentSettings.BackgroundColor != "" {
+		{{ backgroundColorClass = "bg-" + componentSettings.BackgroundColor }}
+	}
+	{{ openBackgroundColorClass := "open:bg-neutral-50/7.5 hover:bg-neutral-50/7.5" }}
+	if componentSettings.OpenBackgroundColor != "" {
+		{{ openBackgroundColorClass = "open:bg-" + componentSettings.OpenBackgroundColor + " hover:bg-" + componentSettings.OpenBackgroundColor }}
+	}
+	{{ contentBackgroundColorClass := "bg-neutral-900" }}
+	if componentSettings.ContentBackgroundColor != "" {
+		{{ contentBackgroundColorClass = "bg-" + componentSettings.ContentBackgroundColor }}
+	}
+	{{ titleColorClass := "text-neutral-50/80" }}
+	if componentSettings.TitleColor != "" {
+		{{ titleColorClass = "text-" + componentSettings.TitleColor }}
+	}
+	{{ borderColorClass := "border-neutral-50/5" }}
+	if componentSettings.BorderColor != "" {
+		{{ borderColorClass = "border-" + componentSettings.BorderColor }}
+	}
+	{{ groupName := "" }}
+	if componentSettings.IsSingleOpen {
+		{{ groupName = generateAccordionGroupName() }}
+	}
+	{{ textCaseClass := uiToolset.TextCaseClassResolver(componentSettings.TextCase) }}
 	<!-- Accordion -->
-	<section class="w-full rounded-md">
+	<section class="w-full">
 		for _, item := range componentSettings.Items {
 			<!-- AccordionItem -->
-			<details class="border-b-1 open:bg-neutral-50/7.5 hover:bg-neutral-50/7.5 group/accordion border-neutral-50/5 bg-neutral-50/5 p-3 transition-all duration-300 first:rounded-t last:rounded-b last:border-b-0">
-				<summary class="relative flex cursor-pointer list-none items-center gap-1.5 pr-8 text-neutral-50/80 focus-visible:outline-none [&::-webkit-details-marker]:hidden">
+			<details
+				class={ "border-b-1 group/accordion transition-all duration-300 last:border-b-0 " + itemPaddingClass + " " + itemEdgeRadiusClasses + " " + backgroundColorClass + " " + openBackgroundColorClass + " " + borderColorClass }
+				if groupName != "" {
+					name={ groupName }
+				}
+			>
+				<summary class={ "relative flex cursor-pointer list-none items-center gap-1.5 pr-8 focus-visible:outline-none [&::-webkit-details-marker]:hidden " + titleColorClass }>
 					if item.Icon != "" {
 						<i class={ "ph-duotone " + item.Icon + " text-2xl" }></i>
 					}
-					<span class="font-bold">{ item.Title }</span>
+					<span class={ "font-bold " + textCaseClass }>{ item.Title }</span>
 					<i class="ph-bold ph-plus absolute right-0 top-1.5 text-xs transition duration-300 group-open/accordion:rotate-45"></i>
 				</summary>
-				<div class="flex w-full flex-col gap-5 px-2 py-4">
+				<div class={ "mt-4 flex w-full flex-col gap-5 rounded-lg " + contentPaddingClass + " " + contentBackgroundColorClass }>
 					@item.Content
 				</div>
 			</details>
