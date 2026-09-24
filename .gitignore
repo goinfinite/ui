@@ -2,7 +2,8 @@ tmp/
 bin/
 logs/
 TODO.md
-demo/demo_templ.go
+demo/demo
+demo/*_templ.go
 demo.html
 .agents/
 .memory/

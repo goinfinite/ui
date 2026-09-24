@@ -1,0 +1,124 @@
+package main
+
+import (
+	uiControl "github.com/goinfinite/ui/src/control"
+	uiDisplay "github.com/goinfinite/ui/src/display"
+)
+
+templ LoadingOverlayIconAnimationExample() {
+	{{
+		iconUsage := `@uiDisplay.LoadingOverlay(uiDisplay.LoadingOverlaySettings{
+	IsLoadingOneWayStatePath: "isLoading",
+
+	// OptionalFields
+	Icon:                     "ph-compass-rose",
+	IconSize:                 uiDisplay.LoadingOverlayIconSizeMd,
+	AnimationName:            uiDisplay.LoadingOverlayAnimationNameSpin,
+	AnimationDurationSeconds: "2",
+})`
+	}}
+	@DemoExampleCard(
+		"Icon & Animation",
+		"Icon replaces the spinner. IconSize scales it. AnimationName spins or pulses it over AnimationDurationSeconds.",
+		"/display/loadingOverlay.templ",
+		iconUsage,
+	) {
+		<div class="relative h-64 overflow-hidden rounded-md border border-neutral-800 bg-neutral-50/5" x-data="{isIconLoading: false}">
+			<div class="flex h-full flex-col items-center justify-center gap-4 p-8">
+				<p class="text-center text-sm text-neutral-400">
+					The overlay covers this content while it loads.
+				</p>
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:       "Trigger Loading (3s)",
+					IconLeft:    "ph-play",
+					OnClickFunc: "isIconLoading = true; setTimeout(() => isIconLoading = false, 3000)",
+					Size:        uiControl.ButtonSizeSm,
+				})
+			</div>
+			@uiDisplay.LoadingOverlay(uiDisplay.LoadingOverlaySettings{
+				IsLoadingOneWayStatePath: "isIconLoading",
+				Icon:                     "ph-compass-rose",
+				IconSize:                 uiDisplay.LoadingOverlayIconSizeMd,
+				AnimationName:            uiDisplay.LoadingOverlayAnimationNameSpin,
+				AnimationDurationSeconds: "2",
+			})
+		</div>
+	}
+}
+
+templ LoadingOverlayBackgroundExample() {
+	{{
+		backgroundUsage := `@uiDisplay.LoadingOverlay(uiDisplay.LoadingOverlaySettings{
+	IsLoadingOneWayStatePath: "isLoading",
+
+	// OptionalFields
+	BackgroundColor: "neutral-900/80",
+})`
+	}}
+	@DemoExampleCard(
+		"Background Color",
+		"BackgroundColor paints the veil over the content.",
+		"/display/loadingOverlay.templ",
+		backgroundUsage,
+	) {
+		<div class="relative h-64 overflow-hidden rounded-md border border-neutral-800 bg-neutral-50/5" x-data="{isBackgroundLoading: false}">
+			<div class="flex h-full flex-col items-center justify-center gap-4 p-8">
+				<p class="text-center text-sm text-neutral-400">
+					The overlay covers this content while it loads.
+				</p>
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:       "Trigger Loading (3s)",
+					IconLeft:    "ph-play",
+					OnClickFunc: "isBackgroundLoading = true; setTimeout(() => isBackgroundLoading = false, 3000)",
+					Size:        uiControl.ButtonSizeSm,
+				})
+			</div>
+			@uiDisplay.LoadingOverlay(uiDisplay.LoadingOverlaySettings{
+				IsLoadingOneWayStatePath: "isBackgroundLoading",
+				BackgroundColor:          "neutral-900/80",
+			})
+		</div>
+	}
+}
+
+templ LoadingOverlayDemo() {
+	{{
+		demoUsage := `@uiDisplay.LoadingOverlay(uiDisplay.LoadingOverlaySettings{
+	IsLoadingOneWayStatePath: "isLoading",
+})`
+	}}
+	<div class="flex flex-col gap-4" id="loading-overlay-demo">
+		@DemoComponentSection(DemoComponentSectionSettings{
+			ComponentPath:          "/display/loadingOverlay.templ",
+			Description:            "A loading overlay displays a loading indicator over content to show that an operation is in progress.",
+			LiveExampleDescription: "An overlay driven by one boolean state path. Trigger it to cover the content below.",
+			Title:                  ".LoadingOverlay",
+			UsageCode:              demoUsage,
+			AlpineStateCode:        `<div x-data="{isLoading: false}"></div>`,
+			TitleNote:              "(htmx-ready)",
+		}) {
+			<div class="relative h-64 overflow-hidden rounded-md border border-neutral-800 bg-neutral-50/5" x-data="{isLoading: false}">
+				<div class="flex h-full flex-col items-center justify-center gap-4 p-8">
+					<p class="text-center text-sm text-neutral-400">
+						The page content will be covered by the loading overlay when triggered.
+					</p>
+					<div class="flex flex-wrap gap-2">
+						@uiControl.Button(uiControl.ButtonSettings{
+							Label:       "Trigger Loading (3s)",
+							IconLeft:    "ph-play",
+							OnClickFunc: "isLoading = true; setTimeout(() => isLoading = false, 3000)",
+							Size:        uiControl.ButtonSizeSm,
+						})
+					</div>
+				</div>
+				@uiDisplay.LoadingOverlay(uiDisplay.LoadingOverlaySettings{
+					IsLoadingOneWayStatePath: "isLoading",
+				})
+			</div>
+		}
+		@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
+			{Title: "Icon & Animation", Icon: "ph-spinner", Content: LoadingOverlayIconAnimationExample()},
+			{Title: "Background Color", Icon: "ph-paint-bucket", Content: LoadingOverlayBackgroundExample()},
+		})
+	</div>
+}

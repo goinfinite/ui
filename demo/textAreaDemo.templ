@@ -1,0 +1,174 @@
+package main
+
+import (
+	uiControl "github.com/goinfinite/ui/src/control"
+	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiForm "github.com/goinfinite/ui/src/form"
+)
+
+templ TextAreaReadOnlyExample() {
+	{{
+		readOnlyUsage := `@uiForm.TextArea(uiForm.TextAreaSettings{
+	InputName: "description",
+	Label:     "Description",
+
+	// OptionalFields
+	Value:      "Lorem ipsum dolor sit amet.",
+	IsReadOnly: true,
+})`
+	}}
+	@DemoExampleCard(
+		"Value & Read-Only",
+		"Value seeds the field content. IsReadOnly shows the value without accepting edits.",
+		"/form/textArea.templ",
+		readOnlyUsage,
+	) {
+		@uiForm.TextArea(uiForm.TextAreaSettings{
+			InputName:  "description",
+			Label:      "Description",
+			Value:      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+			IsReadOnly: true,
+		})
+	}
+}
+
+templ TextAreaCodeExample() {
+	{{
+		codeUsage := `@uiForm.TextArea(uiForm.TextAreaSettings{
+	InputName: "snippet",
+	Label:     "Snippet",
+
+	// OptionalFields
+	TwoWayStatePath: "snippet",
+	IsCode:          true,
+})`
+	}}
+	@DemoExampleCard(
+		"Code Mode",
+		"IsCode switches the field to a monospace editor styled for source code.",
+		"/form/textArea.templ",
+		codeUsage,
+	) {
+		<div x-data="{snippet: 'echo hello world'}">
+			@uiForm.TextArea(uiForm.TextAreaSettings{
+				InputName:       "snippet",
+				Label:           "Snippet",
+				TwoWayStatePath: "snippet",
+				IsCode:          true,
+			})
+		</div>
+	}
+}
+
+templ TextAreaHintsExample() {
+	{{
+		hintsUsage := `@uiForm.TextArea(uiForm.TextAreaSettings{
+	InputName: "description",
+	Label:     "Description",
+
+	// OptionalFields
+	TwoWayStatePath: "description",
+	HintValue:       "This is a helpful hint.",
+	HintDisplay:     uiForm.InputHintDisplayDescription,
+})`
+	}}
+	@DemoExampleCard(
+		"Hints",
+		"HintValue explains the field. HintDisplay shows it as a description below the field or as a tooltip.",
+		"/form/textArea.templ",
+		hintsUsage,
+	) {
+		<div class="flex flex-col gap-3" x-data="{description: ''}">
+			@uiForm.TextArea(uiForm.TextAreaSettings{
+				InputName:       "description",
+				Label:           "Description",
+				TwoWayStatePath: "description",
+				HintValue:       "This is a helpful hint displayed as a description below the textarea.",
+				HintDisplay:     uiForm.InputHintDisplayDescription,
+			})
+			@uiForm.TextArea(uiForm.TextAreaSettings{
+				InputName:       "description",
+				Label:           "Description",
+				TwoWayStatePath: "description",
+				HintValue:       "This is a helpful hint displayed as a tooltip.",
+				HintDisplay:     uiForm.InputHintDisplayTooltip,
+			})
+		</div>
+	}
+}
+
+templ TextAreaHintStatePathExample() {
+	{{
+		hintStateUsage := `@uiForm.TextArea(uiForm.TextAreaSettings{
+	InputName: "description",
+	Label:     "Description",
+
+	// OptionalFields
+	TwoWayStatePath: "description",
+	HintStatePath:   "hintText",
+	HintDisplay:     uiForm.InputHintDisplayTooltip,
+})`
+	}}
+	@DemoExampleCard(
+		"Hint State Path",
+		"HintStatePath reads the hint text from Alpine state, so the hint updates as the state changes.",
+		"/form/textArea.templ",
+		hintStateUsage,
+	) {
+		<div x-data="{description: '', hintText: 'First hint text.'}" class="flex flex-col gap-3">
+			@uiForm.TextArea(uiForm.TextAreaSettings{
+				InputName:       "description",
+				Label:           "Description",
+				TwoWayStatePath: "description",
+				HintStatePath:   "hintText",
+				HintDisplay:     uiForm.InputHintDisplayTooltip,
+			})
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "Change Hint Text",
+				IconLeft:        "ph-pencil-simple",
+				OnClickFunc:     "hintText = hintText === 'First hint text.' ? 'Second hint text.' : 'First hint text.'",
+				Size:            uiControl.ButtonSizeSm,
+				BackgroundColor: "neutral-700",
+			})
+		</div>
+	}
+}
+
+templ TextAreaDemo() {
+	{{
+		demoUsage := `@uiForm.TextArea(uiForm.TextAreaSettings{
+	InputName: "description",
+	Label:     "Description",
+
+	// OptionalFields
+	TwoWayStatePath: "description",
+})`
+	}}
+	<div class="flex flex-col gap-4" id="text-area-demo">
+		@DemoComponentSection(DemoComponentSectionSettings{
+			ComponentPath:          "/form/textArea.templ",
+			Description:            "A textarea is a form element that allows users to enter multiple lines of text.",
+			LiveExampleDescription: "A labeled textarea bound to Alpine state.",
+			Title:                  ".TextArea",
+			UsageCode:              demoUsage,
+			AlpineStateCode:        `<div x-data="{description: ''}"></div>`,
+		}) {
+			<div x-data="{description: ''}">
+				@uiForm.TextArea(uiForm.TextAreaSettings{
+					InputName:       "description",
+					Label:           "Description",
+					TwoWayStatePath: "description",
+				})
+				<p class={ DemoLiveStateClasses }>
+					Value: <span x-text="description"></span>
+				</p>
+			</div>
+		}
+		@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
+			{Title: "Value & Read-Only", Icon: "ph-lock", Content: TextAreaReadOnlyExample()},
+			{Title: "Code Mode", Icon: "ph-code", Content: TextAreaCodeExample()},
+			{Title: "Hints", Icon: "ph-info", Content: TextAreaHintsExample()},
+			{Title: "Hint State Path", Icon: "ph-arrows-clockwise", Content: TextAreaHintStatePathExample()},
+		})
+	</div>
+}

@@ -1,0 +1,201 @@
+package main
+
+import (
+	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiStructural "github.com/goinfinite/ui/src/structural"
+)
+
+templ FilterBarQueryParamExample() {
+	{{
+		queryParamUsage := `@uiStructural.FilterBar(uiStructural.FilterBarSettings{
+	Filters: []uiStructural.FilterSettings{
+		{
+			Key:            "environment",
+			Label:          "Environment",
+			Kind:           uiStructural.FilterKindEnumSelect,
+			Options:        buildDemoEnvironmentOptions(),
+			QueryParamName: "recordEnvironment",
+		},
+	},
+	ValuesTwoWayStatePath: "filterValues",
+})`
+	}}
+	@DemoExampleCard(
+		"Query Param Names",
+		"QueryParamName renames the filter in the DataTable URL template. Without it the filter Key is the parameter name.",
+		"/structural/filterBar.templ",
+		queryParamUsage,
+	) {
+		<div class="rounded-md border border-neutral-800 p-4" x-data="{queryFilterValues: {environment: 'running'}}">
+			@uiStructural.FilterBar(uiStructural.FilterBarSettings{
+				Filters: []uiStructural.FilterSettings{
+					{
+						Key:            "environment",
+						Label:          "Environment",
+						Kind:           uiStructural.FilterKindEnumSelect,
+						Options:        buildDemoEnvironmentOptions(),
+						QueryParamName: "recordEnvironment",
+					},
+				},
+				ValuesTwoWayStatePath: "queryFilterValues",
+			})
+		</div>
+	}
+}
+
+templ FilterBarEnumPrefixExample() {
+	{{
+		prefixUsage := `@uiStructural.FilterBar(uiStructural.FilterBarSettings{
+	Filters: []uiStructural.FilterSettings{
+		{Key: "region", Label: "Region", Kind: uiStructural.FilterKindEnumSelect, Options: buildDemoRegionOptions()},
+	},
+	ValuesTwoWayStatePath: "filterValues",
+
+	// OptionalFields
+	EnumSelectRadioGroupNamePrefix: "myForm",
+})`
+	}}
+	@DemoExampleCard(
+		"Enum Radio Group Prefix",
+		"EnumSelectRadioGroupNamePrefix namespaces the generated radio inputs of enum selects, so two filter bars on one page do not collide.",
+		"/structural/filterBar.templ",
+		prefixUsage,
+	) {
+		<div class="rounded-md border border-neutral-800 p-4" x-data="{prefixFilterValues: {region: 'stopped'}}">
+			@uiStructural.FilterBar(uiStructural.FilterBarSettings{
+				Filters: []uiStructural.FilterSettings{
+					{
+						Key:     "region",
+						Label:   "Region",
+						Kind:    uiStructural.FilterKindEnumSelect,
+						Options: buildDemoRegionOptions(),
+					},
+				},
+				ValuesTwoWayStatePath:          "prefixFilterValues",
+				EnumSelectRadioGroupNamePrefix: "filterBarDemo",
+			})
+		</div>
+	}
+}
+
+templ FilterBarDropdownBackgroundExample() {
+	{{
+		dropdownBackgroundUsage := `@uiStructural.FilterBar(uiStructural.FilterBarSettings{
+	Filters: []uiStructural.FilterSettings{
+		{Key: "status", Label: "Status", Kind: uiStructural.FilterKindEnumSelect, Options: statusOptions},
+	},
+	ValuesTwoWayStatePath: "filterValues",
+
+	// OptionalFields
+	DropdownBackgroundColor: "primary-500/95",
+})`
+	}}
+	@DemoExampleCard(
+		"Dropdown Background",
+		"DropdownBackgroundColor paints the enum select dropdown with a Tailwind background token. DataTable forwards it as FilterDropdownBackgroundColor.",
+		"/structural/filterBar.templ",
+		dropdownBackgroundUsage,
+	) {
+		<div class="rounded-md border border-neutral-800 p-4" x-data="{dropdownFilterValues: {status: 'running'}}">
+			@uiStructural.FilterBar(uiStructural.FilterBarSettings{
+				Filters: []uiStructural.FilterSettings{
+					{
+						Key:     "status",
+						Label:   "Status",
+						Kind:    uiStructural.FilterKindEnumSelect,
+						Options: buildDemoEnvironmentOptions(),
+					},
+				},
+				ValuesTwoWayStatePath:   "dropdownFilterValues",
+				DropdownBackgroundColor: "primary-500/95",
+			})
+		</div>
+	}
+}
+
+templ FilterBarMultiValueExample() {
+	{{
+		multiValueUsage := `@uiStructural.FilterBar(uiStructural.FilterBarSettings{
+	Filters: []uiStructural.FilterSettings{
+		{Key: "status", Label: "Status", Kind: uiStructural.FilterKindMultiEnumSelect, Options: statusOptions},
+	},
+	ValuesTwoWayStatePath: "filterValues",
+})`
+	}}
+	@DemoExampleCard(
+		"Multi-Value Filter",
+		"FilterKindMultiEnumSelect holds an array of selected values under one key. The chip lists every value, and the DataTable URL repeats the parameter once per value.",
+		"/structural/filterBar.templ",
+		multiValueUsage,
+	) {
+		<div
+			class="flex flex-col gap-3"
+			id="filter-bar-demo-multi"
+			x-data="{multiFilterValues: {status: ['running']}}"
+		>
+			<div class="rounded-md border border-neutral-800 p-4">
+				@uiStructural.FilterBar(uiStructural.FilterBarSettings{
+					Filters: []uiStructural.FilterSettings{
+						{
+							Key:     "status",
+							Label:   "Status",
+							Kind:    uiStructural.FilterKindMultiEnumSelect,
+							Options: buildDemoRecordStatusOptions(),
+						},
+					},
+					ValuesTwoWayStatePath: "multiFilterValues",
+				})
+			</div>
+			<p class={ DemoLiveStateClasses } id="filter-bar-demo-multi-state">
+				<span x-text="JSON.stringify(multiFilterValues)"></span>
+			</p>
+		</div>
+	}
+}
+
+templ FilterBarDemo() {
+	{{
+		demoUsage := `@uiStructural.FilterBar(uiStructural.FilterBarSettings{
+	Filters: []uiStructural.FilterSettings{
+		{Key: "name", Label: "Name", Kind: uiStructural.FilterKindTextContains},
+		{Key: "status", Label: "Status", Kind: uiStructural.FilterKindEnumSelect, Options: statusOptions},
+		{Key: "cpu", Label: "CPU", Kind: uiStructural.FilterKindNumberRange},
+	},
+	ValuesTwoWayStatePath: "filterValues",
+
+	// OptionalFields
+	OnChangeFunc: "changeCount = changeCount + 1",
+})`
+	}}
+	<div
+		class="flex flex-col gap-4"
+		id="filter-bar-demo"
+		x-data="{filterValues: {name: '', status: 'running', cpu: {min: '', max: ''}}, changeCount: 0}"
+	>
+		@DemoComponentSection(DemoComponentSectionSettings{
+			ComponentPath:          "/structural/filterBar.templ",
+			Description:            "A filter bar renders one editor per declared filter and shows the active filters as removable chips.",
+			LiveExampleDescription: "All three filter kinds at once: text contains, enum select, and number range, with removable chips.",
+			Title:                  ".FilterBar",
+			UsageCode:              demoUsage,
+		}) {
+			<div class="rounded-md border border-neutral-800 p-4" id="filter-bar-demo-main">
+				@uiStructural.FilterBar(uiStructural.FilterBarSettings{
+					Filters:               buildDemoRecordFilters(),
+					ValuesTwoWayStatePath: "filterValues",
+					OnChangeFunc:          "changeCount = changeCount + 1",
+				})
+			</div>
+			<p class={ DemoLiveStateClasses } id="filter-bar-demo-state">
+				Values: <span x-text="JSON.stringify(filterValues)"></span>
+				· OnChangeFunc calls: <span x-text="changeCount"></span>
+			</p>
+		}
+		@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
+			{Title: "Query Param Names", Icon: "ph-link", Content: FilterBarQueryParamExample()},
+			{Title: "Enum Radio Group Prefix", Icon: "ph-tag", Content: FilterBarEnumPrefixExample()},
+			{Title: "Dropdown Background", Icon: "ph-palette", Content: FilterBarDropdownBackgroundExample()},
+			{Title: "Multi-Value Filter", Icon: "ph-list-checks", Content: FilterBarMultiValueExample()},
+		})
+	</div>
+}

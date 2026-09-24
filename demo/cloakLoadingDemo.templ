@@ -1,0 +1,186 @@
+package main
+
+import (
+	uiControl "github.com/goinfinite/ui/src/control"
+	uiDisplay "github.com/goinfinite/ui/src/display"
+)
+
+templ CloakLoadingCustomTextExample() {
+	{{
+		textUsage := `@uiDisplay.CloakLoading(uiDisplay.CloakLoadingSettings{
+	// OptionalFields
+	BackgroundColor: "rgb(30, 58, 138)",
+	TextMessage:     "Please wait...",
+	TextColor:       "rgb(255, 255, 255)",
+	TextSize:        uiDisplay.CloakLoadingTextSizeLg,
+})`
+	}}
+	@DemoExampleCard(
+		"Custom Text",
+		"TextMessage replaces the default loading label. TextColor and TextSize style it. Set colors as rgb(a), hex, or hsl(a) values: they are used in an inline style.",
+		"/display/cloakLoading.templ",
+		textUsage,
+	) {
+		<div class="relative h-64 overflow-hidden rounded-md border border-neutral-800 bg-neutral-50/5">
+			<div class="flex h-full flex-col items-center justify-center gap-4 p-8">
+				<p class="text-center text-sm text-neutral-400">
+					The cloak screen covers this content when triggered.
+				</p>
+				<div class="flex flex-wrap gap-2" x-data="{ showTextCloak: false }">
+					<template x-if="showTextCloak">
+						@uiDisplay.CloakLoading(uiDisplay.CloakLoadingSettings{
+							HideDelaySeconds:             "2",
+							BackgroundColor:              "rgb(30, 58, 138)",
+							TextMessage:                  "Please wait...",
+							TextColor:                    "rgb(255, 255, 255)",
+							TextSize:                     uiDisplay.CloakLoadingTextSizeLg,
+							Icon:                         "ph-circle-notch",
+							IconSize:                     uiDisplay.CloakLoadingIconSizeLg,
+							IconColor:                    "rgb(255, 255, 255)",
+							IconAnimationName:            uiDisplay.CloakLoadingAnimationNameSpin,
+							IconAnimationDurationSeconds: "1",
+						})
+					</template>
+					@uiControl.Button(uiControl.ButtonSettings{
+						Label:           "Show Custom Text",
+						IconLeft:        "ph-circle-notch",
+						OnClickFunc:     "showTextCloak = true; setTimeout(() => showTextCloak = false, 2100)",
+						Size:            uiControl.ButtonSizeSm,
+						BackgroundColor: "primary-600",
+					})
+				</div>
+			</div>
+		</div>
+	}
+}
+
+templ CloakLoadingIconAnimationExample() {
+	{{
+		iconUsage := `@uiDisplay.CloakLoading(uiDisplay.CloakLoadingSettings{
+	// OptionalFields
+	Icon:                         "ph-hourglass",
+	IconSize:                     uiDisplay.CloakLoadingIconSizeMd,
+	IconColor:                    "rgb(110, 231, 183)",
+	IconAnimationName:            uiDisplay.CloakLoadingAnimationNamePulse,
+	IconAnimationDurationSeconds: "2",
+})`
+	}}
+	@DemoExampleCard(
+		"Icon & Animation",
+		"Icon replaces the spinner. IconSize scales it. IconAnimationName spins or pulses it over IconAnimationDurationSeconds.",
+		"/display/cloakLoading.templ",
+		iconUsage,
+	) {
+		<div class="relative h-64 overflow-hidden rounded-md border border-neutral-800 bg-neutral-50/5">
+			<div class="flex h-full flex-col items-center justify-center gap-4 p-8">
+				<p class="text-center text-sm text-neutral-400">
+					The cloak screen covers this content when triggered.
+				</p>
+				<div class="flex flex-wrap gap-2" x-data="{ showIconCloak: false }">
+					<template x-if="showIconCloak">
+						@uiDisplay.CloakLoading(uiDisplay.CloakLoadingSettings{
+							HideDelaySeconds:             "2",
+							BackgroundColor:              "rgb(6, 78, 59)",
+							TextMessage:                  "Almost there...",
+							TextColor:                    "rgb(236, 253, 245)",
+							TextSize:                     uiDisplay.CloakLoadingTextSizeSm,
+							Icon:                         "ph-hourglass",
+							IconSize:                     uiDisplay.CloakLoadingIconSizeMd,
+							IconColor:                    "rgb(110, 231, 183)",
+							IconAnimationName:            uiDisplay.CloakLoadingAnimationNamePulse,
+							IconAnimationDurationSeconds: "2",
+						})
+					</template>
+					@uiControl.Button(uiControl.ButtonSettings{
+						Label:           "Show Pulse Icon",
+						IconLeft:        "ph-hourglass",
+						OnClickFunc:     "showIconCloak = true; setTimeout(() => showIconCloak = false, 2100)",
+						Size:            uiControl.ButtonSizeSm,
+						BackgroundColor: "emerald-600",
+					})
+				</div>
+			</div>
+		</div>
+	}
+}
+
+templ CloakLoadingHideDelayExample() {
+	{{
+		hideDelayUsage := `@uiDisplay.CloakLoading(uiDisplay.CloakLoadingSettings{
+	// OptionalFields
+	HideDelaySeconds: "3",
+})`
+	}}
+	@DemoExampleCard(
+		"Hide Delay",
+		"HideDelaySeconds keeps the cloak on screen for a moment after the libraries load, so the hand-off does not flash. It defaults to 0 seconds.",
+		"/display/cloakLoading.templ",
+		hideDelayUsage,
+	) {
+		<div class="relative h-64 overflow-hidden rounded-md border border-neutral-800 bg-neutral-50/5">
+			<div class="flex h-full flex-col items-center justify-center gap-4 p-8">
+				<p class="text-center text-sm text-neutral-400">
+					The cloak screen covers this content when triggered.
+				</p>
+				<div class="flex flex-wrap gap-2" x-data="{ showDelayedCloak: false }">
+					<template x-if="showDelayedCloak">
+						@uiDisplay.CloakLoading(uiDisplay.CloakLoadingSettings{
+							HideDelaySeconds: "3",
+						})
+					</template>
+					@uiControl.Button(uiControl.ButtonSettings{
+						Label:       "Show 3s Delay",
+						IconLeft:    "ph-timer",
+						OnClickFunc: "showDelayedCloak = true; setTimeout(() => showDelayedCloak = false, 3500)",
+						Size:        uiControl.ButtonSizeSm,
+					})
+				</div>
+			</div>
+		</div>
+	}
+}
+
+templ CloakLoadingDemo() {
+	{{
+		demoUsage := `@uiDisplay.CloakLoading(uiDisplay.CloakLoadingSettings{
+	// OptionalFields
+	BackgroundColor: "rgb(23, 23, 23)",
+	Icon:            "ph-compass-rose",
+})`
+	}}
+	<div class="flex flex-col gap-4" id="cloak-loading-demo">
+		@DemoComponentSection(DemoComponentSectionSettings{
+			ComponentPath:          "/display/cloakLoading.templ",
+			Description:            "A cloak loading screen that appears only before the JavaScript libraries are loaded to prevent FOUC (Flash of Unstyled Content).",
+			LiveExampleDescription: "Since the demo is already loaded with Alpine.js, the CloakLoading component will behave like a regular loading overlay. In a real application, this would be the first thing that appears when the page starts loading.",
+			Title:                  ".CloakLoading",
+			UsageCode:              demoUsage,
+			TitleNote:              "(pre-Alpine/HTMX)",
+			UsageNote:              "Set colors as rgb(a), hex, or hsl(a) values: they are used in the inline style.",
+		}) {
+			<div class="relative h-64 overflow-hidden rounded-md border border-neutral-800 bg-neutral-50/5">
+				<div class="flex h-full flex-col items-center justify-center gap-4 p-8">
+					<p class="text-center text-sm text-neutral-400">
+						The page content will be covered by the cloak loading screen when triggered.
+					</p>
+					<div class="flex flex-wrap gap-2" x-data="{ showCloak: false }">
+						<template x-if="showCloak">
+							@uiDisplay.CloakLoading(uiDisplay.CloakLoadingSettings{})
+						</template>
+						@uiControl.Button(uiControl.ButtonSettings{
+							Label:       "Show Default",
+							IconLeft:    "ph-compass-rose",
+							OnClickFunc: "showCloak = true; setTimeout(() => showCloak = false, 2100)",
+							Size:        uiControl.ButtonSizeSm,
+						})
+					</div>
+				</div>
+			</div>
+		}
+		@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
+			{Title: "Custom Text", Icon: "ph-text-aa", Content: CloakLoadingCustomTextExample()},
+			{Title: "Icon & Animation", Icon: "ph-spinner", Content: CloakLoadingIconAnimationExample()},
+			{Title: "Hide Delay", Icon: "ph-timer", Content: CloakLoadingHideDelayExample()},
+		})
+	</div>
+}

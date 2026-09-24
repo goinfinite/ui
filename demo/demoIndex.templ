@@ -1,0 +1,237 @@
+package main
+
+import (
+	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiImport "github.com/goinfinite/ui/src/import"
+	uiStructural "github.com/goinfinite/ui/src/structural"
+)
+
+const (
+	UiVersion string = "0.2.2"
+)
+
+templ DemoNavSection(label string) {
+	<li
+		class="select-none px-3 pb-1 pt-4 text-xs font-bold text-neutral-400"
+		:class="{'hidden': isDemoSidebarCollapsed}"
+	>
+		{ label }
+	</li>
+}
+
+templ DemoNavItem(label, targetId, icon string) {
+	<li>
+		<a
+			href={ templ.SafeURL("#" + targetId) }
+			class="group relative flex cursor-pointer items-center gap-2 rounded"
+			:class="{'px-3 hover:bg-neutral-50/5 py-2':!isDemoSidebarCollapsed}"
+			title={ label }
+		>
+			<div
+				class="group-hover:text-secondary-500 flex items-center justify-center rounded bg-neutral-50/5 transition-colors group-hover:bg-neutral-50/10"
+				:class="isDemoSidebarCollapsed ? 'p-2' : 'p-1.5'"
+			>
+				<i
+					class={ "ph-duotone " + icon + " block text-2xl" }
+					:class="{'text-xl': !isDemoSidebarCollapsed}"
+				></i>
+			</div>
+			<span
+				class="group-hover:text-secondary-500 select-none text-sm"
+				:class="{'hidden' : isDemoSidebarCollapsed}"
+			>
+				{ label }
+			</span>
+		</a>
+	</li>
+}
+
+templ DemoNavigationHeader() {
+	<div class="mx-auto flex flex-col items-center justify-center gap-4 py-4">
+		<!-- UI Logo -->
+		<div class="flex flex-col items-center justify-center gap-1">
+			<a
+				href="#"
+				@click="document.documentElement.scrollTop = 0"
+				title="Infinite UI"
+				:class="isDemoSidebarCollapsed ? 'w-12' : 'w-24'"
+			>
+				<img src="https://ui.demo.goinfinite.net/assets/ui-logo.svg" alt="Infinite UI" class="fill-white"/>
+			</a>
+			<p class="text-center text-[0.5rem]">v{ UiVersion }</p>
+		</div>
+	</div>
+}
+
+templ DemoNavigationContent() {
+	<ul
+		class="flex flex-col gap-0.5 py-4"
+		:class="isDemoSidebarCollapsed && 'gap-2 items-center'"
+	>
+		@DemoNavSection("@uiForm")
+		@DemoNavItem("CheckboxInput", "checkbox-input-demo", "ph-check-square")
+		@DemoNavItem("InlineRadioGroup", "inline-radio-group-demo", "ph-selection")
+		@DemoNavItem("InputField", "input-field-demo", "ph-text-aa")
+		@DemoNavItem("MultiSelectInput", "multi-select-input-demo", "ph-list-checks")
+		@DemoNavItem("RadioInput", "radio-input-demo", "ph-radio-button")
+		@DemoNavItem("SelectInput", "select-input-demo", "ph-caret-down")
+		@DemoNavItem("TextArea", "text-area-demo", "ph-text-align-left")
+		@DemoNavItem("ToggleSwitch", "toggle-switch-demo", "ph-toggle-right")
+		@DemoNavSection("@uiDisplay")
+		@DemoNavItem("Accordion", "accordion-demo", "ph-list")
+		@DemoNavItem("Alert", "alert-demo", "ph-warning")
+		@DemoNavItem("CloakLoading", "cloak-loading-demo", "ph-eye-slash")
+		@DemoNavItem("ConfirmationDialog", "confirmation-dialog-demo", "ph-question")
+		@DemoNavItem("LoadingOverlay", "loading-overlay-demo", "ph-spinner")
+		@DemoNavItem("Modal", "modal-demo", "ph-square")
+		@DemoNavItem("Sidebar", "sidebar-demo", "ph-sidebar")
+		@DemoNavItem("Tag", "tag-demo", "ph-tag")
+		@DemoNavItem("Toast", "toast-demo", "ph-bell")
+		@DemoNavSection("@uiControl")
+		@DemoNavItem("Button", "button-demo", "ph-cursor")
+		@DemoNavItem("RangeSlider", "range-slider-demo", "ph-sliders")
+		@DemoNavSection("@uiStructural")
+		@DemoNavItem("Card", "card-demo", "ph-cube")
+		@DemoNavItem("DataTable", "data-table-demo", "ph-table")
+		@DemoNavItem("FilterBar", "filter-bar-demo", "ph-funnel")
+		@DemoNavItem("PageHeading", "page-heading-demo", "ph-text-h")
+		@DemoNavItem("Pagination", "pagination-demo", "ph-caret-double-right")
+	</ul>
+}
+
+templ DemoNavigationSidebar() {
+	@uiStructural.Sidebar(uiStructural.SidebarSettings{
+		MiddleContent:              DemoNavigationContent(),
+		HeaderContent:              DemoNavigationHeader(),
+		BackgroundColor:            "bg-neutral-800/50",
+		IsCollapsedTwoWayStatePath: "isDemoSidebarCollapsed",
+		Width:                      "w-46",
+		AttachmentMode:             uiStructural.SidebarAttachmentModeFixed,
+	})
+}
+
+templ DemoIndex() {
+	<!DOCTYPE html>
+	<html lang="en" class="dark">
+		<head>
+			<title>Infinite UI Demo</title>
+			<meta charset="utf-8"/>
+			<script type="text/javascript">window.__unocss={theme:{colors:{primary:{50:'#edfcff',100:'#d7f6ff',200:'#b8f0ff',300:'#86eaff',400:'#4edbff',500:'#25c2ff',600:'#0da6ff',700:'#0993f8',800:'#0d6fc0',900:'#115e97',950:'#10395b'},secondary:{50:"#dea893",100:"#d89a81",200:"#d38b6f",300:"#cd7d5d",400:"#ca7654",500:"#c97350",600:"#c46f4d",700:"#ba6949",800:"#a55e41",900:"#905239",950:"#7c4631"}}}};</script>
+			@uiImport.HeadTagsFull()
+		</head>
+		<body class="bg-neutral-900 text-neutral-50 flex">
+			<!-- Navigation Sidebar -->
+			<div x-data="{isDemoSidebarCollapsed: $persist(false).as('uiDemo.isSidebarCollapsed')}">
+				@DemoNavigationSidebar()
+			</div>
+			<main class="container mx-auto flex flex-col gap-20">
+				<!-- Demo Header -->
+				<section class="flex flex-col items-center justify-between gap-4 overflow-y-auto mt-20" id="demo-header">
+					<h1 class="text-center text-5xl font-bold">Infinite UI Demo</h1>
+					<p class="text-center text-sm text-neutral-400">
+						<i><a href="https://goinfinite.net" target="_blank" rel="noopener noreferrer" title="goinfinite.net">Infinite</a></i> UI is a collection of reusable components for building elegant user interfaces in Go.
+						<br/>
+						It is built with <i>a-h/templ</i>, <i>Alpine.js</i>, <i>Tailwind CSS</i>, <i>Phosphor Icons</i> and the occasional additional JavaScript libraries when necessary.
+					</p>
+					<div class="flex flex-row items-center gap-2">
+						<a href="https://github.com/goinfinite/ui" target="_blank" rel="noopener noreferrer" title="GitHub Repository">
+							<img src="https://img.shields.io/badge/repository-262626?logo=github" alt="GitHub Repository"/>
+						</a>
+						<a href="https://github.com/orgs/goinfinite/discussions" target="_blank" rel="noopener noreferrer" title="GitHub Discussions">
+							<img src="https://img.shields.io/badge/discussions-751A3D?logo=github" alt="GitHub Discussions"/>
+						</a>
+						<a href="https://www.reddit.com/r/goinfinite/" target="_blank" rel="noopener noreferrer" title="Reddit Subreddit">
+							<img src="https://img.shields.io/badge/%2Fr%2Fgoinfinite-FF4500?logo=reddit&logoColor=ffffff" alt="Reddit Subreddit"/>
+						</a>
+						<a href="https://sonarcloud.io/project/overview?id=goinfinite_ui" target="_blank" rel="noopener noreferrer" title="Quality Gate Status">
+							<img src="https://sonarcloud.io/api/project_badges/measure?project=goinfinite_ui&metric=alert_status" alt="Quality Gate Status"/>
+						</a>
+						<a href="https://github.com/goinfinite/ui/blob/main/LICENSE.md" target="_blank" rel="noopener noreferrer" title="License">
+							<img src="https://img.shields.io/badge/license-MIT-teal.svg" alt="License"/>
+						</a>
+					</div>
+				</section>
+				<!-- Main Content -->
+				<section class="flex flex-col gap-30 p-4" id="main-content">
+					<div class="flex flex-col gap-10">
+						<!-- uiForm -->
+						<div id="ui-form-section" class="flex flex-col gap-2">
+							<h2 class="text-3xl font-bold">
+								{ `@uiForm` }
+							</h2>
+							<p class="text-sm text-neutral-400">
+								uiForm is a collection of components that make it easy to create forms.
+							</p>
+						</div>
+						<div class="*:border-t *:border-neutral-800 *:py-20 flex flex-col">
+							@CheckboxInputDemo()
+							@InlineRadioGroupDemo()
+							@InputFieldDemo()
+							@MultiSelectInputDemo()
+							@RadioInputDemo()
+							@SelectInputDemo()
+							@TextAreaDemo()
+							@ToggleSwitchDemo()
+						</div>
+					</div>
+					<!-- uiDisplay -->
+					<div class="flex flex-col gap-10">
+						<div id="ui-display-section" class="flex flex-col gap-2">
+							<h2 class="text-3xl font-bold">
+								{ `@uiDisplay` }
+							</h2>
+							<p class="text-sm text-neutral-400">
+								uiDisplay is a collection of components for displaying content.
+							</p>
+						</div>
+						<div class="*:border-t *:border-neutral-800 *:py-20 flex flex-col">
+							@AccordionDemo()
+							@AlertDemo()
+							@CloakLoadingDemo()
+							@ConfirmationDialogDemo()
+							@LoadingOverlayDemo()
+							@ModalDemo()
+							@SidebarDemo()
+							@TagDemo()
+							@ToastDemo()
+						</div>
+					</div>
+					<!-- uiControl -->
+					<div class="flex flex-col gap-10">
+						<div id="ui-control-section" class="flex flex-col gap-2">
+							<h2 class="text-3xl font-bold">
+								{ `@uiControl` }
+							</h2>
+							<p class="text-sm text-neutral-400">
+								uiControl is a collection of components for controlling content.
+							</p>
+						</div>
+						<div class="*:border-t *:border-neutral-800 *:py-20 flex flex-col">
+							@ButtonDemo()
+							@RangeSliderDemo()
+						</div>
+					</div>
+					<!-- uiStructural -->
+					<div class="flex flex-col gap-10">
+						<div id="ui-structural-section" class="flex flex-col gap-2">
+							<h2 class="text-3xl font-bold">
+								{ `@uiStructural` }
+							</h2>
+							<p class="text-sm text-neutral-400">
+								uiStructural is a collection of components for navigating and displaying structured data.
+							</p>
+						</div>
+						<div class="*:border-t *:border-neutral-800 *:py-20 flex flex-col">
+							@CardDemo()
+							@DataTableDemo()
+							@FilterBarDemo()
+							@PaginationDemo()
+							@PageHeadingDemo()
+						</div>
+					</div>
+				</section>
+			</main>
+			@uiDisplay.CloakLoading(uiDisplay.CloakLoadingSettings{BackgroundColor: "rgb(38, 38, 38)"})
+		</body>
+	</html>
+}

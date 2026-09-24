@@ -1,0 +1,116 @@
+package main
+
+import (
+	uiDisplay "github.com/goinfinite/ui/src/display"
+)
+
+const (
+	DemoPreCodeClasses         string = "rounded-md bg-neutral-800 p-4 text-xs text-wrap tab-2"
+	DemoLiveStateClasses       string = "mt-1.5 rounded-md border border-amber-400/30 bg-amber-400/10 px-3 py-2 font-mono text-xs text-amber-100"
+	DemoLiveStateInlineClasses string = "rounded-md border border-amber-400/30 bg-amber-400/10 px-3 py-2 font-mono text-xs text-amber-100"
+)
+
+templ UsageTitle(componentPath string) {
+	<a
+		href={ "https://github.com/goinfinite/ui/blob/main/src" + templ.SafeURL(componentPath) }
+		rel="help noopener noreferrer"
+		target="_blank"
+		title="View Complete Component Settings"
+	>
+		<h4 class="text-lg font-bold text-neutral-50 transition-all hover:opacity-80">
+			Usage
+			<i class="ph-bold ph-arrow-square-out text-sm text-neutral-400"></i>
+		</h4>
+	</a>
+}
+
+templ DemoExampleHeader(title, description, componentPath, usageCode string) {
+	<div class="flex flex-col gap-1">
+		<h5 class="text-base font-bold">{ title }</h5>
+		<p class="text-sm text-neutral-400">{ description }</p>
+	</div>
+	<div class="flex flex-col gap-2">
+		@UsageTitle(componentPath)
+		<pre class={ DemoPreCodeClasses }>
+			<code>{ usageCode }</code>
+		</pre>
+	</div>
+}
+
+templ DemoExampleCard(title, description, componentPath, usageCode string) {
+	<div class="flex flex-col gap-4">
+		@DemoExampleHeader(title, description, componentPath, usageCode)
+		{ children... }
+	</div>
+}
+
+templ DemoAlpineStateBlock(stateCode string) {
+	<div class="flex flex-col gap-2">
+		<h5 class="text-sm font-bold">Alpine.js Parent State <i>(x-data)</i></h5>
+		<pre class={ DemoPreCodeClasses }>
+			<code>{ stateCode }</code>
+		</pre>
+	</div>
+}
+
+templ DemoAdvancedExamples(items []uiDisplay.AccordionItemSettings) {
+	<div class="flex flex-col gap-4">
+		<div class="flex flex-col gap-1">
+			<p class="text-lg font-bold">Advanced Examples</p>
+			<p class="text-sm text-neutral-400">
+				Open a panel to see one variation with its settings and the rendered result.
+			</p>
+		</div>
+		@uiDisplay.Accordion(uiDisplay.AccordionSettings{
+			Items: items,
+		})
+	</div>
+}
+
+type DemoComponentSectionSettings struct {
+	ComponentPath          string
+	Description            string
+	LiveExampleDescription string
+	Title                  string
+	UsageCode              string
+
+	// OptionalFields
+	AlpineStateCode string
+	TitleNote       string
+	UsageNote       string
+}
+
+templ DemoComponentSection(settings DemoComponentSectionSettings) {
+	<div class="grid gap-x-10 lg:grid-cols-2">
+		<div class="flex flex-col gap-4">
+			<div class="flex flex-col gap-2">
+				<h3 class="text-xl font-bold">
+					{ settings.Title }
+					if settings.TitleNote != "" {
+						<i class="text-sm text-neutral-500">{ settings.TitleNote }</i>
+					}
+				</h3>
+				<p class="text-sm text-neutral-400">{ settings.Description }</p>
+			</div>
+			<div class="flex flex-col gap-2">
+				@UsageTitle(settings.ComponentPath)
+				<pre class={ DemoPreCodeClasses }>
+					<code>{ settings.UsageCode }</code>
+				</pre>
+				if settings.UsageNote != "" {
+					<small class="text-sm text-neutral-400">{ settings.UsageNote }</small>
+				}
+			</div>
+			if settings.AlpineStateCode != "" {
+				@DemoAlpineStateBlock(settings.AlpineStateCode)
+			}
+		</div>
+		<div class="flex flex-col gap-4">
+			<div class="flex flex-col gap-1">
+				<p class="text-lg font-bold">Live Example</p>
+				<p class="text-sm text-neutral-400">{ settings.LiveExampleDescription }</p>
+			</div>
+			{ children... }
+		</div>
+	</div>
+}

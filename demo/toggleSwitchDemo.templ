@@ -1,0 +1,216 @@
+package main
+
+import (
+	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiForm "github.com/goinfinite/ui/src/form"
+)
+
+templ ToggleSwitchSizesExample() {
+	{{
+		sizesUsage := `@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
+	Label:           "Enable notifications",
+	TwoWayStatePath: "isNotificationsEnabled",
+
+	// OptionalFields
+	Size: uiForm.ToggleSwitchSizeMd,
+})`
+	}}
+	@DemoExampleCard(
+		"Sizes",
+		"Size scales the track, thumb, and label: xs, sm, md, lg, or xl.",
+		"/form/toggleSwitch.templ",
+		sizesUsage,
+	) {
+		<div class="flex flex-col gap-3" x-data="{isSizeExampleEnabled: false}">
+			for _, toggleSwitchSize := range []string{uiForm.ToggleSwitchSizeXs, uiForm.ToggleSwitchSizeSm, uiForm.ToggleSwitchSizeMd, uiForm.ToggleSwitchSizeLg, uiForm.ToggleSwitchSizeXl} {
+				@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
+					Label:           toggleSwitchSize,
+					TwoWayStatePath: "isSizeExampleEnabled",
+					Size:            toggleSwitchSize,
+				})
+			}
+		</div>
+	}
+}
+
+templ ToggleSwitchLabelPositionExample() {
+	{{
+		labelPositionUsage := `@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
+	Label:           "Enable notifications",
+	TwoWayStatePath: "isNotificationsEnabled",
+
+	// OptionalFields
+	LabelPosition: uiForm.ToggleSwitchLabelPositionLeft,
+})`
+	}}
+	@DemoExampleCard(
+		"Label Position",
+		"LabelPosition places the label on the left or the right of the switch.",
+		"/form/toggleSwitch.templ",
+		labelPositionUsage,
+	) {
+		<div class="flex flex-col gap-3" x-data="{isSizeExampleEnabled: false}">
+			@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
+				Label:           "Label on left",
+				TwoWayStatePath: "isSizeExampleEnabled",
+				LabelPosition:   uiForm.ToggleSwitchLabelPositionLeft,
+			})
+			@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
+				Label:           "Label on right",
+				TwoWayStatePath: "isSizeExampleEnabled",
+				LabelPosition:   uiForm.ToggleSwitchLabelPositionRight,
+			})
+		</div>
+	}
+}
+
+templ ToggleSwitchColorsExample() {
+	{{
+		colorsUsage := `@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
+	Label:                       "Emerald accent",
+	TwoWayStatePath:             "emeraldEnabled",
+
+	// OptionalFields
+	TrackBackgroundColor:        "emerald-900/40",
+	TrackCheckedBackgroundColor: "emerald-500",
+	FocusRingColor:              "emerald-500/50",
+})`
+	}}
+	@DemoExampleCard(
+		"Color Variants",
+		"Track, thumb, and focus colors accept Tailwind color tokens.",
+		"/form/toggleSwitch.templ",
+		colorsUsage,
+	) {
+		<div
+			class="flex flex-col gap-3"
+			x-data="{emeraldEnabled: true, violetEnabled: false, amberEnabled: true}"
+		>
+			@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
+				Label:                       "Emerald accent",
+				TwoWayStatePath:             "emeraldEnabled",
+				TrackBackgroundColor:        "emerald-900/40",
+				TrackCheckedBackgroundColor: "emerald-500",
+				FocusRingColor:              "emerald-500/50",
+			})
+			@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
+				Label:                       "Violet accent",
+				TwoWayStatePath:             "violetEnabled",
+				TrackBackgroundColor:        "violet-900/40",
+				TrackCheckedBackgroundColor: "violet-500",
+				FocusRingColor:              "violet-500/50",
+			})
+			@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
+				Label:                       "Amber thumb",
+				TwoWayStatePath:             "amberEnabled",
+				TrackBackgroundColor:        "red-500/20",
+				TrackCheckedBackgroundColor: "amber-500",
+				ThumbBackgroundColor:        "amber-300",
+				ThumbBorderColor:            "amber-500",
+				TextColor:                   "amber-100",
+				FocusRingColor:              "amber-500/50",
+			})
+		</div>
+	}
+}
+
+templ ToggleSwitchStatesExample() {
+	{{
+		statesUsage := `@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
+	Label:           "Enable notifications",
+	TwoWayStatePath: "isNotificationsEnabled",
+
+	// OptionalFields
+	IsRequired: true,
+	IsDisabled: false,
+})`
+	}}
+	@DemoExampleCard(
+		"Required & Disabled",
+		"IsRequired marks the switch as required. IsDisabled blocks edits.",
+		"/form/toggleSwitch.templ",
+		statesUsage,
+	) {
+		<div class="flex flex-col gap-3" x-data="{isRequiredExampleEnabled: false, isSizeExampleEnabled: false}">
+			@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
+				Label:           "Required notifications",
+				TwoWayStatePath: "isRequiredExampleEnabled",
+				IsRequired:      true,
+			})
+			@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
+				Label:           "Disabled",
+				TwoWayStatePath: "isSizeExampleEnabled",
+				IsDisabled:      true,
+			})
+		</div>
+	}
+}
+
+templ ToggleSwitchDemo() {
+	{{
+		demoUsage := `@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
+	Label:           "Enable notifications",
+	TwoWayStatePath: "isNotificationsEnabled",
+
+	// OptionalFields
+	InputName: "notificationsEnabled",
+})`
+	}}
+	<div class="flex flex-col gap-4" id="toggle-switch-demo">
+		@DemoComponentSection(DemoComponentSectionSettings{
+			ComponentPath:          "/form/toggleSwitch.templ",
+			Description:            "A switch toggles a boolean state or adds and removes a custom value from an array.",
+			LiveExampleDescription: "The two binding modes: a boolean toggle and channel switches bound to an array.",
+			Title:                  ".ToggleSwitch",
+			UsageCode:              demoUsage,
+			AlpineStateCode: `<div x-data="{isNotificationsEnabled: false}"></div>
+<div x-data="{selectedChannels: ['email']}"></div>`,
+		}) {
+			<div class="flex flex-col gap-6">
+				<div
+					x-data="{isNotificationsEnabled: false}"
+					class="flex flex-col gap-3"
+				>
+					<h5 class="text-sm font-bold">Boolean state</h5>
+					@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
+						Label:           "Enable notifications",
+						TwoWayStatePath: "isNotificationsEnabled",
+						InputName:       "notificationsEnabled",
+					})
+					<p class={ DemoLiveStateClasses }>
+						Value: <span x-text="isNotificationsEnabled"></span>
+					</p>
+				</div>
+				<div
+					x-data="{selectedChannels: ['email']}"
+					class="flex flex-col gap-3"
+				>
+					<h5 class="text-sm font-bold">Array state</h5>
+					@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
+						Label:           "Email notifications",
+						TwoWayStatePath: "selectedChannels",
+						CustomValue:     "email",
+						InputId:         "channel-email",
+						InputName:       "channels",
+					})
+					@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
+						Label:           "SMS notifications",
+						TwoWayStatePath: "selectedChannels",
+						CustomValue:     "sms",
+						InputId:         "channel-sms",
+						InputName:       "channels",
+					})
+					<p class={ DemoLiveStateClasses }>
+						Values: <span x-text="selectedChannels"></span>
+					</p>
+				</div>
+			</div>
+		}
+		@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
+			{Title: "Sizes", Icon: "ph-ruler", Content: ToggleSwitchSizesExample()},
+			{Title: "Label Position", Icon: "ph-text-align-left", Content: ToggleSwitchLabelPositionExample()},
+			{Title: "Color Variants", Icon: "ph-palette", Content: ToggleSwitchColorsExample()},
+			{Title: "Required & Disabled", Icon: "ph-prohibit", Content: ToggleSwitchStatesExample()},
+		})
+	</div>
+}

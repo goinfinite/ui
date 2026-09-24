@@ -1,0 +1,684 @@
+package main
+
+import (
+	uiControl "github.com/goinfinite/ui/src/control"
+	uiDisplay "github.com/goinfinite/ui/src/display"
+)
+
+templ ModalDemoHeader() {
+	<div class="flex items-center justify-between gap-2">
+		<h3 class="text-lg font-bold text-amber-300">Custom Header Slot</h3>
+		<span class="rounded bg-amber-500/20 px-2 py-1 text-xs font-bold text-amber-200">beta</span>
+	</div>
+}
+
+templ ModalDemoFooter() {
+	<div class="flex flex-wrap justify-end gap-2">
+		@uiControl.Button(uiControl.ButtonSettings{
+			Label:           "Cancel",
+			IconLeft:        "ph-x",
+			Size:            uiControl.ButtonSizeSm,
+			BackgroundColor: "neutral-50/10",
+		})
+		@uiControl.Button(uiControl.ButtonSettings{
+			Label:           "Save Changes",
+			IconLeft:        "ph-check",
+			Size:            uiControl.ButtonSizeSm,
+			BackgroundColor: "emerald-500",
+		})
+	</div>
+}
+
+templ TerminalModalDemoContent() {
+	<div
+		class="flex h-full flex-col gap-2 rounded-md bg-neutral-950 p-4 font-mono text-sm text-emerald-300"
+		id="terminal-modal-demo-content"
+	>
+		<p><span class="text-emerald-500">agent@opencode</span>:~$ run --task "ship the feature"</p>
+		<p class="text-neutral-400">planning the change across 4 files...</p>
+		<p class="text-neutral-400">applying edits (12 hunks, 3 packages)</p>
+		<p><span class="text-emerald-500">agent@opencode</span>:~$ tests/tests.sh fast</p>
+		<p class="text-neutral-400">go test ./src/... ok · playwright 18 passed</p>
+		<p><span class="text-emerald-500">agent@opencode</span>:~$ <span class="inline-block h-4 w-2 animate-pulse bg-emerald-300"></span></p>
+	</div>
+}
+
+templ ModalDemoContent() {
+	<div class="flex flex-col gap-4">
+		<p class="text-neutral-300">
+			This is the modal content area. You can put any content here including forms, images, or other components.
+		</p>
+		<div class="flex flex-col gap-2">
+			<h4 class="text-base font-bold">Features:</h4>
+			<ul class="list-inside list-disc space-y-1 text-sm text-neutral-400">
+				<li>Click outside to close (when closeable)</li>
+				<li>Use the close button in the header</li>
+				<li>Resize using the + and - buttons</li>
+				<li>Responsive design for different screen sizes</li>
+			</ul>
+		</div>
+		<div class="flex flex-wrap gap-2">
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "Action Button",
+				IconLeft:        "ph-check",
+				Size:            uiControl.ButtonSizeSm,
+				BackgroundColor: "emerald-500",
+			})
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "Secondary Action",
+				IconLeft:        "ph-info",
+				Size:            uiControl.ButtonSizeSm,
+				BackgroundColor: "neutral-50/10",
+			})
+		</div>
+	</div>
+}
+
+templ UncloseableModalDemoContent() {
+	<div class="flex flex-col gap-4" id="uncloseable-modal-demo-content">
+		<p class="text-neutral-300">
+			This modal hides the close button and ignores backdrop clicks. Use the button below to close it.
+		</p>
+		<div class="flex flex-wrap gap-2">
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "Close Modal",
+				OnClickFunc:     "isUncloseableModalVisible = false",
+				Size:            uiControl.ButtonSizeSm,
+				BackgroundColor: "primary-500",
+			})
+		</div>
+	</div>
+}
+
+templ ModalUncloseableExample() {
+	{{
+		uncloseableUsage := `@uiDisplay.Modal(uiDisplay.ModalSettings{
+	MiddleContent: UncloseableModalDemoContent(),
+	Title:         "Uncloseable Modal",
+
+	// OptionalFields
+	IsUncloseable:            true,
+	IsVisibleTwoWayStatePath: "isUncloseableModalVisible",
+})`
+	}}
+	@DemoExampleCard(
+		"Uncloseable",
+		"IsUncloseable hides the close button and ignores backdrop clicks. Your content closes the modal through its own state path.",
+		"/display/modal.templ",
+		uncloseableUsage,
+	) {
+		<div class="flex flex-col gap-3" x-data="{isUncloseableModalVisible: false}">
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "Open",
+				OnClickFunc:     "isUncloseableModalVisible = true",
+				Size:            uiControl.ButtonSizeSm,
+				BackgroundColor: "red-600",
+			})
+			@uiDisplay.Modal(uiDisplay.ModalSettings{
+				MiddleContent:            UncloseableModalDemoContent(),
+				Title:                    "Uncloseable Modal",
+				InitialSize:              uiDisplay.ModalSizeMd,
+				IsUncloseable:            true,
+				IsVisibleTwoWayStatePath: "isUncloseableModalVisible",
+			})
+		</div>
+	}
+}
+
+templ ModalUnresizableExample() {
+	{{
+		unresizableUsage := `@uiDisplay.Modal(uiDisplay.ModalSettings{
+	MiddleContent: ModalDemoContent(),
+	Title:         "Fixed Size Modal",
+
+	// OptionalFields
+	IsUnresizable: true,
+	OnResizeFunc:  "resizeCount = resizeCount + 1",
+})`
+	}}
+	@DemoExampleCard(
+		"Unresizable & OnResize",
+		"IsUnresizable hides the resize buttons. OnResizeFunc runs every time the user resizes a closeable modal through those buttons.",
+		"/display/modal.templ",
+		unresizableUsage,
+	) {
+		<div
+			class="flex flex-col gap-3"
+			x-data="{isUnresizableModalVisible: false, isResizeTrackedModalVisible: false, resizeCount: 0}"
+		>
+			<div class="flex flex-wrap gap-2">
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:           "Open Fixed Size",
+					IconLeft:        "ph-lock",
+					OnClickFunc:     "isUnresizableModalVisible = true",
+					Size:            uiControl.ButtonSizeSm,
+					BackgroundColor: "orange-600",
+				})
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:           "Open Resize-Tracked",
+					IconLeft:        "ph-arrows-out",
+					OnClickFunc:     "isResizeTrackedModalVisible = true",
+					Size:            uiControl.ButtonSizeSm,
+					BackgroundColor: "primary-600",
+				})
+			</div>
+			<p class={ DemoLiveStateClasses }>
+				OnResizeFunc calls: <span x-text="resizeCount"></span>
+			</p>
+			@uiDisplay.Modal(uiDisplay.ModalSettings{
+				MiddleContent:            ModalDemoContent(),
+				Title:                    "Fixed Size Modal",
+				InitialSize:              uiDisplay.ModalSizeMd,
+				IsUnresizable:            true,
+				IsVisibleTwoWayStatePath: "isUnresizableModalVisible",
+			})
+			@uiDisplay.Modal(uiDisplay.ModalSettings{
+				MiddleContent:            ModalDemoContent(),
+				Title:                    "Resize-Tracked Modal",
+				InitialSize:              uiDisplay.ModalSizeMd,
+				IsVisibleTwoWayStatePath: "isResizeTrackedModalVisible",
+				OnResizeFunc:             "resizeCount = resizeCount + 1",
+			})
+		</div>
+	}
+}
+
+templ ModalHeaderFooterExample() {
+	{{
+		slotsUsage := `@uiDisplay.Modal(uiDisplay.ModalSettings{
+	MiddleContent: ModalDemoContent(),
+
+	// OptionalFields
+	HeaderContent:            ModalDemoHeader(),
+	FooterContent:            ModalDemoFooter(),
+	IsVisibleTwoWayStatePath: "isSlotsModalVisible",
+})`
+	}}
+	@DemoExampleCard(
+		"Header & Footer Slots",
+		"HeaderContent replaces the title bar. FooterContent renders under the body for actions. Set Title as well to keep an accessible name when the header is custom.",
+		"/display/modal.templ",
+		slotsUsage,
+	) {
+		<div class="flex flex-col gap-3" x-data="{isSlotsModalVisible: false}">
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "Open Slots Modal",
+				IconLeft:        "ph-columns",
+				OnClickFunc:     "isSlotsModalVisible = true",
+				Size:            uiControl.ButtonSizeSm,
+				BackgroundColor: "secondary-600",
+			})
+			@uiDisplay.Modal(uiDisplay.ModalSettings{
+				MiddleContent:            ModalDemoContent(),
+				Title:                    "Slots Modal",
+				HeaderContent:            ModalDemoHeader(),
+				FooterContent:            ModalDemoFooter(),
+				InitialSize:              uiDisplay.ModalSizeMd,
+				IsVisibleTwoWayStatePath: "isSlotsModalVisible",
+			})
+		</div>
+	}
+}
+
+templ ModalCustomSurfaceExample() {
+	{{
+		surfaceUsage := `@uiDisplay.Modal(uiDisplay.ModalSettings{
+	MiddleContent: ModalDemoContent(),
+	Title:         "Blue Backdrop Modal",
+
+	// OptionalFields
+	BackdropColor:            "blue-900/60",
+	BackgroundColor:          "primary-900",
+	RingColor:                "primary-500",
+	RingThickness:            "md",
+	BorderRadius:             "lg",
+	IsVisibleTwoWayStatePath: "isBlueBackdropModalVisible",
+})`
+	}}
+	@DemoExampleCard(
+		"Custom Surface",
+		"Backdrop, background, ring, radius, shadow, and text colors accept Tailwind tokens.",
+		"/display/modal.templ",
+		surfaceUsage,
+	) {
+		<div
+			class="flex flex-col gap-4"
+			x-data="{
+				isDarkModalVisible: false,
+				isPrimaryModalVisible: false,
+				isSecondaryModalVisible: false,
+				isBlueBackdropModalVisible: false,
+				isRedBackdropModalVisible: false,
+				isPrimaryRingModalVisible: false,
+				isEmeraldRingModalVisible: false,
+				isRedRingModalVisible: false,
+				isThinRingModalVisible: false,
+				isSquareModalVisible: false,
+				isSmallRadiusModalVisible: false,
+				isLargeRadiusModalVisible: false,
+				isXLRadiusModalVisible: false,
+			}"
+		>
+			<div class="flex flex-col gap-2">
+				<p class="text-sm text-neutral-400">Background Colors</p>
+				<div class="flex flex-wrap gap-2">
+					@uiControl.Button(uiControl.ButtonSettings{
+						Label:           "Dark",
+						OnClickFunc:     "isDarkModalVisible = true",
+						Size:            uiControl.ButtonSizeSm,
+						BackgroundColor: "neutral-800",
+					})
+					@uiControl.Button(uiControl.ButtonSettings{
+						Label:           "Primary",
+						OnClickFunc:     "isPrimaryModalVisible = true",
+						Size:            uiControl.ButtonSizeSm,
+						BackgroundColor: "primary-600",
+					})
+					@uiControl.Button(uiControl.ButtonSettings{
+						Label:           "Secondary",
+						OnClickFunc:     "isSecondaryModalVisible = true",
+						Size:            uiControl.ButtonSizeSm,
+						BackgroundColor: "secondary-600",
+					})
+				</div>
+			</div>
+			<div class="flex flex-col gap-2">
+				<p class="text-sm text-neutral-400">Backdrop Colors</p>
+				<div class="flex flex-wrap gap-2">
+					@uiControl.Button(uiControl.ButtonSettings{
+						Label:           "Blue",
+						OnClickFunc:     "isBlueBackdropModalVisible = true",
+						Size:            uiControl.ButtonSizeSm,
+						BackgroundColor: "blue-600",
+					})
+					@uiControl.Button(uiControl.ButtonSettings{
+						Label:           "Red",
+						OnClickFunc:     "isRedBackdropModalVisible = true",
+						Size:            uiControl.ButtonSizeSm,
+						BackgroundColor: "red-600",
+					})
+				</div>
+			</div>
+			<div class="flex flex-col gap-2">
+				<p class="text-sm text-neutral-400">Ring Variations</p>
+				<div class="flex flex-wrap gap-2">
+					@uiControl.Button(uiControl.ButtonSettings{
+						Label:           "Primary Ring",
+						OnClickFunc:     "isPrimaryRingModalVisible = true",
+						Size:            uiControl.ButtonSizeSm,
+						BackgroundColor: "primary-600",
+					})
+					@uiControl.Button(uiControl.ButtonSettings{
+						Label:           "Emerald Ring",
+						OnClickFunc:     "isEmeraldRingModalVisible = true",
+						Size:            uiControl.ButtonSizeSm,
+						BackgroundColor: "emerald-600",
+					})
+					@uiControl.Button(uiControl.ButtonSettings{
+						Label:           "Red Ring",
+						OnClickFunc:     "isRedRingModalVisible = true",
+						Size:            uiControl.ButtonSizeSm,
+						BackgroundColor: "red-600",
+					})
+					@uiControl.Button(uiControl.ButtonSettings{
+						Label:           "Thin Ring",
+						OnClickFunc:     "isThinRingModalVisible = true",
+						Size:            uiControl.ButtonSizeSm,
+						BackgroundColor: "violet-600",
+					})
+				</div>
+			</div>
+			<div class="flex flex-col gap-2">
+				<p class="text-sm text-neutral-400">Border Radius</p>
+				<div class="flex flex-wrap gap-2">
+					@uiControl.Button(uiControl.ButtonSettings{
+						Label:           "Square",
+						OnClickFunc:     "isSquareModalVisible = true",
+						Size:            uiControl.ButtonSizeSm,
+						BackgroundColor: "orange-600",
+					})
+					@uiControl.Button(uiControl.ButtonSettings{
+						Label:           "Small",
+						OnClickFunc:     "isSmallRadiusModalVisible = true",
+						Size:            uiControl.ButtonSizeSm,
+						BackgroundColor: "orange-600",
+					})
+					@uiControl.Button(uiControl.ButtonSettings{
+						Label:           "Large",
+						OnClickFunc:     "isLargeRadiusModalVisible = true",
+						Size:            uiControl.ButtonSizeSm,
+						BackgroundColor: "orange-600",
+					})
+					@uiControl.Button(uiControl.ButtonSettings{
+						Label:           "Extra Large",
+						OnClickFunc:     "isXLRadiusModalVisible = true",
+						Size:            uiControl.ButtonSizeSm,
+						BackgroundColor: "orange-600",
+					})
+				</div>
+			</div>
+			@uiDisplay.Modal(uiDisplay.ModalSettings{
+				MiddleContent:            ModalDemoContent(),
+				Title:                    "Dark Background Modal",
+				InitialSize:              uiDisplay.ModalSizeMd,
+				BackgroundColor:          "neutral-900",
+				IsVisibleTwoWayStatePath: "isDarkModalVisible",
+			})
+			@uiDisplay.Modal(uiDisplay.ModalSettings{
+				MiddleContent:            ModalDemoContent(),
+				Title:                    "Primary Background Modal",
+				InitialSize:              uiDisplay.ModalSizeMd,
+				BackgroundColor:          "primary-900",
+				IsVisibleTwoWayStatePath: "isPrimaryModalVisible",
+			})
+			@uiDisplay.Modal(uiDisplay.ModalSettings{
+				MiddleContent:            ModalDemoContent(),
+				Title:                    "Secondary Background Modal",
+				InitialSize:              uiDisplay.ModalSizeMd,
+				BackgroundColor:          "secondary-900",
+				IsVisibleTwoWayStatePath: "isSecondaryModalVisible",
+			})
+			@uiDisplay.Modal(uiDisplay.ModalSettings{
+				MiddleContent:            ModalDemoContent(),
+				Title:                    "Blue Backdrop Modal",
+				InitialSize:              uiDisplay.ModalSizeXl,
+				BackdropColor:            "blue-900/60",
+				IsVisibleTwoWayStatePath: "isBlueBackdropModalVisible",
+			})
+			@uiDisplay.Modal(uiDisplay.ModalSettings{
+				MiddleContent:            ModalDemoContent(),
+				Title:                    "Red Backdrop Modal",
+				InitialSize:              uiDisplay.ModalSizeMd,
+				BackdropColor:            "red-900/70",
+				IsVisibleTwoWayStatePath: "isRedBackdropModalVisible",
+			})
+			@uiDisplay.Modal(uiDisplay.ModalSettings{
+				MiddleContent:            ModalDemoContent(),
+				Title:                    "Primary Ring Modal",
+				InitialSize:              uiDisplay.ModalSizeMd,
+				RingColor:                "primary-500",
+				RingThickness:            "md",
+				IsVisibleTwoWayStatePath: "isPrimaryRingModalVisible",
+			})
+			@uiDisplay.Modal(uiDisplay.ModalSettings{
+				MiddleContent:            ModalDemoContent(),
+				Title:                    "Emerald Ring Modal",
+				InitialSize:              uiDisplay.ModalSizeMd,
+				RingColor:                "emerald-500",
+				RingThickness:            "lg",
+				IsVisibleTwoWayStatePath: "isEmeraldRingModalVisible",
+			})
+			@uiDisplay.Modal(uiDisplay.ModalSettings{
+				MiddleContent:            ModalDemoContent(),
+				Title:                    "Red Ring Modal",
+				InitialSize:              uiDisplay.ModalSizeMd,
+				RingColor:                "red-500",
+				RingThickness:            "xl",
+				IsVisibleTwoWayStatePath: "isRedRingModalVisible",
+			})
+			@uiDisplay.Modal(uiDisplay.ModalSettings{
+				MiddleContent:            ModalDemoContent(),
+				Title:                    "Thin Violet Ring Modal",
+				InitialSize:              uiDisplay.ModalSizeMd,
+				RingColor:                "violet-500",
+				RingThickness:            "xs",
+				IsVisibleTwoWayStatePath: "isThinRingModalVisible",
+			})
+			@uiDisplay.Modal(uiDisplay.ModalSettings{
+				MiddleContent:            ModalDemoContent(),
+				Title:                    "Square Modal",
+				InitialSize:              uiDisplay.ModalSizeMd,
+				BorderRadius:             "none",
+				IsVisibleTwoWayStatePath: "isSquareModalVisible",
+			})
+			@uiDisplay.Modal(uiDisplay.ModalSettings{
+				MiddleContent:            ModalDemoContent(),
+				Title:                    "Small Radius Modal",
+				InitialSize:              uiDisplay.ModalSizeMd,
+				BorderRadius:             "sm",
+				IsVisibleTwoWayStatePath: "isSmallRadiusModalVisible",
+			})
+			@uiDisplay.Modal(uiDisplay.ModalSettings{
+				MiddleContent:            ModalDemoContent(),
+				Title:                    "Large Radius Modal",
+				InitialSize:              uiDisplay.ModalSizeMd,
+				BorderRadius:             "lg",
+				IsVisibleTwoWayStatePath: "isLargeRadiusModalVisible",
+			})
+			@uiDisplay.Modal(uiDisplay.ModalSettings{
+				MiddleContent:            ModalDemoContent(),
+				Title:                    "Extra Large Radius Modal",
+				InitialSize:              uiDisplay.ModalSizeMd,
+				BorderRadius:             "xl",
+				IsVisibleTwoWayStatePath: "isXLRadiusModalVisible",
+			})
+		</div>
+	}
+}
+
+templ ModalNearFullSizeExample() {
+	{{
+		nearFullUsage := `@uiDisplay.Modal(uiDisplay.ModalSettings{
+	MiddleContent: TerminalModalDemoContent(),
+	Title:         "WebTerminal Modal",
+
+	// OptionalFields
+	InitialSize:              uiDisplay.ModalSizeXxl,
+	IsVisibleTwoWayStatePath: "isTerminalModalVisible",
+})`
+	}}
+	@DemoExampleCard(
+		"Near-Full Size",
+		"ModalSizeXxl spans about 90% of the viewport in both directions. Tall content like a terminal session is its usual partner.",
+		"/display/modal.templ",
+		nearFullUsage,
+	) {
+		<div class="flex flex-col gap-3" x-data="{isTerminalModalVisible: false}">
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "Open XXL 90%",
+				IconLeft:        "ph-terminal",
+				OnClickFunc:     "isTerminalModalVisible = true",
+				Size:            uiControl.ButtonSizeSm,
+				BackgroundColor: "emerald-800",
+			})
+			@uiDisplay.Modal(uiDisplay.ModalSettings{
+				MiddleContent:            TerminalModalDemoContent(),
+				Title:                    "WebTerminal Modal",
+				InitialSize:              uiDisplay.ModalSizeXxl,
+				IsVisibleTwoWayStatePath: "isTerminalModalVisible",
+			})
+		</div>
+	}
+}
+
+templ ModalCustomDimensionsExample() {
+	{{
+		dimensionsUsage := `@uiDisplay.Modal(uiDisplay.ModalSettings{
+	MiddleContent: TerminalModalDemoContent(),
+	Title:         "Pinned Dimensions Modal",
+
+	// OptionalFields
+	InitialSize:                   uiDisplay.ModalSizeMd,
+	WidthPercent:                  70,
+	HeightPercent:                 45,
+	IsMiddleContentScrollDisabled: true,
+	IsVisibleTwoWayStatePath:      "isPinnedDimensionsModalVisible",
+})`
+	}}
+	@DemoExampleCard(
+		"Custom Dimensions",
+		"WidthPercent and HeightPercent replace the width and height of InitialSize; InitialSize keeps its padding and header scale. Pinning both axes retires the resize controls. IsMiddleContentScrollDisabled pins the body for embedded apps like a terminal.",
+		"/display/modal.templ",
+		dimensionsUsage,
+	) {
+		<div class="flex flex-col gap-3" x-data="{isPinnedDimensionsModalVisible: false}">
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "Open Pinned Dimensions",
+				IconLeft:        "ph-arrows-out",
+				OnClickFunc:     "isPinnedDimensionsModalVisible = true",
+				Size:            uiControl.ButtonSizeSm,
+				BackgroundColor: "violet-800",
+			})
+			@uiDisplay.Modal(uiDisplay.ModalSettings{
+				MiddleContent:                 TerminalModalDemoContent(),
+				Title:                         "Pinned Dimensions Modal",
+				InitialSize:                   uiDisplay.ModalSizeMd,
+				WidthPercent:                  70,
+				HeightPercent:                 45,
+				IsMiddleContentScrollDisabled: true,
+				IsVisibleTwoWayStatePath:      "isPinnedDimensionsModalVisible",
+			})
+		</div>
+	}
+}
+
+templ ModalSizeSliceExample() {
+	{{
+		sliceUsage := `@uiDisplay.Modal(uiDisplay.ModalSettings{
+	MiddleContent: ModalDemoContent(),
+	Title:         "Size Slice Modal",
+
+	// OptionalFields
+	InitialSize:              uiDisplay.ModalSizeMd,
+	PossibleSizes:            []string{uiDisplay.ModalSizeMd, uiDisplay.ModalSizeLg, uiDisplay.ModalSizeXl},
+	IsVisibleTwoWayStatePath: "isSizeSliceModalVisible",
+})`
+	}}
+	@DemoExampleCard(
+		"Size Slice",
+		"PossibleSizes is the ordered set of sizes and InitialSize is its first entry; entries below it are dropped. Enlarge steps up the set, reduce steps back down, and each control hides when it would do nothing.",
+		"/display/modal.templ",
+		sliceUsage,
+	) {
+		<div class="flex flex-col gap-3" x-data="{isSizeSliceModalVisible: false}">
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "Open Size Slice",
+				IconLeft:        "ph-ruler",
+				OnClickFunc:     "isSizeSliceModalVisible = true",
+				Size:            uiControl.ButtonSizeSm,
+				BackgroundColor: "secondary-800",
+			})
+			@uiDisplay.Modal(uiDisplay.ModalSettings{
+				MiddleContent:            ModalDemoContent(),
+				Title:                    "Size Slice Modal",
+				InitialSize:              uiDisplay.ModalSizeMd,
+				PossibleSizes:            []string{uiDisplay.ModalSizeMd, uiDisplay.ModalSizeLg, uiDisplay.ModalSizeXl},
+				IsVisibleTwoWayStatePath: "isSizeSliceModalVisible",
+			})
+		</div>
+	}
+}
+
+templ ModalDemo() {
+	{{
+		demoUsage := `@uiDisplay.Modal(uiDisplay.ModalSettings{
+	MiddleContent: ModalDemoContent(),
+
+	// OptionalFields
+	Title:                    "Modal Title",
+	InitialSize:              uiDisplay.ModalSizeMd,
+	IsVisibleTwoWayStatePath: "isModalVisible",
+})`
+	}}
+	<div class="flex flex-col gap-4" id="modal-demo">
+		@DemoComponentSection(DemoComponentSectionSettings{
+			ComponentPath:          "/display/modal.templ",
+			Description:            "A modal is a dialog box that appears on top of the main content to display additional information or request user input.",
+			LiveExampleDescription: "The interactive modal: size presets, resize controls, a state-bound title, and a close callback.",
+			Title:                  ".Modal",
+			UsageCode:              demoUsage,
+			AlpineStateCode: `<div x-data="{
+  isModalVisible: false,
+  modalSize: 'md',
+  modalTitle: 'Interactive Modal'
+}"></div>`,
+		}) {
+			<div
+				class="flex flex-col gap-4"
+				x-data="{
+					isModalVisible: false,
+					modalSize: 'md',
+					modalTitle: 'Interactive Modal',
+				}"
+			>
+				<div class="flex flex-row flex-wrap items-start gap-10">
+					<div class="flex flex-col gap-2">
+						<p class="text-sm text-neutral-400">Basic Modal</p>
+						<div class="flex flex-wrap gap-2">
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "Show Modal",
+								IconLeft:        "ph-squares-four",
+								OnClickFunc:     "modalSize = 'md'; isModalVisible = true",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "primary-500",
+							})
+						</div>
+					</div>
+					<div class="flex flex-col gap-2">
+						<p class="text-sm text-neutral-400">Different Sizes</p>
+						<div class="flex flex-wrap gap-2">
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "XS",
+								OnClickFunc:     "modalSize = 'xs'; isModalVisible = true",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "neutral-50/10",
+							})
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "SM",
+								OnClickFunc:     "modalSize = 'sm'; isModalVisible = true",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "neutral-50/10",
+							})
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "LG",
+								OnClickFunc:     "modalSize = 'lg'; isModalVisible = true",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "neutral-50/10",
+							})
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "XL",
+								OnClickFunc:     "modalSize = 'xl'; isModalVisible = true",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "neutral-50/10",
+							})
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "XXL",
+								OnClickFunc:     "modalSize = 'xxl'; isModalVisible = true",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "neutral-50/10",
+							})
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "Full",
+								OnClickFunc:     "modalSize = 'full'; isModalVisible = true",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "neutral-50/10",
+							})
+						</div>
+					</div>
+				</div>
+				@uiDisplay.Modal(uiDisplay.ModalSettings{
+					MiddleContent:              ModalDemoContent(),
+					TitleOneWayStatePath:       "modalTitle",
+					InitialSize:                uiDisplay.ModalSizeXs,
+					CurrentSizeTwoWayStatePath: "modalSize",
+					PossibleSizes: []string{
+						uiDisplay.ModalSizeXs, uiDisplay.ModalSizeSm, uiDisplay.ModalSizeMd,
+						uiDisplay.ModalSizeLg, uiDisplay.ModalSizeXl, uiDisplay.ModalSizeXxl,
+						uiDisplay.ModalSizeFull,
+					},
+					IsVisibleTwoWayStatePath: "isModalVisible",
+					OnCloseFunc:              "modalTitle = 'Closed by backdrop click'",
+				})
+			</div>
+		}
+		@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
+			{Title: "Uncloseable", Icon: "ph-lock", Content: ModalUncloseableExample()},
+			{Title: "Unresizable & OnResize", Icon: "ph-arrows-out", Content: ModalUnresizableExample()},
+			{Title: "Header & Footer Slots", Icon: "ph-columns", Content: ModalHeaderFooterExample()},
+			{Title: "Custom Surface", Icon: "ph-palette", Content: ModalCustomSurfaceExample()},
+			{Title: "Near-Full Size", Icon: "ph-terminal", Content: ModalNearFullSizeExample()},
+			{Title: "Custom Dimensions", Icon: "ph-arrows-out", Content: ModalCustomDimensionsExample()},
+			{Title: "Size Slice", Icon: "ph-ruler", Content: ModalSizeSliceExample()},
+		})
+	</div>
+}

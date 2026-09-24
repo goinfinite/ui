@@ -1,0 +1,174 @@
+package main
+
+import (
+	uiControl "github.com/goinfinite/ui/src/control"
+	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiStructural "github.com/goinfinite/ui/src/structural"
+)
+
+templ PaginationSizeChoicesExample() {
+	{{
+		choicesUsage := `@uiStructural.Pagination(uiStructural.PaginationSettings{
+	PageNumberTwoWayStatePath:   "pageNumber",
+	ItemsPerPageTwoWayStatePath: "itemsPerPage",
+	ItemsTotal:                  240,
+
+	// OptionalFields
+	ItemsPerPageSizeChoices: []uint{5, 10, 25},
+})`
+	}}
+	@DemoExampleCard(
+		"Page-Size Choices",
+		"ItemsPerPageSizeChoices replaces the default page-size options in the select.",
+		"/structural/pagination.templ",
+		choicesUsage,
+	) {
+		<div class="rounded-md border border-neutral-800 p-4" x-data="{pageNumber: 1, itemsPerPage: 5}">
+			@uiStructural.Pagination(uiStructural.PaginationSettings{
+				PageNumberTwoWayStatePath:   "pageNumber",
+				ItemsPerPageTwoWayStatePath: "itemsPerPage",
+				ItemsTotal:                  240,
+				PagesTotal:                  48,
+				ItemsPerPageSizeChoices:     []uint{5, 10, 25},
+			})
+		</div>
+	}
+}
+
+templ PaginationDisabledExample() {
+	{{
+		disabledUsage := `@uiStructural.Pagination(uiStructural.PaginationSettings{
+	PageNumberTwoWayStatePath:   "pageNumber",
+	ItemsPerPageTwoWayStatePath: "itemsPerPage",
+	ItemsTotal:                  240,
+
+	// OptionalFields
+	IsDisabledOneWayStatePath: "isPaginationDisabled",
+})`
+	}}
+	@DemoExampleCard(
+		"Disabled Binding",
+		"IsDisabledOneWayStatePath greys out the controls while a request is in flight.",
+		"/structural/pagination.templ",
+		disabledUsage,
+	) {
+		<div class="flex flex-col gap-3" x-data="{pageNumber: 2, itemsPerPage: 10, isPaginationDisabled: true}">
+			<div class="rounded-md border border-neutral-800 p-4">
+				@uiStructural.Pagination(uiStructural.PaginationSettings{
+					PageNumberTwoWayStatePath:   "pageNumber",
+					ItemsPerPageTwoWayStatePath: "itemsPerPage",
+					ItemsTotal:                  240,
+					PagesTotal:                  24,
+					IsDisabledOneWayStatePath:   "isPaginationDisabled",
+				})
+			</div>
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:       "Toggle Disabled",
+				IconLeft:    "ph-prohibit",
+				OnClickFunc: "isPaginationDisabled = !isPaginationDisabled",
+				Size:        uiControl.ButtonSizeSm,
+			})
+		</div>
+	}
+}
+
+templ PaginationHiddenSinglePageExample() {
+	{{
+		hiddenUsage := `@uiStructural.Pagination(uiStructural.PaginationSettings{
+	PageNumberTwoWayStatePath:   "pageNumber",
+	ItemsPerPageTwoWayStatePath: "itemsPerPage",
+	ItemsTotal:                  10,
+
+	// OptionalFields
+	IsHiddenWhenSinglePage: true,
+})`
+	}}
+	@DemoExampleCard(
+		"Hidden On Single Page",
+		"IsHiddenWhenSinglePage hides only the page-number controls while the records fit on one page. The readout and the items-per-page select stay visible, and the controls return when a smaller page size needs more pages.",
+		"/structural/pagination.templ",
+		hiddenUsage,
+	) {
+		<div class="flex flex-col gap-4">
+			<div class="flex flex-col gap-1">
+				<p class="text-sm font-bold">One page: only the readout and page size</p>
+				<div
+					class="rounded-md border border-neutral-800 p-4"
+					id="pagination-hidden-single"
+					x-data="{singlePageNumber: 1, singlePageItemsPerPage: 50}"
+				>
+					@uiStructural.Pagination(uiStructural.PaginationSettings{
+						PageNumberTwoWayStatePath:   "singlePageNumber",
+						ItemsPerPageTwoWayStatePath: "singlePageItemsPerPage",
+						ItemsTotal:                  10,
+						PagesTotal:                  1,
+						IsHiddenWhenSinglePage:      true,
+					})
+					<p class="text-xs text-neutral-500">
+						10 records at 50 per page fit on one page. Pick 5 per page to reveal the page-number controls.
+					</p>
+				</div>
+			</div>
+			<div class="flex flex-col gap-1">
+				<p class="text-sm font-bold">Two pages: pagination shows</p>
+				<div
+					class="rounded-md border border-neutral-800 p-4"
+					id="pagination-hidden-multi"
+					x-data="{multiPageNumber: 1, multiPageItemsPerPage: 5}"
+				>
+					@uiStructural.Pagination(uiStructural.PaginationSettings{
+						PageNumberTwoWayStatePath:   "multiPageNumber",
+						ItemsPerPageTwoWayStatePath: "multiPageItemsPerPage",
+						ItemsTotal:                  10,
+						PagesTotal:                  2,
+						IsHiddenWhenSinglePage:      true,
+					})
+				</div>
+			</div>
+		</div>
+	}
+}
+
+templ PaginationDemo() {
+	{{
+		demoUsage := `@uiStructural.Pagination(uiStructural.PaginationSettings{
+	PageNumberTwoWayStatePath:   "pageNumber",
+	ItemsPerPageTwoWayStatePath: "itemsPerPage",
+	ItemsTotal:                  240,
+
+	// OptionalFields
+	OnChangeFunc: "changeCount = changeCount + 1",
+})`
+	}}
+	<div class="flex flex-col gap-4" id="pagination-demo">
+		@DemoComponentSection(DemoComponentSectionSettings{
+			ComponentPath:          "/structural/pagination.templ",
+			Description:            "Pagination splits records into pages and lets the user move between them.",
+			LiveExampleDescription: "Page navigation and a page-size select bound to Alpine state.",
+			Title:                  ".Pagination",
+			UsageCode:              demoUsage,
+		}) {
+			<div class="flex flex-col gap-4" x-data="{pageNumber: 2, itemsPerPage: 10, changeCount: 0}">
+				<div class="rounded-md border border-neutral-800 p-4" id="pagination-demo-main">
+					@uiStructural.Pagination(uiStructural.PaginationSettings{
+						PageNumberTwoWayStatePath:   "pageNumber",
+						ItemsPerPageTwoWayStatePath: "itemsPerPage",
+						ItemsTotal:                  240,
+						PagesTotal:                  24,
+						OnChangeFunc:                "changeCount = changeCount + 1",
+					})
+				</div>
+				<p class={ DemoLiveStateClasses } id="pagination-demo-state">
+					pageNumber: <span x-text="pageNumber"></span>
+					· itemsPerPage: <span x-text="itemsPerPage"></span>
+					· OnChangeFunc calls: <span x-text="changeCount"></span>
+				</p>
+			</div>
+		}
+		@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
+			{Title: "Page-Size Choices", Icon: "ph-list-numbers", Content: PaginationSizeChoicesExample()},
+			{Title: "Disabled Binding", Icon: "ph-prohibit", Content: PaginationDisabledExample()},
+			{Title: "Hidden On Single Page", Icon: "ph-eye-slash", Content: PaginationHiddenSinglePageExample()},
+		})
+	</div>
+}

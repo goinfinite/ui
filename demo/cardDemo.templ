@@ -1,0 +1,249 @@
+package main
+
+import (
+	uiControl "github.com/goinfinite/ui/src/control"
+	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiStructural "github.com/goinfinite/ui/src/structural"
+)
+
+templ CardDemoBody() {
+	<p class="text-sm text-neutral-300">
+		Cards group related content on a surface. This body is the MiddleContent, so the card only styles the container and the optional heading.
+	</p>
+}
+
+templ CardDemoFooter() {
+	<div class="border-t border-neutral-50/10 pt-3">
+		<p class="text-xs text-neutral-400">Card footer content sits below the body.</p>
+	</div>
+}
+
+templ CardDemoContentOnlyBody() {
+	<p class="text-sm text-neutral-300">
+		Content-only card body without a heading block above it.
+	</p>
+}
+
+templ CardDemoActions() {
+	@uiControl.Button(uiControl.ButtonSettings{
+		Label:           "Action",
+		IconLeft:        "ph-plus",
+		Size:            uiControl.ButtonSizeSm,
+		BackgroundColor: "secondary-800",
+	})
+}
+
+templ CardSurfaceEdgesExample() {
+	{{
+		surfaceUsage := `@uiStructural.Card(uiStructural.CardSettings{
+	MiddleContent: CardDemoBody(),
+
+	// OptionalFields
+	BackgroundColor: "primary-900/60",
+	TextColor:       "neutral-50",
+	PaddingSize:     uiStructural.CardPaddingSizeLg,
+	BorderRadius:    uiStructural.CardBorderRadiusNone,
+	ShadowSize:      uiStructural.CardShadowSizeLg,
+	RingColor:       "primary-500",
+	RingThickness:   uiStructural.CardRingThicknessMd,
+})`
+	}}
+	@DemoExampleCard(
+		"Surface & Edges",
+		"Background, text, radius, shadow, ring, and padding accept Tailwind tokens.",
+		"/structural/card.templ",
+		surfaceUsage,
+	) {
+		@uiStructural.Card(uiStructural.CardSettings{
+			MiddleContent:    CardDemoBody(),
+			HeaderTitle:      "Tinted Card",
+			HeaderSubHeading: "Custom background, text, and ring",
+			HeaderIcon:       "ph-palette",
+			BackgroundColor:  "primary-900/60",
+			TextColor:        "neutral-50",
+			PaddingSize:      uiStructural.CardPaddingSizeLg,
+			RingColor:        "primary-500",
+			RingThickness:    uiStructural.CardRingThicknessMd,
+		})
+		@uiStructural.Card(uiStructural.CardSettings{
+			MiddleContent:  CardDemoBody(),
+			HeaderTitle:    "Square Card",
+			HeaderIcon:     "ph-square",
+			BorderRadius:   uiStructural.CardBorderRadiusNone,
+			ShadowSize:     uiStructural.CardShadowSizeLg,
+			ActionsContent: CardDemoActions(),
+		})
+	}
+}
+
+templ CardHeaderIconExample() {
+	{{
+		iconUsage := `@uiStructural.Card(uiStructural.CardSettings{
+	MiddleContent: CardDemoBody(),
+
+	// OptionalFields
+	HeaderIcon:                "ph-cube",
+	HeaderIconPosition:        uiDisplay.HeaderIconPositionLeft,
+	HeaderIconColor:           "primary-100",
+	HeaderIconBackgroundColor: "primary-500/30",
+	HeaderIconBorderRadius:    uiDisplay.HeaderIconBorderRadiusLg,
+	HeaderIconPaddingSize:     uiDisplay.HeaderIconPaddingSizeMd,
+})`
+	}}
+	@DemoExampleCard(
+		"Header Icon Styles",
+		"HeaderIcon stamps a Phosphor icon in the header. Position, color, background, radius, and padding size style it.",
+		"/structural/card.templ",
+		iconUsage,
+	) {
+		<div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+			@uiStructural.Card(uiStructural.CardSettings{
+				MiddleContent:             CardDemoBody(),
+				HeaderTitle:               "Icon on Top",
+				HeaderIcon:                "ph-cube",
+				HeaderIconPosition:        uiDisplay.HeaderIconPositionTop,
+				HeaderIconColor:           "secondary-100",
+				HeaderIconBackgroundColor: "secondary-500/30",
+				HeaderIconBorderRadius:    uiDisplay.HeaderIconBorderRadiusLg,
+				HeaderIconPaddingSize:     uiDisplay.HeaderIconPaddingSizeMd,
+			})
+			@uiStructural.Card(uiStructural.CardSettings{
+				MiddleContent:             CardDemoBody(),
+				HeaderTitle:               "Icon on Left",
+				HeaderIcon:                "ph-star",
+				HeaderIconPosition:        uiDisplay.HeaderIconPositionLeft,
+				HeaderIconColor:           "amber-300",
+				HeaderIconBackgroundColor: "amber-500/20",
+				HeaderIconBorderRadius:    uiDisplay.HeaderIconBorderRadiusXl,
+				HeaderIconPaddingSize:     uiDisplay.HeaderIconPaddingSizeSm,
+			})
+		</div>
+	}
+}
+
+templ CardContentOnlyExample() {
+	{{
+		contentUsage := `@uiStructural.Card(uiStructural.CardSettings{
+	MiddleContent: CardDemoContentOnlyBody(),
+})`
+	}}
+	@DemoExampleCard(
+		"Content-Only Card",
+		"With no header settings the card is a bare surface around MiddleContent.",
+		"/structural/card.templ",
+		contentUsage,
+	) {
+		@uiStructural.Card(uiStructural.CardSettings{
+			MiddleContent: CardDemoContentOnlyBody(),
+			BorderRadius:  uiStructural.CardBorderRadiusLg,
+			ShadowSize:    uiStructural.CardShadowSizeSm,
+		})
+	}
+}
+
+templ CardStateBoundHeaderExample() {
+	{{
+		stateUsage := `@uiStructural.Card(uiStructural.CardSettings{
+	MiddleContent: CardDemoBody(),
+
+	// OptionalFields
+	HeaderTitle:                      "Card Title",
+	HeaderTitleOneWayStatePath:       "cardTitle",
+	HeaderSubHeadingOneWayStatePath:  "cardSubHeading",
+})`
+	}}
+	@DemoExampleCard(
+		"State-Bound Header",
+		"HeaderTitleOneWayStatePath and HeaderSubHeadingOneWayStatePath drive the header text from Alpine state.",
+		"/structural/card.templ",
+		stateUsage,
+	) {
+		<div x-data="{cardTitle: 'Live Title', cardSubHeading: 'Bound to Alpine state'}" class="flex flex-col gap-3">
+			@uiStructural.Card(uiStructural.CardSettings{
+				MiddleContent:                   CardDemoBody(),
+				HeaderTitle:                     "Live Title",
+				HeaderIcon:                      "ph-arrows-clockwise",
+				HeaderTitleOneWayStatePath:      "cardTitle",
+				HeaderSubHeadingOneWayStatePath: "cardSubHeading",
+			})
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:       "Change Header",
+				IconLeft:    "ph-pencil",
+				OnClickFunc: "cardTitle = 'Updated at ' + new Date().toLocaleTimeString(); cardSubHeading = 'Just now'",
+				Size:        uiControl.ButtonSizeSm,
+			})
+		</div>
+	}
+}
+
+templ CardContentGapExample() {
+	{{
+		gapUsage := `@uiStructural.Card(uiStructural.CardSettings{
+	MiddleContent: CardDemoBody(),
+	FooterContent: CardDemoFooter(),
+
+	// OptionalFields
+	HeaderTitle: "Tight Gap",
+	GapSize:     uiStructural.CardGapSizeSm,
+})`
+	}}
+	@DemoExampleCard(
+		"Content Gap",
+		"GapSize sets the space between the header, body, and footer. The default CardGapSizeMd renders gap-3.",
+		"/structural/card.templ",
+		gapUsage,
+	) {
+		<div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+			@uiStructural.Card(uiStructural.CardSettings{
+				MiddleContent: CardDemoBody(),
+				FooterContent: CardDemoFooter(),
+				HeaderTitle:   "Tight Gap",
+				GapSize:       uiStructural.CardGapSizeSm,
+			})
+			@uiStructural.Card(uiStructural.CardSettings{
+				MiddleContent: CardDemoBody(),
+				FooterContent: CardDemoFooter(),
+				HeaderTitle:   "Loose Gap",
+				GapSize:       uiStructural.CardGapSizeXl,
+			})
+		</div>
+	}
+}
+
+templ CardDemo() {
+	{{
+		demoUsage := `@uiStructural.Card(uiStructural.CardSettings{
+	MiddleContent: CardDemoBody(),
+
+	// OptionalFields
+	HeaderTitle:      "Card Title",
+	HeaderSubHeading: "Card sub-heading",
+	HeaderIcon:       "ph-cube",
+})`
+	}}
+	<div class="flex flex-col gap-4" id="card-demo">
+		@DemoComponentSection(DemoComponentSectionSettings{
+			ComponentPath:          "/structural/card.templ",
+			Description:            "A card is a surface container with an optional page-style heading (header title, icon, sub-heading) and customizable edges, shadow, ring, and padding.",
+			LiveExampleDescription: "The complete card: header with icon and sub-heading, a body, and a footer with actions.",
+			Title:                  ".Card",
+			UsageCode:              demoUsage,
+		}) {
+			@uiStructural.Card(uiStructural.CardSettings{
+				MiddleContent:    CardDemoBody(),
+				FooterContent:    CardDemoFooter(),
+				HeaderTitle:      "Default Card",
+				HeaderSubHeading: "Rounded edges and an icon heading",
+				HeaderIcon:       "ph-cube",
+				ActionsContent:   CardDemoActions(),
+			})
+		}
+		@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
+			{Title: "Surface & Edges", Icon: "ph-paint-brush", Content: CardSurfaceEdgesExample()},
+			{Title: "Header Icon Styles", Icon: "ph-star", Content: CardHeaderIconExample()},
+			{Title: "Content Gap", Icon: "ph-arrows-down-up", Content: CardContentGapExample()},
+			{Title: "Content-Only Card", Icon: "ph-square", Content: CardContentOnlyExample()},
+			{Title: "State-Bound Header", Icon: "ph-arrows-clockwise", Content: CardStateBoundHeaderExample()},
+		})
+	</div>
+}

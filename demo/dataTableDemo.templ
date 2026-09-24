@@ -1,0 +1,530 @@
+package main
+
+import (
+	uiControl "github.com/goinfinite/ui/src/control"
+	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiForm "github.com/goinfinite/ui/src/form"
+	uiStructural "github.com/goinfinite/ui/src/structural"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+templ DemoServerTextCell(value string) {
+	<span class="text-neutral-300">{ value }</span>
+}
+
+templ DemoServerStatusCell(status string) {
+	{{ variationClasses := "bg-emerald-500/20 text-emerald-100" }}
+	if status != "running" {
+		{{ variationClasses = "bg-neutral-500/20 text-neutral-300" }}
+	}
+	<span class={ "rounded-full px-2 py-0.5 text-xs font-bold " + variationClasses }>{ status }</span>
+}
+
+templ DemoServerPlainTextCell(value string) {
+	{ value }
+}
+
+templ DataTableColumnConfigExample() {
+	{{
+		columnSettings := buildDemoStaticTableSettings(
+			"data-table-demo-columns",
+			"Column configuration table pagination",
+			buildDemoColumnShowcaseColumns(),
+			dataTableDemoRecords[:4],
+		)
+	}}
+	{{
+		columnUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
+	Columns: []uiStructural.DataTableColumnSettings[Record]{
+		{Label: "Name", SortKey: "name", WidthPercent: 20, CellRenderer: nameCell},
+		{Label: "Description", MaxWidthClass: "max-w-72 truncate", CellRenderer: descriptionCell},
+		{Label: "Status", Alignment: uiStructural.DataTableAlignmentCenter, WidthPercent: 15, CellRenderer: statusCell},
+		{Label: "CPU cores", SortKey: "cpuCores", Alignment: uiStructural.DataTableAlignmentRight, WidthPercent: 12, CellRenderer: cpuCell},
+		{Label: "Created at", MinWidthClass: "min-w-28", CellRenderer: createdAtCell},
+	},
+	Rows: records,
+})`
+	}}
+	@DemoExampleCard(
+		"Column Configuration",
+		"A column sets its alignment, width, and sortability. WidthPercent shares the row width, MaxWidthClass caps a long cell, and MinWidthClass holds a floor. A column with a SortKey renders a sort button; one without renders plain text.",
+		"/structural/dataTable.templ",
+		columnUsage,
+	) {
+		@uiStructural.DataTable(columnSettings)
+	}
+}
+
+templ DataTableRowsConfigExample() {
+	{{
+		rowsSettings := buildDemoStaticTableSettings(
+			"data-table-demo-rows",
+			"Rows configuration table pagination",
+			buildDemoPlainTableColumns(),
+			dataTableDemoRecords[:4],
+		)
+	}}
+	{{
+		rowsSettings.RowIdResolver = func(record DemoServerRecord) string { return record.Id }
+		rowsSettings.RowLabelResolver = func(record DemoServerRecord) string { return record.Name }
+		rowsSettings.CheckboxShape = uiForm.CheckboxInputShapeRounded
+		rowsSettings.CheckboxSize = uiForm.CheckboxInputSizeSm
+		rowsSettings.CheckboxCheckedColor = "emerald-500"
+	}}
+	{{
+		rowsUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
+	Columns:              columns,
+	Rows:                 records,
+	RowIdResolver:        func(record Record) string { return record.Id },
+	RowLabelResolver:     func(record Record) string { return record.Name },
+	CheckboxShape:        uiForm.CheckboxInputShapeRounded,
+	CheckboxSize:         uiForm.CheckboxInputSizeSm,
+	CheckboxCheckedColor: "emerald-500",
+})`
+	}}
+	@DemoExampleCard(
+		"Rows Configuration",
+		"RowIdResolver adds the selection column and identifies each row. RowLabelResolver names the row checkbox for screen readers. CheckboxShape, CheckboxSize, and CheckboxCheckedColor change the selection checkbox. Select a row to see the emerald checkbox and the selection count.",
+		"/structural/dataTable.templ",
+		rowsUsage,
+	) {
+		@uiStructural.DataTable(rowsSettings)
+	}
+}
+
+templ DataTableFiltersExample() {
+	{{
+		filterSettings := buildDemoStaticTableSettings(
+			"data-table-demo-filters",
+			"Filters table pagination",
+			buildDemoPlainTableColumns(),
+			dataTableDemoRecords[:5],
+		)
+	}}
+	{{
+		filterSettings.Filters = buildDemoRecordFilters()
+		filterSettings.InitialFilterValues = map[string]any{"status": "running"}
+	}}
+	{{
+		filtersUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
+	Columns:             columns,
+	Rows:                records,
+	Filters:             filters,
+	InitialFilterValues: map[string]any{"status": "running"},
+})`
+	}}
+	@DemoExampleCard(
+		"Filters",
+		"Each filter renders an editor and an active chip. InitialFilterValues seeds the starting values. A filter change updates the chips and the filter values.",
+		"/structural/dataTable.templ",
+		filtersUsage,
+	) {
+		@uiStructural.DataTable(filterSettings)
+	}
+}
+
+templ DataTableSearchBoxExample() {
+	{{
+		searchSettings := buildDemoStaticTableSettings(
+			"data-table-demo-search",
+			"Search box table pagination",
+			buildDemoPlainTableColumns(),
+			dataTableDemoRecords[:5],
+		)
+	}}
+	{{
+		searchSettings.QueryUrlTemplate = "assets/dataTableDemoRefresh.html?search=" +
+			uiStructural.DataTableUrlPlaceholderSearch
+		searchSettings.InitialSearchQuery = "alpha"
+		searchSettings.SearchBoxAlignment = uiStructural.DataTableAlignmentCenter
+	}}
+	{{
+		searchUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
+	Columns:          columns,
+	Rows:             records,
+	QueryUrlTemplate: "/records?search={search}",
+
+	// OptionalFields
+	InitialSearchQuery: "alpha",
+	SearchBoxAlignment: uiStructural.DataTableAlignmentCenter,
+})`
+	}}
+	@DemoExampleCard(
+		"Search Box",
+		"The table renders a default search box when the query template carries the search placeholder. InitialSearchQuery seeds the starting text. SearchBoxAlignment places the box left, center, or right. Pass SearchBox to replace the default box.",
+		"/structural/dataTable.templ",
+		searchUsage,
+	) {
+		@uiStructural.DataTable(searchSettings)
+	}
+}
+
+templ DataTableHeaderActionsExample() {
+	{{
+		headerSettings := buildDemoStaticTableSettings(
+			"data-table-demo-header-actions",
+			"Header actions table pagination",
+			buildDemoPlainTableColumns(),
+			dataTableDemoRecords[:4],
+		)
+	}}
+	{{
+		headerSettings.HeaderActions = uiControl.Button(uiControl.ButtonSettings{
+			Label:       "Sync",
+			IconLeft:    "ph-arrows-clockwise",
+			OnClickFunc: "$dispatch('demo:header-action')",
+			Size:        uiControl.ButtonSizeSm,
+		})
+	}}
+	{{
+		headerUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
+	Columns: columns,
+	Rows:    records,
+	HeaderActions: uiControl.Button(uiControl.ButtonSettings{
+		Label:       "Sync",
+		IconLeft:    "ph-arrows-clockwise",
+		OnClickFunc: "$dispatch('demo:header-action')",
+		Size:        uiControl.ButtonSizeSm,
+	}),
+})`
+	}}
+	<div class="flex flex-col gap-4" x-data="{headerActionCount: 0}">
+		@DemoExampleHeader(
+			"Header Actions",
+			"HeaderActions renders in the toolbar. The button here dispatches an event the panel counts.",
+			"/structural/dataTable.templ",
+			headerUsage,
+		)
+		<div @demo:header-action.window="headerActionCount++">
+			@uiStructural.DataTable(headerSettings)
+		</div>
+		<p class={ DemoLiveStateClasses }>
+			Header action clicks: <span x-text="headerActionCount"></span>
+		</p>
+	</div>
+}
+
+templ DataTableBulkActionsExample() {
+	{{
+		bulkSettings := buildDemoStaticTableSettings(
+			"data-table-demo-bulk-actions",
+			"Bulk actions table pagination",
+			buildDemoPlainTableColumns(),
+			dataTableDemoRecords[:4],
+		)
+	}}
+	{{
+		bulkSettings.RowIdResolver = func(record DemoServerRecord) string { return record.Id }
+		bulkSettings.RowLabelResolver = func(record DemoServerRecord) string { return record.Name }
+		bulkSettings.BulkActions = uiControl.Button(uiControl.ButtonSettings{
+			Label:           "Archive",
+			IconLeft:        "ph-archive",
+			OnClickFunc:     "selectedRowIds = []",
+			Size:            uiControl.ButtonSizeSm,
+			BackgroundColor: "red-500/20",
+			TextColor:       "red-200",
+		})
+	}}
+	{{
+		bulkUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
+	Columns: columns,
+	Rows:    records,
+	RowIdResolver: func(record Record) string { return record.Id },
+	BulkActions: uiControl.Button(uiControl.ButtonSettings{
+		Label:           "Archive",
+		IconLeft:        "ph-archive",
+		OnClickFunc:     "selectedRowIds = []",
+		Size:            uiControl.ButtonSizeSm,
+		BackgroundColor: "red-500/20",
+		TextColor:       "red-200",
+	}),
+})`
+	}}
+	@DemoExampleCard(
+		"Bulk Actions",
+		"BulkActions renders in the toolbar only while at least one row is selected. Select a row to reveal the action.",
+		"/structural/dataTable.templ",
+		bulkUsage,
+	) {
+		@uiStructural.DataTable(bulkSettings)
+	}
+}
+
+templ DataTableStylingExample() {
+	{{
+		stylingSettings := buildDemoStaticTableSettings(
+			"data-table-demo-styling",
+			"Styling table pagination",
+			buildDemoStylingColumns(),
+			dataTableDemoRecords[:4],
+		)
+	}}
+	{{
+		stylingSettings.HeaderClass = "bg-neutral-50/5"
+		stylingSettings.IsStriped = true
+		stylingSettings.RowClassResolver = func(record DemoServerRecord) string {
+			if record.Status != "running" {
+				return "text-neutral-400"
+			}
+			return ""
+		}
+	}}
+	{{
+		stylingUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
+	Columns: []uiStructural.DataTableColumnSettings[Record]{
+		{Label: "Name", CellClass: "font-bold", CellRenderer: nameCell},
+		{Label: "Status", CellRenderer: statusCell},
+		{Label: "CPU cores", Alignment: uiStructural.DataTableAlignmentRight, CellRenderer: cpuCell},
+	},
+	Rows: records,
+
+	// OptionalFields
+	HeaderClass: "bg-neutral-50/5",
+	IsStriped:   true,
+	RowClassResolver: func(record Record) string {
+		if record.Status != "running" {
+			return "text-neutral-400"
+		}
+		return ""
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Row and Column Styling",
+		"HeaderClass paints the header row. IsStriped adds a zebra stripe. CellClass styles one column, and RowClassResolver styles each row from its data. A cell component that sets its own color overrides the row color.",
+		"/structural/dataTable.templ",
+		stylingUsage,
+	) {
+		@uiStructural.DataTable(stylingSettings)
+	}
+}
+
+templ DataTableAppearanceExample() {
+	{{
+		comfortableSettings := buildDemoStaticTableSettings(
+			"data-table-demo-comfortable",
+			"Comfortable table pagination",
+			buildDemoPlainTableColumns(),
+			dataTableDemoRecords[:3],
+		)
+	}}
+	{{
+		denseSettings := buildDemoStaticTableSettings(
+			"data-table-demo-dense",
+			"Dense table pagination",
+			buildDemoPlainTableColumns(),
+			dataTableDemoRecords[:3],
+		)
+	}}
+	{{
+		denseSettings.Density = uiStructural.DataTableDensityDense
+		denseSettings.TextCase = uiToolset.TextCaseUpper
+	}}
+	{{
+		appearanceUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
+	Columns:  columns,
+	Rows:     records,
+	Density:  uiStructural.DataTableDensityDense,
+	TextCase: uiToolset.TextCaseUpper,
+})`
+	}}
+	<div class="flex flex-col gap-4">
+		@DemoExampleHeader(
+			"Density and Header Text Case",
+			"Density changes the cell padding. TextCase changes the header capitalization. Both tables use the same columns and rows.",
+			"/structural/dataTable.templ",
+			appearanceUsage,
+		)
+		<div class="grid gap-6 lg:grid-cols-2">
+			<div class="flex flex-col gap-2">
+				<p class="text-sm text-neutral-400">Comfortable (default), headers as typed</p>
+				@uiStructural.DataTable(comfortableSettings)
+			</div>
+			<div class="flex flex-col gap-2">
+				<p class="text-sm text-neutral-400">Dense with uppercase headers</p>
+				@uiStructural.DataTable(denseSettings)
+			</div>
+		</div>
+	</div>
+}
+
+templ DataTableStickyHeaderExample() {
+	{{
+		stickySettings := buildDemoStaticTableSettings(
+			"data-table-demo-sticky",
+			"Sticky header table pagination",
+			buildDemoPlainTableColumns(),
+			dataTableDemoRecords,
+		)
+	}}
+	{{ stickySettings.IsHeaderSticky = true }}
+	{{
+		stickyUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
+	Columns:        columns,
+	Rows:           records,
+	IsHeaderSticky: true,
+})`
+	}}
+	@DemoExampleCard(
+		"Sticky Header",
+		"IsHeaderSticky pins the header and caps the scroll container, so the header stays visible while the body scrolls.",
+		"/structural/dataTable.templ",
+		stickyUsage,
+	) {
+		@uiStructural.DataTable(stickySettings)
+	}
+}
+
+templ DataTableDemoEmptyState() {
+	<div class="flex flex-col items-center gap-2 py-2 text-center">
+		<i class="ph-duotone ph-tray text-3xl text-neutral-400"></i>
+		<p class="text-sm font-bold text-neutral-50">No servers yet</p>
+		<p class="text-sm text-neutral-400">Create a server to see it listed here.</p>
+	</div>
+}
+
+templ DataTableEmptyStateExample() {
+	{{
+		customEmptySettings := buildDemoStaticTableSettings(
+			"data-table-demo-empty-custom",
+			"Custom empty state table pagination",
+			buildDemoPlainTableColumns(),
+			nil,
+		)
+	}}
+	{{ customEmptySettings.EmptyState = DataTableDemoEmptyState() }}
+	{{
+		defaultEmptySettings := buildDemoStaticTableSettings(
+			"data-table-demo-empty-default",
+			"Default empty state table pagination",
+			buildDemoPlainTableColumns(),
+			nil,
+		)
+	}}
+	{{
+		emptyUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
+	Columns:    columns,
+	Rows:       nil,
+	EmptyState: DataTableDemoEmptyState(),
+})`
+	}}
+	<div class="flex flex-col gap-4">
+		@DemoExampleHeader(
+			"Empty States",
+			"With no rows the table renders the EmptyState slot. Without the slot it renders the default message.",
+			"/structural/dataTable.templ",
+			emptyUsage,
+		)
+		<div class="grid gap-6 lg:grid-cols-2">
+			<div class="flex flex-col gap-2">
+				<p class="text-sm text-neutral-400">Custom EmptyState</p>
+				@uiStructural.DataTable(customEmptySettings)
+			</div>
+			<div class="flex flex-col gap-2">
+				<p class="text-sm text-neutral-400">Default empty state</p>
+				@uiStructural.DataTable(defaultEmptySettings)
+			</div>
+		</div>
+	</div>
+}
+
+templ DataTableDemo() {
+	{{ demoTableSettings := buildDemoDataTableSettings(dataTableDemoRecords, 1, dataTableDemoItemsPerPage) }}
+	{{
+		demoTableSettings.BulkActions = uiControl.Button(uiControl.ButtonSettings{
+			Label:           "Clear selection",
+			IconLeft:        "ph-trash",
+			OnClickFunc:     "selectedRowIds = []",
+			Size:            uiControl.ButtonSizeSm,
+			BackgroundColor: "red-500/20",
+			TextColor:       "red-200",
+		})
+	}}
+	{{
+		demoTableSettings.HeaderActions = uiControl.Button(uiControl.ButtonSettings{
+			Label:       "Refresh",
+			IconLeft:    "ph-arrow-clockwise",
+			OnClickFunc: "$dispatch('refresh:data-table-demo')",
+			Size:        uiControl.ButtonSizeSm,
+		})
+	}}
+	{{ demoTableSettings.RefreshOnEvents = []string{"refresh:data-table-demo"} }}
+	{{
+		overviewUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
+	Columns:          columns,
+	Rows:             records,
+	QueryUrlTemplate: "/records?page={pageNumber}&sort={sortKey}&direction={sortDirection}&search={search}",
+
+	// OptionalFields
+	Filters:              filters,
+	RowIdResolver:        func(record Record) string { return record.Id },
+	RefreshOnEvents:      []string{"refresh:records-table"},
+	InitialSortKey:       "name",
+	InitialSortDirection: uiStructural.DataTableSortDirectionAsc,
+})`
+	}}
+	<div class="flex flex-col gap-6" id="data-table-demo">
+		@DemoComponentSection(DemoComponentSectionSettings{
+			ComponentPath:          "/structural/dataTable.templ",
+			Description:            "A data table renders rows from column definitions with sorting, selection, filters, search, and pagination. Every change refreshes the table from the server through the URL template. The examples below cover the full settings surface.",
+			LiveExampleDescription: "The complete server-driven table: filters, search, sorting, selection, bulk and header actions, and pagination.",
+			Title:                  ".DataTable",
+			UsageCode:              overviewUsage,
+		}) {
+			<div class="flex flex-col gap-4" x-data="{ isFileUrl: window.location.protocol === 'file:' }">
+				<div x-show="!isFileUrl">
+					@uiDisplay.Alert(uiDisplay.AlertSettings{
+						Title:       "This table needs a server response",
+						Description: "Every sort, filter, search, or page change sends a request. A real application returns the requested rows. This static demo serves five fixed pages from docs/assets: paging works, and sorting, filtering, and search do not change the rows.",
+						Variation:   uiDisplay.AlertVariationInfo,
+						Size:        uiDisplay.AlertSizeMd,
+					})
+				</div>
+				<div x-show="isFileUrl" style="display: none">
+					@uiDisplay.Alert(uiDisplay.AlertSettings{
+						Title:       "Open this page through a web server",
+						Description: "Browsers block refresh requests from file:// pages, so the table cannot page or refresh here. Serve the docs folder over HTTP and open the served URL.",
+						Variation:   uiDisplay.AlertVariationWarning,
+						Size:        uiDisplay.AlertSizeMd,
+					})
+				</div>
+				@uiToolset.MinifierTemplateJs(&dataTableDemoRoutingScript)
+				@uiStructural.DataTable(demoTableSettings)
+			</div>
+		}
+		<div class="flex flex-col gap-4">
+			<div class="flex flex-col gap-1">
+				<p class="text-lg font-bold">Advanced Examples</p>
+				<p class="text-sm text-neutral-400">
+					The panels below hold static tables. They send no requests, so you can inspect the layout and the configuration without a server. Open a panel to see the settings and the rendered result.
+				</p>
+			</div>
+			@uiDisplay.Accordion(uiDisplay.AccordionSettings{
+				Items: []uiDisplay.AccordionItemSettings{
+					{Title: "Column Configuration", Icon: "ph-columns", Content: DataTableColumnConfigExample()},
+					{Title: "Rows Configuration", Icon: "ph-list-numbers", Content: DataTableRowsConfigExample()},
+					{Title: "Filters", Icon: "ph-funnel", Content: DataTableFiltersExample()},
+					{Title: "Search Box", Icon: "ph-magnifying-glass", Content: DataTableSearchBoxExample()},
+					{Title: "Header Actions", Icon: "ph-wrench", Content: DataTableHeaderActionsExample()},
+					{Title: "Bulk Actions", Icon: "ph-checks", Content: DataTableBulkActionsExample()},
+					{Title: "Row and Column Styling", Icon: "ph-paint-brush", Content: DataTableStylingExample()},
+					{Title: "Density and Header Text Case", Icon: "ph-text-aa", Content: DataTableAppearanceExample()},
+					{Title: "Sticky Header", Icon: "ph-arrow-line-down", Content: DataTableStickyHeaderExample()},
+					{Title: "Empty States", Icon: "ph-tray", Content: DataTableEmptyStateExample()},
+				},
+			})
+		</div>
+	</div>
+}
+
+templ DataTableRefreshFragment(pageNumber uint, itemsPerPage uiStructural.DataTablePageSize) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<title>DataTable Refresh Fragment</title>
+		</head>
+		<body>
+			@uiStructural.DataTable(buildDemoDataTableSettings(dataTableDemoRecords, pageNumber, itemsPerPage))
+		</body>
+	</html>
+}

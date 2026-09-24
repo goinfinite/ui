@@ -1,0 +1,334 @@
+package main
+
+import (
+	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiForm "github.com/goinfinite/ui/src/form"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+templ InputFieldReadOnlyExample() {
+	{{
+		readOnlyUsage := `@uiForm.InputField(uiForm.InputFieldSettings{
+	InputType: uiForm.InputTypeText,
+	InputName: "name",
+	Label:     "Name",
+
+	// OptionalFields
+	Value:      "Lorem ipsum dolor sit amet.",
+	IsReadOnly: true,
+})`
+	}}
+	@DemoExampleCard(
+		"Value & Read-Only",
+		"Value seeds the field content. IsReadOnly shows the value without accepting edits.",
+		"/form/inputField.templ",
+		readOnlyUsage,
+	) {
+		@uiForm.InputField(uiForm.InputFieldSettings{
+			InputType:  uiForm.InputTypeText,
+			InputName:  "name",
+			Label:      "Name",
+			Value:      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+			IsReadOnly: true,
+		})
+	}
+}
+
+templ InputFieldNumberExample() {
+	{{
+		numberUsage := `@uiForm.InputField(uiForm.InputFieldSettings{
+	InputType: uiForm.InputTypeNumber,
+	InputName: "name",
+	Label:     "Name",
+
+	// OptionalFields
+	TwoWayStatePath: "name",
+	InputNumberMin:  "0",
+	InputNumberMax:  "100",
+	InputNumberStep: ".1",
+})`
+	}}
+	@DemoExampleCard(
+		"Number Constraints",
+		"InputTypeNumber with InputNumberMin, InputNumberMax, and InputNumberStep bounds the accepted value.",
+		"/form/inputField.templ",
+		numberUsage,
+	) {
+		<div x-data="{name: ''}">
+			@uiForm.InputField(uiForm.InputFieldSettings{
+				InputType:       uiForm.InputTypeNumber,
+				InputName:       "name",
+				Label:           "Name",
+				TwoWayStatePath: "name",
+				InputNumberMin:  "0",
+				InputNumberMax:  "100",
+				InputNumberStep: ".1",
+			})
+		</div>
+	}
+}
+
+templ InputFieldAffixesExample() {
+	{{
+		affixesUsage := `@uiForm.InputField(uiForm.InputFieldSettings{
+	InputType: uiForm.InputTypeText,
+	InputName: "name",
+	Label:     "Name",
+
+	// OptionalFields
+	TwoWayStatePath: "name",
+	AffixLeftValue:  "goinfinite.net/",
+	AffixRightValue: ".jpg",
+})`
+	}}
+	@DemoExampleCard(
+		"Affixes",
+		"AffixLeftValue and AffixRightValue render fixed text on either side of the input.",
+		"/form/inputField.templ",
+		affixesUsage,
+	) {
+		<div class="flex flex-col gap-3 lg:*:max-w-50" x-data="{name: '', slug: ''}">
+			@uiForm.InputField(uiForm.InputFieldSettings{
+				InputType:       uiForm.InputTypeText,
+				InputName:       "name",
+				Label:           "Name",
+				TwoWayStatePath: "name",
+				AffixLeftValue:  "goinfinite.net/",
+			})
+			@uiForm.InputField(uiForm.InputFieldSettings{
+				InputType:       uiForm.InputTypeText,
+				InputName:       "name",
+				Label:           "Name",
+				TwoWayStatePath: "name",
+				AffixRightValue: ".jpg",
+			})
+			@uiForm.InputField(uiForm.InputFieldSettings{
+				InputType:       uiForm.InputTypeText,
+				InputName:       "slug",
+				Label:           "Slug",
+				TwoWayStatePath: "slug",
+				AffixRightValue: "ui.demo.goinfinite.net",
+			})
+		</div>
+	}
+}
+
+templ InputFieldSizesExample() {
+	{{
+		sizesUsage := `@uiForm.InputField(uiForm.InputFieldSettings{
+	InputType: uiForm.InputTypeText,
+	InputName: "name",
+	Label:     "Name",
+
+	// OptionalFields
+	Size: uiForm.InputFieldSizeLg,
+})`
+	}}
+	@DemoExampleCard(
+		"Sizes",
+		"Size scales the input, its affixes, and the floating label. It accepts xs, sm, md (the default), lg, or xl.",
+		"/form/inputField.templ",
+		sizesUsage,
+	) {
+		<div class="flex flex-col gap-3 lg:*:max-w-50">
+			for _, inputSize := range []string{
+				uiForm.InputFieldSizeXs,
+				uiForm.InputFieldSizeSm,
+				uiForm.InputFieldSizeMd,
+				uiForm.InputFieldSizeLg,
+				uiForm.InputFieldSizeXl,
+			} {
+				@uiForm.InputField(uiForm.InputFieldSettings{
+					InputType: uiForm.InputTypeText,
+					InputName: "name",
+					Label:     "Name (" + inputSize + ")",
+					Size:      inputSize,
+				})
+			}
+		</div>
+	}
+}
+
+templ InputFieldLabelCaseExample() {
+	{{
+		labelCaseUsage := `@uiForm.InputField(uiForm.InputFieldSettings{
+	InputType: uiForm.InputTypeText,
+	InputName: "name",
+	Label:     "Network Interface",
+
+	// OptionalFields
+	TextCase: uiToolset.TextCaseUpper,
+})`
+	}}
+	@DemoExampleCard(
+		"Label Case",
+		"TextCase transforms the floating label and the placeholder. It accepts uiToolset.TextCaseNone (the default, as typed), TextCaseLower, TextCaseUpper, or TextCaseCapitalize.",
+		"/form/inputField.templ",
+		labelCaseUsage,
+	) {
+		<div class="flex flex-col gap-3 lg:*:max-w-50">
+			for _, textCase := range []string{
+				uiToolset.TextCaseNone,
+				uiToolset.TextCaseLower,
+				uiToolset.TextCaseUpper,
+				uiToolset.TextCaseCapitalize,
+			} {
+				@uiForm.InputField(uiForm.InputFieldSettings{
+					InputType: uiForm.InputTypeText,
+					InputName: "name",
+					Label:     "Network Interface (" + textCase + ")",
+					TextCase:  textCase,
+				})
+			}
+		</div>
+	}
+}
+
+templ InputFieldAffixWidthExample() {
+	{{
+		widthUsage := `@uiForm.InputField(uiForm.InputFieldSettings{
+	InputType: uiForm.InputTypeText,
+	InputName: "domain",
+	Label:     "Domain",
+
+	// OptionalFields
+	AffixLeftValue:        "goinfinite.net/",
+	AffixLeftWidthPercent: 40,
+})`
+	}}
+	@DemoExampleCard(
+		"Affix Width",
+		"AffixLeftWidthPercent and AffixRightWidthPercent fix an affix to a percentage of the field width. Without them, an affix caps at half the width.",
+		"/form/inputField.templ",
+		widthUsage,
+	) {
+		<div class="flex flex-col gap-3 lg:*:max-w-80">
+			@uiForm.InputField(uiForm.InputFieldSettings{
+				InputType:             uiForm.InputTypeText,
+				InputName:             "domain",
+				Label:                 "Domain",
+				AffixLeftValue:        "goinfinite.net/",
+				AffixLeftWidthPercent: 40,
+			})
+			@uiForm.InputField(uiForm.InputFieldSettings{
+				InputType:              uiForm.InputTypeText,
+				InputName:              "name",
+				Label:                  "Name",
+				AffixRightValue:        ".jpg",
+				AffixRightWidthPercent: 25,
+			})
+		</div>
+	}
+}
+
+templ InputFieldHintsExample() {
+	{{
+		hintsUsage := `@uiForm.InputField(uiForm.InputFieldSettings{
+	InputType: uiForm.InputTypeText,
+	InputName: "name",
+	Label:     "Name",
+
+	// OptionalFields
+	HintValue:   "This is a helpful hint.",
+	HintDisplay: uiForm.InputHintDisplayDescription,
+})`
+	}}
+	@DemoExampleCard(
+		"Hints",
+		"HintValue explains the field. HintDisplay shows it as a description below the field or as a tooltip.",
+		"/form/inputField.templ",
+		hintsUsage,
+	) {
+		<div class="flex flex-col gap-3 lg:*:max-w-50">
+			@uiForm.InputField(uiForm.InputFieldSettings{
+				InputType:   uiForm.InputTypeText,
+				InputName:   "name",
+				Label:       "Name",
+				HintValue:   "This is a helpful hint displayed as a description below the input.",
+				HintDisplay: uiForm.InputHintDisplayDescription,
+			})
+			@uiForm.InputField(uiForm.InputFieldSettings{
+				InputType:   uiForm.InputTypeText,
+				InputName:   "name",
+				Label:       "Name",
+				HintValue:   "This is a helpful hint displayed as a tooltip.",
+				HintDisplay: uiForm.InputHintDisplayTooltip,
+			})
+		</div>
+	}
+}
+
+templ InputFieldHintIconStyleExample() {
+	{{
+		hintIconUsage := `@uiForm.InputField(uiForm.InputFieldSettings{
+	InputType: uiForm.InputTypeText,
+	InputName: "name",
+	Label:     "Name",
+
+	// OptionalFields
+	HintValue:     "This is a helpful hint.",
+	HintDisplay:   uiForm.InputHintDisplayTooltip,
+	HintIconStyle: uiForm.InputHintIconStyleBoxed,
+})`
+	}}
+	@DemoExampleCard(
+		"Hint Icon Styles",
+		"HintIconStyle renders the hint trigger as an icon or as a boxed tooltip.",
+		"/form/inputField.templ",
+		hintIconUsage,
+	) {
+		@uiForm.InputField(uiForm.InputFieldSettings{
+			InputType:     uiForm.InputTypeText,
+			InputName:     "name",
+			Label:         "Name",
+			HintValue:     "This is a helpful hint displayed as a boxed tooltip.",
+			HintDisplay:   uiForm.InputHintDisplayTooltip,
+			HintIconStyle: uiForm.InputHintIconStyleBoxed,
+		})
+	}
+}
+
+templ InputFieldDemo() {
+	{{
+		demoUsage := `@uiForm.InputField(uiForm.InputFieldSettings{
+	InputType: uiForm.InputTypeText,
+	InputName: "name",
+	Label:     "Name",
+
+	// OptionalFields
+	TwoWayStatePath: "name",
+})`
+	}}
+	<div class="flex flex-col gap-4" id="input-field-demo">
+		@DemoComponentSection(DemoComponentSectionSettings{
+			ComponentPath:          "/form/inputField.templ",
+			Description:            "An input field is a basic form element that allows users to enter text.",
+			LiveExampleDescription: "A labeled text field bound to Alpine state.",
+			Title:                  ".InputField",
+			UsageCode:              demoUsage,
+			AlpineStateCode:        `<div x-data="{name: ''}"></div>`,
+		}) {
+			<div x-data="{name: ''}" class="lg:*:max-w-50">
+				@uiForm.InputField(uiForm.InputFieldSettings{
+					InputType:       uiForm.InputTypeText,
+					InputName:       "name",
+					Label:           "Name",
+					TwoWayStatePath: "name",
+				})
+				<p class={ DemoLiveStateClasses }>
+					Value: <span x-text="name"></span>
+				</p>
+			</div>
+		}
+		@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
+			{Title: "Value & Read-Only", Icon: "ph-lock", Content: InputFieldReadOnlyExample()},
+			{Title: "Number Constraints", Icon: "ph-hash", Content: InputFieldNumberExample()},
+			{Title: "Affixes", Icon: "ph-text-aa", Content: InputFieldAffixesExample()},
+			{Title: "Affix Width", Icon: "ph-arrows-horizontal", Content: InputFieldAffixWidthExample()},
+			{Title: "Sizes", Icon: "ph-ruler", Content: InputFieldSizesExample()},
+			{Title: "Label Case", Icon: "ph-text-t", Content: InputFieldLabelCaseExample()},
+			{Title: "Hints", Icon: "ph-info", Content: InputFieldHintsExample()},
+			{Title: "Hint Icon Styles", Icon: "ph-question", Content: InputFieldHintIconStyleExample()},
+		})
+	</div>
+}

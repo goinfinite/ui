@@ -1,0 +1,407 @@
+package main
+
+import (
+	uiControl "github.com/goinfinite/ui/src/control"
+	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+templ ButtonSizesExample() {
+	{{
+		sizesUsage := `@uiControl.Button(uiControl.ButtonSettings{
+	Label: "Button",
+
+	// OptionalFields
+	Size: uiControl.ButtonSizeMd,
+})`
+	}}
+	@DemoExampleCard(
+		"Sizes",
+		"Size scales the button and its type: xs, sm, md, lg, or xl.",
+		"/control/button.templ",
+		sizesUsage,
+	) {
+		<div class="flex flex-col gap-2">
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:    "Button",
+				IconLeft: "ph-info",
+				Size:     uiControl.ButtonSizeXs,
+			})
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:    "Button",
+				IconLeft: "ph-info",
+				Size:     uiControl.ButtonSizeSm,
+			})
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:    "Button",
+				IconLeft: "ph-info",
+				Size:     uiControl.ButtonSizeMd,
+			})
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:    "Button",
+				IconLeft: "ph-info",
+				Size:     uiControl.ButtonSizeLg,
+			})
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:    "Button",
+				IconLeft: "ph-info",
+				Size:     uiControl.ButtonSizeXl,
+			})
+		</div>
+	}
+}
+
+templ ButtonShapesExample() {
+	{{
+		shapesUsage := `@uiControl.Button(uiControl.ButtonSettings{
+	Label: "Button",
+
+	// OptionalFields
+	Shape: uiControl.ButtonShapeRounded,
+})`
+	}}
+	@DemoExampleCard(
+		"Shapes",
+		"Shape rounds the button frame: square, rounded, or circular.",
+		"/control/button.templ",
+		shapesUsage,
+	) {
+		<div class="flex flex-col gap-2">
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label: "Square",
+				Shape: uiControl.ButtonShapeSquare,
+			})
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label: "Rounded",
+				Shape: uiControl.ButtonShapeRounded,
+			})
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label: "Circular",
+				Shape: uiControl.ButtonShapeCircular,
+			})
+		</div>
+	}
+}
+
+templ ButtonIconsExample() {
+	{{
+		iconsUsage := `@uiControl.Button(uiControl.ButtonSettings{
+	Label: "Info",
+
+	// OptionalFields
+	IconLeft:  "ph-info",
+	IconRight: "ph-arrow-right",
+})`
+	}}
+	@DemoExampleCard(
+		"Icons",
+		"IconLeft and IconRight flank the label with Phosphor icons.",
+		"/control/button.templ",
+		iconsUsage,
+	) {
+		<div class="flex flex-col gap-2">
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:    "Info",
+				IconLeft: "ph-info",
+			})
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:     "Warning",
+				IconRight: "ph-warning",
+			})
+		</div>
+	}
+}
+
+templ ButtonColorsExample() {
+	{{
+		colorsUsage := `@uiControl.Button(uiControl.ButtonSettings{
+	Label: "Save",
+
+	// OptionalFields
+	BackgroundColor:      "emerald-500",
+	BackgroundColorHover: "emerald-600",
+	TextColor:            "neutral-50",
+	TextColorHover:       "neutral-50",
+})`
+	}}
+	@DemoExampleCard(
+		"Colors",
+		"Background and text colors accept Tailwind tokens. The Hover variants paint the hover state.",
+		"/control/button.templ",
+		colorsUsage,
+	) {
+		<div class="flex flex-col gap-2">
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:    "Default",
+				IconLeft: "ph-info",
+			})
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "Red",
+				IconLeft:        "ph-warning",
+				BackgroundColor: "red-500",
+			})
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "Green",
+				IconRight:       "ph-check",
+				BackgroundColor: "emerald-500",
+			})
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "Secondary",
+				IconLeft:        "ph-star",
+				BackgroundColor: "secondary-500",
+			})
+		</div>
+	}
+}
+
+templ ButtonRingsExample() {
+	{{
+		ringsUsage := `@uiControl.Button(uiControl.ButtonSettings{
+	Label: "Red Ring",
+
+	// OptionalFields
+	BackgroundColor:      "red-500/10",
+	BackgroundColorHover: "red-500/20",
+	RingColor:            "red-500",
+	RingColorHover:       "red-400",
+	RingThickness:        uiControl.ButtonRingThicknessMd,
+})`
+	}}
+	@DemoExampleCard(
+		"Rings",
+		"RingColor and RingThickness outline the button. The Hover variants paint the hover ring.",
+		"/control/button.templ",
+		ringsUsage,
+	) {
+		<div class="flex flex-col gap-3">
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "Red Ring",
+				BackgroundColor: "red-500/10",
+				RingColor:       "red-500",
+				RingThickness:   uiControl.ButtonRingThicknessMd,
+			})
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:                "Green Hover",
+				BackgroundColor:      "yellow-500/10",
+				BackgroundColorHover: "green-500/10",
+				RingColor:            "yellow-500",
+				RingColorHover:       "green-500",
+				RingThickness:        uiControl.ButtonRingThicknessMd,
+			})
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:         "ThicknessXs",
+				RingColor:     "blue-500",
+				RingThickness: uiControl.ButtonRingThicknessXs,
+			})
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:         "ThicknessXl",
+				RingColor:     "violet-500",
+				RingThickness: uiControl.ButtonRingThicknessXl,
+			})
+		</div>
+	}
+}
+
+templ ButtonTooltipsExample() {
+	{{
+		tooltipsUsage := `@uiControl.Button(uiControl.ButtonSettings{
+	Label: "Top Tooltip",
+
+	// OptionalFields
+	TooltipContent:  "This tooltip appears on top",
+	TooltipPosition: uiControl.ButtonTooltipPositionTop,
+})`
+	}}
+	@DemoExampleCard(
+		"Tooltips",
+		"TooltipContent renders a tooltip on hover. TooltipPosition places it on any side.",
+		"/control/button.templ",
+		tooltipsUsage,
+	) {
+		<div class="flex flex-col gap-2">
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "Top Tooltip",
+				IconLeft:        "ph-arrow-up",
+				TooltipContent:  "This tooltip appears on top",
+				TooltipPosition: uiControl.ButtonTooltipPositionTop,
+			})
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "Bottom Tooltip",
+				IconLeft:        "ph-arrow-down",
+				TooltipContent:  "This tooltip appears on bottom",
+				TooltipPosition: uiControl.ButtonTooltipPositionBottom,
+			})
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "Left Tooltip",
+				IconLeft:        "ph-arrow-left",
+				TooltipContent:  "This tooltip appears on left",
+				TooltipPosition: uiControl.ButtonTooltipPositionLeft,
+			})
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "Right Tooltip",
+				IconLeft:        "ph-arrow-right",
+				TooltipContent:  "This tooltip appears on right",
+				TooltipPosition: uiControl.ButtonTooltipPositionRight,
+			})
+		</div>
+	}
+}
+
+templ ButtonDisabledBindingExample() {
+	{{
+		disabledUsage := `@uiControl.Button(uiControl.ButtonSettings{
+	Label: "Click Me",
+
+	// OptionalFields
+	OnClickFunc:               "clickCount++",
+	IsDisabledOneWayStatePath: "shouldDisable",
+})`
+	}}
+	@DemoExampleCard(
+		"Disabled Binding",
+		"IsDisabledOneWayStatePath disables the button from Alpine state. IsDisabled disables it outright.",
+		"/control/button.templ",
+		disabledUsage,
+	) {
+		<div
+			x-data="{clickCount: 0, get shouldDisable() { return this.clickCount > 0 }}"
+			class="flex flex-col gap-2"
+		>
+			<div class="flex flex-col gap-2">
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:                     "Click Me",
+					IconLeft:                  "ph-plus",
+					OnClickFunc:               "clickCount++",
+					IsDisabledOneWayStatePath: "shouldDisable",
+					IsFullWidth:               true,
+				})
+				<div class="flex flex-row items-center gap-2">
+					<p class={ DemoLiveStateInlineClasses }>
+						Count: <span x-text="clickCount"></span>
+					</p>
+					@uiControl.Button(uiControl.ButtonSettings{
+						IconLeft:    "ph-arrow-counter-clockwise",
+						OnClickFunc: "clickCount = 0",
+						Size:        uiControl.ButtonSizeSm,
+						Shape:       uiControl.ButtonShapeCircular,
+					})
+				</div>
+			</div>
+		</div>
+	}
+}
+
+templ ButtonFullWidthSubmitExample() {
+	{{
+		formUsage := `@uiControl.Button(uiControl.ButtonSettings{
+	Label: "Save",
+
+	// OptionalFields
+	IsFullWidth: true,
+	IsSubmit:    true,
+})`
+	}}
+	@DemoExampleCard(
+		"Full-Width & Submit",
+		"IsFullWidth stretches the button to its container. IsSubmit renders a submit input for forms.",
+		"/control/button.templ",
+		formUsage,
+	) {
+		<div class="flex flex-col gap-2">
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "Full Width Action",
+				IconLeft:        "ph-check",
+				IsFullWidth:     true,
+				BackgroundColor: "primary-600",
+			})
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:    "Submit",
+				IsSubmit: true,
+			})
+		</div>
+	}
+}
+
+templ ButtonTextCaseExample() {
+	{{
+		textCaseUsage := `@uiControl.Button(uiControl.ButtonSettings{
+	Label:    "New Record",
+	TextCase: uiToolset.TextCaseUpper,
+})`
+	}}
+	@DemoExampleCard(
+		"Text Case",
+		"TextCase transforms the button label. It accepts uiToolset.TextCaseNone (the default, as typed), TextCaseLower, TextCaseUpper, or TextCaseCapitalize.",
+		"/control/button.templ",
+		textCaseUsage,
+	) {
+		<div class="flex flex-wrap items-center gap-2">
+			for _, textCase := range []string{
+				uiToolset.TextCaseNone,
+				uiToolset.TextCaseLower,
+				uiToolset.TextCaseUpper,
+				uiToolset.TextCaseCapitalize,
+			} {
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:           "New Record (" + textCase + ")",
+					IconLeft:        "ph-plus",
+					TextCase:        textCase,
+					BackgroundColor: "primary-600",
+				})
+			}
+		</div>
+	}
+}
+
+templ ButtonDemo() {
+	{{
+		demoUsage := `@uiControl.Button(uiControl.ButtonSettings{
+	Label:       "Click me",
+	IconLeft:    "ph-info",
+	OnClickFunc: "alert('Button clicked!')",
+})`
+	}}
+	<div class="flex flex-col gap-4" id="button-demo">
+		@DemoComponentSection(DemoComponentSectionSettings{
+			ComponentPath:          "/control/button.templ",
+			Description:            "A button is a clickable element that can be used to trigger an action.",
+			LiveExampleDescription: "The action buttons an app reaches for: a primary action, a quiet secondary, and a destructive one.",
+			Title:                  ".Button",
+			UsageCode:              demoUsage,
+		}) {
+			<div x-data="{saveCount: 0}" class="flex flex-row flex-wrap items-center gap-3">
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:           "New Record",
+					IconLeft:        "ph-plus",
+					OnClickFunc:     "saveCount++",
+					BackgroundColor: "primary-600",
+				})
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:           "Export",
+					IconLeft:        "ph-download",
+					BackgroundColor: "neutral-50/10",
+				})
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:           "Delete",
+					IconLeft:        "ph-trash",
+					BackgroundColor: "red-500/20",
+					TextColor:       "red-200",
+				})
+				<p class={ DemoLiveStateClasses }>
+					New Record clicks: <span x-text="saveCount"></span>
+				</p>
+			</div>
+		}
+		@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
+			{Title: "Sizes", Icon: "ph-ruler", Content: ButtonSizesExample()},
+			{Title: "Shapes", Icon: "ph-square", Content: ButtonShapesExample()},
+			{Title: "Icons", Icon: "ph-star", Content: ButtonIconsExample()},
+			{Title: "Colors", Icon: "ph-palette", Content: ButtonColorsExample()},
+			{Title: "Rings", Icon: "ph-circle", Content: ButtonRingsExample()},
+			{Title: "Tooltips", Icon: "ph-chats", Content: ButtonTooltipsExample()},
+			{Title: "Disabled Binding", Icon: "ph-prohibit", Content: ButtonDisabledBindingExample()},
+			{Title: "Full-Width & Submit", Icon: "ph-arrows-out", Content: ButtonFullWidthSubmitExample()},
+			{Title: "Text Case", Icon: "ph-text-t", Content: ButtonTextCaseExample()},
+		})
+	</div>
+}

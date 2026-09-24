@@ -1,0 +1,332 @@
+package main
+
+import (
+	uiControl "github.com/goinfinite/ui/src/control"
+	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+templ TagSizesExample() {
+	{{
+		sizesUsage := `@uiDisplay.Tag(uiDisplay.TagSettings{
+	OuterLeftIcon:  "ph-info",
+	OuterLeftLabel: "Info",
+	InnerIcon:      "ph-warning",
+	InnerLabel:     "Warning",
+
+	// OptionalFields
+	Size: uiDisplay.TagSizeSm,
+})`
+	}}
+	@DemoExampleCard(
+		"Sizes",
+		"Size scales the outer and inner segments: tiny, xs, sm, md, lg, or xl.",
+		"/display/tag.templ",
+		sizesUsage,
+	) {
+		<div class="flex flex-col gap-2">
+			for _, tagSize := range []string{"tiny", "xs", "sm", "md", "lg", "xl"} {
+				@uiDisplay.Tag(uiDisplay.TagSettings{
+					OuterLeftIcon:  "ph-info",
+					OuterLeftLabel: "Info",
+					InnerIcon:      "ph-warning",
+					InnerLabel:     "Warning",
+					Size:           tagSize,
+				})
+			}
+		</div>
+	}
+}
+
+templ TagRadiiExample() {
+	{{
+		radiiUsage := `@uiDisplay.Tag(uiDisplay.TagSettings{
+	OuterLeftIcon:  "ph-info",
+	OuterLeftLabel: "Info",
+	InnerIcon:      "ph-warning",
+	InnerLabel:     "Warning",
+
+	// OptionalFields
+	OuterRadius: uiDisplay.TagRadiusMd,
+	InnerRadius: uiDisplay.TagRadiusMd,
+})`
+	}}
+	@DemoExampleCard(
+		"Radii",
+		"OuterRadius rounds the outer segment and InnerRadius rounds the inner one: none, xs, sm, md, lg, xl, or full.",
+		"/display/tag.templ",
+		radiiUsage,
+	) {
+		<div class="flex flex-col gap-2">
+			for _, tagRadius := range []string{"none", "xs", "sm", "md", "lg", "xl", "full"} {
+				@uiDisplay.Tag(uiDisplay.TagSettings{
+					OuterLeftIcon:  "ph-info",
+					OuterLeftLabel: "Info",
+					OuterRadius:    tagRadius,
+					InnerIcon:      "ph-warning",
+					InnerLabel:     "Warning",
+					InnerRadius:    tagRadius,
+				})
+			}
+		</div>
+	}
+}
+
+templ TagOuterRingColorsExample() {
+	{{
+		ringUsage := `@uiDisplay.Tag(uiDisplay.TagSettings{
+	OuterLeftIcon:  "ph-info",
+	OuterLeftLabel: "Info",
+
+	// OptionalFields
+	OuterRingColor:       "emerald-500",
+	OuterBackgroundColor: "transparent",
+	OuterTextColor:       "neutral-50",
+})`
+	}}
+	@DemoExampleCard(
+		"Outer Ring Colors",
+		"OuterRingColor outlines the outer segment. Pair it with a transparent OuterBackgroundColor for an outlined tag.",
+		"/display/tag.templ",
+		ringUsage,
+	) {
+		<div class="flex flex-row flex-wrap items-center gap-2">
+			for _, tagRingColor := range []string{"red-500", "amber-500", "emerald-500", "cyan-500", "violet-500", "gray-500"} {
+				@uiDisplay.Tag(uiDisplay.TagSettings{
+					OuterLeftIcon:        "ph-info",
+					OuterLeftLabel:       "Info",
+					OuterRingColor:       tagRingColor,
+					OuterBackgroundColor: "transparent",
+					OuterTextColor:       "neutral-50",
+					InnerIcon:            "ph-warning",
+					InnerLabel:           "Warning",
+				})
+			}
+		</div>
+	}
+}
+
+templ TagOuterBackgroundColorsExample() {
+	{{
+		backgroundUsage := `@uiDisplay.Tag(uiDisplay.TagSettings{
+	OuterLeftIcon:  "ph-info",
+	OuterLeftLabel: "Info",
+
+	// OptionalFields
+	OuterBackgroundColor: "emerald-500",
+	OuterTextColor:       "neutral-50",
+})`
+	}}
+	@DemoExampleCard(
+		"Outer Background Colors",
+		"OuterBackgroundColor fills the outer segment. OuterTextColor paints its label and icon.",
+		"/display/tag.templ",
+		backgroundUsage,
+	) {
+		<div class="flex flex-row flex-wrap items-center gap-2">
+			for _, tagBackgroundColor := range []string{"red-500", "amber-500", "emerald-500", "cyan-500", "violet-500", "gray-500"} {
+				@uiDisplay.Tag(uiDisplay.TagSettings{
+					OuterLeftIcon:        "ph-info",
+					OuterLeftLabel:       "Info",
+					OuterBackgroundColor: tagBackgroundColor,
+					OuterTextColor:       "neutral-50",
+					InnerIcon:            "ph-warning",
+					InnerLabel:           "Warning",
+				})
+			}
+		</div>
+	}
+}
+
+templ TagInnerColorsExample() {
+	{{
+		innerUsage := `@uiDisplay.Tag(uiDisplay.TagSettings{
+	OuterLeftIcon:  "ph-info",
+	OuterLeftLabel: "Info",
+	InnerIcon:      "ph-warning",
+	InnerLabel:     "Warning",
+
+	// OptionalFields
+	InnerBackgroundColor: "emerald-500",
+	InnerTextColor:       "neutral-50",
+})`
+	}}
+	@DemoExampleCard(
+		"Inner Colors",
+		"InnerBackgroundColor and InnerTextColor style the inner segment only.",
+		"/display/tag.templ",
+		innerUsage,
+	) {
+		<div class="flex flex-row flex-wrap items-center gap-2">
+			for _, innerColor := range []string{"red-500", "amber-500", "emerald-500", "cyan-500", "violet-500", "gray-500"} {
+				@uiDisplay.Tag(uiDisplay.TagSettings{
+					OuterLeftIcon:        "ph-info",
+					OuterLeftLabel:       "Info",
+					InnerIcon:            "ph-warning",
+					InnerLabel:           "Warning",
+					InnerBackgroundColor: innerColor,
+				})
+			}
+		</div>
+	}
+}
+
+templ TagSideElementActionsExample() {
+	{{
+		actionsUsage := `@uiDisplay.Tag(uiDisplay.TagSettings{
+	OuterLeftIcon:             "ph-plus",
+	OuterLeftLabel:            "Add",
+	OuterLeftOnClickFunc:      "clickCount++",
+	OuterRightIcon:            "ph-minus",
+	OuterRightLabel:           "Remove",
+	OuterRightOnClickFunc:     "if(clickCount > 0) clickCount--",
+	InnerIcon:                 "ph-hash",
+	InnerLabelOneWayStatePath: "clickCount",
+})`
+	}}
+	@DemoExampleCard(
+		"Side Element Actions",
+		"OuterLeftOnClickFunc and OuterRightOnClickFunc run on the outer side labels. InnerLabelOneWayStatePath and InnerValueOneWayStatePath mirror Alpine state into the inner segment.",
+		"/display/tag.templ",
+		actionsUsage,
+	) {
+		<div x-data="{clickCount: 0}" class="flex flex-col gap-2">
+			<div class="flex flex-row flex-wrap items-center gap-2">
+				@uiDisplay.Tag(uiDisplay.TagSettings{
+					OuterLeftIcon:             "ph-plus",
+					OuterLeftLabel:            "Add",
+					OuterLeftOnClickFunc:      "clickCount++",
+					OuterRightIcon:            "ph-minus",
+					OuterRightLabel:           "Remove",
+					OuterRightOnClickFunc:     "if(clickCount > 0) clickCount--",
+					InnerIcon:                 "ph-hash",
+					InnerLabelOneWayStatePath: "clickCount",
+				})
+				@uiDisplay.Tag(uiDisplay.TagSettings{
+					OuterLeftLabel:            "count",
+					InnerValueOneWayStatePath: "clickCount",
+				})
+			</div>
+			<p class={ DemoLiveStateClasses }>
+				Count: <span x-text="clickCount"></span>
+			</p>
+		</div>
+	}
+}
+
+templ TagRemovableExample() {
+	{{
+		removableUsage := `@uiDisplay.Tag(uiDisplay.TagSettings{
+	OuterLeftLabel: "Status: running",
+
+	// OptionalFields
+	OnRemoveFunc:         "showTag = false",
+	RemoveButtonLabel:    "Remove status filter",
+})`
+	}}
+	@DemoExampleCard(
+		"Removable Tags",
+		"OnRemoveFunc renders a remove button on the tag. RemoveButtonLabel names it for screen readers.",
+		"/display/tag.templ",
+		removableUsage,
+	) {
+		<div x-data="{showRemovableTag: true}" class="flex flex-col gap-2">
+			<div class="flex flex-row flex-wrap items-center gap-2">
+				<span x-show="showRemovableTag">
+					@uiDisplay.Tag(uiDisplay.TagSettings{
+						Size:                 uiDisplay.TagSizeSm,
+						OuterBackgroundColor: "neutral-50/10",
+						OuterRingColor:       "neutral-50/20",
+						OuterTextColor:       "neutral-50",
+						OuterLeftLabel:       "Status: running",
+						OnRemoveFunc:         "showRemovableTag = false",
+						RemoveButtonLabel:    "Remove status filter",
+					})
+				</span>
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:                    "Restore",
+					IconLeft:                 "ph-arrow-counter-clockwise",
+					IsVisibleOneWayStatePath: "!showRemovableTag",
+					OnClickFunc:              "showRemovableTag = true",
+					Size:                     uiControl.ButtonSizeSm,
+				})
+			</div>
+		</div>
+	}
+}
+
+templ TagTextCaseExample() {
+	{{
+		textCaseUsage := `@uiDisplay.Tag(uiDisplay.TagSettings{
+	OuterLeftLabel: "Info",
+	InnerLabel:     "Warning",
+
+	// OptionalFields
+	TextCase: uiToolset.TextCaseUpper,
+})`
+	}}
+	@DemoExampleCard(
+		"Text Case",
+		"TextCase transforms the tag labels. It accepts uiToolset.TextCaseNone (the default, as typed), TextCaseLower, TextCaseUpper, or TextCaseCapitalize.",
+		"/display/tag.templ",
+		textCaseUsage,
+	) {
+		<div class="flex flex-row flex-wrap items-center gap-2">
+			for _, textCase := range []string{
+				uiToolset.TextCaseNone,
+				uiToolset.TextCaseLower,
+				uiToolset.TextCaseUpper,
+				uiToolset.TextCaseCapitalize,
+			} {
+				@uiDisplay.Tag(uiDisplay.TagSettings{
+					Size:           uiDisplay.TagSizeSm,
+					OuterLeftLabel: "Info (" + textCase + ")",
+					InnerLabel:     "Warning",
+					TextCase:       textCase,
+				})
+			}
+		</div>
+	}
+}
+
+templ TagDemo() {
+	{{
+		demoUsage := `@uiDisplay.Tag(uiDisplay.TagSettings{
+	OuterLeftIcon:  "ph-info",
+	OuterLeftLabel: "Info",
+	InnerLabel:     "Warning",
+})`
+	}}
+	<div class="flex flex-col gap-4" id="tag-demo">
+		@DemoComponentSection(DemoComponentSectionSettings{
+			ComponentPath:          "/display/tag.templ",
+			Description:            "A tag is a small label that can be used to categorize or identify content.",
+			LiveExampleDescription: "The common shapes: an outer label with an inner label, and an outer label with a bound inner value.",
+			Title:                  ".Tag",
+			UsageCode:              demoUsage,
+		}) {
+			<div x-data="{clickCount: 4}" class="flex flex-row flex-wrap items-center gap-4">
+				@uiDisplay.Tag(uiDisplay.TagSettings{
+					OuterLeftIcon:  "ph-info",
+					OuterLeftLabel: "Info",
+					InnerIcon:      "ph-warning",
+					InnerLabel:     "Warning",
+				})
+				@uiDisplay.Tag(uiDisplay.TagSettings{
+					OuterLeftLabel:            "count",
+					InnerValueOneWayStatePath: "clickCount",
+				})
+			</div>
+		}
+		@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
+			{Title: "Sizes", Icon: "ph-ruler", Content: TagSizesExample()},
+			{Title: "Radii", Icon: "ph-circle", Content: TagRadiiExample()},
+			{Title: "Outer Ring Colors", Icon: "ph-circle-dashed", Content: TagOuterRingColorsExample()},
+			{Title: "Outer Background Colors", Icon: "ph-paint-bucket", Content: TagOuterBackgroundColorsExample()},
+			{Title: "Inner Colors", Icon: "ph-drop", Content: TagInnerColorsExample()},
+			{Title: "Side Element Actions", Icon: "ph-hand-tap", Content: TagSideElementActionsExample()},
+			{Title: "Removable Tags", Icon: "ph-x", Content: TagRemovableExample()},
+			{Title: "Text Case", Icon: "ph-text-t", Content: TagTextCaseExample()},
+		})
+	</div>
+}

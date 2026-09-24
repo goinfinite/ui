@@ -1,0 +1,344 @@
+package main
+
+import (
+	uiControl "github.com/goinfinite/ui/src/control"
+	uiDisplay "github.com/goinfinite/ui/src/display"
+)
+
+templ ConfirmationDialogDemoTargetReference() {
+	<p class={ DemoLiveStateClasses }>
+		Target: <span x-text="demoTargetName"></span> (id: <span x-text="demoTargetId"></span>) ·
+		Confirmed: <span x-text="confirmedAction">nothing yet</span>
+	</p>
+}
+
+templ ConfirmationDialogTypeToConfirmExample() {
+	{{
+		typeToConfirmUsage := `@uiDisplay.ConfirmDialog(uiDisplay.ConfirmationDialogSettings{
+	IsVisibleTwoWayStatePath: "isTypeToConfirmVisible",
+	OnConfirmFunc:            "runAction()",
+
+	// OptionalFields
+	IsTypeToConfirmEnabled:     true,
+	TypeToConfirmExpectedValue: "proceed",
+})`
+	}}
+	@DemoExampleCard(
+		"Type-to-Confirm",
+		"IsTypeToConfirmEnabled gates the confirm button behind a typed match. The match comes from TargetNameStatePath, TargetIdStatePath, or TypeToConfirmExpectedValue. The delete and critical presets enable this by default.",
+		"/display/confirmationDialog.templ",
+		typeToConfirmUsage,
+	) {
+		<div
+			class="flex flex-col gap-4"
+			x-data="{isTypeToConfirmVisible: false, typedConfirmationValue: '', typeToConfirmDone: false}"
+		>
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "Open Typed Prompt",
+				IconLeft:        "ph-shield-check",
+				OnClickFunc:     "isTypeToConfirmVisible = true",
+				Size:            uiControl.ButtonSizeSm,
+				BackgroundColor: "primary-800",
+			})
+			<p class={ DemoLiveStateClasses }>
+				Confirmed: <span x-text="typeToConfirmDone"></span>
+			</p>
+			@uiDisplay.ConfirmDialog(uiDisplay.ConfirmationDialogSettings{
+				IsVisibleTwoWayStatePath:   "isTypeToConfirmVisible",
+				OnConfirmFunc:              "typeToConfirmDone = true; isTypeToConfirmVisible = false",
+				HeaderTitle:                "Typed Prompt",
+				IsTypeToConfirmEnabled:     true,
+				TypeToConfirmExpectedValue: "proceed",
+			})
+		</div>
+	}
+}
+
+templ ConfirmationDialogUncloseableExample() {
+	{{
+		uncloseableUsage := `@uiDisplay.ConfirmDialog(uiDisplay.ConfirmationDialogSettings{
+	IsVisibleTwoWayStatePath: "isUncloseableVisible",
+	OnConfirmFunc:            "runAction()",
+
+	// OptionalFields
+	IsUncloseable: true,
+	CancelFunc:    "isUncloseableVisible = false",
+})`
+	}}
+	@DemoExampleCard(
+		"Uncloseable",
+		"IsUncloseable hides the close button and ignores backdrop clicks. CancelFunc still closes the dialog from its cancel button.",
+		"/display/confirmationDialog.templ",
+		uncloseableUsage,
+	) {
+		<div
+			class="flex flex-col gap-4"
+			x-data="{isUncloseableVisible: false, uncloseableDone: false}"
+		>
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "Open Uncloseable",
+				IconLeft:        "ph-lock",
+				OnClickFunc:     "isUncloseableVisible = true",
+				Size:            uiControl.ButtonSizeSm,
+				BackgroundColor: "red-700",
+			})
+			@uiDisplay.ConfirmDialog(uiDisplay.ConfirmationDialogSettings{
+				IsVisibleTwoWayStatePath: "isUncloseableVisible",
+				OnConfirmFunc:            "uncloseableDone = true; isUncloseableVisible = false",
+				HeaderTitle:              "Uncloseable Prompt",
+				IsUncloseable:            true,
+				CancelFunc:               "isUncloseableVisible = false",
+			})
+		</div>
+	}
+}
+
+templ ConfirmationDialogButtonLabelsExample() {
+	{{
+		labelsUsage := `@uiDisplay.ConfirmDialog(uiDisplay.ConfirmationDialogSettings{
+	IsVisibleTwoWayStatePath: "isLabelsVisible",
+	OnConfirmFunc:            "runAction()",
+
+	// OptionalFields
+	HeaderTitle:        "Purge Records",
+	ConfirmButtonLabel: "Purge Everything",
+	ConfirmButtonIcon:  "ph-fire",
+	CancelButtonLabel:  "Keep It",
+})`
+	}}
+	@DemoExampleCard(
+		"Button Labels & Icons",
+		"ConfirmButtonLabel, ConfirmButtonIcon, and CancelButtonLabel override the preset copy. CancelFunc runs when the cancel button is pressed.",
+		"/display/confirmationDialog.templ",
+		labelsUsage,
+	) {
+		<div
+			class="flex flex-col gap-4"
+			x-data="{isLabelsVisible: false, labelsDone: false}"
+		>
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "Open Custom Labels",
+				IconLeft:        "ph-fire",
+				OnClickFunc:     "isLabelsVisible = true",
+				Size:            uiControl.ButtonSizeSm,
+				BackgroundColor: "red-800",
+			})
+			<p class={ DemoLiveStateClasses }>
+				Confirmed: <span x-text="labelsDone"></span>
+			</p>
+			@uiDisplay.ConfirmDialog(uiDisplay.ConfirmationDialogSettings{
+				IsVisibleTwoWayStatePath: "isLabelsVisible",
+				OnConfirmFunc:            "labelsDone = true; isLabelsVisible = false",
+				HeaderTitle:              "Purge Records",
+				ConfirmButtonLabel:       "Purge Everything",
+				ConfirmButtonIcon:        "ph-fire",
+				CancelButtonLabel:        "Keep It",
+			})
+		</div>
+	}
+}
+
+templ ConfirmationDialogDemoCustomMessage() {
+	<div class="flex flex-col gap-2 text-left">
+		<p class="text-sm font-bold">Billing impact</p>
+		<p class="text-sm text-neutral-400">
+			Removing this record stops the metered plan at the end of the cycle. Invoices already issued stay open.
+		</p>
+	</div>
+}
+
+templ ConfirmationDialogDemoCustomHeader() {
+	<div class="flex flex-col gap-1">
+		<p class="text-xs font-bold uppercase text-amber-300">Maintenance window</p>
+		<h3 class="text-xl font-bold">Drain the edge pool?</h3>
+	</div>
+}
+
+templ ConfirmationDialogCustomSlotsExample() {
+	{{
+		slotsUsage := `@uiDisplay.ConfirmDialog(uiDisplay.ConfirmationDialogSettings{
+	IsVisibleTwoWayStatePath: "isSlotsVisible",
+	OnConfirmFunc:            "runAction()",
+
+	// OptionalFields
+	MessageContent: ConfirmationDialogDemoCustomMessage(),
+	HeaderContent:  ConfirmationDialogDemoCustomHeader(),
+	Size:           uiDisplay.ConfirmationDialogSizeLg,
+})`
+	}}
+	@DemoExampleCard(
+		"Custom Message & Header",
+		"MessageContent replaces the question copy. HeaderContent replaces the icon and title block. Size sets the dialog width.",
+		"/display/confirmationDialog.templ",
+		slotsUsage,
+	) {
+		<div
+			class="flex flex-col gap-4"
+			x-data="{isSlotsVisible: false, slotsDone: false}"
+		>
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "Open Custom Slots",
+				IconLeft:        "ph-columns",
+				OnClickFunc:     "isSlotsVisible = true",
+				Size:            uiControl.ButtonSizeSm,
+				BackgroundColor: "secondary-700",
+			})
+			<p class={ DemoLiveStateClasses }>
+				Confirmed: <span x-text="slotsDone"></span>
+			</p>
+			@uiDisplay.ConfirmDialog(uiDisplay.ConfirmationDialogSettings{
+				IsVisibleTwoWayStatePath: "isSlotsVisible",
+				OnConfirmFunc:            "slotsDone = true; isSlotsVisible = false",
+				MessageContent:           ConfirmationDialogDemoCustomMessage(),
+				HeaderContent:            ConfirmationDialogDemoCustomHeader(),
+				Size:                     uiDisplay.ConfirmationDialogSizeLg,
+			})
+		</div>
+	}
+}
+
+templ ConfirmationDialogIconPositionExample() {
+	{{
+		iconPositionUsage := `@uiDisplay.WarningDialog(uiDisplay.ConfirmationDialogSettings{
+	IsVisibleTwoWayStatePath: "isIconPositionVisible",
+	OnConfirmFunc:            "runAction()",
+
+	// OptionalFields
+	HeaderIconPosition: uiDisplay.HeaderIconPositionLeft,
+})`
+	}}
+	@DemoExampleCard(
+		"Icon On Left",
+		"HeaderIconPosition defaults to Top, which centers the icon above the title. HeaderIconPositionLeft places it beside the title.",
+		"/display/confirmationDialog.templ",
+		iconPositionUsage,
+	) {
+		<div
+			class="flex flex-col gap-4"
+			x-data="{isIconPositionVisible: false}"
+		>
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "Open Left Icon",
+				IconLeft:        "ph-arrow-left",
+				OnClickFunc:     "isIconPositionVisible = true",
+				Size:            uiControl.ButtonSizeSm,
+				BackgroundColor: "amber-800",
+			})
+			@uiDisplay.WarningDialog(uiDisplay.ConfirmationDialogSettings{
+				IsVisibleTwoWayStatePath: "isIconPositionVisible",
+				OnConfirmFunc:            "isIconPositionVisible = false",
+				HeaderTitle:              "Icon Beside Title",
+				HeaderIconPosition:       uiDisplay.HeaderIconPositionLeft,
+			})
+		</div>
+	}
+}
+
+templ ConfirmationDialogDemo() {
+	{{
+		demoUsage := `@uiDisplay.DeleteDialog(uiDisplay.ConfirmationDialogSettings{
+	IsVisibleTwoWayStatePath: "isDeleteDialogVisible",
+	OnConfirmFunc:            "deleteRecord()",
+
+	// OptionalFields
+	TargetNameStatePath: "demoTargetName",
+	TargetIdStatePath:   "demoTargetId",
+})`
+	}}
+	<div class="flex flex-col gap-4" id="confirmation-dialog-demo">
+		@DemoComponentSection(DemoComponentSectionSettings{
+			ComponentPath:          "/display/confirmationDialog.templ",
+			Description:            "Confirmation dialog presets: confirm, warning, critical, and delete. Each preset supplies its icon, tone, and confirmation copy. Delete and critical gate the confirm action behind typing the target name.",
+			LiveExampleDescription: "The four presets against one target. Delete and critical require typing the target name.",
+			Title:                  ".ConfirmationDialog",
+			UsageCode:              demoUsage,
+			AlpineStateCode: `<div x-data="{
+  isDeleteDialogVisible: false,
+  demoTargetName: 'primary-database',
+  demoTargetId: '42',
+}"></div>`,
+		}) {
+			<div
+				class="flex flex-col gap-4"
+				x-data="{
+					isConfirmDialogVisible: false,
+					isWarningDialogVisible: false,
+					isCriticalDialogVisible: false,
+					isDeleteDialogVisible: false,
+					demoTargetName: 'primary-database',
+					demoTargetId: '42',
+					confirmedAction: '',
+				}"
+			>
+				@ConfirmationDialogDemoTargetReference()
+				<div class="flex flex-row flex-wrap items-start gap-10">
+					<div class="flex flex-col gap-2">
+						<p class="text-sm text-neutral-400">Presets</p>
+						<div class="flex flex-wrap gap-2">
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "Confirm",
+								IconLeft:        "ph-question",
+								OnClickFunc:     "isConfirmDialogVisible = true",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "primary-800",
+							})
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "Warning",
+								IconLeft:        "ph-warning-circle",
+								OnClickFunc:     "isWarningDialogVisible = true",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "amber-800",
+							})
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "Critical",
+								IconLeft:        "ph-warning",
+								OnClickFunc:     "isCriticalDialogVisible = true",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "red-700",
+							})
+							@uiControl.Button(uiControl.ButtonSettings{
+								Label:           "Delete",
+								IconLeft:        "ph-trash",
+								OnClickFunc:     "isDeleteDialogVisible = true",
+								Size:            uiControl.ButtonSizeSm,
+								BackgroundColor: "red-800",
+							})
+						</div>
+					</div>
+				</div>
+				@uiDisplay.ConfirmDialog(uiDisplay.ConfirmationDialogSettings{
+					IsVisibleTwoWayStatePath: "isConfirmDialogVisible",
+					OnConfirmFunc:            "confirmedAction = 'confirmed'; isConfirmDialogVisible = false",
+					TargetNameStatePath:      "demoTargetName",
+					TargetIdStatePath:        "demoTargetId",
+				})
+				@uiDisplay.WarningDialog(uiDisplay.ConfirmationDialogSettings{
+					IsVisibleTwoWayStatePath: "isWarningDialogVisible",
+					OnConfirmFunc:            "confirmedAction = 'warning acknowledged'; isWarningDialogVisible = false",
+					TargetNameStatePath:      "demoTargetName",
+					TargetIdStatePath:        "demoTargetId",
+				})
+				@uiDisplay.CriticalDialog(uiDisplay.ConfirmationDialogSettings{
+					IsVisibleTwoWayStatePath: "isCriticalDialogVisible",
+					OnConfirmFunc:            "confirmedAction = 'critical action ran'; isCriticalDialogVisible = false",
+					TargetNameStatePath:      "demoTargetName",
+					TargetIdStatePath:        "demoTargetId",
+					HeaderIconPosition:       uiDisplay.HeaderIconPositionTop,
+				})
+				@uiDisplay.DeleteDialog(uiDisplay.ConfirmationDialogSettings{
+					IsVisibleTwoWayStatePath: "isDeleteDialogVisible",
+					OnConfirmFunc:            "confirmedAction = 'deleted ' + demoTargetName; isDeleteDialogVisible = false",
+					TargetNameStatePath:      "demoTargetName",
+					TargetIdStatePath:        "demoTargetId",
+				})
+			</div>
+		}
+		@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
+			{Title: "Type-to-Confirm", Icon: "ph-keyboard", Content: ConfirmationDialogTypeToConfirmExample()},
+			{Title: "Uncloseable", Icon: "ph-lock", Content: ConfirmationDialogUncloseableExample()},
+			{Title: "Button Labels & Icons", Icon: "ph-hand-tap", Content: ConfirmationDialogButtonLabelsExample()},
+			{Title: "Custom Message & Header", Icon: "ph-columns", Content: ConfirmationDialogCustomSlotsExample()},
+			{Title: "Icon On Left", Icon: "ph-arrow-left", Content: ConfirmationDialogIconPositionExample()},
+		})
+	</div>
+}

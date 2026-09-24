@@ -65,17 +65,35 @@ func buildDemoServerRecords() []DemoServerRecord {
 	return records
 }
 
+func buildDemoEnvironmentOptions() []uiForm.SelectLabelValueOption {
+	return []uiForm.SelectLabelValueOption{
+		{Label: "production", Value: "production"},
+		{Label: "staging", Value: "staging"},
+	}
+}
+
+func buildDemoRegionOptions() []uiForm.SelectLabelValueOption {
+	return []uiForm.SelectLabelValueOption{
+		{Label: "us-east-1", Value: "us-east-1"},
+		{Label: "eu-west-1", Value: "eu-west-1"},
+	}
+}
+
+func buildDemoRecordStatusOptions() []uiForm.SelectLabelValueOption {
+	return []uiForm.SelectLabelValueOption{
+		{Label: "running", Value: "running"},
+		{Label: "stopped", Value: "stopped"},
+	}
+}
+
 func buildDemoRecordFilters() []uiStructural.FilterSettings {
 	return []uiStructural.FilterSettings{
 		{Key: "name", Label: "Name", Kind: uiStructural.FilterKindTextContains},
 		{
-			Key:   "status",
-			Label: "Status",
-			Kind:  uiStructural.FilterKindEnumSelect,
-			Options: []uiForm.SelectLabelValueOption{
-				{Label: "running", Value: "running"},
-				{Label: "stopped", Value: "stopped"},
-			},
+			Key:     "status",
+			Label:   "Status",
+			Kind:    uiStructural.FilterKindEnumSelect,
+			Options: buildDemoRecordStatusOptions(),
 		},
 		{Key: "cpu", Label: "CPU", Kind: uiStructural.FilterKindNumberRange},
 	}

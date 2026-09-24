@@ -1,0 +1,269 @@
+package main
+
+import (
+	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiForm "github.com/goinfinite/ui/src/form"
+)
+
+templ MultiSelectInputDemoOption1() {
+	<div class="flex flex-col">
+		<h4 class="text-base font-bold">🇦🇷 Argentina</h4>
+		<p class="text-sm text-neutral-400">Known for its dance and wine.</p>
+	</div>
+}
+
+templ MultiSelectInputDemoOption2() {
+	<div class="flex flex-col">
+		<h4 class="text-base font-bold">🇧🇷 Brazil</h4>
+		<p class="text-sm text-neutral-400">Known for its music and natural beauty.</p>
+	</div>
+}
+
+templ MultiSelectInputDemoOption3() {
+	<div class="flex flex-col">
+		<h4 class="text-base font-bold">🇨🇱 Chile</h4>
+		<p class="text-sm text-neutral-400">Known for its deserts and mysterious islands.</p>
+	</div>
+}
+
+templ MultiSelectInputLabelValueExample() {
+	{{
+		labelValueUsage := `@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
+	InputName: "countries",
+	Label:     "Countries",
+
+	// OptionalFields
+	LabelValueOptions: []uiForm.SelectLabelValueOption{
+		{Label: "Argentina", Value: "AR"},
+		{Label: "Brazil", Value: "BR"},
+		{Label: "Chile", Value: "CL"},
+	},
+	TwoWayStatePath: "countries",
+})`
+	}}
+	@DemoExampleCard(
+		"LabelValueOptions",
+		"LabelValueOptions send a stored Value while showing a human Label. The bound state holds the selected Values.",
+		"/form/multiSelectInput.templ",
+		labelValueUsage,
+	) {
+		@DemoAlpineStateBlock(`<div x-data="{countries: ['BR']}"></div>`)
+		<div x-data="{countries: ['BR']}">
+			@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
+				InputName: "countriesLabelValue",
+				Label:     "Countries",
+				LabelValueOptions: []uiForm.SelectLabelValueOption{
+					{
+						Label: "Argentina",
+						Value: "AR",
+					},
+					{
+						Label: "Brazil",
+						Value: "BR",
+					},
+					{
+						Label: "Chile",
+						Value: "CL",
+					},
+				},
+				TwoWayStatePath: "countries",
+			})
+		</div>
+	}
+}
+
+templ MultiSelectInputHtmlOptionsExample() {
+	{{
+		htmlOptionsUsage := `@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
+	InputName: "countriesWithHtml",
+	Label:     "Countries",
+
+	// OptionalFields
+	LabelValueOptions: []uiForm.SelectLabelValueOption{
+		{Label: "Argentina", LabelHtml: MultiSelectInputDemoOption1(), Value: "AR"},
+		{Label: "Brazil", LabelHtml: MultiSelectInputDemoOption2(), Value: "BR"},
+		{Label: "Chile", LabelHtml: MultiSelectInputDemoOption3(), Value: "CL"},
+	},
+	TwoWayStatePath: "countries",
+})`
+	}}
+	@DemoExampleCard(
+		"HTML Option Labels",
+		"LabelHtml replaces the plain option label with custom markup in the dropdown.",
+		"/form/multiSelectInput.templ",
+		htmlOptionsUsage,
+	) {
+		@DemoAlpineStateBlock(`<div x-data="{countries: ['BR']}"></div>`)
+		<div class="flex flex-col gap-3" x-data="{countries: ['BR']}">
+			<p class="text-sm text-neutral-400">Click the dropdown to see the HTML labels.</p>
+			@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
+				InputName: "countriesWithHtml",
+				Label:     "Countries",
+				LabelValueOptions: []uiForm.SelectLabelValueOption{
+					{
+						Label:     "Argentina",
+						LabelHtml: MultiSelectInputDemoOption1(),
+						Value:     "AR",
+					},
+					{
+						Label:     "Brazil",
+						LabelHtml: MultiSelectInputDemoOption2(),
+						Value:     "BR",
+					},
+					{
+						Label:     "Chile",
+						LabelHtml: MultiSelectInputDemoOption3(),
+						Value:     "CL",
+					},
+				},
+				TwoWayStatePath: "countries",
+			})
+		</div>
+	}
+}
+
+templ MultiSelectInputHintsExample() {
+	{{
+		hintsUsage := `@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
+	InputName: "countriesHint",
+	Label:     "Countries",
+
+	// OptionalFields
+	FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+	TwoWayStatePath: "countries",
+	HintValue:        "This is a helpful hint.",
+	HintDisplay:      uiForm.InputHintDisplayDescription,
+})`
+	}}
+	@DemoExampleCard(
+		"Hints",
+		"HintValue explains the field. HintDisplay shows it as a description below the field or as a tooltip.",
+		"/form/multiSelectInput.templ",
+		hintsUsage,
+	) {
+		<div class="flex flex-col gap-6" x-data="{countries: ['Brazil']}">
+			@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
+				InputName:       "countriesHintDescription",
+				Label:           "Countries",
+				FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+				TwoWayStatePath: "countries",
+				HintValue:       "This is a helpful hint displayed as a description below the multi-select.",
+				HintDisplay:     uiForm.InputHintDisplayDescription,
+			})
+			@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
+				InputName:       "countriesHintTooltip",
+				Label:           "Countries",
+				FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+				TwoWayStatePath: "countries",
+				HintValue:       "This is a helpful hint displayed as a tooltip.",
+				HintDisplay:     uiForm.InputHintDisplayTooltip,
+			})
+		</div>
+	}
+}
+
+templ MultiSelectInputHintIconStyleExample() {
+	{{
+		hintIconUsage := `@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
+	InputName: "countriesHintBoxed",
+	Label:     "Countries",
+
+	// OptionalFields
+	FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+	TwoWayStatePath: "countries",
+	HintValue:        "This is a helpful hint.",
+	HintDisplay:      uiForm.InputHintDisplayTooltip,
+	HintIconStyle:    uiForm.InputHintIconStyleBoxed,
+})`
+	}}
+	@DemoExampleCard(
+		"Hint Icon Styles",
+		"HintIconStyle renders the hint trigger as an icon or as a boxed tooltip.",
+		"/form/multiSelectInput.templ",
+		hintIconUsage,
+	) {
+		<div x-data="{countries: ['Brazil']}">
+			@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
+				InputName:       "countriesHintBoxed",
+				Label:           "Countries",
+				FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+				TwoWayStatePath: "countries",
+				HintValue:       "This is a helpful hint displayed as a boxed tooltip.",
+				HintDisplay:     uiForm.InputHintDisplayTooltip,
+				HintIconStyle:   uiForm.InputHintIconStyleBoxed,
+			})
+		</div>
+	}
+}
+
+templ MultiSelectInputRequiredExample() {
+	{{
+		requiredUsage := `@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
+	InputName: "countriesRequired",
+	Label:     "Countries",
+
+	// OptionalFields
+	FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+	TwoWayStatePath: "countries",
+	IsRequired:      true,
+})`
+	}}
+	@DemoExampleCard(
+		"Required",
+		"IsRequired marks the field as required.",
+		"/form/multiSelectInput.templ",
+		requiredUsage,
+	) {
+		<div x-data="{countries: ['Brazil']}">
+			@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
+				InputName:       "countriesRequired",
+				Label:           "Countries",
+				FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+				TwoWayStatePath: "countries",
+				IsRequired:      true,
+			})
+		</div>
+	}
+}
+
+templ MultiSelectInputDemo() {
+	{{
+		demoUsage := `@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
+	InputName: "countries",
+	Label:     "Countries",
+
+	// OptionalFields
+	FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+	TwoWayStatePath: "countries",
+})`
+	}}
+	<div class="flex flex-col gap-4" id="multi-select-input-demo">
+		@DemoComponentSection(DemoComponentSectionSettings{
+			ComponentPath:          "/form/multiSelectInput.templ",
+			Description:            "A multi-select input allows users to select multiple options from a dropdown list.",
+			LiveExampleDescription: "A multi-select bound to an Alpine array, with flat option labels.",
+			Title:                  ".MultiSelectInput",
+			UsageCode:              demoUsage,
+			AlpineStateCode:        `<div x-data="{countries: ['Brazil']}"></div>`,
+		}) {
+			<div x-data="{countries: ['Brazil']}">
+				@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
+					InputName:       "countries",
+					Label:           "Countries",
+					FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+					TwoWayStatePath: "countries",
+				})
+				<p class={ DemoLiveStateClasses }>
+					Values: <span x-text="JSON.stringify(countries)"></span>
+				</p>
+			</div>
+		}
+		@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
+			{Title: "LabelValueOptions", Icon: "ph-tag", Content: MultiSelectInputLabelValueExample()},
+			{Title: "HTML Option Labels", Icon: "ph-code", Content: MultiSelectInputHtmlOptionsExample()},
+			{Title: "Hints", Icon: "ph-info", Content: MultiSelectInputHintsExample()},
+			{Title: "Hint Icon Styles", Icon: "ph-question", Content: MultiSelectInputHintIconStyleExample()},
+			{Title: "Required", Icon: "ph-asterisk", Content: MultiSelectInputRequiredExample()},
+		})
+	</div>
+}
