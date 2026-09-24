@@ -2,6 +2,42 @@
 
 ```log
 0.2.2 - 2026/09/22
+refactor: split the demo page into one templ file per component
+fix: show the loading overlay while a request is in flight
+test: assert the runner CLI contract and cap the test processes
+test: assert rendered behavior across the component specs
+docs: document the new components in the package readmes
+feat: add the text case values and class resolver to the toolset
+feat: add the text case setting to the components
+feat: scale the input field with its affixes and floating label
+feat: add the change callback to the multi select input
+fix: center the hint icon on the field box
+feat: add multi value support to the filter bar
+feat: repeat multi value filters in the refresh query
+feat: hide the pagination on a single page
+feat: pass the filter and pagination options through the data table
+feat: default the modal resize range to medium through near-full
+feat: size the modal width and height from viewport percentages
+refactor: split the modal resize into separate enlarge and reduce controls
+refactor: rename the modal Size to InitialSize and AvailableSizes to PossibleSizes
+refactor: move the demo section layout into one shared template
+test: cover the sidebar dynamic classes builder and the accordion cutout
+refactor: extract the sidebar dynamic classes builder into Go
+fix: stop the sidebar float classes from reading an empty attachment path
+fix: bind the sidebar demo collapse state to the shared sidebar content
+feat: show the accordion item content as a cutout of the parent surface
+docs: state the alert title and description raw-html contract
+docs: separate the demo live-state readouts from their components
+docs: stack the demo meta blocks and put the live example beside them
+test: cover the card and page headings with structural specs
+test: cover the confirmation dialog presets and type-to-confirm gate
+test: cover the modal viewport percentage sizes
+docs: show the page headings, card, confirmation dialog presets, and near-full modal in the demo
+feat: add the delete and critical type-to-confirm gate to the confirmation dialogs
+feat: add the confirm, warning, critical, and delete confirmation dialog presets
+feat: make the modal size scale a coupled viewport percentage and add the xxl size
+feat: add the card with header block, middle and footer slots, and surface settings
+feat: add the page heading with page and section levels
 docs: record the v0.2.2 feature entries in the changelog
 test: raise the color contrast baseline to 84
 test: register the form and display unit test nodes
