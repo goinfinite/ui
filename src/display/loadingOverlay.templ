@@ -24,7 +24,7 @@ type LoadingOverlaySettings struct {
 
 templ LoadingOverlay(componentSettings LoadingOverlaySettings) {
 	<!-- LoadingOverlay CSS -->
-	<style type="text/css">.htmx-request #loading-overlay,.htmx-request#loading-overlay{display:flex}</style>
+	<style type="text/css">.htmx-request #loading-overlay,.htmx-request#loading-overlay{display:flex !important}</style>
 	{{ loadingOverlayClasses := "z-100 fixed top-0 left-0 h-full w-full items-center justify-center" }}
 	if componentSettings.IsLoadingOneWayStatePath != "" {
 		{{ loadingOverlayClasses += " flex" }}
