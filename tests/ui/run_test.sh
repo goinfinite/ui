@@ -1,53 +1,26 @@
 #!/usr/bin/env bash
-# @description  Companion tests for run.sh: verifies mode validation and DEMO_URL requirement.
+# @description  CLI contract for run.sh: rejected invocations and the DEMO_URL requirement.
 # @usage        bash tests/ui/run_test.sh
-# @output       PASS lines per assertion; exits 1 on the first failure.
-# @requires     bash v4+
-# @version      0.3.0
-# @updated      2026-09-15
-set -euo pipefail
+# @output       PASS lines per assertion; exits 1 if any assertion fails.
+# @requires     bash v4+, node v24+
+# @version      0.4.0
+# @updated      2026-09-24
+set -uo pipefail
 
-source "$(dirname "$0")/run.sh"
+cd "$(dirname "$0")/../.." || exit 2
 
-#
-## Assertions
-#
-assertEquals() {
-	local label="$1" expected="$2" actual="$3"
-	if [ "$expected" != "$actual" ]; then
-		echo "AssertionFailed $label: expected '$expected', got '$actual'" >&2
-		exit 1
-	fi
-	echo "PASS $label"
-}
+source tests/lib/assertions.sh
 
 #
 ## Runtime
 #
-exitStatus=0
-(validateInvocation smoke) || exitStatus=$?
-assertEquals "accepts registered mode" "0" "$exitStatus"
+# A set DEMO_URL keeps the DEMO_URL guard out of the way, so these two
+# invocations reach the mode validation they claim to test.
+assertExitCode "rejects an unknown mode with exit 2" "2" \
+	env DEMO_URL=http://localhost:8377 bash tests/ui/run.sh bogus-mode
+assertExitCode "rejects a missing mode with exit 2" "2" \
+	env DEMO_URL=http://localhost:8377 bash tests/ui/run.sh ""
+assertExitCode "refuses an unset DEMO_URL with exit 2" "2" \
+	env -u DEMO_URL bash tests/ui/run.sh smoke
 
-exitStatus=0
-(validateInvocation toolset) || exitStatus=$?
-assertEquals "accepts toolset mode" "0" "$exitStatus"
-
-exitStatus=0
-(validateInvocation control) || exitStatus=$?
-assertEquals "accepts control mode" "0" "$exitStatus"
-
-exitStatus=0
-(validateInvocation bogus-mode >/dev/null 2>&1) || exitStatus=$?
-assertEquals "rejects unknown mode with exit 2" "2" "$exitStatus"
-
-exitStatus=0
-(validateInvocation "" >/dev/null 2>&1) || exitStatus=$?
-assertEquals "rejects missing mode with exit 2" "2" "$exitStatus"
-
-exitStatus=0
-(DEMO_URL="http://localhost:8377" requireDemoUrl) || exitStatus=$?
-assertEquals "accepts set DEMO_URL" "0" "$exitStatus"
-
-exitStatus=0
-(unset DEMO_URL; requireDemoUrl >/dev/null 2>&1) || exitStatus=$?
-assertEquals "refuses unset DEMO_URL with exit 2" "2" "$exitStatus"
+exitWithAssertionStatus

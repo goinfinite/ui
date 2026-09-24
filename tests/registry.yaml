@@ -9,12 +9,12 @@ features:
   display:
     - scope: unit
       level: fast
-      run: go test ./src/display/...
+      run: go test -p 3 ./src/display/...
       requires_demo: false
   toolset:
     - scope: unit
       level: fast
-      run: go test ./src/toolset/...
+      run: go test -p 3 ./src/toolset/...
       requires_demo: false
     - scope: ui
       level: fast
@@ -27,7 +27,7 @@ features:
   form:
     - scope: unit
       level: fast
-      run: go test ./src/form/...
+      run: go test -p 3 ./src/form/...
       requires_demo: false
     - scope: ui
       level: fast
@@ -61,7 +61,7 @@ features:
   structural:
     - scope: unit
       level: fast
-      run: go test ./src/structural/...
+      run: go test -p 3 ./src/structural/...
       requires_demo: false
     - scope: ui
       level: fast

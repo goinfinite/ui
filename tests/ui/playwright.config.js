@@ -5,6 +5,7 @@ const demoUrl = process.env.DEMO_URL || "http://localhost:8377";
 export default defineConfig({
   testDir: "./specs",
   fullyParallel: true,
+  workers: 3,
   reporter: [["list"]],
   use: {
     baseURL: demoUrl,
