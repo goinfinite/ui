@@ -136,6 +136,21 @@ UiToolset.RegisterAlpineState(() => {
         const queryParamName =
           this.filterQueryParamNames[filterKey] ?? filterKey;
         const encodedQueryParamName = encodeURIComponent(queryParamName);
+        if (Array.isArray(filterValue)) {
+          for (const singleValue of filterValue) {
+            if (
+              singleValue === null ||
+              singleValue === undefined ||
+              singleValue === ""
+            ) {
+              continue;
+            }
+            filterPairs.push(
+              `${encodedQueryParamName}=${encodeURIComponent(singleValue)}`,
+            );
+          }
+          continue;
+        }
         if (filterValue && typeof filterValue === "object") {
           if (filterValue.min) {
             const encodedMin = encodeURIComponent(filterValue.min);
