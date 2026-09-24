@@ -8,6 +8,31 @@ import (
 //go:embed multiSelectInputState.js
 var multiSelectInputAlpineState string
 
+templ multiSelectInputOptionCheckbox(
+	inputIdPrefix, inputName, optionValue, selectedItemsStatePath, onChangeFunc string,
+) {
+	<span class="relative ml-auto inline-flex h-4 w-4 shrink-0 items-center justify-center">
+		<input
+			type="checkbox"
+			if inputIdPrefix != "" {
+				id={ inputIdPrefix + "-" + optionValue }
+			}
+			if inputName != "" {
+				name={ inputName }
+			}
+			value={ optionValue }
+			x-model={ selectedItemsStatePath }
+			if onChangeFunc != "" {
+				@change={ onChangeFunc }
+			}
+			class="peer absolute inset-0 h-full w-full cursor-pointer opacity-0"
+		/>
+		<span class="flex h-4 w-4 items-center justify-center rounded border-2 border-neutral-50/20 text-transparent transition-colors peer-checked:border-secondary-500 peer-checked:text-secondary-500 peer-focus-visible:ring-2 peer-focus-visible:ring-secondary-500">
+			<i class="ph-bold ph-check text-[0.625rem]"></i>
+		</span>
+	</span>
+}
+
 type MultiSelectInputSettings struct {
 	InputName string
 	Label     string
@@ -18,7 +43,9 @@ type MultiSelectInputSettings struct {
 	TwoWayStatePath                   string
 	InputId                           string
 	IsRequired                        bool
+	OnChangeFunc                      string
 	DropdownBackgroundColor           string
+	TextCase                          string
 	HintValue                         string
 	HintStatePath                     string
 	HintDisplay                       string
@@ -34,7 +61,12 @@ templ MultiSelectInput(componentSettings MultiSelectInputSettings) {
 	if componentSettings.TwoWayStatePath != "" {
 		{{ selectedItemsStatePath = componentSettings.TwoWayStatePath }}
 	}
+	{{ onChangeSuffix := "" }}
+	if componentSettings.OnChangeFunc != "" {
+		{{ onChangeSuffix = "; " + componentSettings.OnChangeFunc }}
+	}
 	{{ labelValueOptionsScriptId := componentSettings.InputName + "LabelValueOptions" }}
+	{{ textCaseClass := uiToolset.TextCaseClassResolver(componentSettings.TextCase) }}
 	<div
 		x-data={ templ.JSFuncCall("multiSelectInput", labelValueOptionsScriptId) }
 		class="flex w-full flex-col"
@@ -51,7 +83,7 @@ templ MultiSelectInput(componentSettings MultiSelectInputSettings) {
 			}
 		>
 			<legend
-				class="ml-1 select-none px-1 text-xs font-bold text-neutral-50/80"
+				class={ "ml-1 select-none px-1 text-xs font-bold text-neutral-50/80 " + textCaseClass }
 				if componentSettings.TwoWayStatePath != "" {
 					:class={ `!` + componentSettings.TwoWayStatePath + `.length && 'opacity-0 !p-0 w-0 h-0'` }
 				}
@@ -75,18 +107,18 @@ templ MultiSelectInput(componentSettings MultiSelectInputSettings) {
 				@keydown.space.prevent="toggleDropdownDisplay()"
 				@keydown.escape="closeDropdown()"
 			>
-				{{ formattedSelectedItemsExpression := `selectedItemsDisplayFormatter(` + selectedItemsStatePath + `) || '` + componentSettings.Label + `'` }}
-				<div
-					x-text={ formattedSelectedItemsExpression }
-					class="w-full overflow-hidden text-ellipsis"
-				></div>
+				{{ formattedSelectedItemsExpression := "selectedItemsDisplayFormatter(" + selectedItemsStatePath + ")" }}
+				<div class="w-full overflow-hidden text-ellipsis">
+					<span x-show={ formattedSelectedItemsExpression } x-text={ formattedSelectedItemsExpression }></span>
+					<span class={ textCaseClass } x-show={ "!(" + formattedSelectedItemsExpression + ")" }>{ componentSettings.Label }</span>
+				</div>
 				<div class="flex items-center gap-2.5 text-neutral-100/60">
 					<!-- SelectDropdownIcon -->
 					<i class="ph-bold ph-caret-down pt-0.5 text-sm transition-transform hover:text-neutral-300 group-focus-within:text-neutral-300 group-hover:text-neutral-300" :class="shouldExpandOptions ? 'rotate-180' : ''"></i>
 					<!-- SelectClearIcon -->
 					<i
 						x-show={ selectedItemsStatePath + ".length > 0" }
-						@click.stop.prevent={ selectedItemsStatePath + " = []" }
+						@click.stop.prevent={ selectedItemsStatePath + " = []" + onChangeSuffix }
 						class="ph-bold ph-x-circle text-lg hover:text-neutral-300"
 					></i>
 					if shouldRenderInputHintTooltip(componentSettings.HintDisplay, componentSettings.HintValue, componentSettings.HintStatePath) {
@@ -113,43 +145,33 @@ templ MultiSelectInput(componentSettings MultiSelectInputSettings) {
 				{{ dropdownClasses := "cursor-pointer px-3 py-2 transition-colors hover:bg-neutral-50/5 border-neutral-50/5 border-t first:border-t-0" }}
 				for _, option := range componentSettings.FlatOptions {
 					<li class={ dropdownClasses }>
-						<label class="inline-flex w-full cursor-pointer items-center">
+						<label class="inline-flex w-full cursor-pointer items-center gap-2">
 							<span class="text-sm text-neutral-50">{ option }</span>
-							<input
-								type="checkbox"
-								if componentSettings.InputId != "" {
-									id={ componentSettings.InputId + "-" + option }
-								}
-								if componentSettings.InputName != "" {
-									name={ componentSettings.InputName }
-								}
-								value={ option }
-								x-model={ selectedItemsStatePath }
-								class="ml-auto h-4 w-4 rounded border-neutral-50/20 bg-neutral-50/5 text-neutral-50 accent-neutral-50 focus:ring-1 focus:ring-neutral-50/20"
-							/>
+							@multiSelectInputOptionCheckbox(
+								componentSettings.InputId,
+								componentSettings.InputName,
+								option,
+								selectedItemsStatePath,
+								componentSettings.OnChangeFunc,
+							)
 						</label>
 					</li>
 				}
 				for _, option := range componentSettings.LabelValueOptions {
 					<li class={ dropdownClasses }>
-						<label class="inline-flex w-full cursor-pointer items-center">
+						<label class="inline-flex w-full cursor-pointer items-center gap-2">
 							if option.LabelHtml != nil {
 								@option.LabelHtml
 							} else {
 								<span class="text-sm text-neutral-50">{ option.Label }</span>
 							}
-							<input
-								type="checkbox"
-								if componentSettings.InputId != "" {
-									id={ componentSettings.InputId + "-" + option.Value }
-								}
-								if componentSettings.InputName != "" {
-									name={ componentSettings.InputName }
-								}
-								value={ option.Value }
-								x-model={ selectedItemsStatePath }
-								class="ml-auto h-4 w-4 rounded border-neutral-50/20 bg-neutral-50/5 text-neutral-50 accent-neutral-50 focus:ring-1 focus:ring-neutral-50/20"
-							/>
+							@multiSelectInputOptionCheckbox(
+								componentSettings.InputId,
+								componentSettings.InputName,
+								option.Value,
+								selectedItemsStatePath,
+								componentSettings.OnChangeFunc,
+							)
 						</label>
 					</li>
 				}
