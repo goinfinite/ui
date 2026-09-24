@@ -1,11 +1,12 @@
 import { expect, test } from "@playwright/test";
+import { openExamplePanel } from "../../examplePanel.js";
 
-const filterBarSection = "#filter-bar-demo";
+const filterBarSection = "#filter-bar-demo-main";
 const stateReadout = "#filter-bar-demo-state span";
 
 test.describe("FilterBar @structural", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto(`/index.html#${filterBarSection.slice(1)}`);
+    await page.goto("/index.html#filter-bar-demo");
     await expect(page.locator(filterBarSection)).toBeVisible();
   });
 
@@ -103,6 +104,42 @@ test.describe("FilterBar @structural", () => {
     await expect(page.locator(stateReadout).first()).toContainText('"name":""');
     await expect(page.locator(stateReadout).first()).toContainText(
       '"status":""',
+    );
+  });
+
+  test("@smoke multi-value filter holds an array and joins the chip", async ({
+    page,
+  }) => {
+    await openExamplePanel(page, "#filter-bar-demo", "Multi-Value Filter");
+    const multiSection = "#filter-bar-demo-multi";
+    await page
+      .locator(`${multiSection} button[aria-label="Remove Status filter"]`)
+      .click();
+    await page.locator(`${multiSection} [role=button]`).click();
+    await page
+      .locator(`${multiSection} ul li label`)
+      .filter({ hasText: "running" })
+      .click();
+    await page
+      .locator(`${multiSection} ul li label`)
+      .filter({ hasText: "stopped" })
+      .click();
+
+    await expect(
+      page.locator(multiSection).getByText("Status: running, stopped"),
+    ).toBeVisible();
+    await expect(page.locator("#filter-bar-demo-multi-state")).toContainText(
+      '"status":["running","stopped"]',
+    );
+
+    await page
+      .locator(`${multiSection} button[aria-label="Remove Status filter"]`)
+      .click();
+    await expect(
+      page.locator(multiSection).getByText("Status: running, stopped"),
+    ).toBeHidden();
+    await expect(page.locator("#filter-bar-demo-multi-state")).toContainText(
+      '"status":[]',
     );
   });
 });

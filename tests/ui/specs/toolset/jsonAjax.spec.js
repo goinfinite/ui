@@ -64,80 +64,71 @@ test.describe("JsonAjax", () => {
   test("@toolset a finished request hides the loading overlay", async ({
     page,
   }) => {
-    const overlayStates = await page.evaluate(async () => {
-      const overlay = document.getElementById("loading-overlay");
-      const overlayIsShown = () => overlay.classList.contains("htmx-request");
-      window.fetch = async () => ({
-        headers: { get: () => "application/json" },
-        ok: true,
-        status: 200,
-        json: async () => ({ body: {} }),
+    const overlay = page.locator("#loading-overlay").first();
+    await page.evaluate(() => {
+      window.pendingFetch = new Promise((resolve) => {
+        window.releaseFetch = () =>
+          resolve({
+            headers: { get: () => "application/json" },
+            ok: true,
+            status: 200,
+            json: async () => ({ body: {} }),
+          });
       });
-
-      const request = window.UiToolset.JsonAjax("POST", "/resource", {}, false);
-      const shownDuringRequest = overlayIsShown();
-      await request;
-      return { shownDuringRequest, shownAfterRequest: overlayIsShown() };
+      window.fetch = () => window.pendingFetch;
+      window.pendingRequest = window.UiToolset.JsonAjax(
+        "POST",
+        "/resource",
+        {},
+        false,
+      );
     });
 
-    expect(overlayStates).toEqual({
-      shownDuringRequest: true,
-      shownAfterRequest: false,
+    await expect(overlay).toBeVisible();
+
+    await page.evaluate(async () => {
+      window.releaseFetch();
+      await window.pendingRequest;
     });
+    await expect(overlay).toBeHidden();
   });
 
   test("@toolset the loading overlay stays until the last concurrent request finishes", async ({
     page,
   }) => {
-    const overlayStates = await page.evaluate(async () => {
-      const overlay = document.getElementById("loading-overlay");
-      const overlayIsShown = () => overlay.classList.contains("htmx-request");
-      let resolveFirst;
-      let resolveSecond;
+    const overlay = page.locator("#loading-overlay").first();
+    await page.evaluate(() => {
+      const pendingFetches = [];
+      window.releaseNextFetch = () => pendingFetches.shift()();
       window.fetch = () =>
         new Promise((resolve) => {
-          if (!resolveFirst) {
-            resolveFirst = resolve;
-            return;
-          }
-          resolveSecond = resolve;
+          pendingFetches.push(() =>
+            resolve({
+              headers: { get: () => "application/json" },
+              ok: true,
+              status: 200,
+              json: async () => ({ body: {} }),
+            }),
+          );
         });
-      const response = () => ({
-        headers: { get: () => "application/json" },
-        ok: true,
-        status: 200,
-        json: async () => ({ body: {} }),
-      });
-
-      const firstRequest = window.UiToolset.JsonAjax(
-        "POST",
-        "/first",
-        {},
-        false,
-      );
-      const secondRequest = window.UiToolset.JsonAjax(
-        "POST",
-        "/second",
-        {},
-        false,
-      );
-      const shownDuringBoth = overlayIsShown();
-      resolveFirst(response());
-      await firstRequest;
-      const shownAfterFirst = overlayIsShown();
-      resolveSecond(response());
-      await secondRequest;
-      return {
-        shownDuringBoth,
-        shownAfterFirst,
-        shownAfterSecond: overlayIsShown(),
-      };
+      window.pendingRequests = [
+        window.UiToolset.JsonAjax("POST", "/first", {}, false),
+        window.UiToolset.JsonAjax("POST", "/second", {}, false),
+      ];
     });
 
-    expect(overlayStates).toEqual({
-      shownDuringBoth: true,
-      shownAfterFirst: true,
-      shownAfterSecond: false,
+    await expect(overlay).toBeVisible();
+
+    await page.evaluate(async () => {
+      window.releaseNextFetch();
+      await window.pendingRequests[0];
     });
+    await expect(overlay).toBeVisible();
+
+    await page.evaluate(async () => {
+      window.releaseNextFetch();
+      await window.pendingRequests[1];
+    });
+    await expect(overlay).toBeHidden();
   });
 });

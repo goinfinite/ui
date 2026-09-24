@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { openExamplePanel } from "../../examplePanel.js";
 
 const textAreaSection = "#text-area-demo";
 const collapsedHeightPx = 144;
@@ -83,6 +84,7 @@ test.describe("TextArea", () => {
   });
 
   test("read-only instance expands without a state path", async ({ page }) => {
+    await openExamplePanel(page, textAreaSection, "Value & Read-Only");
     await toggleExpand(page, 1);
     await expectStableHeight(page, 1, expandedHeightPx);
   });
@@ -91,15 +93,16 @@ test.describe("TextArea", () => {
     page,
   }) => {
     const fieldset = page.locator(`${textAreaSection} fieldset`).first();
-    const actions = fieldset.locator("div.hidden").first();
+    const toggleHeightButton = fieldset.locator(
+      'button[aria-label="Toggle text area height"]',
+    );
 
-    await expect(actions).toBeHidden();
+    await expect(toggleHeightButton).toBeAttached();
+    await expect(toggleHeightButton).toBeHidden();
     await fieldset.locator("textarea").focus();
-    await expect(actions).toBeVisible();
+    await expect(toggleHeightButton).toBeVisible();
 
-    await fieldset
-      .getByRole("button", { name: "Toggle text area height" })
-      .press("Enter");
+    await toggleHeightButton.press("Enter");
     await expectStableHeight(page, 0, expandedHeightPx);
   });
 

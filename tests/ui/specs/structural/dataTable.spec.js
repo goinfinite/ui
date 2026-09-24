@@ -343,11 +343,8 @@ test.describe("DataTable @structural", () => {
     page,
   }) => {
     await page.evaluate(() => {
-      const dataTable = Alpine.$data(
-        document.getElementById("data-table-demo-table"),
-      );
-      dataTable.refresh();
-      dataTable.refresh();
+      window.dispatchEvent(new CustomEvent("refresh:data-table-demo"));
+      window.dispatchEvent(new CustomEvent("refresh:data-table-demo"));
     });
 
     await expect(rowNames(page).first()).toHaveText("alpha");
@@ -382,12 +379,15 @@ test.describe("DataTable @structural", () => {
   });
 
   test("a global refresh event reloads the table", async ({ page }) => {
-    const refreshUrls = trackRefreshUrls(page);
+    const liveMessage = page.locator(`${tableRoot} p[aria-live=polite]`);
+    const messageBeforeRefresh = await liveMessage.textContent();
+
     await page.evaluate(() =>
       window.dispatchEvent(new CustomEvent("refresh:data-table-demo")),
     );
 
-    await expect.poll(() => refreshUrls.length).toBe(1);
+    await expect(liveMessage).not.toHaveText(messageBeforeRefresh);
+    await expect(liveMessage).toHaveText("Table refreshed");
   });
 
   test("items per page dropdown opens upward when it would overflow the viewport", async ({

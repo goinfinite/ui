@@ -1,10 +1,11 @@
 import { expect, test } from "@playwright/test";
+import { openExamplePanel } from "../../examplePanel.js";
 
-const paginationSection = "#pagination-demo";
+const paginationSection = "#pagination-demo-main";
 
 test.describe("Pagination @structural", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto(`/index.html#${paginationSection.slice(1)}`);
+    await page.goto("/index.html#pagination-demo");
     await expect(page.locator(`${paginationSection} nav p`)).toHaveText(
       "11–20 of 240",
     );
@@ -184,5 +185,30 @@ test.describe("Pagination @structural", () => {
     await expect(
       page.locator(`${paginationSection} nav`).getByText("…", { exact: true }),
     ).toHaveCount(1);
+  });
+
+  test("@smoke hidden on single page keeps the readout and reveals the controls for a smaller page size", async ({
+    page,
+  }) => {
+    await openExamplePanel(page, "#pagination-demo", "Hidden On Single Page");
+
+    const singleSection = page.locator("#pagination-hidden-single");
+    await expect(singleSection.locator("nav")).toHaveCount(1);
+    await expect(singleSection.locator("nav > p")).toHaveText("1–10 of 10");
+    await expect(
+      singleSection.locator('button[aria-label="Next page"]'),
+    ).toBeHidden();
+
+    await singleSection.locator("nav [role=button]").click();
+    await singleSection
+      .locator("nav ul li label")
+      .filter({ hasText: /\b5\b/ })
+      .click();
+
+    await expect(singleSection.locator("nav > p")).toHaveText("1–5 of 10");
+    await expect(
+      singleSection.locator('button[aria-label="Next page"]'),
+    ).toBeVisible();
+    await expect(page.locator("#pagination-hidden-multi nav")).toHaveCount(1);
   });
 });

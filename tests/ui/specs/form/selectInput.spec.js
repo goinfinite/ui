@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { openExamplePanel } from "../../examplePanel.js";
 
 const selectSection = "#select-input-demo";
 
@@ -119,9 +120,11 @@ test.describe("SelectInput", () => {
   test("@smoke OnChangeFunc runs on selection and on clear", async ({
     page,
   }) => {
+    await openExamplePanel(page, selectSection, "OnChangeFunc");
     const block = page
-      .locator(`${selectSection} .grid`)
-      .filter({ hasText: "Change count:" });
+      .locator(`${selectSection} p`)
+      .filter({ hasText: "Change count:" })
+      .locator("xpath=..");
     const trigger = block.locator(".group.flex");
     const changeCount = block
       .locator("p", { hasText: "Change count:" })
