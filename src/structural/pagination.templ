@@ -16,14 +16,15 @@ type PaginationSettings struct {
 	PageNumberTwoWayStatePath   string
 	ItemsPerPageTwoWayStatePath string
 	ItemsTotal                  uint
-	PagesTotal                  uint
 
 	// OptionalFields
-	AriaLabel                  string
+	AriaLabel                 string
 	IsDisabledOneWayStatePath string
+	IsHiddenWhenSinglePage    bool
 	ItemsPerPageInputName     string
 	ItemsPerPageSizeChoices   []uint
 	OnChangeFunc              string
+	PagesTotal                uint
 }
 
 templ Pagination(componentSettings PaginationSettings) {
@@ -42,7 +43,11 @@ templ Pagination(componentSettings PaginationSettings) {
 	if componentSettings.OnChangeFunc != "" {
 		{{ onChangeSuffix = "; " + componentSettings.OnChangeFunc }}
 	}
-	{{ pagesTotal := strconv.FormatUint(uint64(componentSettings.PagesTotal), 10) }}
+	{{ pagesTotalExpression := paginationPagesTotalExpressionBuilder(itemsPerPagePath, componentSettings.ItemsTotal, componentSettings.PagesTotal) }}
+	{{ centerVisibilityExpression := "" }}
+	if componentSettings.IsHiddenWhenSinglePage {
+		{{ centerVisibilityExpression = pagesTotalExpression + " > 1" }}
+	}
 	{{ disabledSuffix := "" }}
 	if componentSettings.IsDisabledOneWayStatePath != "" {
 		{{ disabledSuffix = componentSettings.IsDisabledOneWayStatePath + " || " }}
@@ -60,7 +65,15 @@ templ Pagination(componentSettings PaginationSettings) {
 		class="flex flex-wrap items-center justify-between gap-3 px-3 py-2 text-sm text-neutral-400"
 	>
 		<p class="select-none" x-text={ paginationReadoutExpressionBuilder(pageNumberPath, itemsPerPagePath, componentSettings.ItemsTotal) }></p>
-		<div class="flex items-center gap-0.5">
+		<div
+			class="flex items-center gap-0.5"
+			if centerVisibilityExpression != "" {
+				x-show={ centerVisibilityExpression }
+			}
+			if centerVisibilityExpression != "" && componentSettings.PagesTotal == 1 {
+				style="display: none"
+			}
+		>
 			@uiControl.Button(uiControl.ButtonSettings{
 				AriaLabel:                 "First page",
 				IconLeft:                  "ph-caret-double-left",
@@ -80,7 +93,7 @@ templ Pagination(componentSettings PaginationSettings) {
 				TooltipPosition:           uiControl.ButtonTooltipPositionTop,
 			})
 			<template
-				x-for={ "pageItem in UiToolset.PaginationPageStripBuilder(" + pageNumberPath + ", " + pagesTotal + ")" }
+				x-for={ "pageItem in UiToolset.PaginationPageStripBuilder(" + pageNumberPath + ", " + pagesTotalExpression + ")" }
 				:key="pageItem.key"
 			>
 				<span>
@@ -105,8 +118,8 @@ templ Pagination(componentSettings PaginationSettings) {
 			@uiControl.Button(uiControl.ButtonSettings{
 				AriaLabel:                 "Next page",
 				IconLeft:                  "ph-caret-right",
-				IsDisabledOneWayStatePath: disabledSuffix + pageNumberPath + " >= " + pagesTotal,
-				OnClickFunc:               pageNumberPath + " = Math.min(" + pagesTotal + ", " + pageNumberPath + " + 1)" + onChangeSuffix,
+				IsDisabledOneWayStatePath: disabledSuffix + pageNumberPath + " >= " + pagesTotalExpression,
+				OnClickFunc:               pageNumberPath + " = Math.min(" + pagesTotalExpression + ", " + pageNumberPath + " + 1)" + onChangeSuffix,
 				Size:                      uiControl.ButtonSizeXs,
 				TooltipContent:            "Next page",
 				TooltipPosition:           uiControl.ButtonTooltipPositionTop,
@@ -114,8 +127,8 @@ templ Pagination(componentSettings PaginationSettings) {
 			@uiControl.Button(uiControl.ButtonSettings{
 				AriaLabel:                 "Last page",
 				IconLeft:                  "ph-caret-double-right",
-				IsDisabledOneWayStatePath: disabledSuffix + pageNumberPath + " >= " + pagesTotal,
-				OnClickFunc:               pageNumberPath + " = " + pagesTotal + onChangeSuffix,
+				IsDisabledOneWayStatePath: disabledSuffix + pageNumberPath + " >= " + pagesTotalExpression,
+				OnClickFunc:               pageNumberPath + " = " + pagesTotalExpression + onChangeSuffix,
 				Size:                      uiControl.ButtonSizeXs,
 				TooltipContent:            "Last page",
 				TooltipPosition:           uiControl.ButtonTooltipPositionTop,
