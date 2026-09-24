@@ -4,11 +4,11 @@
 
 ## Text Input Field
 
-Single-line text input with configurable type (text, email, number, date, password, etc.), with support for labels, hints, required indicators, and optional prefix/suffix affixes.
+Single-line text input with configurable type (text, email, number, date, password, etc.), with support for labels, label text case, hints, required indicators, a size scale, and optional prefix/suffix affixes.
 
 **Flow:**
 
-1. `src/form/inputField.templ` — Component definition with InputFieldSettings struct exposing InputType, Label, TwoWayStatePath, Value, and optional affixes
+1. `src/form/inputField.templ` — Component definition with InputFieldSettings struct exposing InputType, Label, TextCase, TwoWayStatePath, Value, Size, optional affixes, and affix width percentages
 2. `src/form/inputHint.templ` — Shared hint renderer for the tooltip and description display modes
 3. `src/form/inputField_templ.go` — Compiled templ output rendering HTML input with Alpine.js binding and Tailwind styling
 
@@ -42,11 +42,11 @@ Supports optional hint text rendered either as a focusable info-icon tooltip ins
 
 ## Multi-Select Dropdown
 
-Dropdown component that lets the user select multiple options from a flat list or label-value pairs, binding an array via Alpine.js two-way state path.
+Dropdown component that lets the user select multiple options from a flat list or label-value pairs, binding an array via Alpine.js two-way state path. Each option renders the same styled checkbox as the Checkbox Input component.
 
 **Flow:**
 
-1. `src/form/multiSelectInput.templ` — Component definition with MultiSelectInputSettings struct, reusing SelectLabelValueOption for label-value options
+1. `src/form/multiSelectInput.templ` — Component definition with MultiSelectInputSettings struct, reusing SelectLabelValueOption for label-value options, plus the shared option checkbox renderer
 2. `src/form/multiSelectInputState.js` — Alpine.js data component providing the dropdown toggle state
 3. `src/form/inputHint.templ` — Shared hint renderer for the tooltip and description display modes
 4. `src/form/multiSelectInput_templ.go` — Compiled output rendering checkbox-based dropdown with embedded JSON script for label-value options and Alpine.js state management
@@ -138,12 +138,42 @@ Dismissible alert component with title, description, icons (left/right), and var
 
 ## Modal/Dialog
 
-Overlay modal dialog with header (title), body content, footer, customizable size, backdrop, and close/resize handlers using Alpine.js visibility binding.
+Overlay modal dialog with header (title), body content, footer, viewport-percentage sizing, backdrop, and close/resize handlers using Alpine.js visibility binding.
 
 **Flow:**
 
-1. `src/display/modal.templ` — Component definition with ModalSettings struct supporting IsVisibleTwoWayStatePath
-2. `src/display/modal_templ.go` — Compiled output rendering backdrop and modal box with Alpine.js visibility and event management
+1. `src/display/modal.templ` — Component definition with ModalSettings struct supporting IsVisibleTwoWayStatePath, the percentage InitialSize scale (xs 40% through xxl 90% and full), the WidthPercent and HeightPercent overrides, and the PossibleSizes enlarge and reduce range
+2. `src/display/modal.go` — Size resolvers, the percentage class builder, the resizable resolver, and the enlarge and reduce expression builders
+3. `src/display/modal_templ.go` — Compiled output rendering backdrop and modal box with Alpine.js visibility and event management
+
+---
+
+## Confirmation Dialog Presets
+
+Confirm, warning, critical, and delete dialog presets over Modal. Each preset supplies icon, tone, and confirmation copy. Delete and critical gate the confirm action behind typing the target name or id.
+
+**Flow:**
+
+1. `src/display/confirmationDialog.templ` — ConfirmationDialogSettings struct, the confirmationDialog engine, and the ConfirmDialog, WarningDialog, CriticalDialog, and DeleteDialog presets
+2. `src/display/confirmationDialog.go` — Tone resolver, target match path resolver, the type-to-confirm field label resolver, and the type-to-confirm disabled expression builder
+3. `src/display/confirmationDialog_test.go` — Table-driven tests for the tone, match path, and disabled expression helpers
+4. `src/display/headerBlock.templ` — Header block with title, sub-heading, icon, and actions slot used by the dialog header
+5. `src/display/headerIcon.templ` — Icon chip with color, background, padding, and radius settings
+6. `src/form/inputField.templ` — Text input used for the type-to-confirm field
+7. `src/control/button.templ` — Cancel and confirm buttons; the confirm button carries the disabled expression
+
+---
+
+## Header Block
+
+Shared header row (title, sub-heading, icon, actions) behind page headings, cards, and confirmation dialogs, with size and color control and left or top icon placement.
+
+**Flow:**
+
+1. `src/display/headerBlock.templ` — HeaderBlockSettings struct and the HeaderBlock component with the HeaderSize scale and HeadingLevel setting
+2. `src/display/headerIcon.templ` — HeaderIconSettings struct and the HeaderIcon chip component
+3. `src/display/headerBlock_templ.go` — Compiled output rendering the header row
+4. `src/display/headerIcon_templ.go` — Compiled output rendering the icon chip
 
 ---
 
@@ -169,30 +199,53 @@ Small label/badge component for categorization and tagging with customizable siz
 
 ---
 
+## Page Heading
+
+One heading component over HeaderBlock. A Level setting picks the variant: page renders the h1 page header with page spacing, section renders the h2 section heading with icon-chip defaults. Both carry an optional description line and a right-aligned action slot.
+
+**Flow:**
+
+1. `src/structural/pageHeading.templ` — PageHeadingSettings struct and the PageHeading component; wraps HeaderBlock at the h1 or h2 level by Level. `Description` fills the sub-heading line; `HeaderSubHeading` is the legacy name.
+2. `src/structural/pageHeading_templ.go` — Compiled output rendering the heading block
+
+---
+
+## Card
+
+Surface container with an optional header block and middle and footer content slots, with customizable border radius (including square edges), padding, gap, shadow, ring, and colors.
+
+**Flow:**
+
+1. `src/structural/card.templ` — CardSettings struct and the Card component; MiddleContent and FooterContent slots and an optional header block
+2. `src/structural/card_templ.go` — Compiled output rendering the card surface
+
+---
+
 ## Pagination
 
-Page controls with a live readout, a page-number strip, first/previous/next/last buttons, and an items-per-page selector. Binds the page number and page size to Alpine.js state paths and calls `OnChangeFunc` after every change.
+Page controls with a live readout, a page-number strip, first/previous/next/last buttons, and an items-per-page selector. Binds the page number and page size to Alpine.js state paths and calls `OnChangeFunc` after every change. The page count derives from the item total and the bound page size, so the strip and the controls react when the page size changes. `IsHiddenWhenSinglePage` hides only the page-number controls while the records fit on one page; the readout and the items-per-page selector stay visible.
 
 **Flow:**
 
 1. `src/structural/pagination.templ` — Component definition with PaginationSettings; renders the readout, page-number strip, buttons, and items-per-page selector
-2. `src/structural/pagination.go` — Builds the readout expression from the state paths and item total
+2. `src/structural/pagination.go` — Builds the readout and page-count expressions from the state paths and item total
 3. `src/structural/paginationState.js` — Builds the page-number strip from the current page and page total, marking the current page with `aria-current`
-4. `src/structural/pagination_test.go` — Table-driven tests for the readout expression
+4. `src/structural/pagination_test.go` — Table-driven tests for the readout and page-count expressions
 5. `src/structural/pagination_templ.go` — Compiled output rendering the navigation landmark
 
 ---
 
 ## Filter Bar
 
-Standalone filter bar that renders one editor per declared filter (text contains, enum select, number range, date range), shows active filters as removable chips, and resets everything with clear-all.
+Standalone filter bar that renders one editor per declared filter (text contains, enum select, multi-enum select, number range, date range), shows active filters as removable chips, and resets everything with clear-all. A multi-enum filter holds an array and the refresh URL repeats its parameter once per selected value.
 
 **Flow:**
 
 1. `src/structural/filterBar.templ` — Component definition with FilterBarSettings and FilterSettings; renders editors and chips bound to a values object
 2. `src/structural/filterBarState.js` — Alpine component with chip visibility, chip label, single-filter reset, clear-all, and any-active helpers
-3. `src/display/tag.templ` — Removable Tag variant used for the chips
-4. `src/structural/filterBar_templ.go` — Compiled output
+3. `src/form/multiSelectInput.templ` — Checkbox dropdown editor for the multi-enum kind
+4. `src/display/tag.templ` — Removable Tag variant used for the chips
+5. `src/structural/filterBar_templ.go` — Compiled output
 
 ---
 
@@ -203,7 +256,7 @@ Generic server-driven table taking column definitions and rows. Adds sortable he
 **Flow:**
 
 1. `src/structural/dataTable.templ` — Generic component (DataTable[T]) with DataTableSettings and DataTableColumnSettings; renders the filter bar, toolbar, table region, error row, and pagination
-2. `src/structural/dataTable.go` — DataTableSettings and DataTableColumnSettings types with their methods (client settings, id, page size, pagination label, density, header case, checkbox shape, checkbox size, row stripe), the named density/alignment/sort-direction/header-text-case/page-size types, and the URL placeholder constants. The alignment type carries the column alignment and justify class methods. The `Initial*` fields seed client state; `HeaderClass`, `CellClass`, `RowClassResolver`, and `IsStriped` carry styling; `CheckboxCheckedColor` and `CheckboxUncheckedColor` carry the selection color
+2. `src/structural/dataTable.go` — DataTableSettings and DataTableColumnSettings types with their methods (client settings, id, page size, pagination label, density, text case, checkbox shape, checkbox size, row stripe), the named density/alignment/sort-direction/page-size types, and the URL placeholder constants. The alignment type carries the column alignment and justify class methods. The `Initial*` fields seed client state; `HeaderClass`, `CellClass`, `RowClassResolver`, and `IsStriped` carry styling; `CheckboxCheckedColor` and `CheckboxUncheckedColor` carry the selection color
 3. `src/structural/dataTableState.js` — Alpine data component: builds the refresh URL from the template, debounces refreshes, swaps the region carrying `data-ui-data-table`, and owns selection and sort helpers
 4. `src/structural/pagination.templ` — Table footer pagination
 5. `src/structural/filterBar.templ` — Table filter bar
@@ -249,7 +302,7 @@ Overlay to hide/obscure content during loading. It renders a fixed full-viewport
 
 ## Accordion
 
-Collapsible section component for grouping content into expandable panels.
+Collapsible section component for grouping content into expandable panels. The configured radius rounds only the first item's top corners and the last item's bottom corners; middle items stay square. `IsSingleOpen` groups the items so one stays open at a time.
 
 **Flow:**
 
@@ -265,7 +318,7 @@ Consolidated export of all third-party library dependencies (Alpine.js, UnoCSS r
 **Flow:**
 
 1. `src/import/import.templ` — Templ components exporting CDN links with SRI hashes (HeadTagsMinimal, HeadTagsFull, and specialized imports)
-2. `demo/demo.templ` — Usage example showing @uiImport.HeadTagsFull() in HTML head section
+2. `demo/demoIndex.templ` — Usage example showing @uiImport.HeadTagsFull() in HTML head section
 
 ---
 
@@ -293,6 +346,21 @@ Utility for minifying JavaScript and CSS at compile time or runtime using esbuil
 
 ---
 
+## Text Case
+
+Shared text-case values and a class resolver for components that expose a casing setting. Each component applies the matching CSS transform to its label or title; `TextCaseNone` leaves the text as typed.
+
+**Flow:**
+
+1. `src/toolset/textCase.go` — `TextCaseNone`, `TextCaseLower`, `TextCaseUpper`, `TextCaseCapitalize`, and `TextCaseClassResolver()`
+2. Form labels and placeholders — `InputField`, `CheckboxInput`, `RadioInput`, `InlineRadioGroup`, `SelectInput`, `MultiSelectInput`, `TextArea`, `ToggleSwitch`
+3. `src/control/button.templ` — button label
+4. `src/display/tag.templ` — label segments; `src/display/accordion.templ` — item titles
+5. `src/display/headerBlock.templ` — title and sub-heading, forwarded by `Card`, `PageHeading`, and `ConfirmationDialog`
+6. `src/structural/dataTable.go` — header labels
+
+---
+
 ## Static HTML Demo Generation
 
 Build-time HTML generation showcasing all UI components with usage examples and navigation structure.
@@ -300,7 +368,7 @@ Build-time HTML generation showcasing all UI components with usage examples and 
 **Flow:**
 
 1. `demo/demo.go` — Entrypoint that renders DemoIndex() to docs/index.html and one data table refresh fragment per page plus an all-records fragment to docs/assets/
-2. `demo/demo.templ` — Full demo page structure with component usage examples, sidebar navigation, and styling
+2. `demo/demoIndex.templ` plus one `demo/*Demo.templ` file per component, framed by `demo/demoExample.templ` — Page structure, sidebar navigation, and every usage example
 3. `demo/data.go` — Demo record type, 25 sample rows, filter declarations, table column definitions, and the settings builder that slices one page
 4. `demo/dataTableDemoRouting.js` — Browser-side router that rewrites each refresh request to the fragment for the requested page
 5. `src/import/import.templ` — DemoIndex imports HeadTagsFull() for CDN resources
@@ -319,6 +387,6 @@ Single entry point for all verification: Go units, Playwright behavioral specs a
 4. `tests/lib/serveDemo.mjs` — Localhost server for docs/ that proxies external script, stylesheet, and image URLs through a fetch-once cache, keeping CDN latency out of specs
 5. `tests/lib/checkPerformance.mjs` — Compares measured latencies against `tests/golden.yaml` tiers
 6. `tests/ui/run.sh` — Playwright mode runner (smoke, standard, a11y, performance, toolset, control, structural-smoke, structural, structural-a11y, cross-browser, toolset-cross-browser, control-cross-browser, structural-cross-browser)
-7. `tests/ui/specs/` — Behavioral specs by feature: form, control, structural, toolset, a11y, performance
+7. `tests/ui/specs/` — Behavioral specs by feature: form, control, display, structural, toolset, a11y, performance
 
 ---

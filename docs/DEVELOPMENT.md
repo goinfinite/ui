@@ -36,7 +36,7 @@ The entry point is `tests/tests.sh`. It serves `docs/` on a local port, runs the
 
 Exit codes: 0 pass, 1 test failure, 2 runner error. Levels are cumulative.
 
-UI tests are Playwright specs under `tests/ui/specs/`, organized by feature (`form`, later `display`, `control`). They assert rendered behavior — element geometry and Alpine state — against the demo page. Install dependencies with `npm install` and browsers with `npx playwright install` inside `tests/`. WebKit is registered in `playwright.config.js` but disabled in `run.sh` because this host lacks its system libraries; enable it in CI containers that provide them.
+UI tests are Playwright specs under `tests/ui/specs/`, organized by feature (`form`, `display`, `control`, `structural`, `toolset`, `a11y`, `performance`). They assert rendered behavior — geometry, visibility, computed styles, and rendered text — against the demo page. Install dependencies with `npm install` and browsers with `npx playwright install` inside `tests/`. WebKit is registered in `playwright.config.js` but disabled in `run.sh` because this host lacks its system libraries; enable it in CI containers that provide them.
 
 The accessibility scope runs axe-core against the demo and fails on regressions past the counts recorded in `tests/ui/a11y-baseline.json`. Lower the baseline as components get fixed. Raise it only deliberately: `UPDATE_A11Y_BASELINE=1 ./tests/tests.sh --scope=accessibility`.
 
