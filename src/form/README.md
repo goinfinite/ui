@@ -2,6 +2,8 @@
 
 Form layer of Infinite UI. It collects user input: text, choices, and switches. Every component binds to Alpine.js state; field components render their label as a floating legend. Part of [Infinite UI](../../README.md).
 
+Every labelled form component accepts `TextCase` with a `uiToolset.TextCase*` value: `TextCaseNone` (the default, as typed), `TextCaseLower`, `TextCaseUpper`, or `TextCaseCapitalize`. It transforms the label, and the placeholder where the component renders one.
+
 ## CheckboxInput
 
 Checkbox with a label, bound to a boolean or an array state path.
@@ -35,7 +37,7 @@ Single-line input with a floating label, optional affixes, and an optional hint.
 })
 ```
 
-`InputType` accepts the `uiForm.InputType*` constants. An affix renders a static value (`AffixLeftValue`, `AffixRightValue`) or binds a state path (`AffixLeftStatePath`, `AffixRightStatePath`). Number inputs accept `InputNumberMin`, `InputNumberMax`, and `InputNumberStep`.
+`InputType` accepts the `uiForm.InputType*` constants. An affix renders a static value (`AffixLeftValue`, `AffixRightValue`) or binds a state path (`AffixLeftStatePath`, `AffixRightStatePath`). Set `AffixLeftWidthPercent` or `AffixRightWidthPercent` to fix an affix to a percentage of the field width, for example `25` or `50`. Number inputs accept `InputNumberMin`, `InputNumberMax`, and `InputNumberStep`. `Size` accepts the `InputFieldSize*` constants and defaults to `md`; it scales the input, the affixes, and the floating label together. `TextCase` accepts a `uiToolset.TextCase*` value; it transforms the floating label and the placeholder. The default, `TextCaseNone`, leaves the text as typed.
 
 ## TextArea
 
@@ -82,7 +84,7 @@ Dropdown that holds a list of selected values on one state path.
 })
 ```
 
-It shares the `FlatOptions` and `LabelValueOptions` modes with `SelectInput`.
+It shares the `FlatOptions` and `LabelValueOptions` modes with `SelectInput`. `OnChangeFunc` runs after a checkbox toggle or a clear.
 
 ## RadioInput
 
@@ -110,6 +112,8 @@ A row of radios with one shared label.
 })
 ```
 
+`InlineRadioGroup`'s `TextCase` transforms only the shared label. Each option label takes its own `RadioInputSettings.TextCase`.
+
 ## ToggleSwitch
 
 Boolean switch. Bind one state path, or set `CustomValue` to collect one value into an array state path.
@@ -134,6 +138,7 @@ Shared hint helper for the fields above. It renders no field of its own.
 ## Non-obvious behaviors
 
 - `SelectInput` and `MultiSelectInput` render a `templ.JSONScript` block for label-value options. The block feeds the selected label lookup.
-- The floating legend collapses when the field holds a value. The empty field shows the label as a placeholder.
+- The floating legend collapses while the field is empty, so the empty field shows the label as a placeholder.
+- `InputField` hides its empty legend with `display: none`. Chrome reserves scroll space for a zero-sized legend, so the opacity-based collapse the other field components use can phantom-scroll an overflow container.
 - A `SelectInput` dropdown opens upward when it would overflow the bottom of the viewport.
 - `InputName` sets the key in an HTMX form submission. `InputId` is optional.

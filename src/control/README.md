@@ -22,6 +22,7 @@ Button with optional label, icons, tooltip, ring, and shape variants.
 - `IsSubmit` makes the button submit its form.
 - `TooltipContent` renders a text tooltip. `TooltipContentHtml` accepts a component, and `TooltipContentOneWayStatePath` binds live text. `TooltipPosition` accepts the `ButtonTooltipPosition*` constants.
 - `BackgroundColor`, `TextColor`, and `RingColor` accept Tailwind color tokens, for example `"red-500/20"`. The `*Hover` fields set the hover state.
+- `TextCase` accepts a `uiToolset.TextCase*` value and transforms the label. The default, `TextCaseNone`, leaves it as typed.
 
 ## RangeSlider
 

@@ -2,6 +2,29 @@
 
 Structural layer of Infinite UI. It composes form and display components into page-level structures. Part of [Infinite UI](../../README.md).
 
+## Card
+
+Surface container with an optional header block and content slots.
+
+```go
+@uiStructural.Card(uiStructural.CardSettings{
+    MiddleContent: CardBody(),
+
+    // OptionalFields
+    HeaderTitle:      "Card Title",
+    HeaderSubHeading: "Card sub-heading",
+    HeaderIcon:       "ph-cube",
+    FooterContent:    CardFooter(),
+})
+```
+
+- `MiddleContent` is the card body. `FooterContent` sits below it. `HeaderContent` replaces the whole header block.
+- The optional header block carries `HeaderTitle`, `HeaderSubHeading`, `HeaderTitleOneWayStatePath`, `HeaderSubHeadingOneWayStatePath`, `HeaderTitleColor`, `HeaderSubHeadingColor`, `HeaderSize`, and the `HeaderIcon*` icon controls. `ActionsContent` puts buttons in the header row, right-aligned.
+- `BorderRadius` accepts `CardBorderRadiusNone` through `CardBorderRadiusXl`; the default is `CardBorderRadiusLg`. Use `CardBorderRadiusNone` for square edges.
+- `PaddingSize` accepts `CardPaddingSizeNone` through `CardPaddingSizeXl`; the default is `CardPaddingSizeMd`.
+- `GapSize` accepts `CardGapSizeNone` through `CardGapSizeXl`; the default is `CardGapSizeMd`, which renders `gap-3` between the header, body, and footer.
+- `ShadowSize`, `RingColor`, and `RingThickness` follow the same token scales as Modal and Alert. `BackgroundColor` and `TextColor` take color tokens. `TextCase` takes a `uiToolset.TextCase*` value and transforms the header title and sub-heading.
+
 ## DataTable
 
 `@uiStructural.DataTable` renders rows from your data and refreshes them from your server. Every sort, page, filter, or search change requests the URL template you provide. The table uses `htmx.ajax` when HTMX is present and falls back to `fetch` otherwise.
@@ -26,7 +49,7 @@ The component requires a server that answers each request. The static demo serve
 })
 ```
 
-Each column takes a `Label`, a `CellRenderer` function, and optional `SortKey`, `Alignment`, `WidthPercent`, width classes, and `CellClass`. `Alignment` takes a `DataTableAlignment` value: `DataTableAlignmentLeft`, `DataTableAlignmentCenter`, or `DataTableAlignmentRight`. `HeaderTextCase` takes a `DataTableHeaderTextCase` value: `DataTableHeaderTextCaseLower` (the default) or `DataTableHeaderTextCaseUpper`. `Density` takes a `DataTableDensity` value: `DataTableDensityComfortable` (the default) or `DataTableDensityDense`. `InitialSortDirection` takes a `DataTableSortDirection` value: `DataTableSortDirectionAsc` or `DataTableSortDirectionDesc`. `ItemsPerPage` and each entry in `ItemsPerPageSizeChoices` are `DataTablePageSize` values. Set `PaginationAriaLabel` when a page holds more than one table, so each pagination landmark keeps a unique name.
+Each column takes a `Label`, a `CellRenderer` function, and optional `SortKey`, `Alignment`, `WidthPercent`, width classes, and `CellClass`. `Alignment` takes a `DataTableAlignment` value: `DataTableAlignmentLeft`, `DataTableAlignmentCenter`, or `DataTableAlignmentRight`. `TextCase` takes a `uiToolset.TextCase*` value and transforms the header labels. The default, `TextCaseNone`, leaves them as typed. `Density` takes a `DataTableDensity` value: `DataTableDensityComfortable` (the default) or `DataTableDensityDense`. `InitialSortDirection` takes a `DataTableSortDirection` value: `DataTableSortDirectionAsc` or `DataTableSortDirectionDesc`. `ItemsPerPage` and each entry in `ItemsPerPageSizeChoices` are `DataTablePageSize` values. Set `PaginationAriaLabel` when a page holds more than one table, so each pagination landmark keeps a unique name.
 
 The `Initial*` fields seed the client state at render time: `InitialFilterValues`, `InitialSearchQuery`, `InitialSortKey`, and `InitialSortDirection`. The server renders the matching rows. `PageNumber` and `ItemsPerPage` also seed the client, but the component reads them to render the pagination readout.
 
@@ -72,12 +95,38 @@ Standalone filter bar. It renders one editor per declared filter and shows activ
 })
 ```
 
-- `Kind` accepts `FilterKindTextContains`, `FilterKindEnumSelect`, `FilterKindNumberRange`, or `FilterKindDateRange`.
+- `Kind` accepts `FilterKindTextContains`, `FilterKindEnumSelect`, `FilterKindMultiEnumSelect`, `FilterKindNumberRange`, or `FilterKindDateRange`.
 - `ValuesTwoWayStatePath` names a top-level property on the surrounding Alpine scope, for example `filterValues`.
-- Enum filters read `Options`. Range filters write `{min, max}` objects under the filter key.
+- Enum filters read `Options`. Multi-enum filters read `Options` and write an array of selected values under the filter key. Range filters write `{min, max}` objects under the filter key.
 - A chip appears when its filter holds a value. The chip remove button clears that filter.
 - The clear-all button appears when any filter is active.
 - Set `EnumSelectRadioGroupNamePrefix` when a page holds more than one filter bar with the same enum keys. The prefix keeps each enum dropdown's radio group name unique. The DataTable prefixes it with the table id.
+
+## PageHeading
+
+Page and section headings over `display.HeaderBlock`. One `Level` setting picks the variant.
+
+```go
+@uiStructural.PageHeading(uiStructural.PageHeadingSettings{
+    HeaderTitle: "Records",
+    Level:       uiStructural.PageHeadingLevelPage,
+
+    // OptionalFields
+    Description:    "Manage the server records",
+    HeaderIcon:     "ph-table",
+    ActionsContent: PageHeadingActions(),
+})
+```
+
+- `Level` accepts `PageHeadingLevelPage` or `PageHeadingLevelSection`; the default is section.
+- `PageHeadingLevelPage` renders an `h1` with page spacing. `HeaderSize` defaults to `HeaderSizeXl`. The icon defaults to a bare `secondary-500` glyph.
+- `PageHeadingLevelSection` renders an `h2`. `HeaderSize` defaults to `HeaderSizeLg`. With an icon set and no overrides, the icon renders in a padded rounded chip.
+- `Description` fills the line under the title. `HeaderSubHeading` is the legacy name for the same line.
+- `ActionsContent` puts buttons in the heading row, right-aligned.
+- `HeaderTitle` and the description support live text through `HeaderTitleOneWayStatePath` and `HeaderSubHeadingOneWayStatePath`.
+- `HeaderTitleColor`, `HeaderSubHeadingColor`, and `TextColor` take color tokens.
+- `TextCase` takes a `uiToolset.TextCase*` value and transforms the title and description.
+- The `HeaderIcon*` fields control the icon: `HeaderIconPosition` (`HeaderIconPositionLeft` or `HeaderIconPositionTop`), `HeaderIconColor`, `HeaderIconBackgroundColor`, `HeaderIconBorderRadius`, and `HeaderIconPaddingSize`.
 
 ## Pagination
 
@@ -88,7 +137,6 @@ Page controls with a readout, a page-number strip, and an items-per-page selecto
     PageNumberTwoWayStatePath:   "pageNumber",
     ItemsPerPageTwoWayStatePath: "itemsPerPage",
     ItemsTotal:                  240,
-    PagesTotal:                  24,
 
     // OptionalFields
     OnChangeFunc: "requestRefresh()",
@@ -96,10 +144,12 @@ Page controls with a readout, a page-number strip, and an items-per-page selecto
 ```
 
 - The readout follows the state paths. It shows the current range and the total.
+- The component derives the page count from `ItemsTotal` and the bound `itemsPerPage`, so the strip and the controls react when the page size changes. `PagesTotal` is an optional fallback used only when `ItemsTotal` is zero.
 - The strip shows the first page, the last page, the pages around the current one, and ellipses for gaps. The current page carries `aria-current="page"`.
 - `ItemsPerPageSizeChoices` overrides the default page sizes.
 - Set `ItemsPerPageInputName` when a page holds more than one pagination bound to the same state path, so the two items-per-page radio groups stay independent.
 - `IsDisabledOneWayStatePath` disables every control while the path is truthy.
+- `IsHiddenWhenSinglePage` hides the page-number controls while every record fits on one page. The readout and the items-per-page select stay visible. DataTable forwards it as `IsPaginationHiddenWhenSinglePage`.
 - `AriaLabel` names the navigation landmark. Set a distinct label when a page holds more than one pagination.
 
 ## Sidebar
@@ -123,3 +173,4 @@ Vertical navigation panel. It renders inline or fixed, and it can collapse or sl
 - `AttachmentMode` accepts `SidebarAttachmentModeInline` or `SidebarAttachmentModeFixed`.
 - `IsOffCanvas` and `IsOffCanvasTwoWayStatePath` slide the panel over the content.
 - `Width` sets the expanded width.
+- Pass state paths from code, never from request data. The component embeds them into client-side expressions.

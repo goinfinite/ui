@@ -1,6 +1,14 @@
 # Toolset
 
-Toolset of Infinite UI. It provides a JavaScript utility object and a Go minifier. Part of [Infinite UI](../../README.md).
+Toolset of Infinite UI. It provides a JavaScript utility object, a Go minifier, and shared Go text helpers. Part of [Infinite UI](../../README.md).
+
+## Text case
+
+Shared text-case values and a class resolver. Components accept one of these values and apply the matching CSS transform.
+
+- `TextCaseNone`: no transform (the default).
+- `TextCaseLower`, `TextCaseUpper`, `TextCaseCapitalize`: lower, upper, or capitalized.
+- `TextCaseClassResolver(textCase)`: returns the Tailwind class for a value, or an empty string for `TextCaseNone` and unknown values.
 
 ## JavaScript toolset
 
