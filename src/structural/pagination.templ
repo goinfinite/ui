@@ -12,6 +12,10 @@ import (
 //go:embed paginationState.js
 var paginationAlpineState string
 
+var paginationAlpineStateOnce = templ.NewOnceHandle(
+	templ.WithComponent(uiToolset.MinifierTemplateJs(&paginationAlpineState)),
+)
+
 type PaginationSettings struct {
 	PageNumberTwoWayStatePath   string
 	ItemsPerPageTwoWayStatePath string
@@ -28,7 +32,7 @@ type PaginationSettings struct {
 }
 
 templ Pagination(componentSettings PaginationSettings) {
-	@uiToolset.MinifierTemplateJs(&paginationAlpineState)
+	@paginationAlpineStateOnce.Once()
 	{{ pageNumberPath := componentSettings.PageNumberTwoWayStatePath }}
 	{{ itemsPerPagePath := componentSettings.ItemsPerPageTwoWayStatePath }}
 	{{ itemsPerPageSizeChoices := componentSettings.ItemsPerPageSizeChoices }}

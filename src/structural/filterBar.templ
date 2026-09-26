@@ -13,6 +13,10 @@ import (
 //go:embed filterBarState.js
 var filterBarAlpineState string
 
+var filterBarAlpineStateOnce = templ.NewOnceHandle(
+	templ.WithComponent(uiToolset.MinifierTemplateJs(&filterBarAlpineState)),
+)
+
 const (
 	FilterKindTextContains    string = "textContains"
 	FilterKindEnumSelect      string = "enumSelect"
@@ -42,7 +46,7 @@ type FilterBarSettings struct {
 }
 
 templ FilterBar(componentSettings FilterBarSettings) {
-	@uiToolset.MinifierTemplateJs(&filterBarAlpineState)
+	@filterBarAlpineStateOnce.Once()
 	{{ valuesPath := componentSettings.ValuesTwoWayStatePath }}
 	{{ onChangeSuffix := "" }}
 	if componentSettings.OnChangeFunc != "" {

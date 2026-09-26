@@ -13,6 +13,10 @@ import (
 //go:embed dataTableState.js
 var dataTableAlpineState string
 
+var dataTableAlpineStateOnce = templ.NewOnceHandle(
+	templ.WithComponent(uiToolset.MinifierTemplateJs(&dataTableAlpineState)),
+)
+
 templ DataTableDefaultEmptyState() {
 	No records found.
 }
@@ -27,7 +31,7 @@ templ DataTableDefaultSearchBox() {
 }
 
 templ DataTable[Row any](componentSettings DataTableSettings[Row]) {
-	@uiToolset.MinifierTemplateJs(&dataTableAlpineState)
+	@dataTableAlpineStateOnce.Once()
 	{{ tableId := componentSettings.idResolver() }}
 	{{ settingsScriptId := tableId + "-settings" }}
 	{{ cellPaddingClasses := componentSettings.cellPaddingClassesResolver() }}

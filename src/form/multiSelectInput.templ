@@ -8,6 +8,12 @@ import (
 //go:embed multiSelectInputState.js
 var multiSelectInputAlpineState string
 
+var multiSelectInputAlpineStateOnce = templ.NewOnceHandle(
+	templ.WithComponent(
+		uiToolset.MinifierTemplateJs(&multiSelectInputAlpineState),
+	),
+)
+
 templ multiSelectInputOptionCheckbox(
 	inputIdPrefix, inputName, optionValue, selectedItemsStatePath, onChangeFunc string,
 ) {
@@ -55,7 +61,7 @@ type MultiSelectInputSettings struct {
 
 templ MultiSelectInput(componentSettings MultiSelectInputSettings) {
 	<!-- MultiSelectInput JavaScript -->
-	@uiToolset.MinifierTemplateJs(&multiSelectInputAlpineState)
+	@multiSelectInputAlpineStateOnce.Once()
 	<!-- MultiSelectInput HTML -->
 	{{ selectedItemsStatePath := "selectedItems" }}
 	if componentSettings.TwoWayStatePath != "" {
