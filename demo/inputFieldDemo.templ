@@ -229,8 +229,9 @@ templ InputFieldHintsExample() {
 	Label:     "Name",
 
 	// OptionalFields
-	HintValue:   "This is a helpful hint.",
-	HintDisplay: uiForm.InputHintDisplayDescription,
+	TwoWayStatePath: "name",
+	HintValue:       "This is a helpful hint.",
+	HintDisplay:     uiForm.InputHintDisplayDescription,
 })`
 	}}
 	@DemoExampleCard(
@@ -239,20 +240,22 @@ templ InputFieldHintsExample() {
 		"/form/inputField.templ",
 		hintsUsage,
 	) {
-		<div class="flex flex-col gap-3 lg:*:max-w-50">
+		<div class="flex flex-col gap-3 lg:*:max-w-50" x-data="{name: '', tooltipName: ''}">
 			@uiForm.InputField(uiForm.InputFieldSettings{
-				InputType:   uiForm.InputTypeText,
-				InputName:   "name",
-				Label:       "Name",
-				HintValue:   "This is a helpful hint displayed as a description below the input.",
-				HintDisplay: uiForm.InputHintDisplayDescription,
+				InputType:       uiForm.InputTypeText,
+				InputName:       "name",
+				Label:           "Name",
+				TwoWayStatePath: "name",
+				HintValue:       "This is a helpful hint displayed as a description below the input.",
+				HintDisplay:     uiForm.InputHintDisplayDescription,
 			})
 			@uiForm.InputField(uiForm.InputFieldSettings{
-				InputType:   uiForm.InputTypeText,
-				InputName:   "name",
-				Label:       "Name",
-				HintValue:   "This is a helpful hint displayed as a tooltip.",
-				HintDisplay: uiForm.InputHintDisplayTooltip,
+				InputType:       uiForm.InputTypeText,
+				InputName:       "name",
+				Label:           "Name",
+				TwoWayStatePath: "tooltipName",
+				HintValue:       "This is a helpful hint displayed as a tooltip.",
+				HintDisplay:     uiForm.InputHintDisplayTooltip,
 			})
 		</div>
 	}
@@ -266,9 +269,10 @@ templ InputFieldHintIconStyleExample() {
 	Label:     "Name",
 
 	// OptionalFields
-	HintValue:     "This is a helpful hint.",
-	HintDisplay:   uiForm.InputHintDisplayTooltip,
-	HintIconStyle: uiForm.InputHintIconStyleBoxed,
+	TwoWayStatePath: "name",
+	HintValue:       "This is a helpful hint.",
+	HintDisplay:     uiForm.InputHintDisplayTooltip,
+	HintIconStyle:   uiForm.InputHintIconStyleBoxed,
 })`
 	}}
 	@DemoExampleCard(
@@ -277,14 +281,17 @@ templ InputFieldHintIconStyleExample() {
 		"/form/inputField.templ",
 		hintIconUsage,
 	) {
-		@uiForm.InputField(uiForm.InputFieldSettings{
-			InputType:     uiForm.InputTypeText,
-			InputName:     "name",
-			Label:         "Name",
-			HintValue:     "This is a helpful hint displayed as a boxed tooltip.",
-			HintDisplay:   uiForm.InputHintDisplayTooltip,
-			HintIconStyle: uiForm.InputHintIconStyleBoxed,
-		})
+		<div x-data="{name: ''}">
+			@uiForm.InputField(uiForm.InputFieldSettings{
+				InputType:       uiForm.InputTypeText,
+				InputName:       "name",
+				Label:           "Name",
+				TwoWayStatePath: "name",
+				HintValue:       "This is a helpful hint displayed as a boxed tooltip.",
+				HintDisplay:     uiForm.InputHintDisplayTooltip,
+				HintIconStyle:   uiForm.InputHintIconStyleBoxed,
+			})
+		</div>
 	}
 }
 
