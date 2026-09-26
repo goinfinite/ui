@@ -131,4 +131,54 @@ test.describe("DataTable advanced examples @structural", () => {
       )
       .not.toBe(stripeBackground);
   });
+
+  test("a dense table tooltip does not add a scrollbar to the table", async ({
+    page,
+  }) => {
+    const target = await openExamplePanel(
+      page,
+      demoSection,
+      "Density and Header Text Case",
+    );
+    const denseTable = target.locator("#data-table-demo-dense");
+    const scroller = denseTable.locator(
+      "[data-ui-data-table] .overflow-x-auto",
+    );
+    const actionButton = denseTable
+      .locator("tbody tr")
+      .first()
+      .locator("button")
+      .first();
+    const overflow = () =>
+      scroller.evaluate((element) => ({
+        horizontal: element.scrollWidth - element.clientWidth,
+        vertical: element.scrollHeight - element.clientHeight,
+      }));
+
+    await expect.poll(overflow).toEqual({ horizontal: 0, vertical: 0 });
+
+    await actionButton.scrollIntoViewIfNeeded();
+    await actionButton.hover();
+
+    await expect(
+      page.locator('body > div[x-ref="tooltip"]:visible'),
+    ).toHaveCount(1);
+    await expect.poll(overflow).toEqual({ horizontal: 0, vertical: 0 });
+  });
+
+  test("a table refresh does not leak teleported tooltips", async ({
+    page,
+  }) => {
+    const tableRoot = "#data-table-demo-table";
+    const tooltipCount = () =>
+      page.evaluate(
+        () => document.querySelectorAll('body > div[x-ref="tooltip"]').length,
+      );
+    const initialCount = await tooltipCount();
+
+    await page
+      .locator(`${tableRoot} nav button[aria-label="Next page"]`)
+      .click();
+    await expect.poll(tooltipCount).toBe(initialCount);
+  });
 });

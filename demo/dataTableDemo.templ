@@ -24,6 +24,18 @@ templ DemoServerPlainTextCell(value string) {
 	{ value }
 }
 
+templ DemoTooltipActionCell(record DemoServerRecord) {
+	<div class="flex justify-end">
+		@uiControl.Button(uiControl.ButtonSettings{
+			IconLeft:       "ph-info",
+			Shape:          uiControl.ButtonShapeCircular,
+			Size:           uiControl.ButtonSizeSm,
+			AriaLabel:      "Show details for " + record.Name,
+			TooltipContent: "Details for " + record.Name,
+		})
+	</div>
+}
+
 templ DataTableColumnConfigExample() {
 	{{
 		columnSettings := buildDemoStaticTableSettings(
@@ -304,7 +316,7 @@ templ DataTableAppearanceExample() {
 		comfortableSettings := buildDemoStaticTableSettings(
 			"data-table-demo-comfortable",
 			"Comfortable table pagination",
-			buildDemoPlainTableColumns(),
+			buildDemoTooltipActionColumns(),
 			dataTableDemoRecords[:3],
 		)
 	}}
@@ -312,7 +324,7 @@ templ DataTableAppearanceExample() {
 		denseSettings := buildDemoStaticTableSettings(
 			"data-table-demo-dense",
 			"Dense table pagination",
-			buildDemoPlainTableColumns(),
+			buildDemoTooltipActionColumns(),
 			dataTableDemoRecords[:3],
 		)
 	}}
@@ -331,7 +343,7 @@ templ DataTableAppearanceExample() {
 	<div class="flex flex-col gap-4">
 		@DemoExampleHeader(
 			"Density and Header Text Case",
-			"Density changes the cell padding. TextCase changes the header capitalization. Both tables use the same columns and rows.",
+			"Density changes the cell padding. TextCase changes the header capitalization. Both tables use the same columns and rows. The last column holds an icon button with a tooltip.",
 			"/structural/dataTable.templ",
 			appearanceUsage,
 		)

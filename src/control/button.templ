@@ -1,6 +1,25 @@
 package uiControl
 
-import uiToolset "github.com/goinfinite/ui/src/toolset"
+import (
+	_ "embed"
+	"fmt"
+	"sync/atomic"
+
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+//go:embed buttonTooltipState.js
+var buttonTooltipAlpineState string
+
+var buttonTooltipAlpineStateOnce = templ.NewOnceHandle(
+	templ.WithComponent(uiToolset.MinifierTemplateJs(&buttonTooltipAlpineState)),
+)
+
+var buttonTooltipIdCounter atomic.Uint64
+
+func generateButtonTooltipId() string {
+	return fmt.Sprintf("button-tooltip-%d", buttonTooltipIdCounter.Add(1))
+}
 
 const (
 	ButtonSizeXs string = "xs"
@@ -67,7 +86,22 @@ templ Button(componentSettings ButtonSettings) {
 	if componentSettings.IsFullWidth {
 		{{ buttonWidth = "w-full" }}
 	}
-	<div class={ "group relative " + buttonWidth }>
+	{{ hasTooltip := componentSettings.TooltipContent != "" || componentSettings.TooltipContentHtml != nil || componentSettings.TooltipContentOneWayStatePath != "" }}
+	{{ tooltipId := "" }}
+	if hasTooltip {
+		@buttonTooltipAlpineStateOnce.Once()
+		{{ tooltipId = generateButtonTooltipId() }}
+	}
+	<div
+		class={ "relative " + buttonWidth }
+		if hasTooltip {
+			x-data={ templ.JSFuncCall("buttonTooltip", componentSettings.TooltipPosition) }
+			@mouseenter="show()"
+			@mouseleave="hide()"
+			@focusin="show()"
+			@focusout="hide()"
+		}
+	>
 		{{ backgroundColor := "bg-neutral-50/7.5" }}
 		if componentSettings.BackgroundColor != "" {
 			{{ backgroundColor = "bg-" + componentSettings.BackgroundColor }}
@@ -167,15 +201,21 @@ templ Button(componentSettings ButtonSettings) {
 		if componentSettings.IsDisabled {
 			{{ buttonClasses += " " + disabledClasses }}
 		}
+		{{ buttonType := "button" }}
+		if componentSettings.IsSubmit {
+			{{ buttonType = "submit" }}
+		}
 		<button
+			type={ buttonType }
+			if hasTooltip {
+				x-ref="trigger"
+				aria-describedby={ tooltipId }
+			}
 			if componentSettings.Id != "" {
 				id={ componentSettings.Id }
 			}
 			if componentSettings.AriaLabel != "" {
 				aria-label={ componentSettings.AriaLabel }
-			}
-			if componentSettings.IsSubmit {
-				type="submit"
 			}
 			if componentSettings.OnClickFunc != "" && !componentSettings.IsDisabled {
 				if componentSettings.OnClickPreventDefault {
@@ -214,7 +254,7 @@ templ Button(componentSettings ButtonSettings) {
 				<i class={ "ph-bold " + iconSize } :class={ componentSettings.IconRightOneWayStatePath }></i>
 			}
 		</button>
-		if componentSettings.TooltipContent != "" || componentSettings.TooltipContentHtml != nil || componentSettings.TooltipContentOneWayStatePath != "" {
+		if hasTooltip {
 			{{ tooltipBackgroundColor := "neutral-800/95" }}
 			if componentSettings.TooltipBackgroundColor != "" {
 				{{ tooltipBackgroundColor = componentSettings.TooltipBackgroundColor }}
@@ -242,34 +282,26 @@ templ Button(componentSettings ButtonSettings) {
 				}
 				{{ tooltipRingClasses = tooltipRingThickness + " ring-" + componentSettings.TooltipRingColor }}
 			}
-			{{ tooltipBaseClass := "absolute invisible z-10 transition-all duration-300 group-hover:visible opacity-0 group-hover:opacity-100 transform w-fit p-1.5 bg-" + tooltipBackgroundColor + " text-" + tooltipTextColor + " text-xs rounded-md shadow-md " + tooltipRingClasses }}
-			{{ tooltipPosition := ButtonTooltipPositionTop }}
-			if componentSettings.TooltipPosition != "" {
-				{{ tooltipPosition = componentSettings.TooltipPosition }}
-			}
-			switch tooltipPosition {
-				case ButtonTooltipPositionTop:
-					{{ tooltipBaseClass += " bottom-full mb-1.5 group-hover:-translate-y-0.5 left-1/2 -translate-x-1/2" }}
-				case ButtonTooltipPositionBottom:
-					{{ tooltipBaseClass += " top-full mt-1.5 group-hover:translate-y-0.5 left-1/2 -translate-x-1/2" }}
-				case ButtonTooltipPositionLeft:
-					{{ tooltipBaseClass += " right-full mr-1.5 group-hover:-translate-x-0.5 top-1/2 -translate-y-1/2" }}
-				case ButtonTooltipPositionRight:
-					{{ tooltipBaseClass += " left-full ml-1.5 group-hover:translate-x-0.5 top-1/2 -translate-y-1/2" }}
-			}
-			<div
-				class={ tooltipBaseClass }
-				if componentSettings.TooltipContentOneWayStatePath != "" {
-					x-text={ componentSettings.TooltipContentOneWayStatePath }
-				}
-			>
-				if componentSettings.TooltipContent != "" {
-					{ componentSettings.TooltipContent }
-				}
-				if componentSettings.TooltipContentHtml != nil {
-					@componentSettings.TooltipContentHtml
-				}
-			</div>
+			{{ tooltipBaseClass := "fixed z-100 invisible w-fit p-1.5 bg-" + tooltipBackgroundColor + " text-" + tooltipTextColor + " text-xs rounded-md shadow-md transition-opacity duration-150 pointer-events-none " + tooltipRingClasses }}
+			<template x-teleport="body">
+				<div
+					x-ref="tooltip"
+					id={ tooltipId }
+					role="tooltip"
+					:style="resolvedTooltipStyle"
+					class={ tooltipBaseClass }
+					if componentSettings.TooltipContentOneWayStatePath != "" {
+						x-text={ componentSettings.TooltipContentOneWayStatePath }
+					}
+				>
+					if componentSettings.TooltipContent != "" {
+						{ componentSettings.TooltipContent }
+					}
+					if componentSettings.TooltipContentHtml != nil {
+						@componentSettings.TooltipContentHtml
+					}
+				</div>
+			</template>
 		}
 	</div>
 }

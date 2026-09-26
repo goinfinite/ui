@@ -202,6 +202,13 @@ templ ButtonRingsExample() {
 	}
 }
 
+templ ButtonTooltipHtmlContent() {
+	<span class="flex items-center gap-1">
+		<i class="ph-bold ph-check text-emerald-300"></i>
+		Rich tooltip content
+	</span>
+}
+
 templ ButtonTooltipsExample() {
 	{{
 		tooltipsUsage := `@uiControl.Button(uiControl.ButtonSettings{
@@ -214,11 +221,11 @@ templ ButtonTooltipsExample() {
 	}}
 	@DemoExampleCard(
 		"Tooltips",
-		"TooltipContent renders a tooltip on hover. TooltipPosition places it on any side.",
+		"TooltipContent renders a tooltip on hover. TooltipPosition places it on any side. TooltipContentHtml accepts a component, and TooltipContentOneWayStatePath binds live text.",
 		"/control/button.templ",
 		tooltipsUsage,
 	) {
-		<div class="flex flex-col gap-2">
+		<div class="flex flex-col gap-2" x-data="{ dynamicTooltip: 'Live tooltip text' }">
 			@uiControl.Button(uiControl.ButtonSettings{
 				Label:           "Top Tooltip",
 				IconLeft:        "ph-arrow-up",
@@ -242,6 +249,16 @@ templ ButtonTooltipsExample() {
 				IconLeft:        "ph-arrow-right",
 				TooltipContent:  "This tooltip appears on right",
 				TooltipPosition: uiControl.ButtonTooltipPositionRight,
+			})
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:              "HTML Tooltip",
+				IconLeft:           "ph-code",
+				TooltipContentHtml: ButtonTooltipHtmlContent(),
+			})
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:                         "Live Tooltip",
+				IconLeft:                      "ph-activity",
+				TooltipContentOneWayStatePath: "dynamicTooltip",
 			})
 		</div>
 	}

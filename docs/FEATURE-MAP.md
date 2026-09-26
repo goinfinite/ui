@@ -105,12 +105,13 @@ Horizontal radio button group for presenting multiple mutually exclusive options
 
 ## Button
 
-Interactive button component with customizable label, icons (left/right using Phosphor), size/shape variants, colors, disabled state, and click handlers.
+Interactive button component with customizable label, icons (left/right using Phosphor), size/shape variants, colors, disabled state, click handlers, and an optional hover tooltip. Every button renders a `type` attribute: `button` by default, `submit` when `IsSubmit` is set.
 
 **Flow:**
 
-1. `src/control/button.templ` — Component definition with ButtonSettings struct supporting OnClickFunc handlers and icon binding
-2. `src/control/button_templ.go` — Compiled output rendering button element with Alpine.js event binding and optional tooltip support
+1. `src/control/button.templ` — Component definition with ButtonSettings struct supporting OnClickFunc handlers, icon binding, the type attribute, and the optional tooltip
+2. `src/control/buttonTooltipState.js` — Alpine data component that teleports the tooltip to the document body, positions it with fixed coordinates on hover or focus, and flips it to stay inside the viewport
+3. `src/control/button_templ.go` — Compiled output rendering the button with Alpine.js event binding and the teleported tooltip
 
 ---
 

@@ -160,6 +160,17 @@ func buildDemoPlainTableColumns() []uiStructural.DataTableColumnSettings[DemoSer
 	}
 }
 
+func buildDemoTooltipActionColumns() []uiStructural.DataTableColumnSettings[DemoServerRecord] {
+	columns := buildDemoPlainTableColumns()
+	return append(columns, uiStructural.DataTableColumnSettings[DemoServerRecord]{
+		Label:     "Actions",
+		Alignment: uiStructural.DataTableAlignmentRight,
+		CellRenderer: func(record DemoServerRecord) templ.Component {
+			return DemoTooltipActionCell(record)
+		},
+	})
+}
+
 func buildDemoColumnShowcaseColumns() []uiStructural.DataTableColumnSettings[DemoServerRecord] {
 	return []uiStructural.DataTableColumnSettings[DemoServerRecord]{
 		{
