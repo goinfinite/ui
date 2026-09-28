@@ -258,6 +258,23 @@ test.describe("DataTable @structural", () => {
     await expect(rowNames(page).first()).toHaveText("uniform");
   });
 
+  test("a page size the demo cannot serve shows the error row", async ({
+    page,
+  }) => {
+    await page.evaluate(() => {
+      const dataTable = Alpine.$data(
+        document.getElementById("data-table-demo-table"),
+      );
+      dataTable.itemsPerPage = 10;
+      dataTable.refresh();
+    });
+
+    await expect(
+      page.locator(tableRoot).getByText("Could not refresh the table."),
+    ).toBeVisible();
+    await expect(page.locator(`${tableRoot} table`)).toBeHidden();
+  });
+
   test("clear filters resets every filter and refreshes", async ({ page }) => {
     const refreshUrls = trackRefreshUrls(page);
     await page.locator(`${tableRoot} input[name=name]`).fill("alpha");
@@ -342,11 +359,25 @@ test.describe("DataTable @structural", () => {
   test("a stale failed refresh does not show the error row", async ({
     page,
   }) => {
-    await page.evaluate(() => {
-      window.dispatchEvent(new CustomEvent("refresh:data-table-demo"));
-      window.dispatchEvent(new CustomEvent("refresh:data-table-demo"));
+    let requestCount = 0;
+    await page.route(refreshFragmentPattern, async (route) => {
+      requestCount++;
+      if (requestCount === 1) {
+        return route.abort("failed");
+      }
+      await new Promise((resolve) => setTimeout(resolve, 600));
+      return route.continue();
     });
 
+    await page.evaluate(() => {
+      const dataTable = Alpine.$data(
+        document.getElementById("data-table-demo-table"),
+      );
+      dataTable.refresh();
+      dataTable.refresh();
+    });
+
+    await expect.poll(() => requestCount).toBe(2);
     await expect(rowNames(page).first()).toHaveText("alpha");
     await expect(page.locator(`${tableRoot} p[aria-live=polite]`)).toHaveText(
       "Table refreshed",

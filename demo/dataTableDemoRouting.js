@@ -1,31 +1,60 @@
 UiToolset.RegisterAlpineState(() => {
-  const refreshFile = "dataTableDemoRefresh.html";
+  const refreshAssetFile = "dataTableDemoRefreshFragments.json";
   const defaultItemsPerPage = 5;
+  const defaultPageNumber = 1;
 
-  function resolveFragmentPath(requestUrl) {
+  function isRefreshAssetRequest(requestUrl) {
+    return (
+      typeof requestUrl === "string" && requestUrl.includes(refreshAssetFile)
+    );
+  }
+
+  function resolveFragmentKey(requestUrl) {
     const request = new URL(requestUrl, window.location.href);
     const itemsPerPage = Number(
       request.searchParams.get("itemsPerPage") ?? defaultItemsPerPage,
     );
-    if (itemsPerPage > defaultItemsPerPage) {
-      return `assets/dataTableDemoRefreshAll.html${request.search}`;
-    }
-    const pageNumber = Number(request.searchParams.get("page") ?? "1");
-    return `assets/dataTableDemoRefreshPage${pageNumber}.html${request.search}`;
+    const pageNumber = Number(
+      request.searchParams.get("page") ?? defaultPageNumber,
+    );
+    return `${pageNumber}-${itemsPerPage}`;
   }
 
-  document.addEventListener("htmx:configRequest", (event) => {
-    if (!event.detail.path.includes(refreshFile)) {
-      return;
+  function resolveFragmentHtml(assetBody, requestUrl) {
+    const fragmentKey = resolveFragmentKey(requestUrl);
+    const fragmentHtml = JSON.parse(assetBody)[fragmentKey];
+    if (fragmentHtml === undefined) {
+      throw new Error(`DataTableDemoFragmentMissing: ${fragmentKey}`);
     }
-    event.detail.path = resolveFragmentPath(event.detail.path);
-  });
+    return fragmentHtml;
+  }
 
   const originalFetch = window.fetch.bind(window);
-  window.fetch = (input, init) => {
-    if (typeof input !== "string" || !input.includes(refreshFile)) {
-      return originalFetch(input, init);
+  window.fetch = async (input, init) => {
+    const response = await originalFetch(input, init);
+    if (!isRefreshAssetRequest(input) || !response.ok) {
+      return response;
     }
-    return originalFetch(resolveFragmentPath(input), init);
+    return new Response(resolveFragmentHtml(await response.text(), input), {
+      status: 200,
+      headers: { "content-type": "text/html" },
+    });
   };
+
+  document.addEventListener("htmx:beforeSwap", (event) => {
+    const requestUrl = event.detail.xhr?.responseURL;
+    if (!isRefreshAssetRequest(requestUrl) || event.detail.xhr.status !== 200) {
+      return;
+    }
+    try {
+      event.detail.serverResponse = resolveFragmentHtml(
+        event.detail.serverResponse,
+        requestUrl,
+      );
+    } catch (resolveError) {
+      console.error(resolveError.message);
+      event.detail.shouldSwap = false;
+      event.detail.isError = true;
+    }
+  });
 });

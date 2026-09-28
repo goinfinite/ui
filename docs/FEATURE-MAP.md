@@ -368,10 +368,10 @@ Build-time HTML generation showcasing all UI components with usage examples and 
 
 **Flow:**
 
-1. `demo/demo.go` — Entrypoint that renders DemoIndex() to docs/index.html and one data table refresh fragment per page plus an all-records fragment to docs/assets/
+1. `demo/demo.go` — Entrypoint that renders DemoIndex() to docs/index.html and the data table refresh fragments to one JSON asset in docs/assets/
 2. `demo/demoIndex.templ` plus one `demo/*Demo.templ` file per component, framed by `demo/demoExample.templ` — Page structure, sidebar navigation, and every usage example
 3. `demo/data.go` — Demo record type, 25 sample rows, filter declarations, table column definitions, and the settings builder that slices one page
-4. `demo/dataTableDemoRouting.js` — Browser-side router that rewrites each refresh request to the fragment for the requested page
+4. `demo/dataTableDemoRouting.js` — Browser-side router that serves the requested page's pre-rendered fragment from the JSON asset as the refresh response
 5. `src/import/import.templ` — DemoIndex imports HeadTagsFull() for CDN resources
 
 ---

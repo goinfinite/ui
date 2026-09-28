@@ -251,7 +251,7 @@ func buildDemoDataTableSettings(
 	return uiStructural.DataTableSettings[DemoServerRecord]{
 		Columns: buildDemoServerTableColumns(),
 		Rows:    records[firstIndex:lastIndex],
-		QueryUrlTemplate: "assets/dataTableDemoRefresh.html" +
+		QueryUrlTemplate: "assets/dataTableDemoRefreshFragments.json" +
 			"?page=" + uiStructural.DataTableUrlPlaceholderPageNumber +
 			"&itemsPerPage=" + uiStructural.DataTableUrlPlaceholderItemsPerPage +
 			"&sort=" + uiStructural.DataTableUrlPlaceholderSortKey +

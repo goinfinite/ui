@@ -145,7 +145,7 @@ templ DataTableSearchBoxExample() {
 		)
 	}}
 	{{
-		searchSettings.QueryUrlTemplate = "assets/dataTableDemoRefresh.html?search=" +
+		searchSettings.QueryUrlTemplate = "assets/dataTableDemoRefreshFragments.json?search=" +
 			uiStructural.DataTableUrlPlaceholderSearch
 		searchSettings.InitialSearchQuery = "alpha"
 		searchSettings.SearchBoxAlignment = uiStructural.DataTableAlignmentCenter
@@ -487,7 +487,7 @@ templ DataTableDemo() {
 				<div x-show="!isFileUrl">
 					@uiDisplay.Alert(uiDisplay.AlertSettings{
 						Title:       "This table needs a server response",
-						Description: "Every sort, filter, search, or page change sends a request. A real application returns the requested rows. This static demo serves five fixed pages from docs/assets: paging works, and sorting, filtering, and search do not change the rows.",
+						Description: "Every sort, filter, search, or page change sends a request. A real application returns the requested rows. This static demo returns fixed pages from one docs/assets file: paging works, and sorting, filtering, and search do not change the rows.",
 						Variation:   uiDisplay.AlertVariationInfo,
 						Size:        uiDisplay.AlertSizeMd,
 					})
