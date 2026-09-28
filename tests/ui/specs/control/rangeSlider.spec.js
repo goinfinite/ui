@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { openExamplePanel } from "../../examplePanel.js";
 
 const sliderSection = "#range-slider-demo";
 
@@ -71,6 +72,7 @@ test.describe("RangeSlider", () => {
   test("@control dual sliders expose distinct accessible names", async ({
     page,
   }) => {
+    await openExamplePanel(page, sliderSection, "Dual-Thumb Mode");
     await expect(
       page.getByRole("slider", { name: "Minimum price" }),
     ).toHaveCount(1);
@@ -97,6 +99,7 @@ test.describe("RangeSlider", () => {
   test("@control dragging each dual thumb changes its own bound value", async ({
     page,
   }) => {
+    await openExamplePanel(page, sliderSection, "Dual-Thumb Mode");
     const lowerSlider = sliderByLabel(page, "Minimum price");
     const upperSlider = sliderByLabel(page, "Maximum price");
     await expect(lowerSlider).toHaveValue("25");
@@ -111,6 +114,7 @@ test.describe("RangeSlider", () => {
   test("@control lower thumb crossing the upper clamps and syncs both bound values", async ({
     page,
   }) => {
+    await openExamplePanel(page, sliderSection, "Dual-Thumb Mode");
     const lowerSlider = sliderByLabel(page, "Minimum price");
     const upperSlider = sliderByLabel(page, "Maximum price");
 
@@ -127,6 +131,7 @@ test.describe("RangeSlider", () => {
   test("@control external state writes keep both thumbs ordered", async ({
     page,
   }) => {
+    await openExamplePanel(page, sliderSection, "Dual-Thumb Mode");
     const lowerSlider = sliderByLabel(page, "Minimum price");
     const upperSlider = sliderByLabel(page, "Maximum price");
     const rangeDisplay = page.locator(`${sliderSection} p`, {
@@ -154,6 +159,7 @@ test.describe("RangeSlider", () => {
   test("@control initial crossed and out-of-bounds state normalizes when the setting is on", async ({
     page,
   }) => {
+    await openExamplePanel(page, sliderSection, "Initial State Normalization");
     const initialSection = page.locator("#range-slider-initial-state-demo");
     const sliders = initialSection.locator("input[type=range]");
 
@@ -170,6 +176,7 @@ test.describe("RangeSlider", () => {
   test("@control initial crossed state stays untouched when the setting is off", async ({
     page,
   }) => {
+    await openExamplePanel(page, sliderSection, "Initial State Normalization");
     const unnormalizedSection = page.locator("#range-slider-unnormalized-demo");
     const sliders = unnormalizedSection.locator("input[type=range]");
 
@@ -197,6 +204,7 @@ test.describe("RangeSlider", () => {
   test("@control tick marks render at the configured tick step", async ({
     page,
   }) => {
+    await openExamplePanel(page, sliderSection, "Steps & Ticks");
     const slider = sliderByLabel(page, "Ticks every 25");
     const ticks = tickMarksOf(slider);
     await expect(ticks).toHaveCount(5);
@@ -212,6 +220,7 @@ test.describe("RangeSlider", () => {
   });
 
   test("@control tick marks fall back to the slider step", async ({ page }) => {
+    await openExamplePanel(page, sliderSection, "Steps & Ticks");
     await expect(
       tickMarksOf(sliderByLabel(page, "Ticks every step")),
     ).toHaveCount(6);

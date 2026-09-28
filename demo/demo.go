@@ -1,74 +1,124 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	_ "embed"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log/slog"
 	"os"
 
-	"github.com/a-h/templ"
 	uiStructural "github.com/goinfinite/ui/src/structural"
 )
 
 //go:embed dataTableDemoRouting.js
 var dataTableDemoRoutingScript string
 
-type demoArtifact struct {
-	component templ.Component
-	filePath  string
-}
+const dataTableDemoFragmentsAssetPath = "docs/assets/dataTableDemoRefreshFragments.json"
 
-func (artifact demoArtifact) fileRender() error {
-	file, err := os.Create(artifact.filePath)
+func renderDemoIndex() error {
+	indexFile, err := os.Create("docs/index.html")
 	if err != nil {
-		return errors.New(
-			"CreateHtmlFileFailed (" + artifact.filePath + "): " + err.Error(),
-		)
+		return errors.New("CreateHtmlFileFailed (index.html): " + err.Error())
 	}
-
-	renderErr := artifact.component.Render(context.Background(), file)
-	closeErr := file.Close()
+	renderErr := DemoIndex().Render(context.Background(), indexFile)
+	closeErr := indexFile.Close()
 	if renderErr != nil {
 		return errors.New(
-			"WriteHtmlFileFailed (" + artifact.filePath + "): " + renderErr.Error(),
+			"WriteHtmlFileFailed (index.html): " + renderErr.Error(),
 		)
 	}
 	if closeErr != nil {
 		return errors.New(
-			"CloseHtmlFileFailed (" + artifact.filePath + "): " + closeErr.Error(),
+			"CloseHtmlFileFailed (index.html): " + closeErr.Error(),
 		)
 	}
 	return nil
 }
 
-func newDemoArtifacts() []demoArtifact {
-	artifacts := []demoArtifact{
-		{component: DemoIndex(), filePath: "index.html"},
-		{
-			component: DataTableRefreshFragment(1, dataTableDemoItemsPerPage),
-			filePath:  "assets/dataTableDemoRefresh.html",
-		},
+func formatDataTableDemoFragmentKey(
+	pageNumber uint, itemsPerPage uiStructural.DataTablePageSize,
+) string {
+	return fmt.Sprintf("%d-%d", pageNumber, itemsPerPage)
+}
+
+func renderDataTableDemoFragment(
+	pageNumber uint, itemsPerPage uiStructural.DataTablePageSize,
+) (string, error) {
+	fragmentBody := &bytes.Buffer{}
+	renderErr := DataTableRefreshFragment(pageNumber, itemsPerPage).
+		Render(context.Background(), fragmentBody)
+	if renderErr != nil {
+		return "", errors.New(
+			"RenderDataTableFragmentFailed: " + renderErr.Error(),
+		)
 	}
+	return fragmentBody.String(), nil
+}
+
+func buildDataTableDemoFragments() (map[string]string, error) {
+	fragments := map[string]string{}
 	for pageNumber := uint(1); pageNumber <= dataTableDemoPagesTotal; pageNumber++ {
-		artifacts = append(artifacts, demoArtifact{
-			component: DataTableRefreshFragment(pageNumber, dataTableDemoItemsPerPage),
-			filePath:  fmt.Sprintf("assets/dataTableDemoRefreshPage%d.html", pageNumber),
-		})
+		fragmentBody, err := renderDataTableDemoFragment(
+			pageNumber, dataTableDemoItemsPerPage,
+		)
+		if err != nil {
+			return nil, err
+		}
+		fragmentKey := formatDataTableDemoFragmentKey(
+			pageNumber, dataTableDemoItemsPerPage,
+		)
+		fragments[fragmentKey] = fragmentBody
 	}
-	return append(artifacts, demoArtifact{
-		component: DataTableRefreshFragment(1, uiStructural.DataTablePageSize(len(dataTableDemoRecords))),
-		filePath:  "assets/dataTableDemoRefreshAll.html",
-	})
+	allRecordsPageSize := uiStructural.DataTablePageSize(len(dataTableDemoRecords))
+	allRecordsBody, err := renderDataTableDemoFragment(1, allRecordsPageSize)
+	if err != nil {
+		return nil, err
+	}
+	allRecordsKey := formatDataTableDemoFragmentKey(1, allRecordsPageSize)
+	fragments[allRecordsKey] = allRecordsBody
+	return fragments, nil
+}
+
+func writeDataTableDemoFragmentsAsset() error {
+	fragments, err := buildDataTableDemoFragments()
+	if err != nil {
+		return err
+	}
+	fragmentsBody := &bytes.Buffer{}
+	fragmentsEncoder := json.NewEncoder(fragmentsBody)
+	fragmentsEncoder.SetEscapeHTML(false)
+	encodeErr := fragmentsEncoder.Encode(fragments)
+	if encodeErr != nil {
+		return errors.New(
+			"EncodeDataTableDemoFragmentsFailed: " + encodeErr.Error(),
+		)
+	}
+	writeErr := os.WriteFile(
+		dataTableDemoFragmentsAssetPath, fragmentsBody.Bytes(), 0o644,
+	)
+	if writeErr != nil {
+		return errors.New(
+			"WriteDataTableDemoFragmentsFailed (" +
+				dataTableDemoFragmentsAssetPath + "): " + writeErr.Error(),
+		)
+	}
+	return nil
 }
 
 func main() {
-	for _, artifact := range newDemoArtifacts() {
-		err := artifact.fileRender()
-		if err != nil {
-			slog.Error("RenderDemoArtifactFailed", slog.String("err", err.Error()))
-			os.Exit(1)
-		}
+	err := renderDemoIndex()
+	if err != nil {
+		slog.Error("RenderDemoIndexFailed", slog.String("err", err.Error()))
+		os.Exit(1)
+	}
+	err = writeDataTableDemoFragmentsAsset()
+	if err != nil {
+		slog.Error(
+			"WriteDataTableDemoFragmentsFailed", slog.String("err", err.Error()),
+		)
+		os.Exit(1)
 	}
 }

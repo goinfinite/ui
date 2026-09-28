@@ -1,0 +1,300 @@
+package main
+
+import (
+	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiForm "github.com/goinfinite/ui/src/form"
+)
+
+templ SelectInputDemoOption1() {
+	<div class="flex flex-col">
+		<h4 class="text-base font-bold">🇦🇷 Argentina</h4>
+		<p class="text-sm text-neutral-400">Known for its dance and wine.</p>
+	</div>
+}
+
+templ SelectInputDemoOption2() {
+	<div class="flex flex-col">
+		<h4 class="text-base font-bold">🇧🇷 Brazil</h4>
+		<p class="text-sm text-neutral-400">Known for its music and natural beauty.</p>
+	</div>
+}
+
+templ SelectInputDemoOption3() {
+	<div class="flex flex-col">
+		<h4 class="text-base font-bold">🇨🇱 Chile</h4>
+		<p class="text-sm text-neutral-400">Known for its deserts and mysterious islands.</p>
+	</div>
+}
+
+templ SelectInputLabelValueExample() {
+	{{
+		labelValueUsage := `@uiForm.SelectInput(uiForm.SelectInputSettings{
+	InputName: "countryCode",
+	Label:     "Country",
+
+	// OptionalFields
+	LabelValueOptions: []uiForm.SelectLabelValueOption{
+		{Label: "Argentina", Value: "AR"},
+		{Label: "Brazil", Value: "BR"},
+		{Label: "Chile", Value: "CL"},
+	},
+	TwoWayStatePath:          "country",
+	ShouldIncludeBlankOption: true,
+})`
+	}}
+	@DemoExampleCard(
+		"LabelValueOptions",
+		"LabelValueOptions send a stored Value while showing a human Label. The bound state holds the Value.",
+		"/form/selectInput.templ",
+		labelValueUsage,
+	) {
+		@DemoAlpineStateBlock(`<div x-data="{country: 'BR'}"></div>`)
+		<div x-data="{country: 'BR'}">
+			@uiForm.SelectInput(uiForm.SelectInputSettings{
+				InputName: "countryCode",
+				Label:     "Country",
+				LabelValueOptions: []uiForm.SelectLabelValueOption{
+					{
+						Label: "Argentina",
+						Value: "AR",
+					},
+					{
+						Label: "Brazil",
+						Value: "BR",
+					},
+					{
+						Label: "Chile",
+						Value: "CL",
+					},
+				},
+				TwoWayStatePath:          "country",
+				ShouldIncludeBlankOption: true,
+			})
+		</div>
+	}
+}
+
+templ SelectInputHtmlOptionsExample() {
+	{{
+		htmlOptionsUsage := `@uiForm.SelectInput(uiForm.SelectInputSettings{
+	InputName: "countryWithHtml",
+	Label:     "Country",
+
+	// OptionalFields
+	LabelValueOptions: []uiForm.SelectLabelValueOption{
+		{Label: "Argentina", LabelHtml: SelectInputDemoOption1(), Value: "AR"},
+		{Label: "Brazil", LabelHtml: SelectInputDemoOption2(), Value: "BR"},
+		{Label: "Chile", LabelHtml: SelectInputDemoOption3(), Value: "CL"},
+	},
+	TwoWayStatePath:          "country",
+	ShouldIncludeBlankOption: true,
+})`
+	}}
+	@DemoExampleCard(
+		"HTML Option Labels",
+		"LabelHtml replaces the plain option label with custom markup in the dropdown.",
+		"/form/selectInput.templ",
+		htmlOptionsUsage,
+	) {
+		@DemoAlpineStateBlock(`<div x-data="{country: 'BR'}"></div>`)
+		<div class="flex flex-col gap-3" x-data="{country: 'BR'}">
+			<p class="text-sm text-neutral-400">Click the dropdown to see the HTML labels.</p>
+			@uiForm.SelectInput(uiForm.SelectInputSettings{
+				InputName: "countryWithHtml",
+				Label:     "Country",
+				LabelValueOptions: []uiForm.SelectLabelValueOption{
+					{
+						Label:     "Argentina",
+						LabelHtml: SelectInputDemoOption1(),
+						Value:     "AR",
+					},
+					{
+						Label:     "Brazil",
+						LabelHtml: SelectInputDemoOption2(),
+						Value:     "BR",
+					},
+					{
+						Label:     "Chile",
+						LabelHtml: SelectInputDemoOption3(),
+						Value:     "CL",
+					},
+				},
+				TwoWayStatePath:          "country",
+				ShouldIncludeBlankOption: true,
+			})
+		</div>
+	}
+}
+
+templ SelectInputHintsExample() {
+	{{
+		hintsUsage := `@uiForm.SelectInput(uiForm.SelectInputSettings{
+	InputName: "countryHint",
+	Label:     "Country",
+
+	// OptionalFields
+	FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+	TwoWayStatePath: "country",
+	HintValue:        "This is a helpful hint.",
+	HintDisplay:      uiForm.InputHintDisplayDescription,
+})`
+	}}
+	@DemoExampleCard(
+		"Hints",
+		"HintValue explains the field. HintDisplay shows it as a description below the field or as a tooltip.",
+		"/form/selectInput.templ",
+		hintsUsage,
+	) {
+		<div class="flex flex-col gap-6" x-data="{country: 'Brazil'}">
+			@uiForm.SelectInput(uiForm.SelectInputSettings{
+				InputName: "countryHintDescription",
+				Label:     "Country",
+				FlatOptions: []string{
+					"Argentina",
+					"Brazil",
+					"Chile",
+				},
+				TwoWayStatePath:          "country",
+				ShouldIncludeBlankOption: true,
+				HintValue:                "This is a helpful hint displayed as a description below the select.",
+				HintDisplay:              uiForm.InputHintDisplayDescription,
+			})
+			@uiForm.SelectInput(uiForm.SelectInputSettings{
+				InputName: "countryHintTooltip",
+				Label:     "Country",
+				FlatOptions: []string{
+					"Argentina",
+					"Brazil",
+					"Chile",
+				},
+				TwoWayStatePath:          "country",
+				ShouldIncludeBlankOption: true,
+				HintValue:                "This is a helpful hint displayed as a tooltip.",
+				HintDisplay:              uiForm.InputHintDisplayTooltip,
+			})
+		</div>
+	}
+}
+
+templ SelectInputHintIconStyleExample() {
+	{{
+		hintIconUsage := `@uiForm.SelectInput(uiForm.SelectInputSettings{
+	InputName: "countryHintBoxed",
+	Label:     "Country",
+
+	// OptionalFields
+	FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+	TwoWayStatePath: "country",
+	HintValue:        "This is a helpful hint.",
+	HintDisplay:      uiForm.InputHintDisplayTooltip,
+	HintIconStyle:    uiForm.InputHintIconStyleBoxed,
+})`
+	}}
+	@DemoExampleCard(
+		"Hint Icon Styles",
+		"HintIconStyle renders the hint trigger as an icon or as a boxed tooltip.",
+		"/form/selectInput.templ",
+		hintIconUsage,
+	) {
+		<div x-data="{country: 'Brazil'}">
+			@uiForm.SelectInput(uiForm.SelectInputSettings{
+				InputName: "countryHintBoxed",
+				Label:     "Country",
+				FlatOptions: []string{
+					"Argentina",
+					"Brazil",
+					"Chile",
+				},
+				TwoWayStatePath:          "country",
+				ShouldIncludeBlankOption: true,
+				HintValue:                "This is a helpful hint displayed as a boxed tooltip.",
+				HintDisplay:              uiForm.InputHintDisplayTooltip,
+				HintIconStyle:            uiForm.InputHintIconStyleBoxed,
+			})
+		</div>
+	}
+}
+
+templ SelectInputOnChangeExample() {
+	{{
+		onChangeUsage := `@uiForm.SelectInput(uiForm.SelectInputSettings{
+	InputName: "countryChange",
+	Label:     "Country",
+
+	// OptionalFields
+	FlatOptions:              []string{"Argentina", "Brazil", "Chile"},
+	TwoWayStatePath:          "country",
+	ShouldIncludeBlankOption: true,
+	OnChangeFunc:             "onCountryChange()",
+})`
+	}}
+	@DemoExampleCard(
+		"OnChangeFunc",
+		"OnChangeFunc runs when the selection changes and when the field is cleared.",
+		"/form/selectInput.templ",
+		onChangeUsage,
+	) {
+		@DemoAlpineStateBlock(`<div x-data="{country: 'Brazil', changeCount: 0, onCountryChange() { this.changeCount++ }}"></div>`)
+		<div
+			class="grid gap-6"
+			x-data="{country: 'Brazil', changeCount: 0, onCountryChange() { this.changeCount++ }}"
+		>
+			<p class="text-sm text-neutral-400">The function runs when the selection changes. Clear the field to see it run again.</p>
+			@uiForm.SelectInput(uiForm.SelectInputSettings{
+				InputName:                "countryChange",
+				Label:                    "Country",
+				FlatOptions:              []string{"Argentina", "Brazil", "Chile"},
+				TwoWayStatePath:          "country",
+				ShouldIncludeBlankOption: true,
+				OnChangeFunc:             "onCountryChange()",
+			})
+			<p class={ DemoLiveStateClasses }>
+				Change count: <span x-text="changeCount"></span>
+			</p>
+		</div>
+	}
+}
+
+templ SelectInputDemo() {
+	{{
+		demoUsage := `@uiForm.SelectInput(uiForm.SelectInputSettings{
+	InputName: "country",
+	Label:     "Country",
+
+	// OptionalFields
+	FlatOptions:              []string{"Argentina", "Brazil", "Chile", "Côte d'Ivoire"},
+	TwoWayStatePath:          "country",
+	ShouldIncludeBlankOption: true,
+})`
+	}}
+	<div class="flex flex-col gap-4" id="select-input-demo">
+		@DemoComponentSection(DemoComponentSectionSettings{
+			ComponentPath:          "/form/selectInput.templ",
+			Description:            "A select input allows users to select one option from a dropdown list.",
+			LiveExampleDescription: "A select bound to Alpine state, with a blank option and flat option labels.",
+			Title:                  ".SelectInput",
+			UsageCode:              demoUsage,
+			AlpineStateCode:        `<div x-data="{country: 'Brazil'}"></div>`,
+		}) {
+			<div x-data="{country: 'Brazil'}">
+				@uiForm.SelectInput(uiForm.SelectInputSettings{
+					InputName:                "country",
+					Label:                    "Country",
+					FlatOptions:              []string{"Argentina", "Brazil", "Chile", "Côte d'Ivoire"},
+					TwoWayStatePath:          "country",
+					ShouldIncludeBlankOption: true,
+				})
+				<p class={ DemoLiveStateClasses }>
+					Value: <span x-text="country"></span>
+				</p>
+			</div>
+		}
+		@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
+			{Title: "LabelValueOptions", Icon: "ph-tag", Content: SelectInputLabelValueExample()},
+			{Title: "HTML Option Labels", Icon: "ph-code", Content: SelectInputHtmlOptionsExample()},
+			{Title: "Hints", Icon: "ph-info", Content: SelectInputHintsExample()},
+			{Title: "Hint Icon Styles", Icon: "ph-question", Content: SelectInputHintIconStyleExample()},
+			{Title: "OnChangeFunc", Icon: "ph-arrows-clockwise", Content: SelectInputOnChangeExample()},
+		})
+	</div>
+}

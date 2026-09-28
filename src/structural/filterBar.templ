@@ -13,11 +13,16 @@ import (
 //go:embed filterBarState.js
 var filterBarAlpineState string
 
+var filterBarAlpineStateOnce = templ.NewOnceHandle(
+	templ.WithComponent(uiToolset.MinifierTemplateJs(&filterBarAlpineState)),
+)
+
 const (
-	FilterKindTextContains string = "textContains"
-	FilterKindEnumSelect   string = "enumSelect"
-	FilterKindNumberRange  string = "numberRange"
-	FilterKindDateRange    string = "dateRange"
+	FilterKindTextContains    string = "textContains"
+	FilterKindEnumSelect      string = "enumSelect"
+	FilterKindMultiEnumSelect string = "multiEnumSelect"
+	FilterKindNumberRange     string = "numberRange"
+	FilterKindDateRange       string = "dateRange"
 )
 
 type FilterSettings struct {
@@ -35,12 +40,13 @@ type FilterBarSettings struct {
 	ValuesTwoWayStatePath string
 
 	// OptionalFields
+	DropdownBackgroundColor        string
 	EnumSelectRadioGroupNamePrefix string
 	OnChangeFunc                   string
 }
 
 templ FilterBar(componentSettings FilterBarSettings) {
-	@uiToolset.MinifierTemplateJs(&filterBarAlpineState)
+	@filterBarAlpineStateOnce.Once()
 	{{ valuesPath := componentSettings.ValuesTwoWayStatePath }}
 	{{ onChangeSuffix := "" }}
 	if componentSettings.OnChangeFunc != "" {
@@ -73,6 +79,18 @@ templ FilterBar(componentSettings FilterBarSettings) {
 								OnChangeFunc:             componentSettings.OnChangeFunc,
 								ShouldIncludeBlankOption: true,
 								TwoWayStatePath:          valuesPath + "." + filter.Key,
+								DropdownBackgroundColor:  componentSettings.DropdownBackgroundColor,
+							})
+						</div>
+					case FilterKindMultiEnumSelect:
+						<div class="w-44">
+							@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
+								InputName:               componentSettings.EnumSelectRadioGroupNamePrefix + filter.Key,
+								Label:                   filter.Label,
+								LabelValueOptions:       filter.Options,
+								OnChangeFunc:            componentSettings.OnChangeFunc,
+								TwoWayStatePath:         valuesPath + "." + filter.Key,
+								DropdownBackgroundColor: componentSettings.DropdownBackgroundColor,
 							})
 						</div>
 					case FilterKindNumberRange, FilterKindDateRange:

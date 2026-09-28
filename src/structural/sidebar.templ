@@ -58,39 +58,13 @@ templ Sidebar(componentSettings SidebarSettings) {
 	switch componentSettings.Side {
 		case SidebarSideLeft:
 			{{ sidebarClasses += " left-0" }}
-			if sidebarAttachmentMode == SidebarAttachmentModeInline {
-				{{ sidebarClasses += " float-left" }}
-			}
 		case SidebarSideRight:
 			{{ sidebarClasses += " right-0" }}
-			if sidebarAttachmentMode == SidebarAttachmentModeInline {
-				{{ sidebarClasses += " float-right" }}
-			}
 	}
 	if componentSettings.IsCollapsed {
 		{{ sidebarClasses += " !w-16" }}
 	}
-	// SidebarDynamicCssClasses
-	{{ sidebarDynamicClasses := "{" }}
-	if componentSettings.IsVisibleTwoWayStatePath != "" {
-		{{ sidebarDynamicClasses += "'invisible': !" + componentSettings.IsVisibleTwoWayStatePath + "," }}
-	}
-	if componentSettings.IsCollapsedTwoWayStatePath != "" {
-		{{ sidebarDynamicClasses += "'!w-16': " + componentSettings.IsCollapsedTwoWayStatePath + "," }}
-	}
-	if componentSettings.AttachmentModeTwoWayStatePath != "" {
-		{{ sidebarDynamicClasses += "'!fixed top-0': " + componentSettings.AttachmentModeTwoWayStatePath + " === '" + SidebarAttachmentModeFixed + "'," }}
-	}
-	if componentSettings.IsOffCanvasTwoWayStatePath != "" {
-		{{ sidebarDynamicClasses += "'!absolute top-0 z-50': " + componentSettings.IsOffCanvasTwoWayStatePath + "," }}
-	}
-	if componentSettings.SideTwoWayStatePath != "" {
-		{{ sidebarDynamicClasses += "'left-0': " + componentSettings.SideTwoWayStatePath + " === '" + SidebarSideLeft + "'," }}
-		{{ sidebarDynamicClasses += "'right-0': " + componentSettings.SideTwoWayStatePath + " === '" + SidebarSideRight + "'," }}
-		{{ sidebarDynamicClasses += "'float-left': " + componentSettings.SideTwoWayStatePath + " === '" + SidebarSideLeft + "' && " + componentSettings.AttachmentModeTwoWayStatePath + " === '" + SidebarAttachmentModeInline + "'," }}
-		{{ sidebarDynamicClasses += "'float-right': " + componentSettings.SideTwoWayStatePath + " === '" + SidebarSideRight + "' && " + componentSettings.AttachmentModeTwoWayStatePath + " === '" + SidebarAttachmentModeInline + "'," }}
-	}
-	{{ sidebarDynamicClasses += "}" }}
+	{{ sidebarDynamicClasses := sidebarDynamicClassesBuilder(componentSettings, sidebarAttachmentMode) }}
 	// SidebarWrapperCssClasses
 	{{ sidebarWrapperClasses := "h-full flex" }}
 	// - SidebarWrapperWidth
@@ -99,18 +73,17 @@ templ Sidebar(componentSettings SidebarSettings) {
 		{{ sidebarWrapperWidthClass = componentSettings.Width }}
 	}
 	{{ sidebarWrapperClasses += " " + sidebarWrapperWidthClass }}
+	// - SidebarWrapperSide
+	if sidebarAttachmentMode == SidebarAttachmentModeInline {
+		switch componentSettings.Side {
+			case SidebarSideLeft:
+				{{ sidebarWrapperClasses += " float-left" }}
+			case SidebarSideRight:
+				{{ sidebarWrapperClasses += " float-right" }}
+		}
+	}
 	// SidebarWrapperDynamicCssClasses
-	{{ sidebarWrapperDynamicClasses := "{" }}
-	if componentSettings.IsVisibleTwoWayStatePath != "" {
-		{{ sidebarWrapperDynamicClasses += "'invisible': !" + componentSettings.IsVisibleTwoWayStatePath + "," }}
-	}
-	if componentSettings.IsOffCanvasTwoWayStatePath != "" {
-		{{ sidebarWrapperDynamicClasses += "'!w-0': " + componentSettings.IsOffCanvasTwoWayStatePath + "," }}
-	}
-	if componentSettings.IsCollapsedTwoWayStatePath != "" {
-		{{ sidebarWrapperDynamicClasses += "'!w-16': " + componentSettings.IsCollapsedTwoWayStatePath + "," }}
-	}
-	{{ sidebarWrapperDynamicClasses += "}" }}
+	{{ sidebarWrapperDynamicClasses := sidebarWrapperDynamicClassesBuilder(componentSettings, sidebarAttachmentMode) }}
 	<!-- Sidebar -->
 	<aside class={ sidebarWrapperClasses } :class={ sidebarWrapperDynamicClasses }>
 		<div class={ sidebarClasses } :class={ sidebarDynamicClasses }>

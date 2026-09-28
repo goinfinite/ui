@@ -1,0 +1,275 @@
+package main
+
+import (
+	uiControl "github.com/goinfinite/ui/src/control"
+	uiDisplay "github.com/goinfinite/ui/src/display"
+)
+
+templ AlertSizesExample() {
+	{{
+		sizesUsage := `@uiDisplay.Alert(uiDisplay.AlertSettings{
+	Title:       "Alert Title",
+	Description: "This is an alert message.",
+	Variation:   uiDisplay.AlertVariationInfo,
+	Size:        uiDisplay.AlertSizeMd,
+})`
+	}}
+	@DemoExampleCard(
+		"Sizes",
+		"Size scales the alert padding and type: xs, sm, md, lg, or xl.",
+		"/display/alert.templ",
+		sizesUsage,
+	) {
+		<div class="flex flex-col gap-3">
+			for _, alertSize := range []string{uiDisplay.AlertSizeXs, uiDisplay.AlertSizeSm, uiDisplay.AlertSizeMd, uiDisplay.AlertSizeLg, uiDisplay.AlertSizeXl} {
+				@uiDisplay.Alert(uiDisplay.AlertSettings{
+					Title:       alertSize,
+					Description: "This is an alert message.",
+					Variation:   uiDisplay.AlertVariationInfo,
+					Size:        alertSize,
+				})
+			}
+		</div>
+	}
+}
+
+templ AlertDemoCustomContent() {
+	<div class="flex flex-col gap-2">
+		<p class="text-sm">
+			Deploy finished on <span class="font-mono font-bold text-emerald-300">edge-03</span>. Wire in any templ component here.
+		</p>
+	</div>
+}
+
+templ AlertContentHtmlExample() {
+	{{
+		contentUsage := `@uiDisplay.Alert(uiDisplay.AlertSettings{
+	Title: "Deploy finished",
+
+	// OptionalFields
+	ContentHtml: AlertDemoCustomContent(),
+})`
+	}}
+	@DemoExampleCard(
+		"Content Html Slot",
+		"ContentHtml replaces the plain description with a templ component of your own.",
+		"/display/alert.templ",
+		contentUsage,
+	) {
+		@uiDisplay.Alert(uiDisplay.AlertSettings{
+			Title:       "Deploy finished",
+			ContentHtml: AlertDemoCustomContent(),
+			Variation:   uiDisplay.AlertVariationSuccess,
+			Size:        uiDisplay.AlertSizeMd,
+		})
+	}
+}
+
+templ AlertCloseTimeoutExample() {
+	{{
+		closeUsage := `@uiDisplay.Alert(uiDisplay.AlertSettings{
+	Title:       "Alert Title",
+	Description: "This is an alert message.",
+
+	// OptionalFields
+	IsCloseable:           true,
+	OnCloseFunc:           "alertClosed = true",
+	DisplayTimeoutSeconds: 8,
+	OnTimeoutFunc:         "alertTimedOut = true",
+})`
+	}}
+	@DemoExampleCard(
+		"Close & Timeout",
+		"IsCloseable adds the dismiss button and OnCloseFunc runs when it is pressed. DisplayTimeoutSeconds auto-dismisses the alert and runs OnTimeoutFunc.",
+		"/display/alert.templ",
+		closeUsage,
+	) {
+		<div class="flex flex-col gap-3" x-data="{alertClosed: false, alertTimedOut: false}">
+			@uiDisplay.Alert(uiDisplay.AlertSettings{
+				Title:       "Closable alert",
+				Description: "Press the X to dismiss it.",
+				Variation:   uiDisplay.AlertVariationInfo,
+				Size:        uiDisplay.AlertSizeMd,
+				IsCloseable: true,
+				OnCloseFunc: "alertClosed = true",
+			})
+			@uiDisplay.Alert(uiDisplay.AlertSettings{
+				Title:                 "Self-dismissing alert",
+				Description:           "This alert dismisses itself after 8 seconds.",
+				Variation:             uiDisplay.AlertVariationWarning,
+				Size:                  uiDisplay.AlertSizeMd,
+				DisplayTimeoutSeconds: 8,
+				OnTimeoutFunc:         "alertTimedOut = true",
+			})
+			<p class={ DemoLiveStateClasses }>
+				Closed: <span x-text="alertClosed"></span>
+				· Timed out: <span x-text="alertTimedOut"></span>
+			</p>
+		</div>
+	}
+}
+
+templ AlertCustomSurfaceExample() {
+	{{
+		surfaceUsage := `@uiDisplay.Alert(uiDisplay.AlertSettings{
+	Title:       "Alert Title",
+	Description: "This is an alert message.",
+
+	// OptionalFields
+	BackgroundColor:          "cyan-500/20",
+	TextColor:                "cyan-100",
+	RingThickness:            uiDisplay.AlertRingThicknessLg,
+	RingColor:                "cyan-400",
+	ShadowSize:               uiDisplay.AlertShadowSizeXl,
+	CloseIconBackgroundColor: "cyan-500/30",
+})`
+	}}
+	@DemoExampleCard(
+		"Custom Surface",
+		"Background, text, ring, radius, shadow, and close-icon colors accept Tailwind tokens. Gradient backgrounds work too.",
+		"/display/alert.templ",
+		surfaceUsage,
+	) {
+		<div class="flex flex-col gap-3">
+			@uiDisplay.Alert(uiDisplay.AlertSettings{
+				Title:                    "Neon Glow Alert",
+				Description:              "This alert glows with neon colors!",
+				Size:                     uiDisplay.AlertSizeSm,
+				BackgroundColor:          "cyan-500/20",
+				TextColor:                "cyan-100",
+				RingThickness:            uiDisplay.AlertRingThicknessLg,
+				RingColor:                "cyan-400",
+				ShadowSize:               uiDisplay.AlertShadowSizeXl,
+				IsCloseable:              true,
+				CloseIconBackgroundColor: "cyan-500/30",
+			})
+			@uiDisplay.Alert(uiDisplay.AlertSettings{
+				Title:                    "Gradient Alert",
+				Description:              "This alert uses a gradient background!",
+				Size:                     uiDisplay.AlertSizeXs,
+				BackgroundColor:          "gradient-to-r from-purple-500/20 via-pink-500/20 to-red-500/20",
+				TextColor:                "white",
+				IsCloseable:              true,
+				CloseIconBackgroundColor: "red-500/20",
+				CloseIconTextColor:       "white",
+			})
+		</div>
+	}
+}
+
+templ AlertStateBoundExample() {
+	{{
+		stateUsage := `@uiDisplay.Alert(uiDisplay.AlertSettings{
+	Title:                      "Dynamic Content Alert",
+	DescriptionOneWayStatePath: "alertMessage",
+	Variation:                  uiDisplay.AlertVariationInfo,
+
+	// OptionalFields
+	IsCloseableOneWayStatePath: "isAlertCloseable",
+})`
+	}}
+	@DemoExampleCard(
+		"State-Bound Content",
+		"DescriptionOneWayStatePath and IsCloseableOneWayStatePath drive the alert from Alpine state.",
+		"/display/alert.templ",
+		stateUsage,
+	) {
+		<div class="grid gap-6 md:grid-cols-2" x-data="{alertMessage: 'Dynamic alert content!', isAlertCloseable: true}">
+			<div class="flex flex-col gap-3">
+				@uiDisplay.Alert(uiDisplay.AlertSettings{
+					Title:                      "Dynamic Content Alert",
+					DescriptionOneWayStatePath: "alertMessage",
+					Variation:                  uiDisplay.AlertVariationInfo,
+					Size:                       uiDisplay.AlertSizeMd,
+					IsCloseable:                true,
+				})
+				<div class="flex gap-2">
+					@uiControl.Button(uiControl.ButtonSettings{
+						Label:       "Change Message",
+						IconLeft:    "ph-pencil",
+						OnClickFunc: "alertMessage = 'Message updated at ' + new Date().toLocaleTimeString()",
+						Size:        uiControl.ButtonSizeSm,
+					})
+				</div>
+			</div>
+			<div class="flex flex-col gap-3">
+				@uiDisplay.Alert(uiDisplay.AlertSettings{
+					Title:                      "Conditional Close Button",
+					Description:                "This alert's close button can be toggled!",
+					Variation:                  uiDisplay.AlertVariationWarning,
+					Size:                       uiDisplay.AlertSizeMd,
+					IsCloseableOneWayStatePath: "isAlertCloseable",
+					CloseIconBackgroundColor:   "yellow-500/20",
+					CloseIconTextColor:         "yellow-100",
+				})
+				<div class="flex gap-2">
+					@uiControl.Button(uiControl.ButtonSettings{
+						Label:       "Toggle Close Button",
+						IconLeft:    "ph-toggle-left",
+						OnClickFunc: "isAlertCloseable = !isAlertCloseable",
+						Size:        uiControl.ButtonSizeSm,
+					})
+				</div>
+			</div>
+		</div>
+	}
+}
+
+templ AlertDemo() {
+	{{
+		demoUsage := `@uiDisplay.Alert(uiDisplay.AlertSettings{
+	Title:       "Alert Title",
+	Description: "This is an alert message.",
+	Variation:   uiDisplay.AlertVariationInfo,
+	Size:        uiDisplay.AlertSizeMd,
+	IsCloseable: true,
+})`
+	}}
+	<div class="flex flex-col gap-4" id="alert-demo">
+		@DemoComponentSection(DemoComponentSectionSettings{
+			ComponentPath:          "/display/alert.templ",
+			Description:            "An alert is a notification component that displays important information to users.",
+			LiveExampleDescription: "The four tone variations: success, warning, error, and info.",
+			Title:                  ".Alert",
+			UsageCode:              demoUsage,
+		}) {
+			<div class="flex flex-col gap-3">
+				@uiDisplay.Alert(uiDisplay.AlertSettings{
+					Title:       "Success Alert",
+					Description: "Your operation completed successfully!",
+					Variation:   uiDisplay.AlertVariationSuccess,
+					Size:        uiDisplay.AlertSizeMd,
+					IsCloseable: true,
+				})
+				@uiDisplay.Alert(uiDisplay.AlertSettings{
+					Title:       "Warning Alert",
+					Description: "Please review your settings before proceeding.",
+					Variation:   uiDisplay.AlertVariationWarning,
+					Size:        uiDisplay.AlertSizeMd,
+					IsCloseable: true,
+				})
+				@uiDisplay.Alert(uiDisplay.AlertSettings{
+					Title:       "Error Alert",
+					Description: "An error occurred while processing your request.",
+					Variation:   uiDisplay.AlertVariationError,
+					Size:        uiDisplay.AlertSizeMd,
+					IsCloseable: true,
+				})
+				@uiDisplay.Alert(uiDisplay.AlertSettings{
+					Title:       "Info Alert",
+					Description: "Here's some helpful information for you.",
+					Variation:   uiDisplay.AlertVariationInfo,
+					Size:        uiDisplay.AlertSizeMd,
+					IsCloseable: true,
+				})
+			</div>
+		}
+		@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
+			{Title: "Sizes", Icon: "ph-ruler", Content: AlertSizesExample()},
+			{Title: "Content Html Slot", Icon: "ph-code", Content: AlertContentHtmlExample()},
+			{Title: "Close & Timeout", Icon: "ph-timer", Content: AlertCloseTimeoutExample()},
+			{Title: "Custom Surface", Icon: "ph-palette", Content: AlertCustomSurfaceExample()},
+			{Title: "State-Bound Content", Icon: "ph-arrows-clockwise", Content: AlertStateBoundExample()},
+		})
+	</div>
+}

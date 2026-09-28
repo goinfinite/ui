@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { openExamplePanel } from "../../examplePanel.js";
 
 const toggleSection = "#toggle-switch-demo";
 const booleanStateInput = `${toggleSection} input[type=hidden][name=notificationsEnabled]`;
@@ -49,6 +50,7 @@ test.describe("ToggleSwitch", () => {
   test("label position left renders the label before the track", async ({
     page,
   }) => {
+    await openExamplePanel(page, toggleSection, "Label Position");
     await expect
       .poll(() => labelOffsetFromTrack(page, "Label on left"))
       .toBeLessThan(0);
@@ -57,6 +59,7 @@ test.describe("ToggleSwitch", () => {
   test("label position left keeps the switch at the column start", async ({
     page,
   }) => {
+    await openExamplePanel(page, toggleSection, "Label Position");
     await expect
       .poll(async () => {
         const leftPositionStart = await startEdgeOf(page, "Label on left");
@@ -69,6 +72,7 @@ test.describe("ToggleSwitch", () => {
   test("label position left keeps the label and track together", async ({
     page,
   }) => {
+    await openExamplePanel(page, toggleSection, "Label Position");
     const toggle = toggleByLabel(page, "Label on left");
     const labelBox = await toggle.boundingBox();
     const parentBox = await toggle.locator("xpath=..").boundingBox();

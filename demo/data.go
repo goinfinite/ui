@@ -65,17 +65,35 @@ func buildDemoServerRecords() []DemoServerRecord {
 	return records
 }
 
+func buildDemoEnvironmentOptions() []uiForm.SelectLabelValueOption {
+	return []uiForm.SelectLabelValueOption{
+		{Label: "production", Value: "production"},
+		{Label: "staging", Value: "staging"},
+	}
+}
+
+func buildDemoRegionOptions() []uiForm.SelectLabelValueOption {
+	return []uiForm.SelectLabelValueOption{
+		{Label: "us-east-1", Value: "us-east-1"},
+		{Label: "eu-west-1", Value: "eu-west-1"},
+	}
+}
+
+func buildDemoRecordStatusOptions() []uiForm.SelectLabelValueOption {
+	return []uiForm.SelectLabelValueOption{
+		{Label: "running", Value: "running"},
+		{Label: "stopped", Value: "stopped"},
+	}
+}
+
 func buildDemoRecordFilters() []uiStructural.FilterSettings {
 	return []uiStructural.FilterSettings{
 		{Key: "name", Label: "Name", Kind: uiStructural.FilterKindTextContains},
 		{
-			Key:   "status",
-			Label: "Status",
-			Kind:  uiStructural.FilterKindEnumSelect,
-			Options: []uiForm.SelectLabelValueOption{
-				{Label: "running", Value: "running"},
-				{Label: "stopped", Value: "stopped"},
-			},
+			Key:     "status",
+			Label:   "Status",
+			Kind:    uiStructural.FilterKindEnumSelect,
+			Options: buildDemoRecordStatusOptions(),
 		},
 		{Key: "cpu", Label: "CPU", Kind: uiStructural.FilterKindNumberRange},
 	}
@@ -140,6 +158,17 @@ func buildDemoPlainTableColumns() []uiStructural.DataTableColumnSettings[DemoSer
 			},
 		},
 	}
+}
+
+func buildDemoTooltipActionColumns() []uiStructural.DataTableColumnSettings[DemoServerRecord] {
+	columns := buildDemoPlainTableColumns()
+	return append(columns, uiStructural.DataTableColumnSettings[DemoServerRecord]{
+		Label:     "Actions",
+		Alignment: uiStructural.DataTableAlignmentRight,
+		CellRenderer: func(record DemoServerRecord) templ.Component {
+			return DemoTooltipActionCell(record)
+		},
+	})
 }
 
 func buildDemoColumnShowcaseColumns() []uiStructural.DataTableColumnSettings[DemoServerRecord] {
@@ -222,7 +251,7 @@ func buildDemoDataTableSettings(
 	return uiStructural.DataTableSettings[DemoServerRecord]{
 		Columns: buildDemoServerTableColumns(),
 		Rows:    records[firstIndex:lastIndex],
-		QueryUrlTemplate: "assets/dataTableDemoRefresh.html" +
+		QueryUrlTemplate: "assets/dataTableDemoRefreshFragments.json" +
 			"?page=" + uiStructural.DataTableUrlPlaceholderPageNumber +
 			"&itemsPerPage=" + uiStructural.DataTableUrlPlaceholderItemsPerPage +
 			"&sort=" + uiStructural.DataTableUrlPlaceholderSortKey +

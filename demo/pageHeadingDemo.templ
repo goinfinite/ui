@@ -1,0 +1,219 @@
+package main
+
+import (
+	uiControl "github.com/goinfinite/ui/src/control"
+	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiStructural "github.com/goinfinite/ui/src/structural"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+templ PageHeadingDemoActions() {
+	@uiControl.Button(uiControl.ButtonSettings{
+		Label:           "New Record",
+		IconLeft:        "ph-plus",
+		Size:            uiControl.ButtonSizeSm,
+		BackgroundColor: "primary-800",
+	})
+	@uiControl.Button(uiControl.ButtonSettings{
+		Label:           "Export",
+		IconLeft:        "ph-download",
+		Size:            uiControl.ButtonSizeSm,
+		BackgroundColor: "neutral-50/10",
+	})
+}
+
+templ PageHeadingTitleOnlyExample() {
+	{{
+		titleOnlyUsage := `@uiStructural.PageHeading(uiStructural.PageHeadingSettings{
+	HeaderTitle: "Title Only",
+	Level:       uiStructural.PageHeadingLevelSection,
+})`
+	}}
+	@DemoExampleCard(
+		"Title Only",
+		"With no icon, sub-heading, or actions the heading is a single line.",
+		"/structural/pageHeading.templ",
+		titleOnlyUsage,
+	) {
+		@uiStructural.PageHeading(uiStructural.PageHeadingSettings{
+			HeaderTitle: "Title Only",
+			Level:       uiStructural.PageHeadingLevelSection,
+		})
+	}
+}
+
+templ PageHeadingLevelSizesExample() {
+	{{
+		levelsUsage := `@uiStructural.PageHeading(uiStructural.PageHeadingSettings{
+	HeaderTitle: "Records",
+	Level:       uiStructural.PageHeadingLevelPage,
+
+	// OptionalFields
+	HeaderSize: uiDisplay.HeaderSizeSm,
+})`
+	}}
+	@DemoExampleCard(
+		"Levels & Sizes",
+		"Level page renders the h1 page header and defaults to xl. Level section renders the h2 section heading and defaults to lg. HeaderSize scales either level: xs, sm, md, lg, or xl.",
+		"/structural/pageHeading.templ",
+		levelsUsage,
+	) {
+		<div class="flex flex-col gap-4">
+			@uiStructural.PageHeading(uiStructural.PageHeadingSettings{
+				HeaderTitle: "Page Level",
+				Level:       uiStructural.PageHeadingLevelPage,
+				HeaderIcon:  "ph-text-h-one",
+			})
+			@uiStructural.PageHeading(uiStructural.PageHeadingSettings{
+				HeaderTitle: "Section Level",
+				Level:       uiStructural.PageHeadingLevelSection,
+				HeaderIcon:  "ph-text-h-two",
+			})
+			for _, headerSize := range []string{uiDisplay.HeaderSizeXs, uiDisplay.HeaderSizeSm, uiDisplay.HeaderSizeMd, uiDisplay.HeaderSizeLg, uiDisplay.HeaderSizeXl} {
+				@uiStructural.PageHeading(uiStructural.PageHeadingSettings{
+					HeaderTitle: headerSize,
+					Level:       uiStructural.PageHeadingLevelPage,
+					HeaderSize:  headerSize,
+				})
+			}
+		</div>
+	}
+}
+
+templ PageHeadingIconStylesExample() {
+	{{
+		iconUsage := `@uiStructural.PageHeading(uiStructural.PageHeadingSettings{
+	HeaderTitle: "Records",
+
+	// OptionalFields
+	HeaderIcon:       "ph-star",
+	HeaderIconColor:  "amber-400",
+	HeaderIconPosition: uiDisplay.HeaderIconPositionLeft,
+})`
+	}}
+	@DemoExampleCard(
+		"Icon Styles",
+		"HeaderIcon stamps a Phosphor icon on the heading. Color and position style it. A section-level icon carries a chip background by default.",
+		"/structural/pageHeading.templ",
+		iconUsage,
+	) {
+		<div class="flex flex-col gap-4">
+			@uiStructural.PageHeading(uiStructural.PageHeadingSettings{
+				HeaderTitle:     "Amber Star",
+				Level:           uiStructural.PageHeadingLevelPage,
+				HeaderSize:      uiDisplay.HeaderSizeSm,
+				HeaderIcon:      "ph-star",
+				HeaderIconColor: "amber-400",
+			})
+			@uiStructural.PageHeading(uiStructural.PageHeadingSettings{
+				HeaderTitle:        "Icon on Left",
+				Level:              uiStructural.PageHeadingLevelPage,
+				HeaderSize:         uiDisplay.HeaderSizeSm,
+				HeaderIcon:         "ph-table",
+				HeaderIconPosition: uiDisplay.HeaderIconPositionLeft,
+			})
+			@uiStructural.PageHeading(uiStructural.PageHeadingSettings{
+				HeaderTitle:     "Section Chip",
+				Level:           uiStructural.PageHeadingLevelSection,
+				HeaderIcon:      "ph-globe",
+				HeaderIconColor: "primary-300",
+			})
+		</div>
+	}
+}
+
+templ PageHeadingStateBoundExample() {
+	{{
+		stateUsage := `@uiStructural.PageHeading(uiStructural.PageHeadingSettings{
+	HeaderTitle: "Records",
+
+	// OptionalFields
+	HeaderTitleOneWayStatePath:      "pageTitle",
+	HeaderSubHeadingOneWayStatePath: "pageSubHeading",
+})`
+	}}
+	@DemoExampleCard(
+		"State-Bound Title",
+		"HeaderTitleOneWayStatePath and HeaderSubHeadingOneWayStatePath drive the heading text from Alpine state.",
+		"/structural/pageHeading.templ",
+		stateUsage,
+	) {
+		<div x-data="{pageTitle: 'Live Title', pageSubHeading: 'Bound to Alpine state'}" class="flex flex-col gap-3">
+			@uiStructural.PageHeading(uiStructural.PageHeadingSettings{
+				HeaderTitle:                     "Live Title",
+				Level:                           uiStructural.PageHeadingLevelPage,
+				HeaderIcon:                      "ph-arrows-clockwise",
+				HeaderTitleOneWayStatePath:      "pageTitle",
+				HeaderSubHeadingOneWayStatePath: "pageSubHeading",
+			})
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:       "Change Title",
+				IconLeft:    "ph-pencil",
+				OnClickFunc: "pageTitle = 'Records at ' + new Date().toLocaleTimeString(); pageSubHeading = 'Just now'",
+				Size:        uiControl.ButtonSizeSm,
+			})
+		</div>
+	}
+}
+
+templ PageHeadingTextCaseExample() {
+	{{
+		textCaseUsage := `@uiStructural.PageHeading(uiStructural.PageHeadingSettings{
+	HeaderTitle: "Network Interfaces",
+	Level:       uiStructural.PageHeadingLevelSection,
+
+	// OptionalFields
+	TextCase: uiToolset.TextCaseUpper,
+})`
+	}}
+	@DemoExampleCard(
+		"Text Case",
+		"TextCase transforms the title and description. It accepts uiToolset.TextCaseNone (the default, as typed), TextCaseLower, TextCaseUpper, or TextCaseCapitalize.",
+		"/structural/pageHeading.templ",
+		textCaseUsage,
+	) {
+		@uiStructural.PageHeading(uiStructural.PageHeadingSettings{
+			HeaderTitle: "Network Interfaces",
+			Level:       uiStructural.PageHeadingLevelSection,
+			TextCase:    uiToolset.TextCaseUpper,
+		})
+	}
+}
+
+templ PageHeadingDemo() {
+	{{
+		demoUsage := `@uiStructural.PageHeading(uiStructural.PageHeadingSettings{
+	HeaderTitle: "Records",
+	Level:       uiStructural.PageHeadingLevelPage,
+
+	// OptionalFields
+	Description:    "Manage the server records",
+	HeaderIcon:     "ph-table",
+	ActionsContent: PageHeadingDemoActions(),
+})`
+	}}
+	<div class="flex flex-col gap-4" id="page-heading-demo">
+		@DemoComponentSection(DemoComponentSectionSettings{
+			ComponentPath:          "/structural/pageHeading.templ",
+			Description:            "The page heading block for both page titles and section headings: header title, optional icon and description, and a right-aligned action slot. One component with a Level setting so pages stop hand-rolling headers.",
+			LiveExampleDescription: "The complete page-level heading: title, icon, description, and actions.",
+			Title:                  ".PageHeading",
+			UsageCode:              demoUsage,
+		}) {
+			@uiStructural.PageHeading(uiStructural.PageHeadingSettings{
+				HeaderTitle:    "Records",
+				Level:          uiStructural.PageHeadingLevelPage,
+				Description:    "Manage the server records and their lifecycle.",
+				HeaderIcon:     "ph-table",
+				ActionsContent: PageHeadingDemoActions(),
+			})
+		}
+		@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
+			{Title: "Title Only", Icon: "ph-text-h-one", Content: PageHeadingTitleOnlyExample()},
+			{Title: "Levels & Sizes", Icon: "ph-ruler", Content: PageHeadingLevelSizesExample()},
+			{Title: "Icon Styles", Icon: "ph-star", Content: PageHeadingIconStylesExample()},
+			{Title: "State-Bound Title", Icon: "ph-arrows-clockwise", Content: PageHeadingStateBoundExample()},
+			{Title: "Text Case", Icon: "ph-text-t", Content: PageHeadingTextCaseExample()},
+		})
+	</div>
+}

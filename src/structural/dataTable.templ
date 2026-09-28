@@ -13,6 +13,10 @@ import (
 //go:embed dataTableState.js
 var dataTableAlpineState string
 
+var dataTableAlpineStateOnce = templ.NewOnceHandle(
+	templ.WithComponent(uiToolset.MinifierTemplateJs(&dataTableAlpineState)),
+)
+
 templ DataTableDefaultEmptyState() {
 	No records found.
 }
@@ -27,12 +31,12 @@ templ DataTableDefaultSearchBox() {
 }
 
 templ DataTable[Row any](componentSettings DataTableSettings[Row]) {
-	@uiToolset.MinifierTemplateJs(&dataTableAlpineState)
+	@dataTableAlpineStateOnce.Once()
 	{{ tableId := componentSettings.idResolver() }}
 	{{ settingsScriptId := tableId + "-settings" }}
 	{{ cellPaddingClasses := componentSettings.cellPaddingClassesResolver() }}
 	{{ headerPaddingClasses := componentSettings.headerPaddingClassesResolver() }}
-	{{ headerTextCaseClass := componentSettings.headerTextCaseClassResolver() }}
+	{{ headerTextCaseClass := componentSettings.textCaseClassResolver() }}
 	{{ headerRowClasses := "border-b border-neutral-50/10 text-xs " + headerTextCaseClass + " text-neutral-400" }}
 	if componentSettings.HeaderClass != "" {
 		{{ headerRowClasses = headerRowClasses + " " + componentSettings.HeaderClass }}
@@ -77,6 +81,7 @@ templ DataTable[Row any](componentSettings DataTableSettings[Row]) {
 					ValuesTwoWayStatePath:          "filterValues",
 					EnumSelectRadioGroupNamePrefix: tableId + "-",
 					OnChangeFunc:                   "resetPageAndRefresh()",
+					DropdownBackgroundColor:        componentSettings.FilterDropdownBackgroundColor,
 				})
 			</div>
 		}
@@ -235,6 +240,7 @@ templ DataTable[Row any](componentSettings DataTableSettings[Row]) {
 					PagesTotal:                  componentSettings.PagesTotal,
 					AriaLabel:                   paginationAriaLabel,
 					IsDisabledOneWayStatePath:   "isLoading",
+					IsHiddenWhenSinglePage:      componentSettings.IsPaginationHiddenWhenSinglePage,
 					ItemsPerPageInputName:       tableId + "-itemsPerPage",
 					ItemsPerPageSizeChoices:     itemsPerPageSizeChoices,
 					OnChangeFunc:                "requestRefresh()",

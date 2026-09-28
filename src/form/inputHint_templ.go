@@ -68,14 +68,14 @@ func InputHintTooltip(componentSettings InputHintSettings) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		tooltipId := generateInputHintTooltipId()
-		triggerClasses := "group/tooltip relative shrink-0 inline-flex items-center"
+		triggerClasses := "group/tooltip relative shrink-0 self-center inline-flex items-center"
 		iconClasses := "ph-bold ph-info text-lg text-neutral-400 transition-colors hover:text-neutral-100"
 		if componentSettings.Size == InputHintSizeSm {
 			triggerClasses += " px-2"
 			iconClasses = "ph-bold ph-info text-sm text-neutral-400 transition-colors hover:text-neutral-100"
 		}
 		if componentSettings.IconStyle == InputHintIconStyleBoxed {
-			iconClasses = "ph-bold ph-info text-base border-1 rounded border-neutral-50/5 bg-neutral-50/5 p-1 text-neutral-100 transition-colors hover:border-neutral-50/30 hover:bg-neutral-50/20"
+			iconClasses = "ph-bold ph-info text-base leading-none border-1 rounded border-neutral-50/5 bg-neutral-50/5 p-1 text-neutral-100 transition-colors hover:border-neutral-50/30 hover:bg-neutral-50/20"
 		}
 		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!-- HintDisplayTooltip -->")
 		if templ_7745c5c3_Err != nil {

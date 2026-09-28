@@ -3,8 +3,8 @@
 # @usage        tests/tests.sh [list] [--level=<fast|standard|exhaustive>] [--feature=<name>[,<name>...]] [--scope=<name>[,<name>...]]
 # @output       Per-node progress on stdout, failures on stderr, final RESULT line, exit 0 pass / 1 failure / 2 runner error.
 # @requires     bash v4+, node v24+, curl, timeout, go
-# @version      0.3.0
-# @updated      2026-09-15
+# @version      0.4.0
+# @updated      2026-09-24
 # @see          .agents/skills/design-testing-strategy/SKILL.md
 set -euo pipefail
 
@@ -115,7 +115,8 @@ if [[ "${BASH_SOURCE[0]}" != "$0" ]]; then return 0; fi
 
 cd "$(dirname "$0")/.."
 
-IFS='|' read -r level feature scope listMode <<<"$(parseInvocation "$@")"
+invocation="$(parseInvocation "$@")"
+IFS='|' read -r level feature scope listMode <<<"$invocation"
 mapfile -t registryFilters < <(buildRegistryFilters "$level" "$feature" "$scope")
 
 if [ "$listMode" = "true" ]; then

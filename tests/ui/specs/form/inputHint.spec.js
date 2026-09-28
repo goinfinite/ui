@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { openExamplePanel } from "../../examplePanel.js";
 
 const inputFieldSection = "#input-field-demo";
 const selectSection = "#select-input-demo";
@@ -17,9 +18,31 @@ test.describe("InputHint", () => {
     await page.waitForFunction(() => window.Alpine !== undefined);
   });
 
+  test("@smoke hint icon centers on the field box in both styles", async ({
+    page,
+  }) => {
+    for (const panelTitle of ["Hints", "Hint Icon Styles"]) {
+      const panel = await openExamplePanel(page, inputFieldSection, panelTitle);
+      const centers = await panel.evaluate((panelEl) => {
+        const note = panelEl.querySelector("[role=note]");
+        const input = note.closest("fieldset").querySelector("input");
+        const noteRect = note.getBoundingClientRect();
+        const inputRect = input.getBoundingClientRect();
+        return {
+          noteCenterY: noteRect.top + noteRect.height / 2,
+          inputCenterY: inputRect.top + inputRect.height / 2,
+        };
+      });
+      expect(Math.abs(centers.noteCenterY - centers.inputCenterY)).toBeLessThan(
+        3,
+      );
+    }
+  });
+
   test("@smoke input field tooltip reveals when reached by keyboard", async ({
     page,
   }) => {
+    await openExamplePanel(page, inputFieldSection, "Hints");
     const trigger = page.locator(`${inputFieldSection} [role=note]`).first();
     const input = trigger.locator("xpath=ancestor::fieldset").locator("input");
     const tooltip = await tooltipFor(trigger);
@@ -38,6 +61,7 @@ test.describe("InputHint", () => {
   test("@smoke select tooltip opens on tap without opening the dropdown", async ({
     page,
   }) => {
+    await openExamplePanel(page, selectSection, "Hints");
     const trigger = page.locator(`${selectSection} [role=note]`).first();
     const dropdown = page.locator(`${selectSection} ul`).first();
     const tooltip = await tooltipFor(trigger);
@@ -49,6 +73,7 @@ test.describe("InputHint", () => {
   });
 
   test("@smoke multi-select tooltip reveals on focus", async ({ page }) => {
+    await openExamplePanel(page, multiSelectSection, "Hints");
     const trigger = page.locator(`${multiSelectSection} [role=note]`).first();
     const tooltip = await tooltipFor(trigger);
 
@@ -63,6 +88,7 @@ test.describe("InputHint", () => {
   test("@smoke multi-select tooltip trigger does not toggle the dropdown from the keyboard", async ({
     page,
   }) => {
+    await openExamplePanel(page, multiSelectSection, "Hints");
     const trigger = page.locator(`${multiSelectSection} [role=note]`).first();
     const dropdown = page.locator(`${multiSelectSection} ul`).first();
 
@@ -77,6 +103,7 @@ test.describe("InputHint", () => {
   test("@smoke textarea description hint renders below the field", async ({
     page,
   }) => {
+    await openExamplePanel(page, textAreaSection, "Hints");
     const hint = page
       .locator(textAreaSection)
       .getByText(
@@ -87,6 +114,7 @@ test.describe("InputHint", () => {
   });
 
   test("@smoke textarea tooltip hint reveals on focus", async ({ page }) => {
+    await openExamplePanel(page, textAreaSection, "Hints");
     const trigger = page.locator(`${textAreaSection} [role=note]`).first();
     const tooltip = await tooltipFor(trigger);
 
@@ -101,6 +129,7 @@ test.describe("InputHint", () => {
   test("textarea hint text bound to a state path updates at runtime", async ({
     page,
   }) => {
+    await openExamplePanel(page, textAreaSection, "Hint State Path");
     const trigger = page.locator(`${textAreaSection} [role=note]`).nth(1);
     const tooltip = await tooltipFor(trigger);
     const changeButton = page

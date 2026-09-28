@@ -1,0 +1,210 @@
+package uiStructural
+
+import uiDisplay "github.com/goinfinite/ui/src/display"
+
+const (
+	CardBorderRadiusNone string = "none"
+	CardBorderRadiusXs   string = "xs"
+	CardBorderRadiusSm   string = "sm"
+	CardBorderRadiusMd   string = "md"
+	CardBorderRadiusLg   string = "lg"
+	CardBorderRadiusXl   string = "xl"
+
+	CardShadowSizeNone string = "none"
+	CardShadowSizeXs   string = "xs"
+	CardShadowSizeSm   string = "sm"
+	CardShadowSizeMd   string = "md"
+	CardShadowSizeLg   string = "lg"
+	CardShadowSizeXl   string = "xl"
+
+	CardRingThicknessXs string = "xs"
+	CardRingThicknessSm string = "sm"
+	CardRingThicknessMd string = "md"
+	CardRingThicknessLg string = "lg"
+	CardRingThicknessXl string = "xl"
+
+	CardPaddingSizeNone string = "none"
+	CardPaddingSizeXs   string = "xs"
+	CardPaddingSizeSm   string = "sm"
+	CardPaddingSizeMd   string = "md"
+	CardPaddingSizeLg   string = "lg"
+	CardPaddingSizeXl   string = "xl"
+
+	CardGapSizeNone string = "none"
+	CardGapSizeXs   string = "xs"
+	CardGapSizeSm   string = "sm"
+	CardGapSizeMd   string = "md"
+	CardGapSizeLg   string = "lg"
+	CardGapSizeXl   string = "xl"
+)
+
+type CardSettings struct {
+	MiddleContent templ.Component
+
+	// OptionalFields
+	ActionsContent                  templ.Component
+	BackgroundColor                 string
+	BorderRadius                    string
+	FooterContent                   templ.Component
+	GapSize                         string
+	HeaderContent                   templ.Component
+	HeaderIcon                      string
+	HeaderIconBackgroundColor       string
+	HeaderIconBorderRadius          string
+	HeaderIconColor                 string
+	HeaderIconPaddingSize           string
+	HeaderIconPosition              string
+	HeaderSize                      string
+	HeaderSubHeading                string
+	HeaderSubHeadingColor           string
+	HeaderSubHeadingOneWayStatePath string
+	HeaderTitle                     string
+	HeaderTitleColor                string
+	HeaderTitleOneWayStatePath      string
+	PaddingSize                     string
+	RingColor                       string
+	RingThickness                   string
+	ShadowSize                      string
+	TextCase                        string
+	TextColor                       string
+}
+
+templ Card(componentSettings CardSettings) {
+	<!-- Card -->
+	{{ backgroundColor := "bg-neutral-950/20" }}
+	if componentSettings.BackgroundColor != "" {
+		{{ backgroundColor = "bg-" + componentSettings.BackgroundColor }}
+	}
+	{{ textColor := "" }}
+	if componentSettings.TextColor != "" {
+		{{ textColor = "text-" + componentSettings.TextColor }}
+	}
+	<!-- Card Gap -->
+	{{ gapClasses := "gap-3" }}
+	if componentSettings.GapSize == "" {
+		{{ componentSettings.GapSize = CardGapSizeMd }}
+	}
+	switch componentSettings.GapSize {
+		case CardGapSizeNone:
+			{{ gapClasses = "gap-0" }}
+		case CardGapSizeXs:
+			{{ gapClasses = "gap-1" }}
+		case CardGapSizeSm:
+			{{ gapClasses = "gap-2" }}
+		case CardGapSizeMd:
+			{{ gapClasses = "gap-3" }}
+		case CardGapSizeLg:
+			{{ gapClasses = "gap-6" }}
+		case CardGapSizeXl:
+			{{ gapClasses = "gap-8" }}
+	}
+	{{ cardClasses := "flex flex-col " + gapClasses + " " + backgroundColor + " " + textColor }}
+	<!-- Card Padding -->
+	{{ paddingClasses := "p-5" }}
+	if componentSettings.PaddingSize == "" {
+		{{ componentSettings.PaddingSize = CardPaddingSizeMd }}
+	}
+	switch componentSettings.PaddingSize {
+		case CardPaddingSizeNone:
+			{{ paddingClasses = "p-0" }}
+		case CardPaddingSizeXs:
+			{{ paddingClasses = "p-3" }}
+		case CardPaddingSizeSm:
+			{{ paddingClasses = "p-4" }}
+		case CardPaddingSizeMd:
+			{{ paddingClasses = "p-5" }}
+		case CardPaddingSizeLg:
+			{{ paddingClasses = "p-6" }}
+		case CardPaddingSizeXl:
+			{{ paddingClasses = "p-8" }}
+	}
+	{{ cardClasses += " " + paddingClasses }}
+	<!-- Card Border Radius -->
+	{{ borderRadiusClasses := "rounded-lg" }}
+	if componentSettings.BorderRadius == "" {
+		{{ componentSettings.BorderRadius = CardBorderRadiusLg }}
+	}
+	switch componentSettings.BorderRadius {
+		case CardBorderRadiusNone:
+			{{ borderRadiusClasses = "rounded-none" }}
+		case CardBorderRadiusXs:
+			{{ borderRadiusClasses = "rounded-xs" }}
+		case CardBorderRadiusSm:
+			{{ borderRadiusClasses = "rounded-sm" }}
+		case CardBorderRadiusMd:
+			{{ borderRadiusClasses = "rounded" }}
+		case CardBorderRadiusLg:
+			{{ borderRadiusClasses = "rounded-lg" }}
+		case CardBorderRadiusXl:
+			{{ borderRadiusClasses = "rounded-xl" }}
+	}
+	{{ cardClasses += " " + borderRadiusClasses }}
+	<!-- Card Shadow -->
+	{{ shadowClasses := "" }}
+	switch componentSettings.ShadowSize {
+		case CardShadowSizeNone:
+			{{ shadowClasses = "shadow-none" }}
+		case CardShadowSizeXs:
+			{{ shadowClasses = "shadow-xs" }}
+		case CardShadowSizeSm:
+			{{ shadowClasses = "shadow-sm" }}
+		case CardShadowSizeMd:
+			{{ shadowClasses = "shadow-md" }}
+		case CardShadowSizeLg:
+			{{ shadowClasses = "shadow-lg" }}
+		case CardShadowSizeXl:
+			{{ shadowClasses = "shadow-xl" }}
+	}
+	{{ cardClasses += " " + shadowClasses }}
+	<!-- Card Ring -->
+	if componentSettings.RingColor != "" && componentSettings.RingThickness != "" {
+		{{ ringThickness := "ring-1" }}
+		switch componentSettings.RingThickness {
+			case CardRingThicknessXs:
+				{{ ringThickness = "ring-1" }}
+			case CardRingThicknessSm:
+				{{ ringThickness = "ring-1.5" }}
+			case CardRingThicknessMd:
+				{{ ringThickness = "ring-2" }}
+			case CardRingThicknessLg:
+				{{ ringThickness = "ring-2.5" }}
+			case CardRingThicknessXl:
+				{{ ringThickness = "ring-3" }}
+		}
+		{{ cardClasses += " " + ringThickness + " ring-" + componentSettings.RingColor }}
+	}
+	{{ hasHeaderBlockContent := componentSettings.HeaderTitle != "" || componentSettings.HeaderTitleOneWayStatePath != "" || componentSettings.HeaderSubHeading != "" || componentSettings.HeaderSubHeadingOneWayStatePath != "" || componentSettings.HeaderIcon != "" || componentSettings.ActionsContent != nil }}
+	<div class={ cardClasses }>
+		if componentSettings.HeaderContent != nil {
+			<!-- CardCustomHeader -->
+			@componentSettings.HeaderContent
+		}
+		if componentSettings.HeaderContent == nil && hasHeaderBlockContent {
+			<!-- CardHeader -->
+			@uiDisplay.HeaderBlock(uiDisplay.HeaderBlockSettings{
+				ActionsContent:                  componentSettings.ActionsContent,
+				HeaderIcon:                      componentSettings.HeaderIcon,
+				HeaderIconBackgroundColor:       componentSettings.HeaderIconBackgroundColor,
+				HeaderIconBorderRadius:          componentSettings.HeaderIconBorderRadius,
+				HeaderIconColor:                 componentSettings.HeaderIconColor,
+				HeaderIconPaddingSize:           componentSettings.HeaderIconPaddingSize,
+				HeaderIconPosition:              componentSettings.HeaderIconPosition,
+				HeaderSize:                      componentSettings.HeaderSize,
+				HeaderSubHeading:                componentSettings.HeaderSubHeading,
+				HeaderSubHeadingColor:           componentSettings.HeaderSubHeadingColor,
+				HeaderSubHeadingOneWayStatePath: componentSettings.HeaderSubHeadingOneWayStatePath,
+				HeaderTitle:                     componentSettings.HeaderTitle,
+				HeaderTitleColor:                componentSettings.HeaderTitleColor,
+				HeaderTitleOneWayStatePath:      componentSettings.HeaderTitleOneWayStatePath,
+				HeadingLevel:                    uiDisplay.HeaderBlockHeadingLevelTwo,
+				TextCase:                        componentSettings.TextCase,
+			})
+		}
+		<!-- CardMiddleContent -->
+		@componentSettings.MiddleContent
+		if componentSettings.FooterContent != nil {
+			<!-- CardFooterContent -->
+			@componentSettings.FooterContent
+		}
+	</div>
+}

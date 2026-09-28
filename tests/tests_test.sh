@@ -1,56 +1,46 @@
 #!/usr/bin/env bash
-# @description  Companion tests for tests.sh: verifies invocation parsing and filter building.
+# @description  CLI contract for tests.sh: registry filters, rejected invocations, and demo-server decisions.
 # @usage        bash tests/tests_test.sh
-# @output       PASS lines per assertion; exits 1 on the first failure.
-# @requires     bash v4+
-# @version      0.2.0
-# @updated      2026-09-15
-set -euo pipefail
+# @output       PASS lines per assertion; exits 1 if any assertion fails.
+# @requires     bash v4+, node v24+, go
+# @version      0.3.0
+# @updated      2026-09-24
+set -uo pipefail
 
-source "$(dirname "$0")/tests.sh"
+cd "$(dirname "$0")/.." || exit 2
 
-#
-## Assertions
-#
-assertEquals() {
-	local label="$1" expected="$2" actual="$3"
-	if [ "$expected" != "$actual" ]; then
-		echo "AssertionFailed $label: expected '$expected', got '$actual'" >&2
-		exit 1
-	fi
-	echo "PASS $label"
-}
+source tests/lib/assertions.sh
 
 #
-## Runtime
+## RegistryFilters
 #
-IFS='|' read -r level feature scope listMode <<<"$(parseInvocation --level=fast --feature=form)"
-assertEquals "parses level and feature" "fast|form||false" "$level|$feature|$scope|$listMode"
+unfilteredList="$(bash tests/tests.sh list)"
+assertContains "prints the unit tree" "runner:unit/fast" "$unfilteredList"
+assertContains "prints the ui tree" ":ui/" "$unfilteredList"
 
-IFS='|' read -r level feature scope listMode <<<"$(parseInvocation list --scope=ui)"
-assertEquals "parses list subcommand with scope" "||ui|true" "$level|$feature|$scope|$listMode"
+formFastNodes="$(bash tests/tests.sh list --level=fast --feature=form)"
+assertEveryLineMatches "keeps only the form feature" "^form:" "$formFastNodes"
+assertEveryLineMatches "keeps only the fast level" "/fast[[:space:]]" "$formFastNodes"
 
-IFS='|' read -r level feature scope listMode <<<"$(parseInvocation)"
-assertEquals "defaults to no filters" "|||false" "$level|$feature|$scope|$listMode"
+uiNodes="$(bash tests/tests.sh list --scope=ui)"
+assertEveryLineMatches "keeps only the ui scope" ":ui/" "$uiNodes"
 
-exitStatus=0
-(parseInvocation --bogus >/dev/null 2>&1) || exitStatus=$?
-assertEquals "rejects unknown argument with exit 2" "2" "$exitStatus"
+#
+## RejectedInvocations
+#
+assertExitCode "rejects an unknown argument with exit 2" "2" bash tests/tests.sh --bogus
+assertExitCode "rejects an unknown feature with exit 2" "2" bash tests/tests.sh list --feature=nonexistent
+assertExitCode "rejects an empty selection with exit 2" "2" bash tests/tests.sh --feature=runner --scope=ui
+assertEquals "prints no nodes when a filter matches nothing" "" "$(bash tests/tests.sh list --feature=runner --scope=ui)"
 
-filters="$(buildRegistryFilters fast "form,toolset" "" | tr '\n' ' ')"
-assertEquals "builds registry filters" "--level=fast --feature=form,toolset " "$filters"
+#
+## DemoServerDecision
+#
+# An unusable port number makes the serve step fail before any node runs.
+unusablePortNumber=99999
+assertExitCode "runs a demo-free node without serving the demo" "0" \
+	env "UI_TEST_PORT=$unusablePortNumber" bash tests/tests.sh --feature=display --scope=unit --level=fast
+assertExitCode "serves the demo before a demo-requiring node" "2" \
+	env "UI_TEST_PORT=$unusablePortNumber" bash tests/tests.sh --feature=form --scope=ui --level=fast
 
-filters="$(buildRegistryFilters "" "" "")"
-assertEquals "empty filters produce no arguments" "" "$filters"
-
-demoRequired="false"
-if selectionRequiresDemo $'form:ui/fast\trun smoke\ttrue'; then
-	demoRequired="true"
-fi
-assertEquals "detects a demo-requiring selection" "true" "$demoRequired"
-
-demoRequired="false"
-if selectionRequiresDemo $'runner:unit/fast\trun unit\tfalse'; then
-	demoRequired="true"
-fi
-assertEquals "ignores a selection with no demo requirement" "false" "$demoRequired"
+exitWithAssertionStatus

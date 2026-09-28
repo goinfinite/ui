@@ -20,18 +20,23 @@ import (
 //go:embed paginationState.js
 var paginationAlpineState string
 
+var paginationAlpineStateOnce = templ.NewOnceHandle(
+	templ.WithComponent(uiToolset.MinifierTemplateJs(&paginationAlpineState)),
+)
+
 type PaginationSettings struct {
 	PageNumberTwoWayStatePath   string
 	ItemsPerPageTwoWayStatePath string
 	ItemsTotal                  uint
-	PagesTotal                  uint
 
 	// OptionalFields
 	AriaLabel                 string
 	IsDisabledOneWayStatePath string
+	IsHiddenWhenSinglePage    bool
 	ItemsPerPageInputName     string
 	ItemsPerPageSizeChoices   []uint
 	OnChangeFunc              string
+	PagesTotal                uint
 }
 
 func Pagination(componentSettings PaginationSettings) templ.Component {
@@ -55,7 +60,7 @@ func Pagination(componentSettings PaginationSettings) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = uiToolset.MinifierTemplateJs(&paginationAlpineState).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = paginationAlpineStateOnce.Once().Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -73,7 +78,11 @@ func Pagination(componentSettings PaginationSettings) templ.Component {
 		if componentSettings.OnChangeFunc != "" {
 			onChangeSuffix = "; " + componentSettings.OnChangeFunc
 		}
-		pagesTotal := strconv.FormatUint(uint64(componentSettings.PagesTotal), 10)
+		pagesTotalExpression := paginationPagesTotalExpressionBuilder(itemsPerPagePath, componentSettings.ItemsTotal, componentSettings.PagesTotal)
+		centerVisibilityExpression := ""
+		if componentSettings.IsHiddenWhenSinglePage {
+			centerVisibilityExpression = pagesTotalExpression + " > 1"
+		}
 		disabledSuffix := ""
 		if componentSettings.IsDisabledOneWayStatePath != "" {
 			disabledSuffix = componentSettings.IsDisabledOneWayStatePath + " || "
@@ -93,7 +102,7 @@ func Pagination(componentSettings PaginationSettings) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.ResolveAttributeValue(ariaLabel)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/pagination.templ`, Line: 59, Col: 24}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/pagination.templ`, Line: 68, Col: 24}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var2)
 		if templ_7745c5c3_Err != nil {
@@ -106,13 +115,42 @@ func Pagination(componentSettings PaginationSettings) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.ResolveAttributeValue(paginationReadoutExpressionBuilder(pageNumberPath, itemsPerPagePath, componentSettings.ItemsTotal))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/pagination.templ`, Line: 62, Col: 132}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/pagination.templ`, Line: 71, Col: 132}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\"></p><div class=\"flex items-center gap-0.5\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\"></p><div class=\"flex items-center gap-0.5\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if centerVisibilityExpression != "" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, " x-show=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var4 string
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue(centerVisibilityExpression)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/pagination.templ`, Line: 75, Col: 39}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if centerVisibilityExpression != "" && componentSettings.PagesTotal == 1 {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, " style=\"display: none\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, ">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -140,90 +178,90 @@ func Pagination(componentSettings PaginationSettings) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<template x-for=\"")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var4 string
-		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue("pageItem in UiToolset.PaginationPageStripBuilder(" + pageNumberPath + ", " + pagesTotal + ")")
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/pagination.templ`, Line: 83, Col: 106}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" :key=\"pageItem.key\"><span><template x-if=\"pageItem.pageNumber === null\"><span class=\"px-1.5 text-sm leading-none text-neutral-400\">…</span></template><template x-if=\"pageItem.pageNumber !== null\"><button type=\"button\" class=\"min-w-6 cursor-pointer rounded border-0 bg-transparent px-1 py-[5px] text-sm font-bold leading-none text-neutral-400 transition-all hover:bg-neutral-50/12.5 hover:text-neutral-50\" :class=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<template x-for=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
-		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.ResolveAttributeValue(pageNumberPath + " === pageItem.pageNumber && '!bg-neutral-50/15 !text-neutral-50'")
+		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.ResolveAttributeValue("pageItem in UiToolset.PaginationPageStripBuilder(" + pageNumberPath + ", " + pagesTotalExpression + ")")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/pagination.templ`, Line: 94, Col: 99}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/pagination.templ`, Line: 100, Col: 116}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" :aria-current=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" :key=\"pageItem.key\"><span><template x-if=\"pageItem.pageNumber === null\"><span class=\"px-1.5 text-sm leading-none text-neutral-400\">…</span></template><template x-if=\"pageItem.pageNumber !== null\"><button type=\"button\" class=\"min-w-6 cursor-pointer rounded border-0 bg-transparent px-1 py-[5px] text-sm font-bold leading-none text-neutral-400 transition-all hover:bg-neutral-50/12.5 hover:text-neutral-50\" :class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var6 string
-		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.ResolveAttributeValue(pageNumberPath + " === pageItem.pageNumber && 'page'")
+		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.ResolveAttributeValue(pageNumberPath + " === pageItem.pageNumber && '!bg-neutral-50/15 !text-neutral-50'")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/pagination.templ`, Line: 95, Col: 76}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/pagination.templ`, Line: 111, Col: 99}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" :aria-current=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var7 string
+		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.ResolveAttributeValue(pageNumberPath + " === pageItem.pageNumber && 'page'")
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/pagination.templ`, Line: 112, Col: 76}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if componentSettings.IsDisabledOneWayStatePath != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, " :disabled=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, " :disabled=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var7 string
-			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.IsDisabledOneWayStatePath)
+			var templ_7745c5c3_Var8 string
+			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.IsDisabledOneWayStatePath)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/pagination.templ`, Line: 97, Col: 63}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/pagination.templ`, Line: 114, Col: 63}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var8)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, " @click=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, " @click=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var8 string
-		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.ResolveAttributeValue(pageNumberPath + " = pageItem.pageNumber" + onChangeSuffix)
+		var templ_7745c5c3_Var9 string
+		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.ResolveAttributeValue(pageNumberPath + " = pageItem.pageNumber" + onChangeSuffix)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/pagination.templ`, Line: 99, Col: 74}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/pagination.templ`, Line: 116, Col: 74}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var8)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var9)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" x-text=\"pageItem.label\"></button></template></span></template>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\" x-text=\"pageItem.label\"></button></template></span></template>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = uiControl.Button(uiControl.ButtonSettings{
 			AriaLabel:                 "Next page",
 			IconLeft:                  "ph-caret-right",
-			IsDisabledOneWayStatePath: disabledSuffix + pageNumberPath + " >= " + pagesTotal,
-			OnClickFunc:               pageNumberPath + " = Math.min(" + pagesTotal + ", " + pageNumberPath + " + 1)" + onChangeSuffix,
+			IsDisabledOneWayStatePath: disabledSuffix + pageNumberPath + " >= " + pagesTotalExpression,
+			OnClickFunc:               pageNumberPath + " = Math.min(" + pagesTotalExpression + ", " + pageNumberPath + " + 1)" + onChangeSuffix,
 			Size:                      uiControl.ButtonSizeXs,
 			TooltipContent:            "Next page",
 			TooltipPosition:           uiControl.ButtonTooltipPositionTop,
@@ -234,8 +272,8 @@ func Pagination(componentSettings PaginationSettings) templ.Component {
 		templ_7745c5c3_Err = uiControl.Button(uiControl.ButtonSettings{
 			AriaLabel:                 "Last page",
 			IconLeft:                  "ph-caret-double-right",
-			IsDisabledOneWayStatePath: disabledSuffix + pageNumberPath + " >= " + pagesTotal,
-			OnClickFunc:               pageNumberPath + " = " + pagesTotal + onChangeSuffix,
+			IsDisabledOneWayStatePath: disabledSuffix + pageNumberPath + " >= " + pagesTotalExpression,
+			OnClickFunc:               pageNumberPath + " = " + pagesTotalExpression + onChangeSuffix,
 			Size:                      uiControl.ButtonSizeXs,
 			TooltipContent:            "Last page",
 			TooltipPosition:           uiControl.ButtonTooltipPositionTop,
@@ -243,7 +281,7 @@ func Pagination(componentSettings PaginationSettings) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</div><div class=\"w-36\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</div><div class=\"w-36\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -259,7 +297,7 @@ func Pagination(componentSettings PaginationSettings) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</div></nav>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</div></nav>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

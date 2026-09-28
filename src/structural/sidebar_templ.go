@@ -80,55 +80,28 @@ func Sidebar(componentSettings SidebarSettings) templ.Component {
 		switch componentSettings.Side {
 		case SidebarSideLeft:
 			sidebarClasses += " left-0"
-			if sidebarAttachmentMode == SidebarAttachmentModeInline {
-				sidebarClasses += " float-left"
-			}
 		case SidebarSideRight:
 			sidebarClasses += " right-0"
-			if sidebarAttachmentMode == SidebarAttachmentModeInline {
-				sidebarClasses += " float-right"
-			}
 		}
 		if componentSettings.IsCollapsed {
 			sidebarClasses += " !w-16"
 		}
-		sidebarDynamicClasses := "{"
-		if componentSettings.IsVisibleTwoWayStatePath != "" {
-			sidebarDynamicClasses += "'invisible': !" + componentSettings.IsVisibleTwoWayStatePath + ","
-		}
-		if componentSettings.IsCollapsedTwoWayStatePath != "" {
-			sidebarDynamicClasses += "'!w-16': " + componentSettings.IsCollapsedTwoWayStatePath + ","
-		}
-		if componentSettings.AttachmentModeTwoWayStatePath != "" {
-			sidebarDynamicClasses += "'!fixed top-0': " + componentSettings.AttachmentModeTwoWayStatePath + " === '" + SidebarAttachmentModeFixed + "',"
-		}
-		if componentSettings.IsOffCanvasTwoWayStatePath != "" {
-			sidebarDynamicClasses += "'!absolute top-0 z-50': " + componentSettings.IsOffCanvasTwoWayStatePath + ","
-		}
-		if componentSettings.SideTwoWayStatePath != "" {
-			sidebarDynamicClasses += "'left-0': " + componentSettings.SideTwoWayStatePath + " === '" + SidebarSideLeft + "',"
-			sidebarDynamicClasses += "'right-0': " + componentSettings.SideTwoWayStatePath + " === '" + SidebarSideRight + "',"
-			sidebarDynamicClasses += "'float-left': " + componentSettings.SideTwoWayStatePath + " === '" + SidebarSideLeft + "' && " + componentSettings.AttachmentModeTwoWayStatePath + " === '" + SidebarAttachmentModeInline + "',"
-			sidebarDynamicClasses += "'float-right': " + componentSettings.SideTwoWayStatePath + " === '" + SidebarSideRight + "' && " + componentSettings.AttachmentModeTwoWayStatePath + " === '" + SidebarAttachmentModeInline + "',"
-		}
-		sidebarDynamicClasses += "}"
+		sidebarDynamicClasses := sidebarDynamicClassesBuilder(componentSettings, sidebarAttachmentMode)
 		sidebarWrapperClasses := "h-full flex"
 		sidebarWrapperWidthClass := "w-64"
 		if componentSettings.Width != "" {
 			sidebarWrapperWidthClass = componentSettings.Width
 		}
 		sidebarWrapperClasses += " " + sidebarWrapperWidthClass
-		sidebarWrapperDynamicClasses := "{"
-		if componentSettings.IsVisibleTwoWayStatePath != "" {
-			sidebarWrapperDynamicClasses += "'invisible': !" + componentSettings.IsVisibleTwoWayStatePath + ","
+		if sidebarAttachmentMode == SidebarAttachmentModeInline {
+			switch componentSettings.Side {
+			case SidebarSideLeft:
+				sidebarWrapperClasses += " float-left"
+			case SidebarSideRight:
+				sidebarWrapperClasses += " float-right"
+			}
 		}
-		if componentSettings.IsOffCanvasTwoWayStatePath != "" {
-			sidebarWrapperDynamicClasses += "'!w-0': " + componentSettings.IsOffCanvasTwoWayStatePath + ","
-		}
-		if componentSettings.IsCollapsedTwoWayStatePath != "" {
-			sidebarWrapperDynamicClasses += "'!w-16': " + componentSettings.IsCollapsedTwoWayStatePath + ","
-		}
-		sidebarWrapperDynamicClasses += "}"
+		sidebarWrapperDynamicClasses := sidebarWrapperDynamicClassesBuilder(componentSettings, sidebarAttachmentMode)
 		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!-- Sidebar -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -158,7 +131,7 @@ func Sidebar(componentSettings SidebarSettings) templ.Component {
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue(sidebarWrapperDynamicClasses)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/sidebar.templ`, Line: 115, Col: 77}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/sidebar.templ`, Line: 88, Col: 77}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
 		if templ_7745c5c3_Err != nil {
@@ -193,7 +166,7 @@ func Sidebar(componentSettings SidebarSettings) templ.Component {
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.ResolveAttributeValue(sidebarDynamicClasses)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/sidebar.templ`, Line: 116, Col: 62}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/sidebar.templ`, Line: 89, Col: 62}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
 		if templ_7745c5c3_Err != nil {
@@ -265,7 +238,7 @@ func Sidebar(componentSettings SidebarSettings) templ.Component {
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.ResolveAttributeValue("{ 'block text-center !bottom-2 !float-none': " + componentSettings.IsCollapsedTwoWayStatePath + "}")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/sidebar.templ`, Line: 140, Col: 115}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/sidebar.templ`, Line: 113, Col: 115}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var10)
 			if templ_7745c5c3_Err != nil {
@@ -349,7 +322,7 @@ func Sidebar(componentSettings SidebarSettings) templ.Component {
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.ResolveAttributeValue(collapseIconDynamicClasses)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/sidebar.templ`, Line: 174, Col: 40}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/sidebar.templ`, Line: 147, Col: 40}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var13)
 			if templ_7745c5c3_Err != nil {
@@ -362,7 +335,7 @@ func Sidebar(componentSettings SidebarSettings) templ.Component {
 			var templ_7745c5c3_Var14 string
 			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.IsCollapsedTwoWayStatePath + " = !" + componentSettings.IsCollapsedTwoWayStatePath)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/sidebar.templ`, Line: 175, Col: 114}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/sidebar.templ`, Line: 148, Col: 114}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var14)
 			if templ_7745c5c3_Err != nil {

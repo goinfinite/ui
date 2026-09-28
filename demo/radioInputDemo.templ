@@ -1,0 +1,83 @@
+package main
+
+import (
+	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiForm "github.com/goinfinite/ui/src/form"
+)
+
+templ RadioInputSizesExample() {
+	{{
+		sizesUsage := `@uiForm.RadioInput(uiForm.RadioInputSettings{
+	Label:           "Option 1",
+	StateValue:      "option1",
+	TwoWayStatePath: "selectedOption",
+
+	// OptionalFields
+	Size: uiForm.RadioInputSizeMd,
+})`
+	}}
+	@DemoExampleCard(
+		"Sizes",
+		"Size scales the radio and its label: xs, sm, md, lg, or xl.",
+		"/form/radioInput.templ",
+		sizesUsage,
+	) {
+		<div class="flex flex-col gap-3" x-data="{selectedOption: 'option1'}">
+			for _, radioSize := range []string{uiForm.RadioInputSizeXs, uiForm.RadioInputSizeSm, uiForm.RadioInputSizeMd, uiForm.RadioInputSizeLg, uiForm.RadioInputSizeXl} {
+				@uiForm.RadioInput(uiForm.RadioInputSettings{
+					Label:           radioSize,
+					StateValue:      radioSize,
+					TwoWayStatePath: "selectedOption",
+					Size:            radioSize,
+				})
+			}
+		</div>
+	}
+}
+
+templ RadioInputDemo() {
+	{{
+		demoUsage := `@uiForm.RadioInput(uiForm.RadioInputSettings{
+	Label:           "Option 1",
+	StateValue:      "option1",
+	TwoWayStatePath: "selectedOption",
+	InputId:         "radioOption1",
+	InputName:       "options",
+})`
+	}}
+	<div class="flex flex-col gap-4" id="radio-input-demo">
+		@DemoComponentSection(DemoComponentSectionSettings{
+			ComponentPath:          "/form/radioInput.templ",
+			Description:            "A radio input allows users to select one option from a set of options.",
+			LiveExampleDescription: "A radio group bound to one shared Alpine state path.",
+			Title:                  ".RadioInput",
+			UsageCode:              demoUsage,
+			AlpineStateCode:        `<div x-data="{selectedOption: 'option2'}"></div>`,
+		}) {
+			<div x-data="{selectedOption: 'option2'}" class="flex flex-col gap-4">
+				<div class="flex flex-col gap-2">
+					@uiForm.RadioInput(uiForm.RadioInputSettings{
+						Label:           "Option 1",
+						StateValue:      "option1",
+						TwoWayStatePath: "selectedOption",
+						InputId:         "radioOption1",
+						InputName:       "options",
+					})
+					@uiForm.RadioInput(uiForm.RadioInputSettings{
+						Label:           "Option 2",
+						StateValue:      "option2",
+						TwoWayStatePath: "selectedOption",
+						InputId:         "radioOption2",
+						InputName:       "options",
+					})
+				</div>
+				<p class={ DemoLiveStateClasses }>
+					Value: <span x-text="selectedOption"></span>
+				</p>
+			</div>
+		}
+		@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
+			{Title: "Sizes", Icon: "ph-ruler", Content: RadioInputSizesExample()},
+		})
+	</div>
+}

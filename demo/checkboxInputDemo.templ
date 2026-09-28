@@ -1,0 +1,267 @@
+package main
+
+import (
+	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiForm "github.com/goinfinite/ui/src/form"
+)
+
+templ CheckboxInputShapesExample() {
+	{{
+		shapesUsage := `@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+	Label:           "Accept the terms",
+	TwoWayStatePath: "hasAcceptedTerms",
+
+	// OptionalFields
+	Shape: uiForm.CheckboxInputShapeRounded,
+})`
+	}}
+	@DemoExampleCard(
+		"Shapes",
+		"Shape rounds the checkbox frame: square, rounded, or circular.",
+		"/form/checkboxInput.templ",
+		shapesUsage,
+	) {
+		<div class="flex flex-col gap-3" x-data="{isCheckboxExampleEnabled: false}">
+			for _, checkboxShape := range []string{uiForm.CheckboxInputShapeSquare, uiForm.CheckboxInputShapeRounded, uiForm.CheckboxInputShapeCircular} {
+				@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+					Label:           checkboxShape,
+					TwoWayStatePath: "isCheckboxExampleEnabled",
+					Shape:           checkboxShape,
+				})
+			}
+		</div>
+	}
+}
+
+templ CheckboxInputSizesExample() {
+	{{
+		sizesUsage := `@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+	Label:           "Accept the terms",
+	TwoWayStatePath: "hasAcceptedTerms",
+
+	// OptionalFields
+	Size: uiForm.CheckboxInputSizeMd,
+})`
+	}}
+	@DemoExampleCard(
+		"Sizes",
+		"Size scales the checkbox and its label: xs, sm, md, lg, or xl.",
+		"/form/checkboxInput.templ",
+		sizesUsage,
+	) {
+		<div class="flex flex-col gap-3" x-data="{isCheckboxExampleEnabled: false}">
+			for _, checkboxSize := range []string{uiForm.CheckboxInputSizeXs, uiForm.CheckboxInputSizeSm, uiForm.CheckboxInputSizeMd, uiForm.CheckboxInputSizeLg, uiForm.CheckboxInputSizeXl} {
+				@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+					Label:           checkboxSize,
+					TwoWayStatePath: "isCheckboxExampleEnabled",
+					Size:            checkboxSize,
+				})
+			}
+		</div>
+	}
+}
+
+templ CheckboxInputLabelPositionExample() {
+	{{
+		labelPositionUsage := `@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+	Label:           "Accept the terms",
+	TwoWayStatePath: "hasAcceptedTerms",
+
+	// OptionalFields
+	LabelPosition: uiForm.CheckboxInputLabelPositionLeft,
+})`
+	}}
+	@DemoExampleCard(
+		"Label Position",
+		"LabelPosition places the label on the left or the right of the checkbox.",
+		"/form/checkboxInput.templ",
+		labelPositionUsage,
+	) {
+		<div class="flex flex-col gap-3" x-data="{isCheckboxExampleEnabled: false}">
+			@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+				Label:           "Label on the left",
+				LabelPosition:   uiForm.CheckboxInputLabelPositionLeft,
+				TwoWayStatePath: "isCheckboxExampleEnabled",
+			})
+			@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+				Label:           "Label on the right",
+				LabelPosition:   uiForm.CheckboxInputLabelPositionRight,
+				TwoWayStatePath: "isCheckboxExampleEnabled",
+			})
+		</div>
+	}
+}
+
+templ CheckboxInputStatesExample() {
+	{{
+		statesUsage := `@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+	Label: "Accept the terms",
+
+	// OptionalFields
+	IsChecked:  true,
+	IsDisabled: false,
+	IsRequired: false,
+})`
+	}}
+	@DemoExampleCard(
+		"States",
+		"IsChecked starts the box checked, IsDisabled blocks edits, and IsRequired marks the field as required.",
+		"/form/checkboxInput.templ",
+		statesUsage,
+	) {
+		<div class="flex flex-col gap-3">
+			@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+				Label:     "Checked",
+				IsChecked: true,
+			})
+			@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+				Label:      "Disabled",
+				IsDisabled: true,
+			})
+			@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+				Label:      "Checked and disabled",
+				IsChecked:  true,
+				IsDisabled: true,
+			})
+			@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+				Label:      "Required",
+				IsRequired: true,
+			})
+		</div>
+	}
+}
+
+templ CheckboxInputErrorStatesExample() {
+	{{
+		errorUsage := `@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+	Label: "Accept the terms",
+
+	// OptionalFields
+	IsInvalid:                 true,
+	ErrorMessage:              "You must accept the terms to continue.",
+	IsInvalidOneWayStatePath:  "!hasAcceptedTerms",
+})`
+	}}
+	@DemoExampleCard(
+		"Error States",
+		"IsInvalid shows the error style and ErrorMessage explains it. IsInvalidOneWayStatePath drives the error from Alpine state.",
+		"/form/checkboxInput.templ",
+		errorUsage,
+	) {
+		<div class="flex flex-col gap-3" x-data="{isCheckboxExampleEnabled: false}">
+			@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+				InputId:      "checkbox-demo-terms",
+				Label:        "Accept the terms",
+				IsInvalid:    true,
+				ErrorMessage: "You must accept the terms to continue.",
+			})
+			@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+				Label:                    "Accept the terms (bound error)",
+				TwoWayStatePath:          "isCheckboxExampleEnabled",
+				IsInvalidOneWayStatePath: "!isCheckboxExampleEnabled",
+				ErrorMessage:             "Checking the box clears this error.",
+			})
+		</div>
+	}
+}
+
+templ CheckboxInputCheckedColorsExample() {
+	{{
+		colorsUsage := `@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+	Label: "Primary",
+
+	// OptionalFields
+	IsChecked:    true,
+	CheckedColor: "primary-500",
+})`
+	}}
+	@DemoExampleCard(
+		"Checked Colors",
+		"CheckedColor paints the filled box. UncheckedColor paints the empty box.",
+		"/form/checkboxInput.templ",
+		colorsUsage,
+	) {
+		<div class="flex flex-col gap-3">
+			@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+				CheckedColor: "primary-500",
+				Label:        "Primary",
+				IsChecked:    true,
+			})
+			@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+				CheckedColor: "emerald-500",
+				Label:        "Emerald",
+				IsChecked:    true,
+			})
+		</div>
+	}
+}
+
+templ CheckboxInputDemo() {
+	{{
+		demoUsage := `@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+	Label:           "Accept the terms",
+	TwoWayStatePath: "hasAcceptedTerms",
+
+	// OptionalFields
+	InputName: "hasAcceptedTerms",
+})`
+	}}
+	<div class="flex flex-col gap-4" id="checkbox-input-demo">
+		@DemoComponentSection(DemoComponentSectionSettings{
+			ComponentPath:          "/form/checkboxInput.templ",
+			Description:            "A checkbox selects one value, bound to a boolean or an array state path.",
+			LiveExampleDescription: "A bound checkbox and the select-all pattern with an indeterminate parent.",
+			Title:                  ".CheckboxInput",
+			UsageCode:              demoUsage,
+			AlpineStateCode: `<div x-data="{hasAcceptedTerms: false}"></div>
+<div x-data="{selectedFruits: ['apple']}"></div>`,
+		}) {
+			<div class="flex flex-col gap-6">
+				<div
+					x-data="{hasAcceptedTerms: false}"
+					class="flex flex-col gap-3"
+				>
+					<h5 class="text-sm font-bold">Boolean state</h5>
+					@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+						Label:           "Accept the terms",
+						InputName:       "hasAcceptedTerms",
+						TwoWayStatePath: "hasAcceptedTerms",
+					})
+					<p class={ DemoLiveStateClasses }>
+						Value: <span x-text="hasAcceptedTerms"></span>
+					</p>
+				</div>
+				<div
+					x-data="{selectedFruits: ['apple'], fruitOptions: ['apple', 'banana', 'orange']}"
+					class="flex flex-col gap-3"
+				>
+					<h5 class="text-sm font-bold">Indeterminate state</h5>
+					@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+						Label:                        "Select all",
+						IndeterminateOneWayStatePath: "selectedFruits.length > 0 && selectedFruits.length < fruitOptions.length",
+						IsCheckedOneWayStatePath:     "selectedFruits.length === fruitOptions.length",
+						OnChangeFunc:                 "selectedFruits = selectedFruits.length === fruitOptions.length ? [] : [...fruitOptions]",
+					})
+					for _, fruitOption := range []string{"apple", "banana", "orange"} {
+						@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+							Label:           fruitOption,
+							TwoWayStatePath: "selectedFruits",
+							Value:           fruitOption,
+						})
+					}
+					<p class={ DemoLiveStateClasses }>
+						Values: <span x-text="selectedFruits"></span>
+					</p>
+				</div>
+			</div>
+		}
+		@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
+			{Title: "Shapes", Icon: "ph-square", Content: CheckboxInputShapesExample()},
+			{Title: "Sizes", Icon: "ph-ruler", Content: CheckboxInputSizesExample()},
+			{Title: "Label Position", Icon: "ph-text-align-left", Content: CheckboxInputLabelPositionExample()},
+			{Title: "States", Icon: "ph-check-circle", Content: CheckboxInputStatesExample()},
+			{Title: "Error States", Icon: "ph-warning-circle", Content: CheckboxInputErrorStatesExample()},
+			{Title: "Checked Colors", Icon: "ph-palette", Content: CheckboxInputCheckedColorsExample()},
+		})
+	</div>
+}

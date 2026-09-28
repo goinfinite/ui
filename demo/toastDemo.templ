@@ -1,0 +1,132 @@
+package main
+
+import (
+	uiControl "github.com/goinfinite/ui/src/control"
+	uiDisplay "github.com/goinfinite/ui/src/display"
+)
+
+templ ToastApiResponseExample() {
+	{{
+		apiResponseUsage := `$store.toast.displayToastWithApiResponse(apiResponse, httpStatusCode)
+$store.toast.displayToastWithApiResponse({readableMessage: "Server rebuilt"}, 200)`
+	}}
+	@DemoExampleCard(
+		"API Response Toasts",
+		"displayToastWithApiResponse reads an Infinite API envelope and picks the tone from the status code: 207 is a partial success, 400 and above is an error, anything else is a success.",
+		"/display/toast.templ",
+		apiResponseUsage,
+	) {
+		<div class="flex flex-wrap gap-2" x-data>
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "200 Success",
+				IconLeft:        "ph-check",
+				OnClickFunc:     "$store.toast.displayToastWithApiResponse({readableMessage: 'Server rebuilt successfully.'}, 200)",
+				Size:            uiControl.ButtonSizeSm,
+				BackgroundColor: "emerald-500",
+			})
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "207 Partial Success",
+				IconLeft:        "ph-warning",
+				OnClickFunc:     "$store.toast.displayToastWithApiResponse({readableMessage: 'Two of three records imported.'}, 207)",
+				Size:            uiControl.ButtonSizeSm,
+				BackgroundColor: "yellow-500",
+			})
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "400 Error",
+				IconLeft:        "ph-x",
+				OnClickFunc:     "$store.toast.displayToastWithApiResponse({readableMessage: 'Record name is required.'}, 400)",
+				Size:            uiControl.ButtonSizeSm,
+				BackgroundColor: "red-500",
+			})
+		</div>
+	}
+}
+
+templ ToastMountSettingsExample() {
+	{{
+		mountUsage := `@uiDisplay.Toast(uiDisplay.ToastSettings{
+	// OptionalFields
+	AutoDismissSeconds: 6,
+	BackgroundColor:    "neutral-800",
+	TextColor:          "neutral-50",
+	Size:               uiDisplay.ToastSizeMd,
+	RingThickness:      uiDisplay.ToastRingThicknessMd,
+	RingColor:          "neutral-500",
+	Radius:             uiDisplay.ToastRadiusMd,
+})`
+	}}
+	@DemoExampleCard(
+		"Mount Settings",
+		"AutoDismissSeconds sets how long each toast stays up; it defaults to 10 seconds. Background, text, ring, and radius accept Tailwind tokens. Mount one Toast per page: the mount configures the shared toast store.",
+		"/display/toast.templ",
+		mountUsage,
+	) {
+		<p class="text-sm text-neutral-400">
+			The live example above already mounts a styled toast with a 6 second auto-dismiss. Every button on this page uses that mount.
+		</p>
+	}
+}
+
+templ ToastDemo() {
+	{{
+		demoUsage := `@uiDisplay.Toast(uiDisplay.ToastSettings{
+	// OptionalFields
+	AutoDismissSeconds: 6,
+	BackgroundColor:    "neutral-800",
+	TextColor:          "neutral-50",
+	Size:               uiDisplay.ToastSizeMd,
+	RingThickness:      uiDisplay.ToastRingThicknessMd,
+	RingColor:          "neutral-500",
+	Radius:             uiDisplay.ToastRadiusMd,
+})
+@uiControl.Button(uiControl.ButtonSettings{
+	OnClickFunc: "$store.toast.displayToast('Saved!', 'success')",
+})`
+	}}
+	<div class="flex flex-col gap-4" id="toast-demo">
+		@DemoComponentSection(DemoComponentSectionSettings{
+			ComponentPath:          "/display/toast.templ",
+			Description:            "A toast is a temporary notification displayed to provide feedback to users.",
+			LiveExampleDescription: "One toast mount serves every message. Trigger the success, warning, and error tones below.",
+			Title:                  ".Toast",
+			UsageCode:              demoUsage,
+		}) {
+			@uiDisplay.Toast(uiDisplay.ToastSettings{
+				AutoDismissSeconds: 6,
+				BackgroundColor:    "neutral-800",
+				TextColor:          "neutral-50",
+				Size:               uiDisplay.ToastSizeMd,
+				RingThickness:      uiDisplay.ToastRingThicknessMd,
+				RingColor:          "neutral-500",
+				Radius:             uiDisplay.ToastRadiusMd,
+			})
+			<div class="flex flex-wrap gap-2" x-data>
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:           "Show Success Toast",
+					IconLeft:        "ph-check",
+					OnClickFunc:     "$store.toast.displayToast('Operation completed successfully!', 'success')",
+					Size:            uiControl.ButtonSizeSm,
+					BackgroundColor: "emerald-500",
+				})
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:           "Show Warning Toast",
+					IconLeft:        "ph-warning",
+					OnClickFunc:     "$store.toast.displayToast('This is a warning message.', 'partialSuccess')",
+					Size:            uiControl.ButtonSizeSm,
+					BackgroundColor: "yellow-500",
+				})
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:           "Show Error Toast",
+					IconLeft:        "ph-x",
+					OnClickFunc:     "$store.toast.displayToast('An error occurred!', 'danger')",
+					Size:            uiControl.ButtonSizeSm,
+					BackgroundColor: "red-500",
+				})
+			</div>
+		}
+		@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
+			{Title: "API Response Toasts", Icon: "ph-cloud", Content: ToastApiResponseExample()},
+			{Title: "Mount Settings", Icon: "ph-palette", Content: ToastMountSettingsExample()},
+		})
+	</div>
+}

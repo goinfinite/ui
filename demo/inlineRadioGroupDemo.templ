@@ -1,0 +1,120 @@
+package main
+
+import (
+	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiForm "github.com/goinfinite/ui/src/form"
+)
+
+templ InlineRadioGroupSizesExample() {
+	{{
+		sizesUsage := `@uiForm.InlineRadioGroup(uiForm.InlineRadioGroupSettings{
+	Label: "Select an option",
+	InputSettings: []uiForm.RadioInputSettings{
+		{
+			Label:           "Option 1",
+			StateValue:      "option1",
+			TwoWayStatePath: "groupSelection",
+			Size:            uiForm.RadioInputSizeSm,
+		},
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Sizes",
+		"Each radio carries its own Size, so the group can scale per option.",
+		"/form/inlineRadioGroup.templ",
+		sizesUsage,
+	) {
+		<div x-data="{groupSizeSelection: 'md'}" class="flex flex-col gap-3">
+			@uiForm.InlineRadioGroup(uiForm.InlineRadioGroupSettings{
+				Label: "Pick a size",
+				InputSettings: []uiForm.RadioInputSettings{
+					{
+						Label:           "Small",
+						StateValue:      "sm",
+						TwoWayStatePath: "groupSizeSelection",
+						InputId:         "groupSizeSm",
+						InputName:       "groupSizes",
+						Size:            uiForm.RadioInputSizeSm,
+					},
+					{
+						Label:           "Medium",
+						StateValue:      "md",
+						TwoWayStatePath: "groupSizeSelection",
+						InputId:         "groupSizeMd",
+						InputName:       "groupSizes",
+						Size:            uiForm.RadioInputSizeMd,
+					},
+					{
+						Label:           "Large",
+						StateValue:      "lg",
+						TwoWayStatePath: "groupSizeSelection",
+						InputId:         "groupSizeLg",
+						InputName:       "groupSizes",
+						Size:            uiForm.RadioInputSizeLg,
+					},
+				},
+				TwoWayStatePath: "groupSizeSelection",
+			})
+		</div>
+	}
+}
+
+templ InlineRadioGroupDemo() {
+	{{
+		demoUsage := `@uiForm.InlineRadioGroup(uiForm.InlineRadioGroupSettings{
+	Label: "Select an option",
+	InputSettings: []uiForm.RadioInputSettings{
+		{
+			Label:           "Option 1",
+			StateValue:      "option1",
+			TwoWayStatePath: "groupSelection",
+			InputId:         "groupOption1",
+			InputName:       "group1",
+		},
+	},
+
+	// OptionalFields
+	TwoWayStatePath: "groupSelection",
+})`
+	}}
+	<div class="flex flex-col gap-4" id="inline-radio-group-demo">
+		@DemoComponentSection(DemoComponentSectionSettings{
+			ComponentPath:          "/form/inlineRadioGroup.templ",
+			Description:            "An inline radio group displays a set of radio options in a horizontal layout.",
+			LiveExampleDescription: "A horizontal radio group bound to one shared Alpine state path.",
+			Title:                  ".InlineRadioGroup",
+			UsageCode:              demoUsage,
+			AlpineStateCode:        `<div x-data="{groupSelection: 'option2'}"></div>`,
+		}) {
+			<div x-data="{groupSelection: 'option2'}" class="flex flex-col gap-3">
+				@uiForm.InlineRadioGroup(uiForm.InlineRadioGroupSettings{
+					Label: "Select an option",
+					InputSettings: []uiForm.RadioInputSettings{
+						{
+							Label:           "Option 1",
+							StateValue:      "option1",
+							TwoWayStatePath: "groupSelection",
+							InputId:         "groupOption1",
+							InputName:       "group1",
+						},
+						{
+							Label:           "Option 2",
+							StateValue:      "option2",
+							TwoWayStatePath: "groupSelection",
+							InputId:         "groupOption2",
+							InputName:       "group1",
+						},
+					},
+					TwoWayStatePath: "groupSelection",
+				})
+				<p class={ DemoLiveStateClasses }>
+					Value: <span x-text="groupSelection"></span>
+				</p>
+			</div>
+		}
+		@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
+			{Title: "Sizes", Icon: "ph-ruler", Content: InlineRadioGroupSizesExample()},
+		})
+	</div>
+}

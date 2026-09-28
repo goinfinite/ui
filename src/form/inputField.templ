@@ -1,5 +1,11 @@
 package uiForm
 
+import (
+	"strconv"
+
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
 const (
 	InputTypeColor    string = "color"
 	InputTypeDate     string = "date"
@@ -12,7 +18,65 @@ const (
 	InputTypeText     string = "text"
 	InputTypeTime     string = "time"
 	InputTypeUrl      string = "url"
+
+	InputFieldSizeXs string = "xs"
+	InputFieldSizeSm string = "sm"
+	InputFieldSizeMd string = "md"
+	InputFieldSizeLg string = "lg"
+	InputFieldSizeXl string = "xl"
 )
+
+type inputFieldSizeTokens struct {
+	AffixPadding   string
+	InputPadding   string
+	LabelOffset    string
+	LegendTextSize string
+	TextSize       string
+}
+
+func inputFieldSizeTokensResolver(size string) inputFieldSizeTokens {
+	switch size {
+	case InputFieldSizeXs:
+		return inputFieldSizeTokens{
+			AffixPadding:   "p-1",
+			InputPadding:   "p-1 pt-0",
+			LabelOffset:    "0.5",
+			LegendTextSize: "text-[0.625rem]",
+			TextSize:       "text-xs",
+		}
+	case InputFieldSizeSm:
+		return inputFieldSizeTokens{
+			AffixPadding:   "p-1.5",
+			InputPadding:   "p-1.5 pt-0",
+			LabelOffset:    "1",
+			LegendTextSize: "text-[0.625rem]",
+			TextSize:       "text-xs",
+		}
+	case InputFieldSizeLg:
+		return inputFieldSizeTokens{
+			AffixPadding:   "p-2",
+			InputPadding:   "p-2 pt-0",
+			LabelOffset:    "2",
+			LegendTextSize: "text-sm",
+			TextSize:       "text-base",
+		}
+	case InputFieldSizeXl:
+		return inputFieldSizeTokens{
+			AffixPadding:   "p-2.5",
+			InputPadding:   "p-2.5 pt-0",
+			LabelOffset:    "2.5",
+			LegendTextSize: "text-base",
+			TextSize:       "text-lg",
+		}
+	}
+	return inputFieldSizeTokens{
+		AffixPadding:   "p-1.5",
+		InputPadding:   "p-1.5 pt-0",
+		LabelOffset:    "1.5",
+		LegendTextSize: "text-xs",
+		TextSize:       "text-sm",
+	}
+}
 
 type InputFieldSettings struct {
 	InputType string
@@ -24,34 +88,44 @@ type InputFieldSettings struct {
 	Value                             string
 	AffixLeftValue                    string
 	AffixLeftStatePath                string
+	AffixLeftWidthPercent             uint
 	AffixRightValue                   string
 	AffixRightStatePath               string
+	AffixRightWidthPercent            uint
 	InputId                           string
 	InputNumberMin                    string
 	InputNumberMax                    string
 	InputNumberStep                   string
 	IsRequired                        bool
 	IsReadOnly                        bool
+	TextCase                          string
 	HintValue                         string
 	HintStatePath                     string
 	HintDisplay                       string
 	HintDisplayTooltipBackgroundColor string
 	HintIconStyle                     string
+	Size                              string
 }
 
 templ InputField(componentSettings InputFieldSettings) {
 	<!-- InputField -->
+	{{ sizeTokens := inputFieldSizeTokensResolver(componentSettings.Size) }}
+	{{ textCaseClass := uiToolset.TextCaseClassResolver(componentSettings.TextCase) }}
+	{{ legendClasses := "ml-1 select-none px-1 font-bold leading-none text-neutral-50/80 " + sizeTokens.LegendTextSize }}
+	if textCaseClass != "" {
+		{{ legendClasses += " " + textCaseClass }}
+	}
 	<div class="flex w-full flex-col">
 		<fieldset
-			class="bg-neutral-50/7.5 relative -mt-1.5 w-full rounded border border-neutral-50/5 transition-colors autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30"
+			class={ "bg-neutral-50/7.5 relative -mt-" + sizeTokens.LabelOffset + " w-full rounded border border-neutral-50/5 transition-colors autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30" }
 			if componentSettings.TwoWayStatePath != "" {
 				:class={ `!` + componentSettings.TwoWayStatePath + ` && 'mt-0'` }
 			}
 		>
 			<legend
-				class="ml-1 select-none px-1 text-xs font-bold lowercase leading-none text-neutral-50/80"
+				class={ legendClasses }
 				if componentSettings.TwoWayStatePath != "" {
-					:class={ `!` + componentSettings.TwoWayStatePath + ` && 'opacity-0 !p-0 w-0 h-0'` }
+					:class={ `!` + componentSettings.TwoWayStatePath + ` && 'hidden'` }
 				}
 			>
 				{ componentSettings.Label }
@@ -59,18 +133,20 @@ templ InputField(componentSettings InputFieldSettings) {
 					<span class="text-red-700">*</span>
 				}
 			</legend>
-			<div
-				class="flex"
-				if componentSettings.TwoWayStatePath != "" {
-					:class={ `!` + componentSettings.TwoWayStatePath + ` && 'items-center'` }
-				}
-			>
+			<div class="flex items-center">
 				if componentSettings.AffixLeftValue != "" || componentSettings.AffixLeftStatePath != "" {
 					<!-- LeftAffix -->
+					{{ leftAffixClasses := "shrink-0 truncate rounded-l border-r border-neutral-50/5 bg-neutral-50/5 text-neutral-400 " + sizeTokens.AffixPadding + " " + sizeTokens.TextSize }}
+					if componentSettings.AffixLeftWidthPercent == 0 {
+						{{ leftAffixClasses += " max-w-[50%]" }}
+					}
 					<div
-						class="shrink-0 rounded-l border-r border-neutral-50/5 bg-neutral-50/5 p-1.5 text-sm text-neutral-400"
+						class={ leftAffixClasses }
+						if componentSettings.AffixLeftWidthPercent > 0 {
+							style={ "width:" + strconv.FormatUint(uint64(componentSettings.AffixLeftWidthPercent), 10) + "%" }
+						}
 						if componentSettings.TwoWayStatePath != "" {
-							:class={ componentSettings.TwoWayStatePath + ` && '-mt-1.5'` }
+							:class={ componentSettings.TwoWayStatePath + ` && '-mt-` + sizeTokens.LabelOffset + `'` }
 						}
 						if componentSettings.AffixLeftStatePath != "" {
 							x-text={ componentSettings.AffixLeftStatePath }
@@ -81,7 +157,10 @@ templ InputField(componentSettings InputFieldSettings) {
 						}
 					</div>
 				}
-				{{ inputClasses := "w-full bg-transparent placeholder-text-neutral-50 placeholder-text-opacity-80 outline-none focus:outline-none p-1.5 pt-0 text-sm placeholder:lowercase peer" }}
+				{{ inputClasses := "w-full min-w-0 bg-transparent placeholder-text-neutral-50 placeholder-text-opacity-80 outline-none focus:outline-none peer " + sizeTokens.InputPadding + " " + sizeTokens.TextSize }}
+				if textCaseClass != "" {
+					{{ inputClasses += " placeholder:" + textCaseClass }}
+				}
 				if componentSettings.IsReadOnly {
 					{{ inputClasses += " text-neutral-400 cursor-not-allowed" }}
 				} else {
@@ -121,7 +200,7 @@ templ InputField(componentSettings InputFieldSettings) {
 					}
 					class={ inputClasses }
 					if componentSettings.TwoWayStatePath != "" {
-						:class={ `!` + componentSettings.TwoWayStatePath + ` && 'pt-1.5'` }
+						:class={ `!` + componentSettings.TwoWayStatePath + ` && 'pt-` + sizeTokens.LabelOffset + `'` }
 					}
 					if componentSettings.IsReadOnly {
 						readonly
@@ -129,10 +208,17 @@ templ InputField(componentSettings InputFieldSettings) {
 				/>
 				if componentSettings.AffixRightValue != "" || componentSettings.AffixRightStatePath != "" {
 					<!-- RightAffix -->
+					{{ rightAffixClasses := "shrink-0 truncate rounded-r border-l border-neutral-50/5 bg-neutral-50/5 text-neutral-400 " + sizeTokens.AffixPadding + " " + sizeTokens.TextSize }}
+					if componentSettings.AffixRightWidthPercent == 0 {
+						{{ rightAffixClasses += " max-w-[50%]" }}
+					}
 					<div
-						class="shrink-0 rounded-r border-l border-neutral-50/5 bg-neutral-50/5 p-1.5 text-sm text-neutral-400"
+						class={ rightAffixClasses }
+						if componentSettings.AffixRightWidthPercent > 0 {
+							style={ "width:" + strconv.FormatUint(uint64(componentSettings.AffixRightWidthPercent), 10) + "%" }
+						}
 						if componentSettings.TwoWayStatePath != "" {
-							:class={ componentSettings.TwoWayStatePath + ` && '-mt-1.5'` }
+							:class={ componentSettings.TwoWayStatePath + ` && '-mt-` + sizeTokens.LabelOffset + `'` }
 						}
 						if componentSettings.AffixRightStatePath != "" {
 							x-text={ componentSettings.AffixRightStatePath }
@@ -144,13 +230,15 @@ templ InputField(componentSettings InputFieldSettings) {
 					</div>
 				}
 				if shouldRenderInputHintTooltip(componentSettings.HintDisplay, componentSettings.HintValue, componentSettings.HintStatePath) {
-					@InputHintTooltip(InputHintSettings{
-						Value:                  componentSettings.HintValue,
-						StatePath:              componentSettings.HintStatePath,
-						TooltipBackgroundColor: componentSettings.HintDisplayTooltipBackgroundColor,
-						Size:                   InputHintSizeSm,
-						IconStyle:              componentSettings.HintIconStyle,
-					})
+					<span class="flex items-center self-center">
+						@InputHintTooltip(InputHintSettings{
+							Value:                  componentSettings.HintValue,
+							StatePath:              componentSettings.HintStatePath,
+							TooltipBackgroundColor: componentSettings.HintDisplayTooltipBackgroundColor,
+							Size:                   InputHintSizeSm,
+							IconStyle:              componentSettings.HintIconStyle,
+						})
+					</span>
 				}
 			</div>
 		</fieldset>

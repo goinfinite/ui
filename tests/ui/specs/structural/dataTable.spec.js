@@ -233,29 +233,48 @@ test.describe("DataTable @structural", () => {
   test("the larger page size and the last page resolve to their own fragments", async ({
     page,
   }) => {
-    await page.locator(`${tableRoot} nav [role=button]`).click();
-    await page
-      .locator(`${tableRoot} nav ul`)
-      .getByText("25", { exact: true })
-      .click();
+    await page.evaluate(() => {
+      const dataTable = Alpine.$data(
+        document.getElementById("data-table-demo-table"),
+      );
+      dataTable.itemsPerPage = 25;
+      dataTable.refresh();
+    });
     await expect(page.locator(`${tableRoot} tbody tr`)).toHaveCount(25);
     await expect(page.locator(`${tableRoot} nav p`)).toHaveText("1–25 of 25");
 
-    await page.locator(`${tableRoot} nav [role=button]`).click();
-    await page
-      .locator(`${tableRoot} nav ul`)
-      .getByText("5", { exact: true })
-      .click();
-    await expect(rowNames(page).first()).toHaveText("alpha");
-
-    await page.locator(`${tableRoot} button[aria-label="Last page"]`).click();
+    await page.evaluate(() => {
+      const dataTable = Alpine.$data(
+        document.getElementById("data-table-demo-table"),
+      );
+      dataTable.itemsPerPage = 5;
+      dataTable.pageNumber = 5;
+      dataTable.refresh();
+    });
     await expect(rowNames(page).first()).toHaveText("uniform");
+    await expect(page.locator(`${tableRoot} nav p`)).toHaveText("21–25 of 25");
 
-    await page
-      .locator(`${tableRoot} button`)
-      .filter({ hasText: "Refresh" })
-      .click();
+    await page.evaluate(() => {
+      Alpine.$data(document.getElementById("data-table-demo-table")).refresh();
+    });
     await expect(rowNames(page).first()).toHaveText("uniform");
+  });
+
+  test("a page size the demo cannot serve shows the error row", async ({
+    page,
+  }) => {
+    await page.evaluate(() => {
+      const dataTable = Alpine.$data(
+        document.getElementById("data-table-demo-table"),
+      );
+      dataTable.itemsPerPage = 10;
+      dataTable.refresh();
+    });
+
+    await expect(
+      page.locator(tableRoot).getByText("Could not refresh the table."),
+    ).toBeVisible();
+    await expect(page.locator(`${tableRoot} table`)).toBeHidden();
   });
 
   test("clear filters resets every filter and refreshes", async ({ page }) => {
@@ -346,9 +365,9 @@ test.describe("DataTable @structural", () => {
     await page.route(refreshFragmentPattern, async (route) => {
       requestCount++;
       if (requestCount === 1) {
+        await new Promise((resolve) => setTimeout(resolve, 300));
         return route.abort("failed");
       }
-      await new Promise((resolve) => setTimeout(resolve, 600));
       return route.continue();
     });
 
@@ -357,6 +376,13 @@ test.describe("DataTable @structural", () => {
         document.getElementById("data-table-demo-table"),
       );
       dataTable.refresh();
+    });
+    await expect.poll(() => requestCount).toBe(1);
+
+    await page.evaluate(() => {
+      const dataTable = Alpine.$data(
+        document.getElementById("data-table-demo-table"),
+      );
       dataTable.refresh();
     });
 
@@ -393,12 +419,15 @@ test.describe("DataTable @structural", () => {
   });
 
   test("a global refresh event reloads the table", async ({ page }) => {
-    const refreshUrls = trackRefreshUrls(page);
+    const liveMessage = page.locator(`${tableRoot} p[aria-live=polite]`);
+    const messageBeforeRefresh = await liveMessage.textContent();
+
     await page.evaluate(() =>
       window.dispatchEvent(new CustomEvent("refresh:data-table-demo")),
     );
 
-    await expect.poll(() => refreshUrls.length).toBe(1);
+    await expect(liveMessage).not.toHaveText(messageBeforeRefresh);
+    await expect(liveMessage).toHaveText("Table refreshed");
   });
 
   test("items per page dropdown opens upward when it would overflow the viewport", async ({

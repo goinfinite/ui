@@ -1,0 +1,221 @@
+package main
+
+import (
+	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+templ AccordionDemoSection1() {
+	<p class="text-sm text-neutral-400">This is the content for section 1. You can put any content here.</p>
+}
+
+templ AccordionDemoSection2() {
+	<p class="text-sm text-neutral-400">This is the content for section 2. You can put any content here.</p>
+}
+
+templ AccordionDemoSection3() {
+	<p class="text-sm text-neutral-400">This is the content for section 3. You can put any content here.</p>
+}
+
+templ AccordionItemIconsExample() {
+	{{
+		iconsUsage := `@uiDisplay.Accordion(uiDisplay.AccordionSettings{
+	Items: []uiDisplay.AccordionItemSettings{
+		{Title: "Section 1", Content: AccordionDemoSection1(), Icon: "ph-info"},
+		{Title: "Section 2", Content: AccordionDemoSection2(), Icon: "ph-warning"},
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Item Icons",
+		"Icon renders a Phosphor icon beside the item title.",
+		"/display/accordion.templ",
+		iconsUsage,
+	) {
+		@uiDisplay.Accordion(uiDisplay.AccordionSettings{
+			Items: []uiDisplay.AccordionItemSettings{
+				{
+					Title:   "Section 1",
+					Content: AccordionDemoSection1(),
+					Icon:    "ph-info",
+				},
+				{
+					Title:   "Section 2",
+					Content: AccordionDemoSection2(),
+					Icon:    "ph-warning",
+				},
+				{
+					Title:   "Section 3",
+					Content: AccordionDemoSection3(),
+					Icon:    "ph-check",
+				},
+			},
+		})
+	}
+}
+
+templ AccordionSurfacePaddingExample() {
+	{{
+		surfaceUsage := `@uiDisplay.Accordion(uiDisplay.AccordionSettings{
+	Items: []uiDisplay.AccordionItemSettings{
+		{Title: "Section 1", Content: AccordionDemoSection1()},
+	},
+
+	// OptionalFields
+	BackgroundColor:        "primary-900/40",
+	OpenBackgroundColor:    "primary-800/60",
+	ContentBackgroundColor: "primary-950",
+	TitleColor:             "primary-100",
+	BorderColor:            "primary-500/30",
+	BorderRadius:           uiDisplay.AccordionBorderRadiusXl,
+	PaddingSize:            uiDisplay.AccordionPaddingSizeLg,
+	ContentPaddingSize:     uiDisplay.AccordionPaddingSizeXl,
+})`
+	}}
+	@DemoExampleCard(
+		"Surface & Padding",
+		"Background, open background, content background, title color, border, and radius style the item surface. PaddingSize and ContentPaddingSize scale the paddings.",
+		"/display/accordion.templ",
+		surfaceUsage,
+	) {
+		@uiDisplay.Accordion(uiDisplay.AccordionSettings{
+			Items: []uiDisplay.AccordionItemSettings{
+				{
+					Title:   "Section 1",
+					Content: AccordionDemoSection1(),
+					Icon:    "ph-palette",
+				},
+				{
+					Title:   "Section 2",
+					Content: AccordionDemoSection2(),
+					Icon:    "ph-paint-brush",
+				},
+			},
+			BackgroundColor:        "primary-900/40",
+			OpenBackgroundColor:    "primary-800/60",
+			ContentBackgroundColor: "primary-950",
+			TitleColor:             "primary-100",
+			BorderColor:            "primary-500/30",
+			BorderRadius:           uiDisplay.AccordionBorderRadiusXl,
+			PaddingSize:            uiDisplay.AccordionPaddingSizeLg,
+			ContentPaddingSize:     uiDisplay.AccordionPaddingSizeXl,
+		})
+	}
+}
+
+templ AccordionSingleOpenExample() {
+	{{
+		singleOpenUsage := `@uiDisplay.Accordion(uiDisplay.AccordionSettings{
+	Items: []uiDisplay.AccordionItemSettings{
+		{Title: "Section 1", Content: AccordionDemoSection1()},
+		{Title: "Section 2", Content: AccordionDemoSection2()},
+		{Title: "Section 3", Content: AccordionDemoSection3()},
+	},
+
+	// OptionalFields
+	IsSingleOpen: true,
+})`
+	}}
+	@DemoExampleCard(
+		"Single Open",
+		"IsSingleOpen keeps one item open at a time. Opening a section closes the section that was open.",
+		"/display/accordion.templ",
+		singleOpenUsage,
+	) {
+		@uiDisplay.Accordion(uiDisplay.AccordionSettings{
+			Items: []uiDisplay.AccordionItemSettings{
+				{
+					Title:   "Section 1",
+					Content: AccordionDemoSection1(),
+				},
+				{
+					Title:   "Section 2",
+					Content: AccordionDemoSection2(),
+				},
+				{
+					Title:   "Section 3",
+					Content: AccordionDemoSection3(),
+				},
+			},
+			IsSingleOpen: true,
+		})
+	}
+}
+
+templ AccordionTextCaseExample() {
+	{{
+		textCaseUsage := `@uiDisplay.Accordion(uiDisplay.AccordionSettings{
+	Items: []uiDisplay.AccordionItemSettings{
+		{Title: "Section 1", Content: AccordionDemoSection1()},
+		{Title: "Section 2", Content: AccordionDemoSection2()},
+	},
+
+	// OptionalFields
+	TextCase: uiToolset.TextCaseUpper,
+})`
+	}}
+	@DemoExampleCard(
+		"Text Case",
+		"TextCase transforms the item titles. It accepts uiToolset.TextCaseNone (the default, as typed), TextCaseLower, TextCaseUpper, or TextCaseCapitalize.",
+		"/display/accordion.templ",
+		textCaseUsage,
+	) {
+		@uiDisplay.Accordion(uiDisplay.AccordionSettings{
+			Items: []uiDisplay.AccordionItemSettings{
+				{
+					Title:   "Section 1",
+					Content: AccordionDemoSection1(),
+				},
+				{
+					Title:   "Section 2",
+					Content: AccordionDemoSection2(),
+				},
+			},
+			TextCase: uiToolset.TextCaseUpper,
+		})
+	}
+}
+
+templ AccordionDemo() {
+	{{
+		demoUsage := `@uiDisplay.Accordion(uiDisplay.AccordionSettings{
+	Items: []uiDisplay.AccordionItemSettings{
+		{Title: "Section 1", Content: AccordionDemoSection1()},
+		{Title: "Section 2", Content: AccordionDemoSection2()},
+		{Title: "Section 3", Content: AccordionDemoSection3()},
+	},
+})`
+	}}
+	<div class="flex flex-col gap-4" id="accordion-demo">
+		@DemoComponentSection(DemoComponentSectionSettings{
+			ComponentPath:          "/display/accordion.templ",
+			Description:            "An accordion is a vertically stacked list of items that can be expanded or collapsed to reveal content.",
+			LiveExampleDescription: "Three titled sections, each holding its own content.",
+			Title:                  ".Accordion",
+			UsageCode:              demoUsage,
+		}) {
+			@uiDisplay.Accordion(uiDisplay.AccordionSettings{
+				Items: []uiDisplay.AccordionItemSettings{
+					{
+						Title:   "Section 1",
+						Content: AccordionDemoSection1(),
+					},
+					{
+						Title:   "Section 2",
+						Content: AccordionDemoSection2(),
+					},
+					{
+						Title:   "Section 3",
+						Content: AccordionDemoSection3(),
+					},
+				},
+			})
+		}
+		@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
+			{Title: "Item Icons", Icon: "ph-star", Content: AccordionItemIconsExample()},
+			{Title: "Surface & Padding", Icon: "ph-palette", Content: AccordionSurfacePaddingExample()},
+			{Title: "Single Open", Icon: "ph-rows", Content: AccordionSingleOpenExample()},
+			{Title: "Text Case", Icon: "ph-text-t", Content: AccordionTextCaseExample()},
+		})
+	</div>
+}

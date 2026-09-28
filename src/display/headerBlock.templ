@@ -1,0 +1,169 @@
+package uiDisplay
+
+import uiToolset "github.com/goinfinite/ui/src/toolset"
+
+const (
+	HeaderBlockHeadingLevelOne string = "1"
+	HeaderBlockHeadingLevelTwo string = "2"
+
+	HeaderSizeXs string = "xs"
+	HeaderSizeSm string = "sm"
+	HeaderSizeMd string = "md"
+	HeaderSizeLg string = "lg"
+	HeaderSizeXl string = "xl"
+)
+
+type HeaderBlockSettings struct {
+	// OptionalFields
+	ActionsContent                  templ.Component
+	HeaderIcon                      string
+	HeaderIconBackgroundColor       string
+	HeaderIconBorderRadius          string
+	HeaderIconColor                 string
+	HeaderIconPaddingSize           string
+	HeaderIconPosition              string
+	HeaderSize                      string
+	HeaderSubHeading                string
+	HeaderSubHeadingColor           string
+	HeaderSubHeadingOneWayStatePath string
+	HeaderTitle                     string
+	HeaderTitleColor                string
+	HeaderTitleOneWayStatePath      string
+	HeadingLevel                    string
+	TextCase                        string
+	TextColor                       string
+}
+
+templ HeaderBlock(componentSettings HeaderBlockSettings) {
+	{{ textCaseClass := uiToolset.TextCaseClassResolver(componentSettings.TextCase) }}
+	{{ titleClasses := "font-bold" }}
+	{{ iconSizeClasses := "text-xl" }}
+	{{ subHeadingClasses := "" }}
+	if componentSettings.HeaderSize == "" {
+		{{ componentSettings.HeaderSize = HeaderSizeMd }}
+	}
+	switch componentSettings.HeaderSize {
+		case HeaderSizeXs:
+			{{
+				titleClasses += " text-base"
+				iconSizeClasses = "text-base"
+				subHeadingClasses = "text-xs"
+			}}
+		case HeaderSizeSm:
+			{{
+				titleClasses += " text-lg"
+				iconSizeClasses = "text-lg"
+				subHeadingClasses = "text-sm"
+			}}
+		case HeaderSizeMd:
+			{{
+				titleClasses += " text-xl"
+				iconSizeClasses = "text-xl"
+				subHeadingClasses = "text-sm"
+			}}
+		case HeaderSizeLg:
+			{{
+				titleClasses += " text-2xl"
+				iconSizeClasses = "text-2xl"
+				subHeadingClasses = "text-base"
+			}}
+		case HeaderSizeXl:
+			{{
+				titleClasses += " text-3xl"
+				iconSizeClasses = "text-3xl"
+				subHeadingClasses = "text-base"
+			}}
+	}
+	if subHeadingClasses == "" {
+		{{ subHeadingClasses = "text-sm" }}
+	}
+	if componentSettings.HeaderTitleColor != "" {
+		{{ titleClasses += " text-" + componentSettings.HeaderTitleColor }}
+	}
+	if componentSettings.HeaderSubHeadingColor != "" {
+		{{ subHeadingClasses += " text-" + componentSettings.HeaderSubHeadingColor }}
+	}
+	if componentSettings.HeaderSubHeadingColor == "" {
+		{{ subHeadingClasses += " opacity-80" }}
+	}
+	if textCaseClass != "" {
+		{{ titleClasses += " " + textCaseClass }}
+		{{ subHeadingClasses += " " + textCaseClass }}
+	}
+	if componentSettings.HeadingLevel == "" {
+		{{ componentSettings.HeadingLevel = HeaderBlockHeadingLevelTwo }}
+	}
+	{{
+		iconSettings := HeaderIconSettings{
+			Name:            componentSettings.HeaderIcon,
+			Color:           componentSettings.HeaderIconColor,
+			BackgroundColor: componentSettings.HeaderIconBackgroundColor,
+			BorderRadius:    componentSettings.HeaderIconBorderRadius,
+			PaddingSize:     componentSettings.HeaderIconPaddingSize,
+		}
+	}}
+	{{ isTopIconPosition := componentSettings.HeaderIconPosition == HeaderIconPositionTop }}
+	{{ hasSubHeadingContent := componentSettings.HeaderSubHeading != "" || componentSettings.HeaderSubHeadingOneWayStatePath != "" }}
+	{{ titleClusterClasses := "flex items-center gap-2" }}
+	if isTopIconPosition {
+		{{ titleClusterClasses = "flex flex-1 flex-col items-center gap-2" }}
+		{{ titleClasses += " text-center" }}
+	}
+	{{ subHeadingAlignmentClasses := "" }}
+	if isTopIconPosition {
+		{{ subHeadingAlignmentClasses = "text-center" }}
+	}
+	{{ headerBlockClasses := "flex flex-col gap-1.5" }}
+	if componentSettings.TextColor != "" {
+		{{ headerBlockClasses += " text-" + componentSettings.TextColor }}
+	}
+	<!-- HeaderBlock -->
+	<div class={ headerBlockClasses }>
+		<div class="flex items-center justify-between gap-4">
+			<span class={ titleClusterClasses }>
+				if componentSettings.HeaderIcon != "" {
+					<span class={ iconSizeClasses }>
+						@HeaderIcon(iconSettings)
+					</span>
+				}
+				if componentSettings.HeaderTitle != "" || componentSettings.HeaderTitleOneWayStatePath != "" {
+					if componentSettings.HeadingLevel == HeaderBlockHeadingLevelOne {
+						<h1
+							class={ titleClasses }
+							if componentSettings.HeaderTitleOneWayStatePath != "" {
+								x-text={ componentSettings.HeaderTitleOneWayStatePath }
+							}
+						>
+							{ componentSettings.HeaderTitle }
+						</h1>
+					} else {
+						<h2
+							class={ titleClasses }
+							if componentSettings.HeaderTitleOneWayStatePath != "" {
+								x-text={ componentSettings.HeaderTitleOneWayStatePath }
+							}
+						>
+							{ componentSettings.HeaderTitle }
+						</h2>
+					}
+				}
+			</span>
+			if componentSettings.ActionsContent != nil {
+				<!-- HeaderBlockActions -->
+				<div class="flex flex-shrink-0 items-center gap-2">
+					@componentSettings.ActionsContent
+				</div>
+			}
+		</div>
+		if hasSubHeadingContent {
+			<p
+				class={ subHeadingClasses + " " + subHeadingAlignmentClasses }
+				if componentSettings.HeaderSubHeadingOneWayStatePath != "" {
+					x-text={ componentSettings.HeaderSubHeadingOneWayStatePath }
+				}
+			>
+				{ componentSettings.HeaderSubHeading }
+			</p>
+		}
+	</div>
+}

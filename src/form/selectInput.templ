@@ -1,5 +1,18 @@
 package uiForm
 
+import (
+	"fmt"
+	"sync/atomic"
+
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+var labelValueOptionsScriptIdCounter atomic.Uint64
+
+func generateLabelValueOptionsScriptId() string {
+	return fmt.Sprintf("label-value-options-%d", labelValueOptionsScriptIdCounter.Add(1))
+}
+
 const (
 	SelectInputSizeXs string = "xs"
 	SelectInputSizeSm string = "sm"
@@ -24,6 +37,7 @@ type SelectInputSettings struct {
 	TwoWayStatePath                   string
 	OnChangeFunc                      string
 	Size                              string
+	TextCase                          string
 	DropdownBackgroundColor           string
 	IsDisabledOneWayStatePath         string
 	IsRequired                        bool
@@ -70,6 +84,7 @@ templ SelectInput(componentSettings SelectInputSettings) {
 		{{ toggleExpression = "!(" + isDisabledPath + ") && (isOpen = !isOpen); if (isOpen) { " + openUpwardExpression + " }" }}
 	}
 	{{ legendSizeClasses, triggerSizeClasses, emptyPaddingClass := selectInputSizeClassesResolver(componentSettings.Size) }}
+	{{ textCaseClass := uiToolset.TextCaseClassResolver(componentSettings.TextCase) }}
 	<!-- SelectInput -->
 	<div
 		x-data={ selectState }
@@ -79,7 +94,7 @@ templ SelectInput(componentSettings SelectInputSettings) {
 			:class={ isDisabledPath + " && 'pointer-events-none opacity-50'" }
 		}
 	>
-		{{ labelValueOptionsScriptId := componentSettings.InputName + "LabelValueOptions" }}
+		{{ labelValueOptionsScriptId := generateLabelValueOptionsScriptId() }}
 		if len(componentSettings.LabelValueOptions) > 0 {
 			@templ.JSONScript(labelValueOptionsScriptId, componentSettings.LabelValueOptions)
 		}
@@ -91,7 +106,7 @@ templ SelectInput(componentSettings SelectInputSettings) {
 				}
 			>
 				<legend
-					class={ "ml-1 select-none px-1 font-bold lowercase leading-none text-neutral-50/80 " + legendSizeClasses }
+					class={ "ml-1 select-none px-1 font-bold leading-none text-neutral-50/80 " + legendSizeClasses + " " + textCaseClass }
 					if componentSettings.TwoWayStatePath != "" {
 						:class={ `!` + componentSettings.TwoWayStatePath + ` && 'opacity-0 !p-0 w-0 h-0'` }
 					}
@@ -124,7 +139,7 @@ templ SelectInput(componentSettings SelectInputSettings) {
 					}
 					<div class="w-full overflow-hidden text-ellipsis">
 						<span x-show={ selectedLabelText } x-text={ selectedLabelText }></span>
-						<span class="lowercase" x-show={ "!(" + selectedLabelText + ")" }>{ componentSettings.Label }</span>
+						<span class={ textCaseClass } x-show={ "!(" + selectedLabelText + ")" }>{ componentSettings.Label }</span>
 					</div>
 					<div class="flex items-center gap-2.5 text-neutral-100/60">
 						<!-- SelectDropdownIcon -->

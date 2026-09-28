@@ -40,6 +40,10 @@ const (
 //go:embed toastState.js
 var toastAlpineState string
 
+var toastAlpineStateOnce = templ.NewOnceHandle(
+	templ.WithComponent(uiToolset.MinifierTemplateJs(&toastAlpineState)),
+)
+
 type ToastSettings struct {
 	// OptionalFields
 	BackgroundColor    string
@@ -76,7 +80,7 @@ func Toast(componentSettings ToastSettings) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = uiToolset.MinifierTemplateJs(&toastAlpineState).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = toastAlpineStateOnce.Once().Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -180,7 +184,7 @@ func Toast(componentSettings ToastSettings) templ.Component {
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue("$store.toast.displayDurationMs = " + autoDismissMilliseconds)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/toast.templ`, Line: 129, Col: 72}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/toast.templ`, Line: 133, Col: 72}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
 		if templ_7745c5c3_Err != nil {

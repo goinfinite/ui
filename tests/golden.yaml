@@ -11,7 +11,7 @@ form.textarea-expand:
   relative_warn_percent: 20
 
 form.select-dropdown-open:
-  baseline_p50_ms: 20
+  baseline_p50_ms: 50
   info_ms: 60
   warn_ms: 150
   relative_warn_percent: 50

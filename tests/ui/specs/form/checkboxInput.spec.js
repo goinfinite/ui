@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { openExamplePanel } from "../../examplePanel.js";
 
 const checkboxSection = "#checkbox-input-demo";
 
@@ -43,6 +44,7 @@ test.describe("CheckboxInput", () => {
   });
 
   test("@smoke static checked and disabled states render", async ({ page }) => {
+    await openExamplePanel(page, checkboxSection, "States");
     await expect(checkboxInput(page, "Checked")).toBeChecked();
     await expect(checkboxInput(page, "Disabled")).toBeDisabled();
     await expect(checkboxInput(page, "Checked and disabled")).toBeChecked();
@@ -52,6 +54,7 @@ test.describe("CheckboxInput", () => {
   test("label position left keeps the box next to the label", async ({
     page,
   }) => {
+    await openExamplePanel(page, checkboxSection, "Label Position");
     const label = page
       .locator(`${checkboxSection} label`)
       .filter({ hasText: "Label on the left" })

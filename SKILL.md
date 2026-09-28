@@ -2,7 +2,7 @@
 name: ui-usage
 description: Use when working in a Go project that imports github.com/goinfinite/ui — presents the component packages, routes you to the right source file, and states the usage conventions.
 version: 1.1.0
-lastUpdated: 2026-09-18
+lastUpdated: 2026-09-24
 ---
 
 ## Purpose
@@ -39,7 +39,7 @@ The package README owns the component list and the usage snippets. Read it first
 These references describe UI's internals. Consult them only when the task reaches the matching subsystem:
 
 - `docs/FEATURE-MAP.md` — end-to-end flows for a UI feature, including which JS state file backs each component.
-- `demo/demo.templ` — every component rendered with real settings. It is the fastest way to see a usage example.
+- `demo/*Demo.templ` — every component rendered with real settings. It is the fastest way to see a usage example.
 - `https://ui.demo.goinfinite.net/` — the same demo running live. Open it with your browser tool when you have one. It shows the rendered behavior that source files hide: animations, dropdown state, and styling.
 - `.context.md` in the package you import — constraints on that package's files.
 - `README.md` in the module root — the library overview, installation, and conventions.

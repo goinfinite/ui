@@ -8,6 +8,29 @@ package uiDisplay
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
+import (
+	"fmt"
+	"sync/atomic"
+
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+const (
+	AccordionPaddingSizeNone string = "none"
+	AccordionPaddingSizeXs   string = "xs"
+	AccordionPaddingSizeSm   string = "sm"
+	AccordionPaddingSizeMd   string = "md"
+	AccordionPaddingSizeLg   string = "lg"
+	AccordionPaddingSizeXl   string = "xl"
+
+	AccordionBorderRadiusNone string = "none"
+	AccordionBorderRadiusXs   string = "xs"
+	AccordionBorderRadiusSm   string = "sm"
+	AccordionBorderRadiusMd   string = "md"
+	AccordionBorderRadiusLg   string = "lg"
+	AccordionBorderRadiusXl   string = "xl"
+)
+
 type AccordionItemSettings struct {
 	Title   string
 	Content templ.Component
@@ -18,6 +41,60 @@ type AccordionItemSettings struct {
 
 type AccordionSettings struct {
 	Items []AccordionItemSettings
+
+	// OptionalFields
+	BackgroundColor        string
+	BorderColor            string
+	BorderRadius           string
+	ContentBackgroundColor string
+	ContentPaddingSize     string
+	IsSingleOpen           bool
+	OpenBackgroundColor    string
+	PaddingSize            string
+	TextCase               string
+	TitleColor             string
+}
+
+var accordionGroupIdCounter atomic.Uint64
+
+func generateAccordionGroupName() string {
+	return fmt.Sprintf("ui-accordion-%d", accordionGroupIdCounter.Add(1))
+}
+
+func accordionPaddingClassResolver(paddingSize string, defaultClass string) string {
+	switch paddingSize {
+	case AccordionPaddingSizeNone:
+		return "p-0"
+	case AccordionPaddingSizeXs:
+		return "p-1"
+	case AccordionPaddingSizeSm:
+		return "p-1.5"
+	case AccordionPaddingSizeMd:
+		return "p-2"
+	case AccordionPaddingSizeLg:
+		return "p-2.5"
+	case AccordionPaddingSizeXl:
+		return "p-3"
+	}
+	return defaultClass
+}
+
+func accordionEdgeRadiusClassesResolver(borderRadius string) string {
+	switch borderRadius {
+	case AccordionBorderRadiusNone:
+		return ""
+	case AccordionBorderRadiusXs:
+		return "first:rounded-t-xs last:rounded-b-xs"
+	case AccordionBorderRadiusSm:
+		return "first:rounded-t-sm last:rounded-b-sm"
+	case AccordionBorderRadiusMd:
+		return "first:rounded-t last:rounded-b"
+	case AccordionBorderRadiusLg:
+		return "first:rounded-t-lg last:rounded-b-lg"
+	case AccordionBorderRadiusXl:
+		return "first:rounded-t-xl last:rounded-b-xl"
+	}
+	return "first:rounded-t-md last:rounded-b-md"
 }
 
 func Accordion(componentSettings AccordionSettings) templ.Component {
@@ -41,53 +118,188 @@ func Accordion(componentSettings AccordionSettings) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!-- Accordion --><section class=\"w-full rounded-md\">")
+		itemPaddingClass := accordionPaddingClassResolver(componentSettings.PaddingSize, "p-3")
+		contentPaddingClass := accordionPaddingClassResolver(componentSettings.ContentPaddingSize, "p-4")
+		itemEdgeRadiusClasses := accordionEdgeRadiusClassesResolver(componentSettings.BorderRadius)
+		backgroundColorClass := "bg-neutral-50/5"
+		if componentSettings.BackgroundColor != "" {
+			backgroundColorClass = "bg-" + componentSettings.BackgroundColor
+		}
+		openBackgroundColorClass := "open:bg-neutral-50/7.5 hover:bg-neutral-50/7.5"
+		if componentSettings.OpenBackgroundColor != "" {
+			openBackgroundColorClass = "open:bg-" + componentSettings.OpenBackgroundColor + " hover:bg-" + componentSettings.OpenBackgroundColor
+		}
+		contentBackgroundColorClass := "bg-neutral-900"
+		if componentSettings.ContentBackgroundColor != "" {
+			contentBackgroundColorClass = "bg-" + componentSettings.ContentBackgroundColor
+		}
+		titleColorClass := "text-neutral-50/80"
+		if componentSettings.TitleColor != "" {
+			titleColorClass = "text-" + componentSettings.TitleColor
+		}
+		borderColorClass := "border-neutral-50/5"
+		if componentSettings.BorderColor != "" {
+			borderColorClass = "border-" + componentSettings.BorderColor
+		}
+		groupName := ""
+		if componentSettings.IsSingleOpen {
+			groupName = generateAccordionGroupName()
+		}
+		textCaseClass := uiToolset.TextCaseClassResolver(componentSettings.TextCase)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!-- Accordion --><section class=\"w-full\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		for _, item := range componentSettings.Items {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<!-- AccordionItem --> <details class=\"border-b-1 open:bg-neutral-50/7.5 hover:bg-neutral-50/7.5 group/accordion border-neutral-50/5 bg-neutral-50/5 p-3 transition-all duration-300 first:rounded-t last:rounded-b last:border-b-0\"><summary class=\"relative flex cursor-pointer list-none items-center gap-1.5 pr-8 text-neutral-50/80 focus-visible:outline-none [&::-webkit-details-marker]:hidden\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<!-- AccordionItem --> ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var2 = []any{"border-b-1 group/accordion transition-all duration-300 last:border-b-0 " + itemPaddingClass + " " + itemEdgeRadiusClasses + " " + backgroundColorClass + " " + openBackgroundColorClass + " " + borderColorClass}
+			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var2...)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<details class=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var3 string
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.ResolveAttributeValue(templ.CSSClasses(templ_7745c5c3_Var2).String())
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/accordion.templ`, Line: 1, Col: 0}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if groupName != "" {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, " name=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var4 string
+				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue(groupName)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/accordion.templ`, Line: 128, Col: 21}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, ">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var5 = []any{"relative flex cursor-pointer list-none items-center gap-1.5 pr-8 focus-visible:outline-none [&::-webkit-details-marker]:hidden " + titleColorClass}
+			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var5...)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<summary class=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var6 string
+			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.ResolveAttributeValue(templ.CSSClasses(templ_7745c5c3_Var5).String())
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/accordion.templ`, Line: 1, Col: 0}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if item.Icon != "" {
-				var templ_7745c5c3_Var2 = []any{"ph-duotone " + item.Icon + " text-2xl"}
-				templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var2...)
+				var templ_7745c5c3_Var7 = []any{"ph-duotone " + item.Icon + " text-2xl"}
+				templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var7...)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<i class=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<i class=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var3 string
-				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.ResolveAttributeValue(templ.CSSClasses(templ_7745c5c3_Var2).String())
+				var templ_7745c5c3_Var8 string
+				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.ResolveAttributeValue(templ.CSSClasses(templ_7745c5c3_Var7).String())
 				if templ_7745c5c3_Err != nil {
 					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/accordion.templ`, Line: 1, Col: 0}
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var8)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\"></i> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\"></i> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<span class=\"font-bold\">")
+			var templ_7745c5c3_Var9 = []any{"font-bold " + textCaseClass}
+			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var9...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var4 string
-			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(item.Title)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/accordion.templ`, Line: 25, Col: 41}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<span class=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</span> <i class=\"ph-bold ph-plus absolute right-0 top-1.5 text-xs transition duration-300 group-open/accordion:rotate-45\"></i></summary><div class=\"flex w-full flex-col gap-5 px-2 py-4\">")
+			var templ_7745c5c3_Var10 string
+			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.ResolveAttributeValue(templ.CSSClasses(templ_7745c5c3_Var9).String())
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/accordion.templ`, Line: 1, Col: 0}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var10)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var11 string
+			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(item.Title)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/accordion.templ`, Line: 135, Col: 62}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</span> <i class=\"ph-bold ph-plus absolute right-0 top-1.5 text-xs transition duration-300 group-open/accordion:rotate-45\"></i></summary>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var12 = []any{"mt-4 flex w-full flex-col gap-5 rounded-lg " + contentPaddingClass + " " + contentBackgroundColorClass}
+			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var12...)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<div class=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var13 string
+			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.ResolveAttributeValue(templ.CSSClasses(templ_7745c5c3_Var12).String())
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/accordion.templ`, Line: 1, Col: 0}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var13)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -95,12 +307,12 @@ func Accordion(componentSettings AccordionSettings) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div></details>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</div></details>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
