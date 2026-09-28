@@ -61,6 +61,7 @@ chore(docs): regenerate the demo page
 fix: center the demo readout text in its box
 fix: serve the demo files with a no-store cache header
 test: hold the stale refresh in flight before superseding it
+test: drive the data table fragment spec from component state
 
 0.2.1 - 2026/09/18
 fix: serve demo files only from canonical paths under the docs root
