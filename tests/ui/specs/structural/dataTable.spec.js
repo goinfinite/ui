@@ -363,9 +363,9 @@ test.describe("DataTable @structural", () => {
     await page.route(refreshFragmentPattern, async (route) => {
       requestCount++;
       if (requestCount === 1) {
+        await new Promise((resolve) => setTimeout(resolve, 300));
         return route.abort("failed");
       }
-      await new Promise((resolve) => setTimeout(resolve, 600));
       return route.continue();
     });
 
@@ -374,6 +374,13 @@ test.describe("DataTable @structural", () => {
         document.getElementById("data-table-demo-table"),
       );
       dataTable.refresh();
+    });
+    await expect.poll(() => requestCount).toBe(1);
+
+    await page.evaluate(() => {
+      const dataTable = Alpine.$data(
+        document.getElementById("data-table-demo-table"),
+      );
       dataTable.refresh();
     });
 
