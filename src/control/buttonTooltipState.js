@@ -21,7 +21,11 @@ function resolveFlippedAxisStart(
   if (start + tooltipSize > viewportSize - buttonTooltipViewportPaddingPx) {
     start = beforeStart;
   }
-  return start;
+  const maximumStart = Math.max(
+    buttonTooltipViewportPaddingPx,
+    viewportSize - tooltipSize - buttonTooltipViewportPaddingPx,
+  );
+  return clampNumber(start, buttonTooltipViewportPaddingPx, maximumStart);
 }
 
 function resolveCenteredAxisStart(
@@ -76,36 +80,44 @@ function resolveTooltipCoordinates(triggerRect, tooltipRect, position) {
 
 UiToolset.RegisterAlpineState(() => {
   Alpine.data("buttonTooltip", (position) => ({
-    position: position || "top",
-    isVisible: false,
+    tooltipPosition: position || "top",
+    isTooltipVisible: false,
     tooltipCoordinates: { top: 0, left: 0 },
-    viewportChangeHandler: null,
+    tooltipViewportChangeHandler: null,
 
     get resolvedTooltipStyle() {
       return {
-        visibility: this.isVisible ? "visible" : "hidden",
-        opacity: this.isVisible ? "1" : "0",
+        visibility: this.isTooltipVisible ? "visible" : "hidden",
+        opacity: this.isTooltipVisible ? "1" : "0",
         top: `${this.tooltipCoordinates.top}px`,
         left: `${this.tooltipCoordinates.left}px`,
       };
     },
 
     init() {
-      this.viewportChangeHandler = () => {
-        if (this.isVisible) {
-          this.show();
+      this.tooltipViewportChangeHandler = () => {
+        if (this.isTooltipVisible) {
+          this.showTooltip();
         }
       };
-      window.addEventListener("scroll", this.viewportChangeHandler, true);
-      window.addEventListener("resize", this.viewportChangeHandler);
+      window.addEventListener(
+        "scroll",
+        this.tooltipViewportChangeHandler,
+        true,
+      );
+      window.addEventListener("resize", this.tooltipViewportChangeHandler);
     },
 
     destroy() {
-      window.removeEventListener("scroll", this.viewportChangeHandler, true);
-      window.removeEventListener("resize", this.viewportChangeHandler);
+      window.removeEventListener(
+        "scroll",
+        this.tooltipViewportChangeHandler,
+        true,
+      );
+      window.removeEventListener("resize", this.tooltipViewportChangeHandler);
     },
 
-    show() {
+    showTooltip() {
       const trigger = this.$refs.trigger;
       const tooltip = this.$refs.tooltip;
       if (!trigger || !tooltip) {
@@ -114,13 +126,13 @@ UiToolset.RegisterAlpineState(() => {
       this.tooltipCoordinates = resolveTooltipCoordinates(
         trigger.getBoundingClientRect(),
         tooltip.getBoundingClientRect(),
-        this.position,
+        this.tooltipPosition,
       );
-      this.isVisible = true;
+      this.isTooltipVisible = true;
     },
 
-    hide() {
-      this.isVisible = false;
+    hideTooltip() {
+      this.isTooltipVisible = false;
     },
   }));
 });

@@ -166,7 +166,7 @@ func Button(componentSettings ButtonSettings) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" @mouseenter=\"show()\" @mouseleave=\"hide()\" @focusin=\"show()\" @focusout=\"hide()\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" @mouseenter=\"showTooltip()\" @mouseleave=\"hideTooltip()\" @focusin=\"showTooltip()\" @focusout=\"hideTooltip()\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

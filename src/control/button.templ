@@ -96,10 +96,10 @@ templ Button(componentSettings ButtonSettings) {
 		class={ "relative " + buttonWidth }
 		if hasTooltip {
 			x-data={ templ.JSFuncCall("buttonTooltip", componentSettings.TooltipPosition) }
-			@mouseenter="show()"
-			@mouseleave="hide()"
-			@focusin="show()"
-			@focusout="hide()"
+			@mouseenter="showTooltip()"
+			@mouseleave="hideTooltip()"
+			@focusin="showTooltip()"
+			@focusout="hideTooltip()"
 		}
 	>
 		{{ backgroundColor := "bg-neutral-50/7.5" }}
