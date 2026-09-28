@@ -45,7 +45,11 @@ type ModalSettings struct {
 	PossibleSizes                 []string
 	WidthPercent                  int
 	HeightPercent                 int
-	IsHeightContentSized          bool
+	MinWidthPercent               int
+	MaxWidthPercent               int
+	MinHeightPercent              int
+	MaxHeightPercent              int
+	ShouldHeightMatchContent      bool
 	BackdropColor                 string
 	BackgroundColor               string
 	TextColor                     string
@@ -133,7 +137,7 @@ templ Modal(componentSettings ModalSettings) {
 			componentSettings.InitialSize,
 			componentSettings.WidthPercent,
 			componentSettings.HeightPercent,
-			componentSettings.IsHeightContentSized,
+			componentSettings.ShouldHeightMatchContent,
 		)
 		modalStandardHeaderTitleSize := "text-lg"
 		modalStandardHeaderIconSize := uiControl.ButtonSizeSm
@@ -161,6 +165,14 @@ templ Modal(componentSettings ModalSettings) {
 			}}
 	}
 	{{ modalClasses += " " + modalSizeClasses }}
+	<!-- Modal Size Constraints -->
+	{{ modalClasses += " " + modalSizeConstraintClassesResolver(
+		componentSettings.MinWidthPercent,
+		componentSettings.MaxWidthPercent,
+		componentSettings.MinHeightPercent,
+		componentSettings.MaxHeightPercent,
+		componentSettings.ShouldHeightMatchContent,
+	) }}
 	<!-- Modal Border Radius -->
 	{{ borderRadiusClasses := "rounded" }}
 	switch componentSettings.BorderRadius {
@@ -290,7 +302,7 @@ templ Modal(componentSettings ModalSettings) {
 					componentSettings.CurrentSizeTwoWayStatePath,
 					componentSettings.WidthPercent,
 					componentSettings.HeightPercent,
-					componentSettings.IsHeightContentSized,
+					componentSettings.ShouldHeightMatchContent,
 				) }
 			}
 		>
@@ -300,7 +312,7 @@ templ Modal(componentSettings ModalSettings) {
 			}
 			if componentSettings.HeaderContent != nil {
 				<!-- ModalCustomHeader -->
-				<div class="flex items-start justify-between gap-4">
+				<div class="relative flex items-start justify-between gap-4">
 					<div class="grow">
 						{{ wasCustomHeaderTitleSet := componentSettings.Title != "" || componentSettings.TitleOneWayStatePath != "" }}
 						if wasCustomHeaderTitleSet {
@@ -315,7 +327,9 @@ templ Modal(componentSettings ModalSettings) {
 						}
 						@componentSettings.HeaderContent
 					</div>
-					@modalHeaderActionButtons(headerActions)
+					<div class="absolute right-0 top-0">
+						@modalHeaderActionButtons(headerActions)
+					</div>
 				</div>
 			}
 			{{ wasTitleSet := componentSettings.Title != "" || componentSettings.TitleOneWayStatePath != "" }}

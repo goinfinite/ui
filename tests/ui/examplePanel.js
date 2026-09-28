@@ -8,6 +8,9 @@ function examplePanel(page, section, title) {
 
 export async function openExamplePanel(page, section, title) {
   const target = examplePanel(page, section, title);
-  await target.locator("summary").click();
+  const isPanelOpen = await target.evaluate((element) => element.open);
+  if (!isPanelOpen) {
+    await target.locator("summary").click();
+  }
   return target;
 }

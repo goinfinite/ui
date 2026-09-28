@@ -311,12 +311,16 @@ templ ConfirmationDialogDemo() {
 					OnConfirmFunc:            "confirmedAction = 'confirmed'; isConfirmDialogVisible = false",
 					TargetNameStatePath:      "demoTargetName",
 					TargetIdStatePath:        "demoTargetId",
+					WidthPercent:             32,
+					MinHeightPercent:         42,
 				})
 				@uiDisplay.WarningDialog(uiDisplay.ConfirmationDialogSettings{
 					IsVisibleTwoWayStatePath: "isWarningDialogVisible",
 					OnConfirmFunc:            "confirmedAction = 'warning acknowledged'; isWarningDialogVisible = false",
 					TargetNameStatePath:      "demoTargetName",
 					TargetIdStatePath:        "demoTargetId",
+					WidthPercent:             32,
+					MinHeightPercent:         42,
 				})
 				@uiDisplay.CriticalDialog(uiDisplay.ConfirmationDialogSettings{
 					IsVisibleTwoWayStatePath: "isCriticalDialogVisible",
@@ -324,12 +328,16 @@ templ ConfirmationDialogDemo() {
 					TargetNameStatePath:      "demoTargetName",
 					TargetIdStatePath:        "demoTargetId",
 					HeaderIconPosition:       uiDisplay.HeaderIconPositionTop,
+					WidthPercent:             32,
+					MinHeightPercent:         42,
 				})
 				@uiDisplay.DeleteDialog(uiDisplay.ConfirmationDialogSettings{
 					IsVisibleTwoWayStatePath: "isDeleteDialogVisible",
 					OnConfirmFunc:            "confirmedAction = 'deleted ' + demoTargetName; isDeleteDialogVisible = false",
 					TargetNameStatePath:      "demoTargetName",
 					TargetIdStatePath:        "demoTargetId",
+					WidthPercent:             32,
+					MinHeightPercent:         42,
 				})
 			</div>
 		}

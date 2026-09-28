@@ -1,6 +1,48 @@
 package uiDisplay
 
-import "testing"
+import (
+	"bytes"
+	"context"
+	"strings"
+	"testing"
+)
+
+func TestConfirmationDialogRetainsSmallInitialSize(t *testing.T) {
+	settings := ConfirmationDialogSettings{
+		Size:                     ConfirmationDialogSizeXs,
+		IsVisibleTwoWayStatePath: "isDialogVisible",
+	}
+
+	var rendered bytes.Buffer
+	err := confirmationDialog(
+		settings, confirmationToneResolver(confirmationPresetConfirm),
+	).Render(context.Background(), &rendered)
+	if err != nil {
+		t.Fatalf("DialogRenderFailed: %v", err)
+	}
+
+	if !strings.Contains(rendered.String(), "w-[40%]") {
+		t.Errorf("RenderedWidthClassMissing: %q", "w-[40%]")
+	}
+}
+
+func TestConfirmationDialogDefaultsToSmallSize(t *testing.T) {
+	settings := ConfirmationDialogSettings{
+		IsVisibleTwoWayStatePath: "isDialogVisible",
+	}
+
+	var rendered bytes.Buffer
+	err := confirmationDialog(
+		settings, confirmationToneResolver(confirmationPresetConfirm),
+	).Render(context.Background(), &rendered)
+	if err != nil {
+		t.Fatalf("DialogRenderFailed: %v", err)
+	}
+
+	if !strings.Contains(rendered.String(), "w-[50%]") {
+		t.Errorf("RenderedWidthClassMissing: %q", "w-[50%]")
+	}
+}
 
 func TestConfirmationToneResolver(t *testing.T) {
 	tests := []struct {
@@ -52,14 +94,14 @@ func TestConfirmationToneResolver(t *testing.T) {
 			tone := confirmationToneResolver(testCase.preset)
 
 			if tone.HeaderTitle != testCase.expectedTitle {
-				t.Errorf("HeaderTitle = %q, want %q", tone.HeaderTitle, testCase.expectedTitle)
+				t.Errorf("HeaderTitleMismatch: got %q, want %q", tone.HeaderTitle, testCase.expectedTitle)
 			}
 			if tone.HeaderIcon != testCase.expectedIcon {
-				t.Errorf("HeaderIcon = %q, want %q", tone.HeaderIcon, testCase.expectedIcon)
+				t.Errorf("HeaderIconMismatch: got %q, want %q", tone.HeaderIcon, testCase.expectedIcon)
 			}
 			if tone.ConfirmButtonLabel != testCase.expectedConfirmLabel {
 				t.Errorf(
-					"ConfirmButtonLabel = %q, want %q",
+					"ConfirmButtonLabelMismatch: got %q, want %q",
 					tone.ConfirmButtonLabel, testCase.expectedConfirmLabel,
 				)
 			}
@@ -101,7 +143,7 @@ func TestConfirmationTypeToConfirmMatchStatePathResolver(t *testing.T) {
 			)
 
 			if resolved != testCase.expected {
-				t.Errorf("resolved = %q, want %q", resolved, testCase.expected)
+				t.Errorf("MatchStatePathMismatch: got %q, want %q", resolved, testCase.expected)
 			}
 		})
 	}
@@ -145,7 +187,7 @@ func TestConfirmationTypeToConfirmFieldLabelResolver(t *testing.T) {
 			)
 
 			if resolved != testCase.expected {
-				t.Errorf("resolved = %q, want %q", resolved, testCase.expected)
+				t.Errorf("FieldLabelMismatch: got %q, want %q", resolved, testCase.expected)
 			}
 		})
 	}
@@ -187,7 +229,7 @@ func TestConfirmationTypeToConfirmDisabledExpressionBuilder(t *testing.T) {
 
 			if disabledExpression != testCase.expected {
 				t.Errorf(
-					"disabledExpression = %q, want %q",
+					"DisabledExpressionMismatch: got %q, want %q",
 					disabledExpression, testCase.expected,
 				)
 			}

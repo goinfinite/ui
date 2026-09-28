@@ -55,6 +55,10 @@ type ConfirmationDialogSettings struct {
 	TypeToConfirmValueTwoWayStatePath string
 	WidthPercent                      int
 	HeightPercent                     int
+	MinWidthPercent                   int
+	MaxWidthPercent                   int
+	MinHeightPercent                  int
+	MaxHeightPercent                  int
 }
 
 templ confirmationDialogTargetReferences(settings ConfirmationDialogSettings, tone confirmationTone) {
@@ -62,7 +66,7 @@ templ confirmationDialogTargetReferences(settings ConfirmationDialogSettings, to
 		<strong
 			x-show={ settings.TargetNameStatePath + " !== ''" }
 			x-text={ settings.TargetNameStatePath }
-			class={ "rounded-md border-2 border-dashed px-2 py-1 border-" + tone.TargetChipBorderColor }
+			class={ "inline-block rounded-md border-2 border-dashed px-2 py-1 border-" + tone.TargetChipBorderColor }
 		></strong>
 	}
 	if settings.TargetIdStatePath != "" {
@@ -99,7 +103,7 @@ templ confirmationTypeToConfirmField(settings ConfirmationDialogSettings, typedS
 			settings.TypeToConfirmExpectedValue,
 		)
 	}}
-	<div class="w-full">
+	<div class="w-full text-left">
 		@uiForm.InputField(uiForm.InputFieldSettings{
 			InputType:       uiForm.InputTypeText,
 			InputName:       "typedConfirmationValue",
@@ -220,9 +224,9 @@ templ confirmationDialog(settings ConfirmationDialogSettings, tone confirmationT
 		{{ settings.HeaderIconPaddingSize = HeaderIconPaddingSizeLg }}
 	}
 	if settings.Size == "" {
-		{{ settings.Size = ConfirmationDialogSizeMd }}
+		{{ settings.Size = ConfirmationDialogSizeSm }}
 	}
-	{{ isHeightContentSized := settings.HeightPercent == 0 }}
+	{{ shouldHeightMatchContent := settings.HeightPercent == 0 }}
 	{{ matchStatePath := confirmationTypeToConfirmMatchStatePathResolver(settings.TargetNameStatePath, settings.TargetIdStatePath) }}
 	{{ typedStatePath := confirmationTypedValueStatePath }}
 	if settings.TypeToConfirmValueTwoWayStatePath != "" {
@@ -233,15 +237,21 @@ templ confirmationDialog(settings ConfirmationDialogSettings, tone confirmationT
 		{{ dialogHeader = settings.HeaderContent }}
 	}
 	{{ needsTypedValueState := settings.IsTypeToConfirmEnabled && settings.TypeToConfirmValueTwoWayStatePath == "" && settings.IsVisibleTwoWayStatePath != "" }}
+	{{ dialogPossibleSizes := []string{settings.Size} }}
 	{{
 		dialogContent := Modal(ModalSettings{
 			HeaderContent:            dialogHeader,
 			MiddleContent:            confirmationDialogMiddle(settings, tone, typedStatePath),
 			FooterContent:            confirmationDialogFooter(settings, tone, typedStatePath, matchStatePath),
 			InitialSize:              settings.Size,
+			PossibleSizes:            dialogPossibleSizes,
 			WidthPercent:             settings.WidthPercent,
 			HeightPercent:            settings.HeightPercent,
-			IsHeightContentSized:     isHeightContentSized,
+			MinWidthPercent:          settings.MinWidthPercent,
+			MaxWidthPercent:          settings.MaxWidthPercent,
+			MinHeightPercent:         settings.MinHeightPercent,
+			MaxHeightPercent:         settings.MaxHeightPercent,
+			ShouldHeightMatchContent: shouldHeightMatchContent,
 			BackgroundColor:          tone.PanelBackgroundColor,
 			TextColor:                settings.TextColor,
 			IsVisibleTwoWayStatePath: settings.IsVisibleTwoWayStatePath,

@@ -74,7 +74,7 @@ Confirmation dialogs over Modal with four presets: `ConfirmDialog`, `WarningDial
 })
 ```
 
-- `Size` accepts `ConfirmationDialogSizeXs` (40%) through `ConfirmationDialogSizeXxl` (90%) as viewport percentages on both axes, like Modal. There is no fullscreen size and no resize control. `WidthPercent` and `HeightPercent` override the panel box like Modal. The default height hugs the content with an `85%` ceiling; set `HeightPercent` to pin it.
+- `Size` accepts `ConfirmationDialogSizeXs` (40%) through `ConfirmationDialogSizeXxl` (90%) as viewport percentages on both axes, like Modal. The default is `ConfirmationDialogSizeSm` (50%). There is no fullscreen size and no resize control. `WidthPercent` and `HeightPercent` override the panel box like Modal. The default height hugs the content with an `85%` ceiling; set `HeightPercent` to pin it.
 - The header block carries `HeaderTitle`, `HeaderSubHeading`, `HeaderTitleOneWayStatePath`, `HeaderSubHeadingOneWayStatePath`, `HeaderTitleColor`, `HeaderSubHeadingColor`, `HeaderSize`, `TextCase`, and the `HeaderIcon*` icon controls. `ActionsContent` adds buttons next to the close button. `HeaderContent` replaces the whole header block. `TextColor` sets the dialog text color. Each preset fills the title and icon defaults.
 - `HeaderIconPosition` defaults to `HeaderIconPositionTop`, which centers the icon above the title. Set `HeaderIconPositionLeft` to place it beside the title.
 - `TargetNameStatePath` and `TargetIdStatePath` bind live values into the message. The name renders as a dashed chip and the id as `#<id>`.
@@ -158,10 +158,11 @@ Window-style dialog with header, middle, and footer slots.
 - The standard header appears when `Title` is set and `HeaderContent` is nil. It carries the enlarge, reduce, and close buttons. A custom `HeaderContent` still gets the same action cluster beside it.
 - `InitialSize` sets the panel box as a viewport percentage on both axes: `ModalSizeXs` (40%), `ModalSizeSm` (50%), `ModalSizeMd` (60%), `ModalSizeLg` (70%), `ModalSizeXl` (80%), `ModalSizeXxl` (90%), and `ModalSizeFull` (100%). Width and height grow together, so the box follows the screen's aspect ratio and a widescreen gets more width than height. `ModalSizeXxl` is the near-full size for wide content such as a web terminal. InitialSize also scales the header title and padding.
 - `WidthPercent` and `HeightPercent` replace the box on that axis with a viewport percentage. Set one to change a single dimension, or both to pin the panel. Values are whole percentages, 1 through 100; 100 renders a full axis. When both are set, the resize controls retire.
+- `MinWidthPercent`, `MaxWidthPercent`, `MinHeightPercent`, and `MaxHeightPercent` add viewport floors and ceilings on each axis. They combine with the size or percent that sets the box: the panel keeps its base width and height but never renders below a minimum or above a maximum. Same values and rules as `WidthPercent`.
 - `PossibleSizes` sets the ordered sizes the panel can take; the default is md, lg, xl, xxl. `InitialSize` is the first reachable entry: any entry before it is dropped, and an `InitialSize` outside the list falls to the first entry.
 - `CurrentSizeTwoWayStatePath` binds the live size so the enlarge and reduce controls can drive it. The modal creates an internal path when the field is empty and the panel is resizable.
 - Enlarge steps up one entry, reduce steps back one. Reduce hides at the initial size and enlarge hides at the largest reachable size.
-- `IsHeightContentSized` renders the panel at its content height with an `85%` ceiling, ignoring the size height. Use it for dialogs that must stay short.
+- `ShouldHeightMatchContent` renders the panel at its content height with an `85%` ceiling, ignoring the size height. Use it for dialogs that must stay short.
 - `IsMiddleContentScrollDisabled` stops the middle region from scrolling and lets the content own the overflow, for a full-bleed panel such as a terminal.
 - `IsUnresizable` and `IsUncloseable` remove those buttons. The resize controls also retire when the panel holds fewer than two reachable sizes.
 - The close button and a backdrop click set the visibility path to false and run `OnCloseFunc`. `IsUncloseable` stops both; the app then closes the modal by setting the visibility path to false.

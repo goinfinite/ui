@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import { openExamplePanel } from "../../examplePanel.js";
 
 const confirmationSection = "#confirmation-dialog-demo";
+const labelAlignmentTolerancePx = 12;
 
 function backdropWith(page, text) {
   return page.locator("div.fixed.inset-0.z-100", { hasText: text });
@@ -94,6 +95,32 @@ test.describe("ConfirmationDialog", () => {
 
     await typedInput.fill("primary-database");
     await expect(confirmButton).toBeEnabled();
+  });
+
+  test("type-to-confirm label aligns with the field left edge", async ({
+    page,
+  }) => {
+    await page
+      .locator(confirmationSection)
+      .getByRole("button", { name: /Critical$/ })
+      .click();
+    const modal = backdropWith(page, "Critical");
+    await expect(modal).toBeVisible();
+
+    const typedInput = modal.getByRole("textbox", {
+      name: "Type the name to confirm",
+    });
+    await typedInput.fill("primary-database");
+
+    const label = modal.locator("legend", {
+      hasText: "Type the name to confirm",
+    });
+    await expect(label).toBeVisible();
+    const inputBox = await typedInput.boundingBox();
+    const labelBox = await label.boundingBox();
+    expect(Math.abs(labelBox.x - inputBox.x)).toBeLessThan(
+      labelAlignmentTolerancePx,
+    );
   });
 
   test("confirm and warning presets do not gate the confirm action", async ({

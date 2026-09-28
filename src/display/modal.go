@@ -1,8 +1,14 @@
 package uiDisplay
 
-import "strconv"
+import (
+	"strconv"
+	"strings"
+)
 
-const modalContentHeightClass string = "h-auto max-h-[85%]"
+const (
+	modalContentHeightClass          string = "h-auto"
+	modalContentHeightCeilingPercent int    = 85
+)
 
 type modalSizeClassSettings struct {
 	Width   string
@@ -78,7 +84,7 @@ func modalPercentageClassBuilder(classPrefix string, percent int) string {
 }
 
 func modalSizeClassesResolver(
-	initialSize string, widthPercent, heightPercent int, isHeightContentSized bool,
+	initialSize string, widthPercent, heightPercent int, shouldHeightMatchContent bool,
 ) string {
 	sizeClasses, isKnownSize := modalSizeClassesBySize[initialSize]
 	if !isKnownSize {
@@ -92,14 +98,40 @@ func modalSizeClassesResolver(
 	if heightPercent > 0 {
 		heightClasses = modalPercentageClassBuilder("h", heightPercent)
 	}
-	if isHeightContentSized {
+	if shouldHeightMatchContent {
 		heightClasses = modalContentHeightClass
 	}
 	return widthClasses + " " + heightClasses + " " + sizeClasses.Padding
 }
 
+func modalSizeConstraintClassesResolver(
+	minWidthPercent, maxWidthPercent, minHeightPercent, maxHeightPercent int,
+	shouldHeightMatchContent bool,
+) string {
+	heightCeilingPercent := maxHeightPercent
+	if shouldHeightMatchContent && heightCeilingPercent == 0 {
+		heightCeilingPercent = modalContentHeightCeilingPercent
+	}
+	constraintClasses := []string{
+		modalPercentageClassBuilder("min-w", minWidthPercent),
+		modalPercentageClassBuilder("max-w", maxWidthPercent),
+		modalPercentageClassBuilder("min-h", minHeightPercent),
+		modalPercentageClassBuilder("max-h", heightCeilingPercent),
+	}
+	nonEmptyClasses := []string{}
+	for _, constraintClass := range constraintClasses {
+		if constraintClass != "" {
+			nonEmptyClasses = append(nonEmptyClasses, constraintClass)
+		}
+	}
+	if len(nonEmptyClasses) == 0 {
+		return ""
+	}
+	return strings.Join(nonEmptyClasses, " ")
+}
+
 func modalSizeClassMapExpressionBuilder(
-	sizePath string, widthPercent, heightPercent int, isHeightContentSized bool,
+	sizePath string, widthPercent, heightPercent int, shouldHeightMatchContent bool,
 ) string {
 	mapExpression := "{"
 	for index, size := range modalSizeOrder {
@@ -107,7 +139,7 @@ func modalSizeClassMapExpressionBuilder(
 			mapExpression += ","
 		}
 		mapExpression += " '" + modalSizeClassesResolver(
-			size, widthPercent, heightPercent, isHeightContentSized,
+			size, widthPercent, heightPercent, shouldHeightMatchContent,
 		) + "': " + sizePath + " === '" + size + "'"
 	}
 	return mapExpression + " }"

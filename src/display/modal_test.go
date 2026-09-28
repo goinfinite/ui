@@ -31,7 +31,7 @@ func TestModalPossibleSizesResolver(t *testing.T) {
 			resolved := modalPossibleSizesResolver(testCase.possibleSizes)
 
 			if !reflect.DeepEqual(resolved, testCase.expected) {
-				t.Errorf("resolved = %v, want %v", resolved, testCase.expected)
+				t.Errorf("PossibleSizesMismatch: got %v, want %v", resolved, testCase.expected)
 			}
 		})
 	}
@@ -57,7 +57,7 @@ func TestModalInitialSizeResolver(t *testing.T) {
 			resolved := modalInitialSizeResolver(testCase.initialSize, testCase.possibleSizes)
 
 			if resolved != testCase.expected {
-				t.Errorf("resolved = %q, want %q", resolved, testCase.expected)
+				t.Errorf("InitialSizeMismatch: got %q, want %q", resolved, testCase.expected)
 			}
 		})
 	}
@@ -103,7 +103,7 @@ func TestModalReachableSizesResolver(t *testing.T) {
 			resolved := modalReachableSizesResolver(testCase.initialSize, testCase.possibleSizes)
 
 			if !reflect.DeepEqual(resolved, testCase.expected) {
-				t.Errorf("resolved = %v, want %v", resolved, testCase.expected)
+				t.Errorf("ReachableSizesMismatch: got %v, want %v", resolved, testCase.expected)
 			}
 		})
 	}
@@ -129,7 +129,7 @@ func TestModalPercentageClassBuilder(t *testing.T) {
 			resolved := modalPercentageClassBuilder(testCase.classPrefix, testCase.percent)
 
 			if resolved != testCase.expected {
-				t.Errorf("resolved = %q, want %q", resolved, testCase.expected)
+				t.Errorf("PercentageClassMismatch: got %q, want %q", resolved, testCase.expected)
 			}
 		})
 	}
@@ -137,12 +137,12 @@ func TestModalPercentageClassBuilder(t *testing.T) {
 
 func TestModalSizeClassesResolver(t *testing.T) {
 	tests := []struct {
-		name                 string
-		initialSize          string
-		widthPercent         int
-		heightPercent        int
-		isHeightContentSized bool
-		expected             string
+		name                     string
+		initialSize              string
+		widthPercent             int
+		heightPercent            int
+		shouldHeightMatchContent bool
+		expected                 string
 	}{
 		{"MediumUsesItsOwnBox", ModalSizeMd, 0, 0, false, "w-[60%] h-[60%] p-4"},
 		{"ExtraSmallUsesItsOwnBox", ModalSizeXs, 0, 0, false, "w-[40%] h-[40%] p-3"},
@@ -153,10 +153,10 @@ func TestModalSizeClassesResolver(t *testing.T) {
 			"BothPercentsReplaceBothAxes",
 			ModalSizeXxl, 95, 85, false, "w-[95%] h-[85%] p-5.5",
 		},
-		{"ContentHeightReplacesHeight", ModalSizeMd, 0, 0, true, "w-[60%] h-auto max-h-[85%] p-4"},
+		{"ContentHeightReplacesHeight", ModalSizeMd, 0, 0, true, "w-[60%] h-auto p-4"},
 		{
 			"ContentHeightWinsOverHeightPercent",
-			ModalSizeMd, 50, 45, true, "w-[50%] h-auto max-h-[85%] p-4",
+			ModalSizeMd, 50, 45, true, "w-[50%] h-auto p-4",
 		},
 	}
 
@@ -166,11 +166,64 @@ func TestModalSizeClassesResolver(t *testing.T) {
 				testCase.initialSize,
 				testCase.widthPercent,
 				testCase.heightPercent,
-				testCase.isHeightContentSized,
+				testCase.shouldHeightMatchContent,
 			)
 
 			if resolved != testCase.expected {
-				t.Errorf("resolved = %q, want %q", resolved, testCase.expected)
+				t.Errorf("SizeClassesMismatch: got %q, want %q", resolved, testCase.expected)
+			}
+		})
+	}
+}
+
+func TestModalSizeConstraintClassesResolver(t *testing.T) {
+	tests := []struct {
+		name                     string
+		minWidthPercent          int
+		maxWidthPercent          int
+		minHeightPercent         int
+		maxHeightPercent         int
+		shouldHeightMatchContent bool
+		expected                 string
+	}{
+		{"NoConstraintsBuildNothing", 0, 0, 0, 0, false, ""},
+		{"MinWidthBuildsFloor", 18, 0, 0, 0, false, "min-w-[18%]"},
+		{"MaxWidthBuildsCeiling", 0, 60, 0, 0, false, "max-w-[60%]"},
+		{
+			"MinAndMaxHeightBuildBoth",
+			0, 0, 42, 85, false, "min-h-[42%] max-h-[85%]",
+		},
+		{
+			"AllConstraintsJoinInOrder",
+			18, 60, 42, 85, false,
+			"min-w-[18%] max-w-[60%] min-h-[42%] max-h-[85%]",
+		},
+		{
+			"ContentHeightDefaultsCeilingTo85",
+			0, 0, 0, 0, true, "max-h-[85%]",
+		},
+		{
+			"ExplicitMaxHeightReplacesContentCeiling",
+			0, 0, 0, 40, true, "max-h-[40%]",
+		},
+		{
+			"FixedHeightWithoutMaxBuildsNoCeiling",
+			0, 0, 42, 0, false, "min-h-[42%]",
+		},
+	}
+
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			resolved := modalSizeConstraintClassesResolver(
+				testCase.minWidthPercent,
+				testCase.maxWidthPercent,
+				testCase.minHeightPercent,
+				testCase.maxHeightPercent,
+				testCase.shouldHeightMatchContent,
+			)
+
+			if resolved != testCase.expected {
+				t.Errorf("ConstraintClassesMismatch: got %q, want %q", resolved, testCase.expected)
 			}
 		})
 	}
@@ -180,12 +233,12 @@ func TestModalSizeClassMapExpressionBuilder(t *testing.T) {
 	resolved := modalSizeClassMapExpressionBuilder("modalSize", 70, 45, false)
 	expectedPrefix := "{ 'w-[70%] h-[45%] p-3': modalSize === 'xs',"
 	if len(resolved) < len(expectedPrefix) || resolved[:len(expectedPrefix)] != expectedPrefix {
-		t.Errorf("resolved = %q, want prefix %q", resolved, expectedPrefix)
+		t.Errorf("MapExpressionMismatch: got %q, want prefix %q", resolved, expectedPrefix)
 	}
 	expectedSuffix := " 'w-[70%] h-[45%] p-5.5': modalSize === 'full' }"
 	if len(resolved) < len(expectedSuffix) ||
 		resolved[len(resolved)-len(expectedSuffix):] != expectedSuffix {
-		t.Errorf("resolved = %q, want suffix %q", resolved, expectedSuffix)
+		t.Errorf("MapExpressionMismatch: got %q, want suffix %q", resolved, expectedSuffix)
 	}
 }
 
@@ -216,7 +269,7 @@ func TestModalIsResizableResolver(t *testing.T) {
 			)
 
 			if resolved != testCase.expected {
-				t.Errorf("resolved = %v, want %v", resolved, testCase.expected)
+				t.Errorf("IsResizableMismatch: got %v, want %v", resolved, testCase.expected)
 			}
 		})
 	}
@@ -244,7 +297,7 @@ func TestModalCanEnlargeExpressionBuilder(t *testing.T) {
 			resolved := modalCanEnlargeExpressionBuilder(testCase.sizePath, testCase.reachableSizes)
 
 			if resolved != testCase.expected {
-				t.Errorf("resolved = %q, want %q", resolved, testCase.expected)
+				t.Errorf("CanEnlargeExpressionMismatch: got %q, want %q", resolved, testCase.expected)
 			}
 		})
 	}
@@ -272,7 +325,7 @@ func TestModalCanReduceExpressionBuilder(t *testing.T) {
 			resolved := modalCanReduceExpressionBuilder(testCase.sizePath, testCase.reachableSizes)
 
 			if resolved != testCase.expected {
-				t.Errorf("resolved = %q, want %q", resolved, testCase.expected)
+				t.Errorf("CanReduceExpressionMismatch: got %q, want %q", resolved, testCase.expected)
 			}
 		})
 	}
@@ -310,7 +363,7 @@ func TestModalEnlargeExpressionBuilder(t *testing.T) {
 			resolved := modalEnlargeExpressionBuilder(testCase.sizePath, testCase.reachableSizes)
 
 			if resolved != testCase.expected {
-				t.Errorf("resolved = %q, want %q", resolved, testCase.expected)
+				t.Errorf("EnlargeExpressionMismatch: got %q, want %q", resolved, testCase.expected)
 			}
 		})
 	}
@@ -348,7 +401,7 @@ func TestModalReduceExpressionBuilder(t *testing.T) {
 			resolved := modalReduceExpressionBuilder(testCase.sizePath, testCase.reachableSizes)
 
 			if resolved != testCase.expected {
-				t.Errorf("resolved = %q, want %q", resolved, testCase.expected)
+				t.Errorf("ReduceExpressionMismatch: got %q, want %q", resolved, testCase.expected)
 			}
 		})
 	}
