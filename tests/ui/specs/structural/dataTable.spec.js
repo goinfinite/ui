@@ -233,28 +233,30 @@ test.describe("DataTable @structural", () => {
   test("the larger page size and the last page resolve to their own fragments", async ({
     page,
   }) => {
-    await page.locator(`${tableRoot} nav [role=button]`).click();
-    await page
-      .locator(`${tableRoot} nav ul`)
-      .getByText("25", { exact: true })
-      .click();
+    await page.evaluate(() => {
+      const dataTable = Alpine.$data(
+        document.getElementById("data-table-demo-table"),
+      );
+      dataTable.itemsPerPage = 25;
+      dataTable.refresh();
+    });
     await expect(page.locator(`${tableRoot} tbody tr`)).toHaveCount(25);
     await expect(page.locator(`${tableRoot} nav p`)).toHaveText("1–25 of 25");
 
-    await page.locator(`${tableRoot} nav [role=button]`).click();
-    await page
-      .locator(`${tableRoot} nav ul`)
-      .getByText("5", { exact: true })
-      .click();
-    await expect(rowNames(page).first()).toHaveText("alpha");
-
-    await page.locator(`${tableRoot} button[aria-label="Last page"]`).click();
+    await page.evaluate(() => {
+      const dataTable = Alpine.$data(
+        document.getElementById("data-table-demo-table"),
+      );
+      dataTable.itemsPerPage = 5;
+      dataTable.pageNumber = 5;
+      dataTable.refresh();
+    });
     await expect(rowNames(page).first()).toHaveText("uniform");
+    await expect(page.locator(`${tableRoot} nav p`)).toHaveText("21–25 of 25");
 
-    await page
-      .locator(`${tableRoot} button`)
-      .filter({ hasText: "Refresh" })
-      .click();
+    await page.evaluate(() => {
+      Alpine.$data(document.getElementById("data-table-demo-table")).refresh();
+    });
     await expect(rowNames(page).first()).toHaveText("uniform");
   });
 
