@@ -52,6 +52,12 @@ feat: add the checkbox input error state
 docs: document the demo server start and stop for agent-browser
 test: raise the select dropdown open golden baseline to 50ms
 test: assert the stale refresh outcome without request counts
+docs: record the pending entries in the changelog
+refactor: namespace the button tooltip state methods
+feat: add the modal viewport size constraints and rename IsHeightContentSized
+feat: refine the confirmation dialog sizing and alignment
+refactor: serve the data table refresh from one json asset
+chore(docs): regenerate the demo page
 
 0.2.1 - 2026/09/18
 fix: serve demo files only from canonical paths under the docs root
