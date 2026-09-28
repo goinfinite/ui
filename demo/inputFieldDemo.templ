@@ -192,6 +192,7 @@ templ InputFieldAffixWidthExample() {
 	Label:     "Domain",
 
 	// OptionalFields
+	TwoWayStatePath:       "domain",
 	AffixLeftValue:        "goinfinite.net/",
 	AffixLeftWidthPercent: 40,
 })`
@@ -202,11 +203,12 @@ templ InputFieldAffixWidthExample() {
 		"/form/inputField.templ",
 		widthUsage,
 	) {
-		<div class="flex flex-col gap-3 lg:*:max-w-80">
+		<div class="flex flex-col gap-3 lg:*:max-w-80" x-data="{domain: '', name: ''}">
 			@uiForm.InputField(uiForm.InputFieldSettings{
 				InputType:             uiForm.InputTypeText,
 				InputName:             "domain",
 				Label:                 "Domain",
+				TwoWayStatePath:       "domain",
 				AffixLeftValue:        "goinfinite.net/",
 				AffixLeftWidthPercent: 40,
 			})
@@ -214,6 +216,7 @@ templ InputFieldAffixWidthExample() {
 				InputType:              uiForm.InputTypeText,
 				InputName:              "name",
 				Label:                  "Name",
+				TwoWayStatePath:        "name",
 				AffixRightValue:        ".jpg",
 				AffixRightWidthPercent: 25,
 			})

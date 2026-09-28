@@ -6,6 +6,7 @@ feat: add the button tooltip in the fixed body layer
 fix: always render the button type attribute
 refactor: render each embedded state script once per page
 docs: bind the input field hint demos to Alpine state
+docs: bind the affix width demo to Alpine state
 refactor: split the demo page into one templ file per component
 fix: show the loading overlay while a request is in flight
 test: assert the runner CLI contract and cap the test processes
