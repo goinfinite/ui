@@ -130,7 +130,7 @@ templ InputFieldSizesExample() {
 		"/form/inputField.templ",
 		sizesUsage,
 	) {
-		<div class="flex flex-col gap-3 lg:*:max-w-50">
+		<div class="flex flex-col gap-3 lg:*:max-w-50" x-data="{xs: '', sm: '', md: '', lg: '', xl: ''}">
 			for _, inputSize := range []string{
 				uiForm.InputFieldSizeXs,
 				uiForm.InputFieldSizeSm,
@@ -139,10 +139,11 @@ templ InputFieldSizesExample() {
 				uiForm.InputFieldSizeXl,
 			} {
 				@uiForm.InputField(uiForm.InputFieldSettings{
-					InputType: uiForm.InputTypeText,
-					InputName: "name",
-					Label:     "Name (" + inputSize + ")",
-					Size:      inputSize,
+					InputType:       uiForm.InputTypeText,
+					InputName:       "name",
+					Label:           "Name (" + inputSize + ")",
+					TwoWayStatePath: inputSize,
+					Size:            inputSize,
 				})
 			}
 		</div>
@@ -166,7 +167,7 @@ templ InputFieldLabelCaseExample() {
 		"/form/inputField.templ",
 		labelCaseUsage,
 	) {
-		<div class="flex flex-col gap-3 lg:*:max-w-50">
+		<div class="flex flex-col gap-3 lg:*:max-w-50" x-data="{none: '', lower: '', upper: '', capitalize: ''}">
 			for _, textCase := range []string{
 				uiToolset.TextCaseNone,
 				uiToolset.TextCaseLower,
@@ -174,10 +175,11 @@ templ InputFieldLabelCaseExample() {
 				uiToolset.TextCaseCapitalize,
 			} {
 				@uiForm.InputField(uiForm.InputFieldSettings{
-					InputType: uiForm.InputTypeText,
-					InputName: "name",
-					Label:     "Network Interface (" + textCase + ")",
-					TextCase:  textCase,
+					InputType:       uiForm.InputTypeText,
+					InputName:       "name",
+					Label:           "Network Interface (" + textCase + ")",
+					TwoWayStatePath: textCase,
+					TextCase:        textCase,
 				})
 			}
 		</div>
