@@ -46,24 +46,22 @@ templ RadioInput(componentSettings RadioInputSettings) {
 			class={ "flex flex-row select-none gap-1 cursor-pointer items-center " + labelTextSize + " " + textCaseClass }
 			:class={ `String(` + componentSettings.TwoWayStatePath + `) == "` + componentSettings.StateValue + `" && "text-secondary-500 font-bold"` }
 		>
-			if componentSettings.InputId != "" && componentSettings.InputName != "" {
-				<input
-					type="radio"
-					if componentSettings.InputId != "" {
-						id={ componentSettings.InputId }
-					}
-					if componentSettings.InputName != "" {
-						name={ componentSettings.InputName }
-					}
-					if componentSettings.StateValue != "" {
-						value={ componentSettings.StateValue }
-					}
-					if componentSettings.TwoWayStatePath != "" {
-						x-model={ componentSettings.TwoWayStatePath }
-					}
-					class="hidden"
-				/>
-			}
+			<input
+				type="radio"
+				if componentSettings.InputId != "" {
+					id={ componentSettings.InputId }
+				}
+				if componentSettings.InputName != "" {
+					name={ componentSettings.InputName }
+				}
+				if componentSettings.StateValue != "" {
+					value={ componentSettings.StateValue }
+				}
+				if componentSettings.TwoWayStatePath != "" {
+					x-model={ componentSettings.TwoWayStatePath }
+				}
+				class="sr-only"
+			/>
 			{{ iconSize := "text-xl" }}
 			switch componentSettings.Size {
 				case RadioInputSizeXs:
