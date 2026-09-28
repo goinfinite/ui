@@ -1,6 +1,17 @@
 package uiForm
 
-import uiToolset "github.com/goinfinite/ui/src/toolset"
+import (
+	"fmt"
+	"sync/atomic"
+
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+var labelValueOptionsScriptIdCounter atomic.Uint64
+
+func generateLabelValueOptionsScriptId() string {
+	return fmt.Sprintf("label-value-options-%d", labelValueOptionsScriptIdCounter.Add(1))
+}
 
 const (
 	SelectInputSizeXs string = "xs"
@@ -83,7 +94,7 @@ templ SelectInput(componentSettings SelectInputSettings) {
 			:class={ isDisabledPath + " && 'pointer-events-none opacity-50'" }
 		}
 	>
-		{{ labelValueOptionsScriptId := componentSettings.InputName + "LabelValueOptions" }}
+		{{ labelValueOptionsScriptId := generateLabelValueOptionsScriptId() }}
 		if len(componentSettings.LabelValueOptions) > 0 {
 			@templ.JSONScript(labelValueOptionsScriptId, componentSettings.LabelValueOptions)
 		}

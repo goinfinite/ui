@@ -71,7 +71,7 @@ templ MultiSelectInput(componentSettings MultiSelectInputSettings) {
 	if componentSettings.OnChangeFunc != "" {
 		{{ onChangeSuffix = "; " + componentSettings.OnChangeFunc }}
 	}
-	{{ labelValueOptionsScriptId := componentSettings.InputName + "LabelValueOptions" }}
+	{{ labelValueOptionsScriptId := generateLabelValueOptionsScriptId() }}
 	{{ textCaseClass := uiToolset.TextCaseClassResolver(componentSettings.TextCase) }}
 	<div
 		x-data={ templ.JSFuncCall("multiSelectInput", labelValueOptionsScriptId) }

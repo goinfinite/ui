@@ -205,7 +205,7 @@ func MultiSelectInput(componentSettings MultiSelectInputSettings) templ.Componen
 		if componentSettings.OnChangeFunc != "" {
 			onChangeSuffix = "; " + componentSettings.OnChangeFunc
 		}
-		labelValueOptionsScriptId := componentSettings.InputName + "LabelValueOptions"
+		labelValueOptionsScriptId := generateLabelValueOptionsScriptId()
 		textCaseClass := uiToolset.TextCaseClassResolver(componentSettings.TextCase)
 		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<div x-data=\"")
 		if templ_7745c5c3_Err != nil {
