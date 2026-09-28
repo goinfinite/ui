@@ -96,13 +96,23 @@ test.describe("Modal", () => {
     await expect(backdropWith(page, "Closed by backdrop click")).toBeVisible();
   });
 
-  async function panelWidthRatio(page, text) {
+  async function openModalPanel(page, text) {
     const modal = backdropWith(page, text);
     await expect(modal).toBeVisible();
     const panel = modal.locator("div.relative.flex.flex-col").first();
-    const panelBox = await panel.boundingBox();
     const viewportSize = page.viewportSize();
-    return panelBox.width / viewportSize.width;
+    const panelBox = await panel.boundingBox();
+    return {
+      modal,
+      panel,
+      viewportSize,
+      widthRatio: panelBox.width / viewportSize.width,
+      heightRatio: panelBox.height / viewportSize.height,
+    };
+  }
+
+  async function panelWidthRatio(page, text) {
+    return (await openModalPanel(page, text)).widthRatio;
   }
 
   test("@smoke medium size spans about 60% of the viewport width", async ({
@@ -149,16 +159,13 @@ test.describe("Modal", () => {
       .locator(modalSection)
       .getByRole("button", { name: "Open XXL 90%" })
       .click();
-    const modal = backdropWith(page, "WebTerminal Modal");
-    await expect(modal).toBeVisible();
-    const panel = modal.locator("div.relative.flex.flex-col").first();
-    const panelBox = await panel.boundingBox();
-    const viewportSize = page.viewportSize();
-    const widthRatio = panelBox.width / viewportSize.width;
-    const heightRatio = panelBox.height / viewportSize.height;
+    const { modal, widthRatio, heightRatio } = await openModalPanel(
+      page,
+      "WebTerminal Modal",
+    );
     expect(widthRatio).toBeGreaterThan(0.85);
     expect(heightRatio).toBeGreaterThan(0.85);
-    await expect(modal.locator("#terminal-modal-demo-content")).toBeVisible();
+    await expect(modal.getByText("agent@opencode").first()).toBeVisible();
   });
 
   test("enlarge and reduce step through every size and hide at the ends", async ({
@@ -168,10 +175,10 @@ test.describe("Modal", () => {
       .locator(modalSection)
       .getByRole("button", { name: "XS", exact: true })
       .click();
-    const modal = backdropWith(page, "Interactive Modal");
-    await expect(modal).toBeVisible();
-    const panel = modal.locator("div.relative.flex.flex-col").first();
-    const viewportSize = page.viewportSize();
+    const { modal, panel, viewportSize } = await openModalPanel(
+      page,
+      "Interactive Modal",
+    );
     const enlargeButton = modal.locator("button:has(i.ph-arrows-out)");
     const reduceButton = modal.locator("button:has(i.ph-arrows-in)");
 
@@ -237,18 +244,12 @@ test.describe("Modal", () => {
       .locator(modalSection)
       .getByRole("button", { name: "Open Pinned Dimensions" })
       .click();
-    const modal = backdropWith(page, "Pinned Dimensions Modal");
-    await expect(modal).toBeVisible();
-
-    const panel = modal.locator("div.relative.flex.flex-col").first();
-    const panelBox = await panel.boundingBox();
-    const viewportSize = page.viewportSize();
-    expect(Math.abs(panelBox.width / viewportSize.width - 0.7)).toBeLessThan(
-      0.05,
+    const { modal, widthRatio, heightRatio } = await openModalPanel(
+      page,
+      "Pinned Dimensions Modal",
     );
-    expect(Math.abs(panelBox.height / viewportSize.height - 0.45)).toBeLessThan(
-      0.05,
-    );
+    expect(Math.abs(widthRatio - 0.7)).toBeLessThan(0.05);
+    expect(Math.abs(heightRatio - 0.45)).toBeLessThan(0.05);
     await expect(
       modal.locator('button:has(i[class*="ph-arrows"])'),
     ).toHaveCount(0);
@@ -260,11 +261,10 @@ test.describe("Modal", () => {
       .locator(modalSection)
       .getByRole("button", { name: "Open Size Slice" })
       .click();
-    const modal = backdropWith(page, "Size Slice Modal");
-    await expect(modal).toBeVisible();
-
-    const panel = modal.locator("div.relative.flex.flex-col").first();
-    const viewportSize = page.viewportSize();
+    const { modal, panel, viewportSize } = await openModalPanel(
+      page,
+      "Size Slice Modal",
+    );
     const enlargeButton = modal.locator("button:has(i.ph-arrows-out)");
     const reduceButton = modal.locator("button:has(i.ph-arrows-in)");
 
