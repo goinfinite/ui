@@ -58,6 +58,8 @@ feat: add the modal viewport size constraints and rename IsHeightContentSized
 feat: refine the confirmation dialog sizing and alignment
 refactor: serve the data table refresh from one json asset
 chore(docs): regenerate the demo page
+fix: center the demo readout text in its box
+fix: serve the demo files with a no-store cache header
 
 0.2.1 - 2026/09/18
 fix: serve demo files only from canonical paths under the docs root
