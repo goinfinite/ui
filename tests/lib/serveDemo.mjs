@@ -117,7 +117,10 @@ async function serveFile(request, response) {
     const body = fileName.endsWith(".html")
       ? rewriteExternalAssetUrls(fileBody.toString("utf8"))
       : fileBody;
-    response.writeHead(200, { "content-type": contentTypeOf(fileName) });
+    response.writeHead(200, {
+      "content-type": contentTypeOf(fileName),
+      "cache-control": "no-store",
+    });
     response.end(body);
   } catch {
     response.writeHead(404).end("not found");
