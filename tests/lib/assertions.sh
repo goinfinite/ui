@@ -11,7 +11,7 @@ assertionFailureCount=0
 
 assertEquals() {
 	local label="$1" expected="$2" actual="$3"
-	if [ "$expected" != "$actual" ]; then
+	if [[ "$expected" != "$actual" ]]; then
 		echo "AssertionFailed $label: expected '$expected', got '$actual'" >&2
 		assertionFailureCount=$((assertionFailureCount + 1))
 		return 0
@@ -48,7 +48,7 @@ assertEveryLineMatches() {
 }
 
 exitWithAssertionStatus() {
-	if [ "$assertionFailureCount" -gt 0 ]; then
+	if [[ "$assertionFailureCount" -gt 0 ]]; then
 		exit 1
 	fi
 	exit 0
