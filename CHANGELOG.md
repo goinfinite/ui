@@ -62,6 +62,13 @@ fix: center the demo readout text in its box
 fix: serve the demo files with a no-store cache header
 test: hold the stale refresh in flight before superseding it
 test: drive the data table fragment spec from component state
+docs: record the pending entries in the changelog
+chore: exclude the generated files from sonar
+fix: derive the select options script id per instance
+feat: add the loading overlay id setting
+fix: render the radio input for its label
+test: deduplicate the modal specs and drop the terminal content id
+test: use double brackets in the shell assertion helpers
 
 0.2.1 - 2026/09/18
 fix: serve demo files only from canonical paths under the docs root
