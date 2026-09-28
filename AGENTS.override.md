@@ -11,7 +11,7 @@ Ignore `*_templ.go` files during reviews and scans. The `templ` tool generates t
 After any `.templ` source edit, regenerate the demo page before delivering. Run from the project root:
 
 ```bash
-templ generate && (cd docs && go run ../demo/*.go)
+templ generate && go run ./demo/*.go
 ```
 
 `docs/index.html` is the rendered demo served at ui.demo.goinfinite.net. A change that skips this step ships stale documentation.

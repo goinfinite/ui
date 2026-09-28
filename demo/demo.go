@@ -16,10 +16,10 @@ import (
 //go:embed dataTableDemoRouting.js
 var dataTableDemoRoutingScript string
 
-const dataTableDemoFragmentsAssetPath = "assets/dataTableDemoRefreshFragments.json"
+const dataTableDemoFragmentsAssetPath = "docs/assets/dataTableDemoRefreshFragments.json"
 
 func renderDemoIndex() error {
-	indexFile, err := os.Create("index.html")
+	indexFile, err := os.Create("docs/index.html")
 	if err != nil {
 		return errors.New("CreateHtmlFileFailed (index.html): " + err.Error())
 	}
