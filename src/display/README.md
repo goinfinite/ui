@@ -140,7 +140,7 @@ Overlay for in-flight requests. It binds to a state path or reacts to the HTMX `
 })
 ```
 
-Set `hx-indicator="#loading-overlay"` on HTMX elements, or toggle it with `UiToolset.ToggleLoadingOverlay()`.
+Set `hx-indicator="#loading-overlay"` on HTMX elements, or toggle it with `UiToolset.ToggleLoadingOverlay()`. Pass `Id` to give a second overlay its own id.
 
 ## Modal
 

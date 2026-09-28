@@ -20,11 +20,17 @@ type LoadingOverlaySettings struct {
 	IconSize                 string
 	AnimationName            string
 	AnimationDurationSeconds string
+	Id                       string
 }
 
 templ LoadingOverlay(componentSettings LoadingOverlaySettings) {
+	{{ loadingOverlayId := "loading-overlay" }}
+	if componentSettings.Id != "" {
+		{{ loadingOverlayId = componentSettings.Id }}
+	}
+	{{ loadingOverlayStyle := ".htmx-request #" + loadingOverlayId + ",.htmx-request#" + loadingOverlayId + "{display:flex !important}" }}
 	<!-- LoadingOverlay CSS -->
-	<style type="text/css">.htmx-request #loading-overlay,.htmx-request#loading-overlay{display:flex !important}</style>
+	@templ.Raw("<style type=\"text/css\">" + loadingOverlayStyle + "</style>")
 	{{ loadingOverlayClasses := "z-100 fixed top-0 left-0 h-full w-full items-center justify-center" }}
 	if componentSettings.IsLoadingOneWayStatePath != "" {
 		{{ loadingOverlayClasses += " flex" }}
@@ -73,7 +79,7 @@ templ LoadingOverlay(componentSettings LoadingOverlaySettings) {
 	{{ loadingOverlayIconClasses += " animate-duration-[" + loadingOverlayIconAnimationDuration + "s]" }}
 	<!-- LoadingOverlay HTML -->
 	<div
-		id="loading-overlay"
+		id={ loadingOverlayId }
 		class={ loadingOverlayClasses }
 		if componentSettings.IsLoadingOneWayStatePath != "" {
 			x-show={ componentSettings.IsLoadingOneWayStatePath }
