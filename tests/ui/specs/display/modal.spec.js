@@ -3,6 +3,7 @@ import { openExamplePanel } from "../../examplePanel.js";
 
 const modalSection = "#modal-demo";
 const closeTransitionDurationMs = 350;
+const resizeTransitionDurationMs = 350;
 
 function backdropWith(page, text) {
   return page.locator("div.fixed.inset-0.z-100", { hasText: text });
@@ -196,6 +197,7 @@ test.describe("Modal", () => {
     };
     for (const step of ["sm", "md", "lg", "xl", "xxl", "full"]) {
       await enlargeButton.click();
+      await page.waitForTimeout(resizeTransitionDurationMs);
       const panelBox = await panel.boundingBox();
       expect(
         Math.abs(
@@ -209,6 +211,7 @@ test.describe("Modal", () => {
 
     for (const step of ["xxl", "xl", "lg", "md", "sm", "xs"]) {
       await reduceButton.click();
+      await page.waitForTimeout(resizeTransitionDurationMs);
       const panelBox = await panel.boundingBox();
       expect(
         Math.abs(
@@ -273,6 +276,7 @@ test.describe("Modal", () => {
     const expectedWidthRatios = { md: 0.6, lg: 0.7, xl: 0.8 };
     for (const step of ["lg", "xl"]) {
       await enlargeButton.click();
+      await page.waitForTimeout(resizeTransitionDurationMs);
       const panelBox = await panel.boundingBox();
       expect(
         Math.abs(
@@ -284,6 +288,7 @@ test.describe("Modal", () => {
 
     for (const step of ["lg", "md"]) {
       await reduceButton.click();
+      await page.waitForTimeout(resizeTransitionDurationMs);
       const panelBox = await panel.boundingBox();
       expect(
         Math.abs(
