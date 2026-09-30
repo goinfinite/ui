@@ -8,6 +8,7 @@ feat: label the page strip from one without changing the bound state
 feat: make the page number zero-based across pagination and the data table
 fix: keep the button tooltip state from aborting on a second embed
 fix: hold the cloak loading screen until Alpine finishes initializing
+fix: keep the track tooltip preview on the step grid
 feat: animate the modal size transition
 feat: fade the loading overlay in and out
 test: cover the track tooltip, the value bubble, the one-based labels, the modal resize, and the loading overlay markup

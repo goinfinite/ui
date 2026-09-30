@@ -346,7 +346,7 @@ templ RangeSliderTrackTooltipExample() {
 	) {
 		<div
 			class="flex flex-col gap-3"
-			x-data="{sliderValue: 50, fractionValue: 0.3}"
+			x-data="{sliderValue: 50, fractionValue: 0.3, tinyValue: 0.0000003, unalignedValue: 60, alignedValue: 0.3}"
 		>
 			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
 				ThumbValueTwoWayStatePath:   "sliderValue",
@@ -368,6 +368,39 @@ templ RangeSliderTrackTooltipExample() {
 				TrackTooltipTextColor:       "neutral-50",
 				TrackTooltipRingColor:       "emerald-200",
 				TrackTooltipRingThickness:   uiControl.RangeSliderTrackTooltipRingThicknessMd,
+			})
+			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+				ThumbValueTwoWayStatePath:   "tinyValue",
+				ThumbAriaLabel:              "Tooltip tiny step",
+				TrackStartValue:             "0",
+				TrackEndValue:               "0.000001",
+				TrackSteps:                  "0.0000001",
+				TrackTooltipEnabled:         true,
+				TrackTooltipPosition:        uiControl.RangeSliderTrackTooltipPositionTop,
+				TrackTooltipBackgroundColor: "amber-500",
+				TrackTooltipTextColor:       "neutral-50",
+			})
+			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+				ThumbValueTwoWayStatePath:   "unalignedValue",
+				ThumbAriaLabel:              "Tooltip unaligned",
+				TrackStartValue:             "0",
+				TrackEndValue:               "100",
+				TrackSteps:                  "60",
+				TrackTooltipEnabled:         true,
+				TrackTooltipPosition:        uiControl.RangeSliderTrackTooltipPositionTop,
+				TrackTooltipBackgroundColor: "secondary-500",
+				TrackTooltipTextColor:       "neutral-50",
+			})
+			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+				ThumbValueTwoWayStatePath:   "alignedValue",
+				ThumbAriaLabel:              "Tooltip aligned decimal",
+				TrackStartValue:             "0",
+				TrackEndValue:               "0.3",
+				TrackSteps:                  "0.1",
+				TrackTooltipEnabled:         true,
+				TrackTooltipPosition:        uiControl.RangeSliderTrackTooltipPositionTop,
+				TrackTooltipBackgroundColor: "primary-500",
+				TrackTooltipTextColor:       "neutral-50",
 			})
 		</div>
 	}

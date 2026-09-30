@@ -273,6 +273,60 @@ test.describe("RangeSlider", () => {
     await expect(tooltip).toHaveText("0.3");
   });
 
+  test("@control the track tooltip keeps a sub-micro step preview nonzero", async ({
+    page,
+  }) => {
+    await openExamplePanel(page, sliderSection, "Track Tooltip");
+    const slider = sliderByLabel(page, "Tooltip tiny step");
+    const track = trackOf(slider);
+    const tooltip = track.locator("[data-ui-range-slider-track-tooltip]");
+
+    await slider.scrollIntoViewIfNeeded();
+    const trackBox = await track.boundingBox();
+    await page.mouse.move(
+      trackBox.x + trackBox.width * 0.3,
+      trackBox.y + trackBox.height / 2,
+    );
+    await expect(tooltip).toBeVisible();
+    await expect(tooltip).toHaveText("3e-7");
+  });
+
+  test("@control the track tooltip caps an unaligned endpoint to the step grid", async ({
+    page,
+  }) => {
+    await openExamplePanel(page, sliderSection, "Track Tooltip");
+    const slider = sliderByLabel(page, "Tooltip unaligned");
+    const track = trackOf(slider);
+    const tooltip = track.locator("[data-ui-range-slider-track-tooltip]");
+
+    await slider.scrollIntoViewIfNeeded();
+    const trackBox = await track.boundingBox();
+    await page.mouse.move(
+      trackBox.x + trackBox.width - 2,
+      trackBox.y + trackBox.height / 2,
+    );
+    await expect(tooltip).toBeVisible();
+    await expect(tooltip).toHaveText("60");
+  });
+
+  test("@control the track tooltip keeps an aligned decimal endpoint on the grid", async ({
+    page,
+  }) => {
+    await openExamplePanel(page, sliderSection, "Track Tooltip");
+    const slider = sliderByLabel(page, "Tooltip aligned decimal");
+    const track = trackOf(slider);
+    const tooltip = track.locator("[data-ui-range-slider-track-tooltip]");
+
+    await slider.scrollIntoViewIfNeeded();
+    const trackBox = await track.boundingBox();
+    await page.mouse.move(
+      trackBox.x + trackBox.width - 2,
+      trackBox.y + trackBox.height / 2,
+    );
+    await expect(tooltip).toBeVisible();
+    await expect(tooltip).toHaveText("0.3");
+  });
+
   test("@control the value bubble display mode gates visibility", async ({
     page,
   }) => {
