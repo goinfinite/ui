@@ -11,6 +11,7 @@
       "!tests/node_modules",
       "!docs/index.html",
       "!docs/assets/*.html",
+      "!docs/assets/*.json",
       "!.zed"
     ]
   },
