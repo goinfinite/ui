@@ -30,13 +30,14 @@ type PaginationSettings struct {
 	ItemsTotal                  uint
 
 	// OptionalFields
-	AriaLabel                 string
-	IsDisabledOneWayStatePath string
-	IsHiddenWhenSinglePage    bool
-	ItemsPerPageInputName     string
-	ItemsPerPageSizeChoices   []uint
-	OnChangeFunc              string
-	PagesTotal                uint
+	AriaLabel                    string
+	IsDisabledOneWayStatePath    string
+	IsHiddenWhenSinglePage       bool
+	ItemsPerPageInputName        string
+	ItemsPerPageSizeChoices      []uint
+	OnChangeFunc                 string
+	PagesTotal                   uint
+	ShouldUseOneBasedPageDisplay bool
 }
 
 func Pagination(componentSettings PaginationSettings) templ.Component {
@@ -79,6 +80,12 @@ func Pagination(componentSettings PaginationSettings) templ.Component {
 			onChangeSuffix = "; " + componentSettings.OnChangeFunc
 		}
 		pagesTotalExpression := paginationPagesTotalExpressionBuilder(itemsPerPagePath, componentSettings.ItemsTotal, componentSettings.PagesTotal)
+		lastPageNumberExpression := paginationLastPageNumberExpressionBuilder(pagesTotalExpression)
+		displayBase := 0
+		if componentSettings.ShouldUseOneBasedPageDisplay {
+			displayBase = 1
+		}
+		displayBaseText := strconv.Itoa(displayBase)
 		centerVisibilityExpression := ""
 		if componentSettings.IsHiddenWhenSinglePage {
 			centerVisibilityExpression = pagesTotalExpression + " > 1"
@@ -102,7 +109,7 @@ func Pagination(componentSettings PaginationSettings) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.ResolveAttributeValue(ariaLabel)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/pagination.templ`, Line: 68, Col: 24}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/pagination.templ`, Line: 75, Col: 24}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var2)
 		if templ_7745c5c3_Err != nil {
@@ -115,7 +122,7 @@ func Pagination(componentSettings PaginationSettings) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.ResolveAttributeValue(paginationReadoutExpressionBuilder(pageNumberPath, itemsPerPagePath, componentSettings.ItemsTotal))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/pagination.templ`, Line: 71, Col: 132}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/pagination.templ`, Line: 78, Col: 132}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
 		if templ_7745c5c3_Err != nil {
@@ -133,7 +140,7 @@ func Pagination(componentSettings PaginationSettings) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue(centerVisibilityExpression)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/pagination.templ`, Line: 75, Col: 39}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/pagination.templ`, Line: 82, Col: 39}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
 			if templ_7745c5c3_Err != nil {
@@ -157,8 +164,8 @@ func Pagination(componentSettings PaginationSettings) templ.Component {
 		templ_7745c5c3_Err = uiControl.Button(uiControl.ButtonSettings{
 			AriaLabel:                 "First page",
 			IconLeft:                  "ph-caret-double-left",
-			IsDisabledOneWayStatePath: disabledSuffix + pageNumberPath + " <= 1",
-			OnClickFunc:               pageNumberPath + " = 1" + onChangeSuffix,
+			IsDisabledOneWayStatePath: disabledSuffix + pageNumberPath + " <= 0",
+			OnClickFunc:               pageNumberPath + " = 0" + onChangeSuffix,
 			Size:                      uiControl.ButtonSizeXs,
 			TooltipContent:            "First page",
 			TooltipPosition:           uiControl.ButtonTooltipPositionTop,
@@ -169,8 +176,8 @@ func Pagination(componentSettings PaginationSettings) templ.Component {
 		templ_7745c5c3_Err = uiControl.Button(uiControl.ButtonSettings{
 			AriaLabel:                 "Previous page",
 			IconLeft:                  "ph-caret-left",
-			IsDisabledOneWayStatePath: disabledSuffix + pageNumberPath + " <= 1",
-			OnClickFunc:               pageNumberPath + " = Math.max(1, " + pageNumberPath + " - 1)" + onChangeSuffix,
+			IsDisabledOneWayStatePath: disabledSuffix + pageNumberPath + " <= 0",
+			OnClickFunc:               pageNumberPath + " = Math.max(0, " + pageNumberPath + " - 1)" + onChangeSuffix,
 			Size:                      uiControl.ButtonSizeXs,
 			TooltipContent:            "Previous page",
 			TooltipPosition:           uiControl.ButtonTooltipPositionTop,
@@ -183,9 +190,9 @@ func Pagination(componentSettings PaginationSettings) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
-		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.ResolveAttributeValue("pageItem in UiToolset.PaginationPageStripBuilder(" + pageNumberPath + ", " + pagesTotalExpression + ")")
+		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.ResolveAttributeValue("pageItem in UiToolset.PaginationPageStripBuilder(" + pageNumberPath + ", " + pagesTotalExpression + ", " + displayBaseText + ")")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/pagination.templ`, Line: 100, Col: 116}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/pagination.templ`, Line: 107, Col: 141}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5)
 		if templ_7745c5c3_Err != nil {
@@ -198,7 +205,7 @@ func Pagination(componentSettings PaginationSettings) templ.Component {
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.ResolveAttributeValue(pageNumberPath + " === pageItem.pageNumber && '!bg-neutral-50/15 !text-neutral-50'")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/pagination.templ`, Line: 111, Col: 99}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/pagination.templ`, Line: 118, Col: 99}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
 		if templ_7745c5c3_Err != nil {
@@ -211,7 +218,7 @@ func Pagination(componentSettings PaginationSettings) templ.Component {
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.ResolveAttributeValue(pageNumberPath + " === pageItem.pageNumber && 'page'")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/pagination.templ`, Line: 112, Col: 76}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/pagination.templ`, Line: 119, Col: 76}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
 		if templ_7745c5c3_Err != nil {
@@ -229,7 +236,7 @@ func Pagination(componentSettings PaginationSettings) templ.Component {
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.IsDisabledOneWayStatePath)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/pagination.templ`, Line: 114, Col: 63}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/pagination.templ`, Line: 121, Col: 63}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var8)
 			if templ_7745c5c3_Err != nil {
@@ -247,7 +254,7 @@ func Pagination(componentSettings PaginationSettings) templ.Component {
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.ResolveAttributeValue(pageNumberPath + " = pageItem.pageNumber" + onChangeSuffix)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/pagination.templ`, Line: 116, Col: 74}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/pagination.templ`, Line: 123, Col: 74}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var9)
 		if templ_7745c5c3_Err != nil {
@@ -260,8 +267,8 @@ func Pagination(componentSettings PaginationSettings) templ.Component {
 		templ_7745c5c3_Err = uiControl.Button(uiControl.ButtonSettings{
 			AriaLabel:                 "Next page",
 			IconLeft:                  "ph-caret-right",
-			IsDisabledOneWayStatePath: disabledSuffix + pageNumberPath + " >= " + pagesTotalExpression,
-			OnClickFunc:               pageNumberPath + " = Math.min(" + pagesTotalExpression + ", " + pageNumberPath + " + 1)" + onChangeSuffix,
+			IsDisabledOneWayStatePath: disabledSuffix + pageNumberPath + " >= " + lastPageNumberExpression,
+			OnClickFunc:               pageNumberPath + " = Math.min(" + lastPageNumberExpression + ", " + pageNumberPath + " + 1)" + onChangeSuffix,
 			Size:                      uiControl.ButtonSizeXs,
 			TooltipContent:            "Next page",
 			TooltipPosition:           uiControl.ButtonTooltipPositionTop,
@@ -272,8 +279,8 @@ func Pagination(componentSettings PaginationSettings) templ.Component {
 		templ_7745c5c3_Err = uiControl.Button(uiControl.ButtonSettings{
 			AriaLabel:                 "Last page",
 			IconLeft:                  "ph-caret-double-right",
-			IsDisabledOneWayStatePath: disabledSuffix + pageNumberPath + " >= " + pagesTotalExpression,
-			OnClickFunc:               pageNumberPath + " = " + pagesTotalExpression + onChangeSuffix,
+			IsDisabledOneWayStatePath: disabledSuffix + pageNumberPath + " >= " + lastPageNumberExpression,
+			OnClickFunc:               pageNumberPath + " = " + lastPageNumberExpression + onChangeSuffix,
 			Size:                      uiControl.ButtonSizeXs,
 			TooltipContent:            "Last page",
 			TooltipPosition:           uiControl.ButtonTooltipPositionTop,
@@ -290,7 +297,7 @@ func Pagination(componentSettings PaginationSettings) templ.Component {
 			Label:                     "Items per page",
 			FlatOptions:               itemsPerPageSizeChoiceLabels,
 			IsDisabledOneWayStatePath: componentSettings.IsDisabledOneWayStatePath,
-			OnChangeFunc:              pageNumberPath + " = 1" + onChangeSuffix,
+			OnChangeFunc:              pageNumberPath + " = 0" + onChangeSuffix,
 			Size:                      uiForm.SelectInputSizeSm,
 			TwoWayStatePath:           itemsPerPagePath,
 		}).Render(ctx, templ_7745c5c3_Buffer)

@@ -15,6 +15,12 @@ func paginationPagesTotalExpressionBuilder(
 		itemsPerPagePath + " || 1)))"
 }
 
+func paginationLastPageNumberExpressionBuilder(
+	pagesTotalExpression string,
+) string {
+	return "Math.max(0, " + pagesTotalExpression + " - 1)"
+}
+
 func paginationReadoutExpressionBuilder(
 	pageNumberPath, itemsPerPagePath string, itemsTotal uint,
 ) string {
@@ -23,9 +29,8 @@ func paginationReadoutExpressionBuilder(
 		return `"0 of 0"`
 	}
 	guardedItemsPerPage := "(" + itemsPerPagePath + " || 1)"
-	firstItemExpression := "(" + pageNumberPath + " - 1) * " +
-		guardedItemsPerPage + " + 1"
-	lastItemExpression := "Math.min(" + pageNumberPath + " * " +
+	firstItemExpression := pageNumberPath + " * " + guardedItemsPerPage + " + 1"
+	lastItemExpression := "Math.min((" + pageNumberPath + " + 1) * " +
 		guardedItemsPerPage + ", " + itemsTotalText + ")"
 	return firstItemExpression + ` + "–" + ` + lastItemExpression +
 		` + " of ` + itemsTotalText + `"`

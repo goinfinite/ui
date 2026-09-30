@@ -74,14 +74,14 @@ test.describe("DataTable @structural", () => {
     ).toHaveCount(0);
   });
 
-  test("@smoke next page requests page two and swaps the rows", async ({
+  test("@smoke next page requests page index one and swaps the rows", async ({
     page,
   }) => {
     const refreshUrls = trackRefreshUrls(page);
     await page.locator(`${tableRoot} button[aria-label="Next page"]`).click();
 
     await expect.poll(() => refreshUrls.length).toBe(1);
-    expect(refreshUrls[0]).toContain("page=2");
+    expect(refreshUrls[0]).toContain("page=1");
     await expect(rowNames(page).first()).toHaveText("foxtrot");
     await expect(page.locator(`${tableRoot} nav p`)).toHaveText("6–10 of 25");
   });
@@ -92,20 +92,20 @@ test.describe("DataTable @structural", () => {
     const refreshUrls = trackRefreshUrls(page);
     await expect(
       page.locator(`${tableRoot} nav [aria-current=page]`),
-    ).toHaveText("1");
+    ).toHaveText("0");
 
     await page
       .locator(`${tableRoot} nav button`)
-      .filter({ hasText: /^2$/ })
+      .filter({ hasText: /^4$/ })
       .click();
 
     await expect.poll(() => refreshUrls.length).toBe(1);
-    expect(refreshUrls[0]).toContain("page=2");
-    await expect(rowNames(page).first()).toHaveText("foxtrot");
-    await expect(page.locator(`${tableRoot} nav p`)).toHaveText("6–10 of 25");
+    expect(refreshUrls[0]).toContain("page=4");
+    await expect(rowNames(page).first()).toHaveText("uniform");
+    await expect(page.locator(`${tableRoot} nav p`)).toHaveText("21–25 of 25");
     await expect(
       page.locator(`${tableRoot} nav [aria-current=page]`),
-    ).toHaveText("2");
+    ).toHaveText("4");
   });
 
   test("sorting cycles ascending, descending, and unsorted", async ({
@@ -121,7 +121,7 @@ test.describe("DataTable @structural", () => {
     await expect.poll(() => refreshUrls.length).toBe(1);
     expect(refreshUrls[0]).toContain("sort=createdAt");
     expect(refreshUrls[0]).toContain("direction=asc");
-    expect(refreshUrls[0]).toContain("page=1");
+    expect(refreshUrls[0]).toContain("page=0");
     await expect(createdAtHeader).toHaveAttribute("aria-sort", "ascending");
 
     await createdAtButton.click();
@@ -160,7 +160,7 @@ test.describe("DataTable @structural", () => {
       .pressSequentially("bravo", { delay: 40 });
     await expect.poll(() => refreshUrls.length).toBe(2);
     expect(refreshUrls[1]).toContain("search=bravo");
-    expect(refreshUrls[1]).toContain("page=1");
+    expect(refreshUrls[1]).toContain("page=0");
   });
 
   test("selection survives a refresh", async ({ page }) => {
@@ -193,7 +193,7 @@ test.describe("DataTable @structural", () => {
 
     await expect.poll(() => refreshUrls.length).toBe(1);
     expect(refreshUrls[0]).not.toContain("status=");
-    expect(refreshUrls[0]).toContain("page=1");
+    expect(refreshUrls[0]).toContain("page=0");
   });
 
   test("removing a filter chip refreshes without the filter param", async ({
@@ -206,7 +206,7 @@ test.describe("DataTable @structural", () => {
 
     await expect.poll(() => refreshUrls.length).toBe(1);
     expect(refreshUrls[0]).not.toContain("status=");
-    expect(refreshUrls[0]).toContain("page=1");
+    expect(refreshUrls[0]).toContain("page=0");
     await expect(
       page.locator(`${tableRoot} span`).filter({ hasText: "Status: running" }),
     ).toBeHidden();
@@ -248,7 +248,7 @@ test.describe("DataTable @structural", () => {
         document.getElementById("data-table-demo-table"),
       );
       dataTable.itemsPerPage = 5;
-      dataTable.pageNumber = 5;
+      dataTable.pageNumber = 4;
       dataTable.refresh();
     });
     await expect(rowNames(page).first()).toHaveText("uniform");
@@ -289,7 +289,7 @@ test.describe("DataTable @structural", () => {
     await expect.poll(() => refreshUrls.length).toBe(2);
     expect(refreshUrls[1]).not.toContain("status=");
     expect(refreshUrls[1]).not.toContain("name=");
-    expect(refreshUrls[1]).toContain("page=1");
+    expect(refreshUrls[1]).toContain("page=0");
     await expect(rowNames(page).first()).toHaveText("alpha");
   });
 

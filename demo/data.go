@@ -245,7 +245,7 @@ func buildDemoDataTableSettings(
 	itemsPerPage uiStructural.DataTablePageSize,
 ) uiStructural.DataTableSettings[DemoServerRecord] {
 	itemsPerPageCount := uint(itemsPerPage)
-	firstIndex := (pageNumber - 1) * itemsPerPageCount
+	firstIndex := pageNumber * itemsPerPageCount
 	lastIndex := min(firstIndex+itemsPerPageCount, uint(len(records)))
 	pagesTotal := demoTablePageCountResolver(uint(len(records)), itemsPerPage)
 	return uiStructural.DataTableSettings[DemoServerRecord]{
@@ -296,7 +296,7 @@ func buildDemoStaticTableSettings(
 		ItemsPerPage:            itemsPerPage,
 		ItemsPerPageSizeChoices: []uiStructural.DataTablePageSize{itemsPerPage},
 		ItemsTotal:              itemsTotal,
-		PageNumber:              1,
+		PageNumber:              0,
 		PaginationAriaLabel:     paginationAriaLabel,
 		PagesTotal:              pagesTotal,
 	}

@@ -22,13 +22,14 @@ type PaginationSettings struct {
 	ItemsTotal                  uint
 
 	// OptionalFields
-	AriaLabel                 string
-	IsDisabledOneWayStatePath string
-	IsHiddenWhenSinglePage    bool
-	ItemsPerPageInputName     string
-	ItemsPerPageSizeChoices   []uint
-	OnChangeFunc              string
-	PagesTotal                uint
+	AriaLabel                    string
+	IsDisabledOneWayStatePath    string
+	IsHiddenWhenSinglePage       bool
+	ItemsPerPageInputName        string
+	ItemsPerPageSizeChoices      []uint
+	OnChangeFunc                 string
+	PagesTotal                   uint
+	ShouldUseOneBasedPageDisplay bool
 }
 
 templ Pagination(componentSettings PaginationSettings) {
@@ -48,6 +49,12 @@ templ Pagination(componentSettings PaginationSettings) {
 		{{ onChangeSuffix = "; " + componentSettings.OnChangeFunc }}
 	}
 	{{ pagesTotalExpression := paginationPagesTotalExpressionBuilder(itemsPerPagePath, componentSettings.ItemsTotal, componentSettings.PagesTotal) }}
+	{{ lastPageNumberExpression := paginationLastPageNumberExpressionBuilder(pagesTotalExpression) }}
+	{{ displayBase := 0 }}
+	if componentSettings.ShouldUseOneBasedPageDisplay {
+		{{ displayBase = 1 }}
+	}
+	{{ displayBaseText := strconv.Itoa(displayBase) }}
 	{{ centerVisibilityExpression := "" }}
 	if componentSettings.IsHiddenWhenSinglePage {
 		{{ centerVisibilityExpression = pagesTotalExpression + " > 1" }}
@@ -81,8 +88,8 @@ templ Pagination(componentSettings PaginationSettings) {
 			@uiControl.Button(uiControl.ButtonSettings{
 				AriaLabel:                 "First page",
 				IconLeft:                  "ph-caret-double-left",
-				IsDisabledOneWayStatePath: disabledSuffix + pageNumberPath + " <= 1",
-				OnClickFunc:               pageNumberPath + " = 1" + onChangeSuffix,
+				IsDisabledOneWayStatePath: disabledSuffix + pageNumberPath + " <= 0",
+				OnClickFunc:               pageNumberPath + " = 0" + onChangeSuffix,
 				Size:                      uiControl.ButtonSizeXs,
 				TooltipContent:            "First page",
 				TooltipPosition:           uiControl.ButtonTooltipPositionTop,
@@ -90,14 +97,14 @@ templ Pagination(componentSettings PaginationSettings) {
 			@uiControl.Button(uiControl.ButtonSettings{
 				AriaLabel:                 "Previous page",
 				IconLeft:                  "ph-caret-left",
-				IsDisabledOneWayStatePath: disabledSuffix + pageNumberPath + " <= 1",
-				OnClickFunc:               pageNumberPath + " = Math.max(1, " + pageNumberPath + " - 1)" + onChangeSuffix,
+				IsDisabledOneWayStatePath: disabledSuffix + pageNumberPath + " <= 0",
+				OnClickFunc:               pageNumberPath + " = Math.max(0, " + pageNumberPath + " - 1)" + onChangeSuffix,
 				Size:                      uiControl.ButtonSizeXs,
 				TooltipContent:            "Previous page",
 				TooltipPosition:           uiControl.ButtonTooltipPositionTop,
 			})
 			<template
-				x-for={ "pageItem in UiToolset.PaginationPageStripBuilder(" + pageNumberPath + ", " + pagesTotalExpression + ")" }
+				x-for={ "pageItem in UiToolset.PaginationPageStripBuilder(" + pageNumberPath + ", " + pagesTotalExpression + ", " + displayBaseText + ")" }
 				:key="pageItem.key"
 			>
 				<span>
@@ -122,8 +129,8 @@ templ Pagination(componentSettings PaginationSettings) {
 			@uiControl.Button(uiControl.ButtonSettings{
 				AriaLabel:                 "Next page",
 				IconLeft:                  "ph-caret-right",
-				IsDisabledOneWayStatePath: disabledSuffix + pageNumberPath + " >= " + pagesTotalExpression,
-				OnClickFunc:               pageNumberPath + " = Math.min(" + pagesTotalExpression + ", " + pageNumberPath + " + 1)" + onChangeSuffix,
+				IsDisabledOneWayStatePath: disabledSuffix + pageNumberPath + " >= " + lastPageNumberExpression,
+				OnClickFunc:               pageNumberPath + " = Math.min(" + lastPageNumberExpression + ", " + pageNumberPath + " + 1)" + onChangeSuffix,
 				Size:                      uiControl.ButtonSizeXs,
 				TooltipContent:            "Next page",
 				TooltipPosition:           uiControl.ButtonTooltipPositionTop,
@@ -131,8 +138,8 @@ templ Pagination(componentSettings PaginationSettings) {
 			@uiControl.Button(uiControl.ButtonSettings{
 				AriaLabel:                 "Last page",
 				IconLeft:                  "ph-caret-double-right",
-				IsDisabledOneWayStatePath: disabledSuffix + pageNumberPath + " >= " + pagesTotalExpression,
-				OnClickFunc:               pageNumberPath + " = " + pagesTotalExpression + onChangeSuffix,
+				IsDisabledOneWayStatePath: disabledSuffix + pageNumberPath + " >= " + lastPageNumberExpression,
+				OnClickFunc:               pageNumberPath + " = " + lastPageNumberExpression + onChangeSuffix,
 				Size:                      uiControl.ButtonSizeXs,
 				TooltipContent:            "Last page",
 				TooltipPosition:           uiControl.ButtonTooltipPositionTop,
@@ -144,7 +151,7 @@ templ Pagination(componentSettings PaginationSettings) {
 				Label:                     "Items per page",
 				FlatOptions:               itemsPerPageSizeChoiceLabels,
 				IsDisabledOneWayStatePath: componentSettings.IsDisabledOneWayStatePath,
-				OnChangeFunc:              pageNumberPath + " = 1" + onChangeSuffix,
+				OnChangeFunc:              pageNumberPath + " = 0" + onChangeSuffix,
 				Size:                      uiForm.SelectInputSizeSm,
 				TwoWayStatePath:           itemsPerPagePath,
 			})
