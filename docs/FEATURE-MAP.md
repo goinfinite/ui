@@ -117,7 +117,7 @@ Interactive button component with customizable label, icons (left/right using Ph
 
 ## Range Slider
 
-Input range slider control with min/max constraints, step values, bidirectional Alpine.js state binding for numeric input, optional tick marks, and accessible names for single and dual thumbs.
+Input range slider control with min/max constraints, step values, bidirectional Alpine.js state binding for numeric input, optional tick marks, value bubbles with an always or hover display mode, an optional track hover tooltip that previews the value under the pointer, and accessible names for single and dual thumbs.
 
 **Flow:**
 
@@ -139,7 +139,7 @@ Dismissible alert component with title, description, icons (left/right), and var
 
 ## Modal/Dialog
 
-Overlay modal dialog with header (title), body content, footer, viewport-percentage sizing, backdrop, and close/resize handlers using Alpine.js visibility binding.
+Overlay modal dialog with header (title), body content, footer, viewport-percentage sizing, an animated size transition, backdrop, and close/resize handlers using Alpine.js visibility binding.
 
 **Flow:**
 
@@ -224,7 +224,7 @@ Surface container with an optional header block and middle and footer content sl
 
 ## Pagination
 
-Page controls with a live readout, a page-number strip, first/previous/next/last buttons, and an items-per-page selector. Binds the page number and page size to Alpine.js state paths and calls `OnChangeFunc` after every change. The page count derives from the item total and the bound page size, so the strip and the controls react when the page size changes. `IsHiddenWhenSinglePage` hides only the page-number controls while the records fit on one page; the readout and the items-per-page selector stay visible.
+Page controls with a live readout, a page-number strip, first/previous/next/last buttons, and an items-per-page selector. Binds the page number and page size to Alpine.js state paths and calls `OnChangeFunc` after every change. The page number is zero-based; `ShouldUseOneBasedPageDisplay` labels the strip from 1 without changing the state. The page count derives from the item total and the bound page size, so the strip and the controls react when the page size changes. `IsHiddenWhenSinglePage` hides only the page-number controls while the records fit on one page; the readout and the items-per-page selector stay visible.
 
 **Flow:**
 
@@ -257,7 +257,7 @@ Generic server-driven table taking column definitions and rows. Adds sortable he
 **Flow:**
 
 1. `src/structural/dataTable.templ` — Generic component (DataTable[T]) with DataTableSettings and DataTableColumnSettings; renders the filter bar, toolbar, table region, error row, and pagination
-2. `src/structural/dataTable.go` — DataTableSettings and DataTableColumnSettings types with their methods (client settings, id, page size, pagination label, density, text case, checkbox shape, checkbox size, row stripe), the named density/alignment/sort-direction/page-size types, and the URL placeholder constants. The alignment type carries the column alignment and justify class methods. The `Initial*` fields seed client state; `HeaderClass`, `CellClass`, `RowClassResolver`, and `IsStriped` carry styling; `CheckboxCheckedColor` and `CheckboxUncheckedColor` carry the selection color
+2. `src/structural/dataTable.go` — DataTableSettings and DataTableColumnSettings types with their methods (client settings, id, page size, pagination label, density, text case, checkbox shape, checkbox size, row stripe), the named density/alignment/sort-direction/page-size types, and the URL placeholder constants. The alignment type carries the column alignment and justify class methods. PageNumber is zero-based and ShouldUseOneBasedPageDisplay changes only the strip labels. The `Initial*` fields seed client state; `HeaderClass`, `CellClass`, `RowClassResolver`, and `IsStriped` carry styling; `CheckboxCheckedColor` and `CheckboxUncheckedColor` carry the selection color
 3. `src/structural/dataTableState.js` — Alpine data component: builds the refresh URL from the template, debounces refreshes, swaps the region carrying `data-ui-data-table`, and owns selection and sort helpers
 4. `src/structural/pagination.templ` — Table footer pagination
 5. `src/structural/filterBar.templ` — Table filter bar
@@ -281,7 +281,7 @@ Dismissible notification toast component with title, description, and Alpine.js 
 
 ## Loading Overlay
 
-Full-screen overlay with loading spinner indicator, used to block interaction during asynchronous operations.
+Full-screen overlay with loading spinner indicator and a fade transition, used to block interaction during asynchronous operations.
 
 **Flow:**
 
