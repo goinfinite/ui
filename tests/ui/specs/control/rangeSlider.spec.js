@@ -225,4 +225,84 @@ test.describe("RangeSlider", () => {
       tickMarksOf(sliderByLabel(page, "Ticks every step")),
     ).toHaveCount(6);
   });
+
+  test("@control hovering the track previews the value under the pointer", async ({
+    page,
+  }) => {
+    await openExamplePanel(page, sliderSection, "Track Tooltip");
+    const slider = sliderByLabel(page, "Tooltip top");
+    const track = trackOf(slider);
+    const tooltip = track.locator("[data-ui-range-slider-track-tooltip]");
+
+    await expect(tooltip).toBeHidden();
+
+    await slider.scrollIntoViewIfNeeded();
+    const trackBox = await track.boundingBox();
+    await page.mouse.move(
+      trackBox.x + trackBox.width * 0.3,
+      trackBox.y + trackBox.height / 2,
+    );
+    await expect(tooltip).toBeVisible();
+    await expect(tooltip).toHaveText("30");
+
+    await page.mouse.move(
+      trackBox.x + trackBox.width - 2,
+      trackBox.y + trackBox.height / 2,
+    );
+    await expect(tooltip).toHaveText("100");
+
+    await page.mouse.move(trackBox.x, trackBox.y - 40);
+    await expect(tooltip).toBeHidden();
+  });
+
+  test("@control the track tooltip snaps to a fractional step", async ({
+    page,
+  }) => {
+    await openExamplePanel(page, sliderSection, "Track Tooltip");
+    const slider = sliderByLabel(page, "Tooltip bottom");
+    const track = trackOf(slider);
+    const tooltip = track.locator("[data-ui-range-slider-track-tooltip]");
+
+    await slider.scrollIntoViewIfNeeded();
+    const trackBox = await track.boundingBox();
+    await page.mouse.move(
+      trackBox.x + trackBox.width * 0.3,
+      trackBox.y + trackBox.height / 2,
+    );
+    await expect(tooltip).toBeVisible();
+    await expect(tooltip).toHaveText("0.3");
+  });
+
+  test("@control the value bubble display mode gates visibility", async ({
+    page,
+  }) => {
+    const panel = await openExamplePanel(page, sliderSection, "Value Bubble");
+    const alwaysBubble = trackOf(
+      panel.locator("input[type=range]").nth(0),
+    ).locator("[data-ui-range-slider-thumb-bubble]");
+    await expect(alwaysBubble).toBeVisible();
+    await expect(alwaysBubble).toHaveText("50");
+
+    const hoverSlider = sliderByLabel(page, "Hover bubble");
+    const hoverTrack = trackOf(hoverSlider);
+    const hoverBubble = hoverTrack.locator(
+      "[data-ui-range-slider-thumb-bubble]",
+    );
+    await expect(hoverBubble).toBeHidden();
+
+    await hoverSlider.scrollIntoViewIfNeeded();
+    const trackBox = await hoverTrack.boundingBox();
+    await page.mouse.move(
+      trackBox.x + trackBox.width / 2,
+      trackBox.y + trackBox.height / 2,
+    );
+    await expect(hoverBubble).toBeVisible();
+    await expect(hoverBubble).toHaveText("50");
+
+    await page.mouse.move(trackBox.x, trackBox.y - 80);
+    await expect(hoverBubble).toBeHidden();
+
+    await hoverSlider.focus();
+    await expect(hoverBubble).toBeVisible();
+  });
 });

@@ -38,7 +38,8 @@ Slider with one or two thumbs, value bubbles, tick marks, and gradient tracks.
 ```
 
 - The track is configured with `TrackStartValue`, `TrackEndValue`, `TrackSteps`, and the optional `TrackStartValueLabel*` and `TrackEndValueLabel*` fields.
-- Single-thumb mode binds `ThumbValueTwoWayStatePath`. `ThumbValueBubbleEnabled` shows the current value above the thumb.
+- `TrackTooltipEnabled` previews the value under the pointer while it moves along the track. The preview snaps to `TrackSteps` and clamps to the track bounds. `TrackTooltipPosition` accepts `RangeSliderTrackTooltipPositionTop` or `RangeSliderTrackTooltipPositionBottom`; the `TrackTooltipBackgroundColor`, `TrackTooltipTextColor`, `TrackTooltipRingColor`, and `TrackTooltipRingThickness` fields style it.
+- Single-thumb mode binds `ThumbValueTwoWayStatePath`. `ThumbValueBubbleEnabled` shows the current value above the thumb. `ThumbValueBubbleDisplayMode` accepts `RangeSliderThumbValueBubbleDisplayModeAlways` (the default) or `RangeSliderThumbValueBubbleDisplayModeHover`, which shows the bubble only while the slider is hovered or dragged.
 - `ThumbDualValueModeEnabled` adds a second thumb. Bind it with `ThumbUpperValueTwoWayStatePath`. The upper thumb mirrors the lower thumb settings through the `ThumbUpper*` fields.
 - `ThumbAriaLabel` and `ThumbUpperAriaLabel` name the thumbs for screen readers. A thumb falls back to its visible label, then to a default name.
 - Thumb corrections run at init and on change: an out-of-bounds value is clamped, and in dual mode the thumbs keep one step of separation.
