@@ -34,4 +34,23 @@ test.describe("Button", () => {
       page.locator(`${buttonSection} button[type=submit]`),
     ).toHaveCount(1);
   });
+
+  test("@control re-embedding the tooltip state script does not throw", async ({
+    page,
+  }) => {
+    const pageErrors = [];
+    page.on("pageerror", (error) => pageErrors.push(error.message));
+
+    await page.evaluate(() => {
+      const tooltipScript = Array.from(
+        document.querySelectorAll("script"),
+      ).find((script) => script.textContent.includes("buttonTooltip"));
+      const reembeddedScript = document.createElement("script");
+      reembeddedScript.textContent = tooltipScript.textContent;
+      document.body.append(reembeddedScript);
+    });
+
+    await page.waitForTimeout(100);
+    expect(pageErrors).toEqual([]);
+  });
 });
