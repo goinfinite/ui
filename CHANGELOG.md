@@ -1,7 +1,7 @@
 # Changelog
 
 ```log
-Unreleased
+0.2.4 - 2026/10/01
 feat: add the tabs component with horizontal and vertical tab headers
 feat: add the badge count and the URL-hash syncing to the tabs
 feat: add the tab side, the icon position, the surface and content customization, the badge styling, the size constraints, and the alignment to the tabs
