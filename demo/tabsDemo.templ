@@ -1,0 +1,629 @@
+package main
+
+import (
+	uiControl "github.com/goinfinite/ui/src/control"
+	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiStructural "github.com/goinfinite/ui/src/structural"
+)
+
+templ TabsDemoGeneralPanel() {
+	<div class="flex flex-col gap-2">
+		<h4 class="text-lg font-bold">General</h4>
+		<p class="text-sm text-neutral-400">
+			Workspace name, language, and timezone live here. The panel stays in the DOM so its inputs keep their state while you switch tabs.
+		</p>
+	</div>
+}
+
+templ TabsDemoSecurityPanel() {
+	<div class="flex flex-col gap-2">
+		<h4 class="text-lg font-bold">Security</h4>
+		<p class="text-sm text-neutral-400">
+			Two-factor authentication and session controls. This tab carries a badge count.
+		</p>
+	</div>
+}
+
+templ TabsDemoAdvancedPanel() {
+	<div class="flex flex-col gap-2">
+		<h4 class="text-lg font-bold">Advanced</h4>
+		<p class="text-sm text-neutral-400">
+			Danger zone and developer options. Arrow keys, Home, and End move between the tabs.
+		</p>
+	</div>
+}
+
+templ TabsDemoNotificationsPanel() {
+	<div class="flex flex-col gap-2">
+		<h4 class="text-lg font-bold">Notifications</h4>
+		<p class="text-sm text-neutral-400">
+			Email, push, and in-app notification preferences.
+		</p>
+	</div>
+}
+
+templ TabsDemoBillingPanel() {
+	<div class="flex flex-col gap-2">
+		<h4 class="text-lg font-bold">Billing</h4>
+		<p class="text-sm text-neutral-400">
+			Plan, payment method, and invoice history.
+		</p>
+	</div>
+}
+
+templ TabsDemoApiPanel() {
+	<div class="flex flex-col gap-2">
+		<h4 class="text-lg font-bold">API</h4>
+		<p class="text-sm text-neutral-400">
+			API keys, webhooks, and rate limits.
+		</p>
+	</div>
+}
+
+templ TabsDemoIntegrationsPanel() {
+	<div class="flex flex-col gap-2">
+		<h4 class="text-lg font-bold">Integrations</h4>
+		<p class="text-sm text-neutral-400">
+			Connect third-party services to your workspace.
+		</p>
+	</div>
+}
+
+templ TabsDemoTeamPanel() {
+	<div class="flex flex-col gap-2">
+		<h4 class="text-lg font-bold">Team</h4>
+		<p class="text-sm text-neutral-400">
+			Members, roles, and invitations.
+		</p>
+	</div>
+}
+
+templ TabsDemoAuditPanel() {
+	<div class="flex flex-col gap-2">
+		<h4 class="text-lg font-bold">Audit</h4>
+		<p class="text-sm text-neutral-400">
+			A log of every change made to the workspace.
+		</p>
+	</div>
+}
+
+templ TabsDemoDangerPanel() {
+	<div class="flex flex-col gap-2">
+		<h4 class="text-lg font-bold">Danger</h4>
+		<p class="text-sm text-neutral-400">
+			Delete the workspace and everything in it.
+		</p>
+	</div>
+}
+
+templ TabsVerticalExample() {
+	{{
+		verticalUsage := `@uiStructural.Tabs(uiStructural.TabSettings{
+    Items: []uiStructural.TabItemSettings{
+        {Label: "General", Value: "general", Icon: "ph-gear", Content: TabsDemoGeneralPanel()},
+        {Label: "Security", Value: "security", Icon: "ph-shield-check", Content: TabsDemoSecurityPanel()},
+        {Label: "Advanced", Value: "advanced", Icon: "ph-sliders", Content: TabsDemoAdvancedPanel()},
+    },
+    SelectedValueTwoWayStatePath: "selectedSettingsTab",
+
+    // OptionalFields
+    Orientation: uiStructural.TabOrientationVertical,
+})`
+	}}
+	@DemoExampleCard(
+		"Vertical",
+		"Orientation renders the tab list as a column beside the panels, for sidebar-style layouts. Up and Down arrows move between the tabs.",
+		"/structural/tabs.templ",
+		verticalUsage,
+	) {
+		<div
+			class="h-64 overflow-hidden rounded-md border border-neutral-800"
+			x-data="{selectedSettingsTab: 'general'}"
+		>
+			@uiStructural.Tabs(uiStructural.TabSettings{
+				Items: []uiStructural.TabItemSettings{
+					{Label: "General", Value: "general", Icon: "ph-gear", Content: TabsDemoGeneralPanel()},
+					{Label: "Security", Value: "security", Icon: "ph-shield-check", Content: TabsDemoSecurityPanel()},
+					{Label: "Advanced", Value: "advanced", Icon: "ph-sliders", Content: TabsDemoAdvancedPanel()},
+				},
+				SelectedValueTwoWayStatePath: "selectedSettingsTab",
+				Orientation:                  uiStructural.TabOrientationVertical,
+			})
+		</div>
+	}
+}
+
+templ TabsRightSideExample() {
+	{{
+		rightSideUsage := `@uiStructural.Tabs(uiStructural.TabSettings{
+    Items: []uiStructural.TabItemSettings{
+        {Label: "General", Value: "general", Icon: "ph-gear", Content: TabsDemoGeneralPanel()},
+        {Label: "Security", Value: "security", Icon: "ph-shield-check", Content: TabsDemoSecurityPanel()},
+        {Label: "Advanced", Value: "advanced", Icon: "ph-sliders", Content: TabsDemoAdvancedPanel()},
+    },
+    SelectedValueTwoWayStatePath: "selectedRightSideTab",
+
+    // OptionalFields
+    Orientation: uiStructural.TabOrientationVertical,
+    Side:        uiStructural.TabSideRight,
+})`
+	}}
+	@DemoExampleCard(
+		"Right Side",
+		"Side places the vertical tab list on the right side of the panels, for layouts that read better with the navigation on the right. Up and Down arrows still move between the tabs.",
+		"/structural/tabs.templ",
+		rightSideUsage,
+	) {
+		<div
+			class="h-64 overflow-hidden rounded-md border border-neutral-800"
+			x-data="{selectedRightSideTab: 'general'}"
+		>
+			@uiStructural.Tabs(uiStructural.TabSettings{
+				Items: []uiStructural.TabItemSettings{
+					{Label: "General", Value: "general", Icon: "ph-gear", Content: TabsDemoGeneralPanel()},
+					{Label: "Security", Value: "security", Icon: "ph-shield-check", Content: TabsDemoSecurityPanel()},
+					{Label: "Advanced", Value: "advanced", Icon: "ph-sliders", Content: TabsDemoAdvancedPanel()},
+				},
+				SelectedValueTwoWayStatePath: "selectedRightSideTab",
+				Orientation:                  uiStructural.TabOrientationVertical,
+				Side:                         uiStructural.TabSideRight,
+			})
+		</div>
+	}
+}
+
+templ TabsVerticalAlignmentExample() {
+	{{
+		verticalAlignmentUsage := `@uiStructural.Tabs(uiStructural.TabSettings{
+    Items: []uiStructural.TabItemSettings{
+        {Label: "General", Value: "general", Icon: "ph-gear", Content: TabsDemoGeneralPanel()},
+        {Label: "Security", Value: "security", Icon: "ph-shield-check", Content: TabsDemoSecurityPanel()},
+        {Label: "Advanced", Value: "advanced", Icon: "ph-sliders", Content: TabsDemoAdvancedPanel()},
+    },
+    SelectedValueTwoWayStatePath: "selectedAlignmentTab",
+
+    // OptionalFields
+    Orientation: uiStructural.TabOrientationVertical,
+    Alignment:   uiStructural.TabAlignmentCenter,
+})`
+	}}
+	@DemoExampleCard(
+		"Vertical Alignment",
+		"Alignment aligns the vertical tab list with the tab content. It accepts TabAlignmentTop (the default), TabAlignmentCenter, and TabAlignmentBottom, and only applies with TabOrientationVertical.",
+		"/structural/tabs.templ",
+		verticalAlignmentUsage,
+	) {
+		<div
+			class="flex h-64 overflow-hidden rounded-md border border-neutral-800"
+			x-data="{selectedAlignmentTab: 'general'}"
+		>
+			@uiStructural.Tabs(uiStructural.TabSettings{
+				Items: []uiStructural.TabItemSettings{
+					{Label: "General", Value: "general", Icon: "ph-gear", Content: TabsDemoGeneralPanel()},
+					{Label: "Security", Value: "security", Icon: "ph-shield-check", Content: TabsDemoSecurityPanel()},
+					{Label: "Advanced", Value: "advanced", Icon: "ph-sliders", Content: TabsDemoAdvancedPanel()},
+				},
+				SelectedValueTwoWayStatePath: "selectedAlignmentTab",
+				Orientation:                       uiStructural.TabOrientationVertical,
+				Alignment:                         uiStructural.TabAlignmentCenter,
+			})
+		</div>
+	}
+}
+
+templ TabsIconPositionExample() {
+	{{
+		iconPositionUsage := `@uiStructural.Tabs(uiStructural.TabSettings{
+    Items: []uiStructural.TabItemSettings{
+        {Label: "General", Value: "general", Icon: "ph-gear", IconPosition: uiStructural.TabIconPositionTop, Content: TabsDemoGeneralPanel()},
+        {Label: "Security", Value: "security", Icon: "ph-shield-check", IconPosition: uiStructural.TabIconPositionTop, Content: TabsDemoSecurityPanel()},
+        {Label: "Advanced", Value: "advanced", Icon: "ph-sliders", IconPosition: uiStructural.TabIconPositionTop, Content: TabsDemoAdvancedPanel()},
+    },
+    SelectedValueTwoWayStatePath: "selectedIconTab",
+})`
+	}}
+	@DemoExampleCard(
+		"Icon Position",
+		"IconPosition places the icon above the label instead of beside it. The default, TabIconPositionLeft, keeps the icon on the left.",
+		"/structural/tabs.templ",
+		iconPositionUsage,
+	) {
+		<div
+			class="overflow-hidden rounded-md border border-neutral-800"
+			x-data="{selectedIconTab: 'general'}"
+		>
+			@uiStructural.Tabs(uiStructural.TabSettings{
+				Items: []uiStructural.TabItemSettings{
+					{Label: "General", Value: "general", Icon: "ph-gear", IconPosition: uiStructural.TabIconPositionTop, Content: TabsDemoGeneralPanel()},
+					{Label: "Security", Value: "security", Icon: "ph-shield-check", IconPosition: uiStructural.TabIconPositionTop, Content: TabsDemoSecurityPanel()},
+					{Label: "Advanced", Value: "advanced", Icon: "ph-sliders", IconPosition: uiStructural.TabIconPositionTop, Content: TabsDemoAdvancedPanel()},
+				},
+				SelectedValueTwoWayStatePath: "selectedIconTab",
+			})
+		</div>
+	}
+}
+
+templ TabsBorderRadiusExample() {
+	{{
+		borderRadiusUsage := `@uiStructural.Tabs(uiStructural.TabSettings{
+    Items: []uiStructural.TabItemSettings{
+        {Label: "General", Value: "general", Icon: "ph-gear", Content: TabsDemoGeneralPanel()},
+        {Label: "Security", Value: "security", Icon: "ph-shield-check", Content: TabsDemoSecurityPanel()},
+        {Label: "Advanced", Value: "advanced", Icon: "ph-sliders", Content: TabsDemoAdvancedPanel()},
+    },
+    SelectedValueTwoWayStatePath: "selectedRadiusTab",
+
+    // OptionalFields
+    BorderRadius: uiStructural.TabBorderRadiusXl,
+})`
+	}}
+	@DemoExampleCard(
+		"Border Radius",
+		"BorderRadius rounds the tab edges. It accepts TabBorderRadiusNone through TabBorderRadiusXl, and the default is TabBorderRadiusMd.",
+		"/structural/tabs.templ",
+		borderRadiusUsage,
+	) {
+		<div
+			class="overflow-hidden rounded-md border border-neutral-800"
+			x-data="{selectedRadiusTab: 'general'}"
+		>
+			@uiStructural.Tabs(uiStructural.TabSettings{
+				Items: []uiStructural.TabItemSettings{
+					{Label: "General", Value: "general", Icon: "ph-gear", Content: TabsDemoGeneralPanel()},
+					{Label: "Security", Value: "security", Icon: "ph-shield-check", Content: TabsDemoSecurityPanel()},
+					{Label: "Advanced", Value: "advanced", Icon: "ph-sliders", Content: TabsDemoAdvancedPanel()},
+				},
+				SelectedValueTwoWayStatePath: "selectedRadiusTab",
+				BorderRadius:                     uiStructural.TabBorderRadiusXl,
+			})
+		</div>
+	}
+}
+
+templ TabsSurfaceExample() {
+	{{
+		surfaceUsage := `@uiStructural.Tabs(uiStructural.TabSettings{
+    Items: []uiStructural.TabItemSettings{
+        {Label: "General", Value: "general", Icon: "ph-gear", Content: TabsDemoGeneralPanel()},
+        {Label: "Security", Value: "security", Icon: "ph-shield-check", Content: TabsDemoSecurityPanel()},
+        {Label: "Advanced", Value: "advanced", Icon: "ph-sliders", Content: TabsDemoAdvancedPanel()},
+    },
+    SelectedValueTwoWayStatePath: "selectedSurfaceTab",
+
+    // OptionalFields
+    BackgroundColor: "neutral-50/5",
+    BorderRadius:    uiStructural.TabBorderRadiusNone,
+    PaddingSize:     uiStructural.TabPaddingSizeXs,
+    RingColor:       "neutral-50/10",
+    RingThickness:   uiStructural.TabRingThicknessMd,
+    TextColor:       "neutral-50/60",
+})`
+	}}
+	@DemoExampleCard(
+		"Surface Customization",
+		"BackgroundColor paints the tab list, BorderRadius rounds the tab edges, PaddingSize insets the tabs, RingColor and RingThickness frame the list, and TextColor tints the unselected tab labels.",
+		"/structural/tabs.templ",
+		surfaceUsage,
+	) {
+		<div
+			class="overflow-hidden rounded-md border border-neutral-800"
+			x-data="{selectedSurfaceTab: 'general'}"
+		>
+			@uiStructural.Tabs(uiStructural.TabSettings{
+				Items: []uiStructural.TabItemSettings{
+					{Label: "General", Value: "general", Icon: "ph-gear", Content: TabsDemoGeneralPanel()},
+					{Label: "Security", Value: "security", Icon: "ph-shield-check", Content: TabsDemoSecurityPanel()},
+					{Label: "Advanced", Value: "advanced", Icon: "ph-sliders", Content: TabsDemoAdvancedPanel()},
+				},
+				SelectedValueTwoWayStatePath: "selectedSurfaceTab",
+				BackgroundColor:                "neutral-50/5",
+				BorderRadius:                   uiStructural.TabBorderRadiusNone,
+				PaddingSize:                    uiStructural.TabPaddingSizeXs,
+				RingColor:                      "neutral-50/10",
+				RingThickness:                  uiStructural.TabRingThicknessMd,
+				TextColor:                      "neutral-50/60",
+			})
+		</div>
+	}
+}
+
+templ TabsContentSurfaceExample() {
+	{{
+		contentSurfaceUsage := `@uiStructural.Tabs(uiStructural.TabSettings{
+    Items: []uiStructural.TabItemSettings{
+        {Label: "General", Value: "general", Icon: "ph-gear", Content: TabsDemoGeneralPanel()},
+        {Label: "Security", Value: "security", Icon: "ph-shield-check", Content: TabsDemoSecurityPanel()},
+        {Label: "Advanced", Value: "advanced", Icon: "ph-sliders", Content: TabsDemoAdvancedPanel()},
+    },
+    SelectedValueTwoWayStatePath: "selectedContentTab",
+
+    // OptionalFields
+    ContentBackgroundColor: "neutral-50/5",
+    ContentBorderRadius:    uiStructural.TabBorderRadiusMd,
+    ContentPaddingSize:     uiStructural.TabPaddingSizeMd,
+    ContentRingColor:       "neutral-50/10",
+    ContentRingThickness:   uiStructural.TabRingThicknessMd,
+    ContentShadowSize:      uiStructural.TabShadowSizeMd,
+    ContentTextColor:       "neutral-50/70",
+})`
+	}}
+	@DemoExampleCard(
+		"Content Surface",
+		"The Content fields style the panel area: ContentBackgroundColor, ContentPaddingSize, ContentBorderRadius, ContentRingColor, ContentRingThickness, ContentShadowSize, and ContentTextColor. ContentPaddingSize replaces the default inset that separates the content from the tab list.",
+		"/structural/tabs.templ",
+		contentSurfaceUsage,
+	) {
+		<div
+			class="h-64 overflow-hidden rounded-md border border-neutral-800"
+			x-data="{selectedContentTab: 'general'}"
+		>
+			@uiStructural.Tabs(uiStructural.TabSettings{
+				Items: []uiStructural.TabItemSettings{
+					{Label: "General", Value: "general", Icon: "ph-gear", Content: TabsDemoGeneralPanel()},
+					{Label: "Security", Value: "security", Icon: "ph-shield-check", Content: TabsDemoSecurityPanel()},
+					{Label: "Advanced", Value: "advanced", Icon: "ph-sliders", Content: TabsDemoAdvancedPanel()},
+				},
+				SelectedValueTwoWayStatePath: "selectedContentTab",
+				ContentBackgroundColor:           "neutral-50/5",
+				ContentBorderRadius:              uiStructural.TabBorderRadiusMd,
+				ContentPaddingSize:               uiStructural.TabPaddingSizeMd,
+				ContentRingColor:                 "neutral-50/10",
+				ContentRingThickness:             uiStructural.TabRingThicknessMd,
+				ContentShadowSize:                uiStructural.TabShadowSizeMd,
+				ContentTextColor:                 "neutral-50/70",
+			})
+		</div>
+	}
+}
+
+templ TabsBadgeExample() {
+	{{
+		badgeUsage := `@uiStructural.Tabs(uiStructural.TabSettings{
+    Items: []uiStructural.TabItemSettings{
+        {Label: "General", Value: "general", Content: TabsDemoGeneralPanel()},
+        {Label: "Security", Value: "security", BadgeCount: 3, Content: TabsDemoSecurityPanel()},
+        {Label: "Notifications", Value: "notifications", BadgeCountOneWayStatePath: "alertCount", BadgeBackgroundColor: "red-500/20", BadgeRingColor: "red-500/50", BadgeRingThickness: uiStructural.TabRingThicknessSm, BadgeTextColor: "red-50", Content: TabsDemoNotificationsPanel()},
+    },
+    SelectedValueTwoWayStatePath: "selectedBadgeTab",
+})`
+	}}
+	@DemoExampleCard(
+		"Badge Counts",
+		"BadgeCount renders a static count, and BadgeCountOneWayStatePath renders a live count that hides itself at zero. BadgeBackgroundColor, BadgeTextColor, BadgeRingColor, BadgeRingThickness, and BadgeBorderRadius style the badge.",
+		"/structural/tabs.templ",
+		badgeUsage,
+	) {
+		<div
+			class="flex flex-col gap-4"
+			x-data="{selectedBadgeTab: 'general', alertCount: 5}"
+		>
+			@uiStructural.Tabs(uiStructural.TabSettings{
+				Items: []uiStructural.TabItemSettings{
+					{Label: "General", Value: "general", Content: TabsDemoGeneralPanel()},
+					{Label: "Security", Value: "security", BadgeCount: 3, Content: TabsDemoSecurityPanel()},
+					{Label: "Notifications", Value: "notifications", BadgeCountOneWayStatePath: "alertCount", BadgeBackgroundColor: "red-500/20", BadgeRingColor: "red-500/50", BadgeRingThickness: uiStructural.TabRingThicknessSm, BadgeTextColor: "red-50", Content: TabsDemoNotificationsPanel()},
+				},
+				SelectedValueTwoWayStatePath: "selectedBadgeTab",
+			})
+			<div class="flex flex-wrap gap-2">
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:       "Add Alert",
+					IconLeft:    "ph-plus",
+					OnClickFunc: "alertCount++",
+					Size:        uiControl.ButtonSizeSm,
+				})
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:       "Clear Alerts",
+					IconLeft:    "ph-check",
+					OnClickFunc: "alertCount = 0",
+					Size:        uiControl.ButtonSizeSm,
+					BackgroundColor: "neutral-50/10",
+				})
+			</div>
+		</div>
+	}
+}
+
+templ TabsDeepLinkExample() {
+	{{
+		deepLinkUsage := `@uiStructural.Tabs(uiStructural.TabSettings{
+    Items: []uiStructural.TabItemSettings{
+        {Label: "General", Value: "general", Content: TabsDemoGeneralPanel()},
+        {Label: "Security", Value: "security", Content: TabsDemoSecurityPanel()},
+        {Label: "Advanced", Value: "advanced", Content: TabsDemoAdvancedPanel()},
+    },
+    SelectedValueTwoWayStatePath: "selectedDeepLinkTab",
+
+    // OptionalFields
+    IsUrlHashSynced: true,
+})`
+	}}
+	@DemoExampleCard(
+		"Deep Linking",
+		"IsUrlHashSynced reads the URL hash on load and on every hash change, so a link to #security opens the Security tab. Clicking a tab writes the hash.",
+		"/structural/tabs.templ",
+		deepLinkUsage,
+	) {
+		<div class="flex flex-col gap-4" x-data="{selectedDeepLinkTab: 'general'}">
+			<div class="flex flex-wrap gap-2">
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:       "Open General",
+					OnClickFunc: "location.hash = 'general'",
+					Size:        uiControl.ButtonSizeSm,
+					BackgroundColor: "neutral-50/10",
+				})
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:       "Open Security",
+					OnClickFunc: "location.hash = 'security'",
+					Size:        uiControl.ButtonSizeSm,
+					BackgroundColor: "neutral-50/10",
+				})
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:       "Open Advanced",
+					OnClickFunc: "location.hash = 'advanced'",
+					Size:        uiControl.ButtonSizeSm,
+					BackgroundColor: "neutral-50/10",
+				})
+			</div>
+			@uiStructural.Tabs(uiStructural.TabSettings{
+				Items: []uiStructural.TabItemSettings{
+					{Label: "General", Value: "general", Content: TabsDemoGeneralPanel()},
+					{Label: "Security", Value: "security", Content: TabsDemoSecurityPanel()},
+					{Label: "Advanced", Value: "advanced", Content: TabsDemoAdvancedPanel()},
+				},
+				SelectedValueTwoWayStatePath: "selectedDeepLinkTab",
+				IsUrlHashSynced:                 true,
+			})
+		</div>
+	}
+}
+
+templ TabsOverflowExample() {
+	{{
+		overflowUsage := `@uiStructural.Tabs(uiStructural.TabSettings{
+    Items: []uiStructural.TabItemSettings{
+        {Label: "General", Value: "general", Icon: "ph-gear", Content: TabsDemoGeneralPanel()},
+        {Label: "Security", Value: "security", Icon: "ph-shield-check", Content: TabsDemoSecurityPanel()},
+        {Label: "Notifications", Value: "notifications", Icon: "ph-bell", Content: TabsDemoNotificationsPanel()},
+        {Label: "Billing", Value: "billing", Icon: "ph-credit-card", Content: TabsDemoBillingPanel()},
+        {Label: "API", Value: "api", Icon: "ph-key", Content: TabsDemoApiPanel()},
+        {Label: "Integrations", Value: "integrations", Icon: "ph-plugs-connected", Content: TabsDemoIntegrationsPanel()},
+        {Label: "Team", Value: "team", Icon: "ph-users", Content: TabsDemoTeamPanel()},
+        {Label: "Audit", Value: "audit", Icon: "ph-clock-counter-clockwise", Content: TabsDemoAuditPanel()},
+        {Label: "Danger", Value: "danger", Icon: "ph-warning", Content: TabsDemoDangerPanel()},
+    },
+    SelectedValueTwoWayStatePath: "selectedOverflowTab",
+
+    // OptionalFields
+    MaxWidthPercent: 80,
+})`
+	}}
+	@DemoExampleCard(
+		"Overflow Scroll",
+		"MaxWidthPercent caps the tab list width as a percentage of its container. The horizontal tab list scrolls when the tabs exceed it, and the default width fills the container.",
+		"/structural/tabs.templ",
+		overflowUsage,
+	) {
+		<div
+			class="max-w-96 overflow-hidden rounded-md border border-neutral-800"
+			x-data="{selectedOverflowTab: 'general'}"
+		>
+			@uiStructural.Tabs(uiStructural.TabSettings{
+				Items: []uiStructural.TabItemSettings{
+					{Label: "General", Value: "general", Icon: "ph-gear", Content: TabsDemoGeneralPanel()},
+					{Label: "Security", Value: "security", Icon: "ph-shield-check", Content: TabsDemoSecurityPanel()},
+					{Label: "Notifications", Value: "notifications", Icon: "ph-bell", Content: TabsDemoNotificationsPanel()},
+					{Label: "Billing", Value: "billing", Icon: "ph-credit-card", Content: TabsDemoBillingPanel()},
+					{Label: "API", Value: "api", Icon: "ph-key", Content: TabsDemoApiPanel()},
+					{Label: "Integrations", Value: "integrations", Icon: "ph-plugs-connected", Content: TabsDemoIntegrationsPanel()},
+					{Label: "Team", Value: "team", Icon: "ph-users", Content: TabsDemoTeamPanel()},
+					{Label: "Audit", Value: "audit", Icon: "ph-clock-counter-clockwise", Content: TabsDemoAuditPanel()},
+					{Label: "Danger", Value: "danger", Icon: "ph-warning", Content: TabsDemoDangerPanel()},
+				},
+				SelectedValueTwoWayStatePath: "selectedOverflowTab",
+				MaxWidthPercent:                80,
+			})
+		</div>
+	}
+}
+
+templ TabsVerticalOverflowExample() {
+	{{
+		verticalOverflowUsage := `@uiStructural.Tabs(uiStructural.TabSettings{
+    Items: []uiStructural.TabItemSettings{
+        {Label: "General", Value: "general", Icon: "ph-gear", Content: TabsDemoGeneralPanel()},
+        {Label: "Security", Value: "security", Icon: "ph-shield-check", Content: TabsDemoSecurityPanel()},
+        {Label: "Notifications", Value: "notifications", Icon: "ph-bell", Content: TabsDemoNotificationsPanel()},
+        {Label: "Billing", Value: "billing", Icon: "ph-credit-card", Content: TabsDemoBillingPanel()},
+        {Label: "API", Value: "api", Icon: "ph-key", Content: TabsDemoApiPanel()},
+        {Label: "Integrations", Value: "integrations", Icon: "ph-plugs-connected", Content: TabsDemoIntegrationsPanel()},
+        {Label: "Team", Value: "team", Icon: "ph-users", Content: TabsDemoTeamPanel()},
+        {Label: "Audit", Value: "audit", Icon: "ph-clock-counter-clockwise", Content: TabsDemoAuditPanel()},
+        {Label: "Danger", Value: "danger", Icon: "ph-warning", Content: TabsDemoDangerPanel()},
+    },
+    SelectedValueTwoWayStatePath: "selectedVerticalOverflowTab",
+
+    // OptionalFields
+    Orientation:      uiStructural.TabOrientationVertical,
+    MaxHeightPercent: 60,
+})`
+	}}
+	@DemoExampleCard(
+		"Vertical Overflow Scroll",
+		"MaxHeightPercent caps the vertical tab list height as a percentage of the tab area. The vertical tab list scrolls when the tabs exceed it.",
+		"/structural/tabs.templ",
+		verticalOverflowUsage,
+	) {
+		<div
+			class="flex h-64 overflow-hidden rounded-md border border-neutral-800"
+			x-data="{selectedVerticalOverflowTab: 'general'}"
+		>
+			@uiStructural.Tabs(uiStructural.TabSettings{
+				Items: []uiStructural.TabItemSettings{
+					{Label: "General", Value: "general", Icon: "ph-gear", Content: TabsDemoGeneralPanel()},
+					{Label: "Security", Value: "security", Icon: "ph-shield-check", Content: TabsDemoSecurityPanel()},
+					{Label: "Notifications", Value: "notifications", Icon: "ph-bell", Content: TabsDemoNotificationsPanel()},
+					{Label: "Billing", Value: "billing", Icon: "ph-credit-card", Content: TabsDemoBillingPanel()},
+					{Label: "API", Value: "api", Icon: "ph-key", Content: TabsDemoApiPanel()},
+					{Label: "Integrations", Value: "integrations", Icon: "ph-plugs-connected", Content: TabsDemoIntegrationsPanel()},
+					{Label: "Team", Value: "team", Icon: "ph-users", Content: TabsDemoTeamPanel()},
+					{Label: "Audit", Value: "audit", Icon: "ph-clock-counter-clockwise", Content: TabsDemoAuditPanel()},
+					{Label: "Danger", Value: "danger", Icon: "ph-warning", Content: TabsDemoDangerPanel()},
+				},
+				SelectedValueTwoWayStatePath: "selectedVerticalOverflowTab",
+				Orientation:                        uiStructural.TabOrientationVertical,
+				MaxHeightPercent:                   60,
+			})
+		</div>
+	}
+}
+
+templ TabsDemo() {
+	{{
+		demoUsage := `@uiStructural.Tabs(uiStructural.TabSettings{
+    Items: []uiStructural.TabItemSettings{
+        {Label: "General", Value: "general", Icon: "ph-gear", Content: TabsDemoGeneralPanel()},
+        {Label: "Security", Value: "security", Icon: "ph-shield-check", BadgeCount: 3, Content: TabsDemoSecurityPanel()},
+        {Label: "Advanced", Value: "advanced", Icon: "ph-sliders", Content: TabsDemoAdvancedPanel()},
+    },
+    SelectedValueTwoWayStatePath: "selectedTab",
+})`
+	}}
+	<div class="flex flex-col gap-4" id="tabs-demo">
+		@DemoComponentSection(DemoComponentSectionSettings{
+			ComponentPath:          "/structural/tabs.templ",
+			Description:            "Tabs split content into a header row and matching panels. Each tab carries a label, a value, and an optional icon and badge count. The selected value binds to an Alpine state path, and the panels switch with x-show.",
+			LiveExampleDescription: "Horizontal tabs with icons and a badge. Click a tab, or use the arrow keys, Home, and End.",
+			Title:                  ".Tabs",
+			UsageCode:              demoUsage,
+			AlpineStateCode: `<div x-data="{
+  selectedTab: 'general',
+}"></div>`,
+		}) {
+			<div x-data="{selectedTab: 'general'}" id="tabs-demo-main">
+				@uiStructural.Tabs(uiStructural.TabSettings{
+					Items: []uiStructural.TabItemSettings{
+						{Label: "General", Value: "general", Icon: "ph-gear", Content: TabsDemoGeneralPanel()},
+						{Label: "Security", Value: "security", Icon: "ph-shield-check", BadgeCount: 3, Content: TabsDemoSecurityPanel()},
+						{Label: "Advanced", Value: "advanced", Icon: "ph-sliders", Content: TabsDemoAdvancedPanel()},
+					},
+					SelectedValueTwoWayStatePath: "selectedTab",
+				})
+			</div>
+		}
+	@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
+		{Title: "Vertical", Icon: "ph-columns", Content: TabsVerticalExample()},
+		{Title: "Right Side", Icon: "ph-arrow-right", Content: TabsRightSideExample()},
+		{Title: "Vertical Alignment", Icon: "ph-align-center-vertical", Content: TabsVerticalAlignmentExample()},
+		{Title: "Icon Position", Icon: "ph-arrows-vertical", Content: TabsIconPositionExample()},
+		{Title: "Border Radius", Icon: "ph-frame-corners", Content: TabsBorderRadiusExample()},
+		{Title: "Surface Customization", Icon: "ph-paint-roller", Content: TabsSurfaceExample()},
+		{Title: "Content Surface", Icon: "ph-layout", Content: TabsContentSurfaceExample()},
+		{Title: "Badge Counts", Icon: "ph-bell", Content: TabsBadgeExample()},
+		{Title: "Deep Linking", Icon: "ph-link", Content: TabsDeepLinkExample()},
+		{Title: "Overflow Scroll", Icon: "ph-arrows-left-right", Content: TabsOverflowExample()},
+		{Title: "Vertical Overflow Scroll", Icon: "ph-arrows-down-up", Content: TabsVerticalOverflowExample()},
+	})
+	</div>
+}
