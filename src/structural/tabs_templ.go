@@ -162,12 +162,12 @@ func Tabs(componentSettings TabSettings) templ.Component {
 		tabListClasses := "flex w-full " + tabGapClassResolver(componentSettings.GapSize) + " overflow-x-auto border-b border-neutral-50/10"
 		if isVertical {
 			tabListClasses = "flex w-fit flex-col " + tabGapClassResolver(componentSettings.GapSize) + " overflow-y-auto " + verticalTabListBorderClass + " border-neutral-50/10"
+			tabListClasses += " " + tabAlignmentClassResolver(componentSettings.Alignment)
 		}
 		constraintClasses := tabConstraintClassesResolver(componentSettings)
 		if constraintClasses != "" {
 			tabListClasses += " " + constraintClasses
 		}
-		tabListClasses += " " + tabAlignmentClassResolver(componentSettings.Alignment)
 		if componentSettings.PaddingSize != "" {
 			tabListClasses += " " + tabPaddingClassResolver(componentSettings.PaddingSize)
 		}
