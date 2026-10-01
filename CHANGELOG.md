@@ -12,6 +12,7 @@ fix: keep the track tooltip preview on the step grid
 feat: animate the modal size transition
 feat: fade the loading overlay in and out
 test: cover the track tooltip, the value bubble, the one-based labels, the modal resize, and the loading overlay markup
+test: share the track tooltip hover helper across the slider specs
 docs: document the zero-based page number in the component readmes
 docs: add the favicon to the demo page
 docs: cover the demo page from the first paint with the cloak loading screen

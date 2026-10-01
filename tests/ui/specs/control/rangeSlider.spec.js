@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import { openExamplePanel } from "../../examplePanel.js";
 
 const sliderSection = "#range-slider-demo";
+const trackRightInsetPx = 2;
 
 function sliderByLabel(page, label) {
   return page.locator(
@@ -45,6 +46,38 @@ async function writeExternalState(page, values) {
       alpineData[property] = value;
     }
   }, values);
+}
+
+async function openTrackTooltipSlider(page, label) {
+  await openExamplePanel(page, sliderSection, "Track Tooltip");
+  const slider = sliderByLabel(page, label);
+  const track = trackOf(slider);
+  const tooltip = track.locator("[data-ui-range-slider-track-tooltip]");
+  await slider.scrollIntoViewIfNeeded();
+  const trackBox = await track.boundingBox();
+  const hover = (horizontalFraction) => {
+    const hoverX = Math.min(
+      trackBox.width * horizontalFraction,
+      trackBox.width - trackRightInsetPx,
+    );
+    return page.mouse.move(
+      trackBox.x + hoverX,
+      trackBox.y + trackBox.height / 2,
+    );
+  };
+  return { tooltip, hover, trackBox };
+}
+
+async function expectTrackTooltipText(
+  page,
+  label,
+  horizontalFraction,
+  expectedText,
+) {
+  const { tooltip, hover } = await openTrackTooltipSlider(page, label);
+  await hover(horizontalFraction);
+  await expect(tooltip).toBeVisible();
+  await expect(tooltip).toHaveText(expectedText);
 }
 
 test.describe("RangeSlider", () => {
@@ -229,26 +262,18 @@ test.describe("RangeSlider", () => {
   test("@control hovering the track previews the value under the pointer", async ({
     page,
   }) => {
-    await openExamplePanel(page, sliderSection, "Track Tooltip");
-    const slider = sliderByLabel(page, "Tooltip top");
-    const track = trackOf(slider);
-    const tooltip = track.locator("[data-ui-range-slider-track-tooltip]");
+    const { tooltip, hover, trackBox } = await openTrackTooltipSlider(
+      page,
+      "Tooltip top",
+    );
 
     await expect(tooltip).toBeHidden();
 
-    await slider.scrollIntoViewIfNeeded();
-    const trackBox = await track.boundingBox();
-    await page.mouse.move(
-      trackBox.x + trackBox.width * 0.3,
-      trackBox.y + trackBox.height / 2,
-    );
+    await hover(0.3);
     await expect(tooltip).toBeVisible();
     await expect(tooltip).toHaveText("30");
 
-    await page.mouse.move(
-      trackBox.x + trackBox.width - 2,
-      trackBox.y + trackBox.height / 2,
-    );
+    await hover(1);
     await expect(tooltip).toHaveText("100");
 
     await page.mouse.move(trackBox.x, trackBox.y - 40);
@@ -258,73 +283,25 @@ test.describe("RangeSlider", () => {
   test("@control the track tooltip snaps to a fractional step", async ({
     page,
   }) => {
-    await openExamplePanel(page, sliderSection, "Track Tooltip");
-    const slider = sliderByLabel(page, "Tooltip bottom");
-    const track = trackOf(slider);
-    const tooltip = track.locator("[data-ui-range-slider-track-tooltip]");
-
-    await slider.scrollIntoViewIfNeeded();
-    const trackBox = await track.boundingBox();
-    await page.mouse.move(
-      trackBox.x + trackBox.width * 0.3,
-      trackBox.y + trackBox.height / 2,
-    );
-    await expect(tooltip).toBeVisible();
-    await expect(tooltip).toHaveText("0.3");
+    await expectTrackTooltipText(page, "Tooltip bottom", 0.3, "0.3");
   });
 
   test("@control the track tooltip keeps a sub-micro step preview nonzero", async ({
     page,
   }) => {
-    await openExamplePanel(page, sliderSection, "Track Tooltip");
-    const slider = sliderByLabel(page, "Tooltip tiny step");
-    const track = trackOf(slider);
-    const tooltip = track.locator("[data-ui-range-slider-track-tooltip]");
-
-    await slider.scrollIntoViewIfNeeded();
-    const trackBox = await track.boundingBox();
-    await page.mouse.move(
-      trackBox.x + trackBox.width * 0.3,
-      trackBox.y + trackBox.height / 2,
-    );
-    await expect(tooltip).toBeVisible();
-    await expect(tooltip).toHaveText("3e-7");
+    await expectTrackTooltipText(page, "Tooltip tiny step", 0.3, "3e-7");
   });
 
   test("@control the track tooltip caps an unaligned endpoint to the step grid", async ({
     page,
   }) => {
-    await openExamplePanel(page, sliderSection, "Track Tooltip");
-    const slider = sliderByLabel(page, "Tooltip unaligned");
-    const track = trackOf(slider);
-    const tooltip = track.locator("[data-ui-range-slider-track-tooltip]");
-
-    await slider.scrollIntoViewIfNeeded();
-    const trackBox = await track.boundingBox();
-    await page.mouse.move(
-      trackBox.x + trackBox.width - 2,
-      trackBox.y + trackBox.height / 2,
-    );
-    await expect(tooltip).toBeVisible();
-    await expect(tooltip).toHaveText("60");
+    await expectTrackTooltipText(page, "Tooltip unaligned", 1, "60");
   });
 
   test("@control the track tooltip keeps an aligned decimal endpoint on the grid", async ({
     page,
   }) => {
-    await openExamplePanel(page, sliderSection, "Track Tooltip");
-    const slider = sliderByLabel(page, "Tooltip aligned decimal");
-    const track = trackOf(slider);
-    const tooltip = track.locator("[data-ui-range-slider-track-tooltip]");
-
-    await slider.scrollIntoViewIfNeeded();
-    const trackBox = await track.boundingBox();
-    await page.mouse.move(
-      trackBox.x + trackBox.width - 2,
-      trackBox.y + trackBox.height / 2,
-    );
-    await expect(tooltip).toBeVisible();
-    await expect(tooltip).toHaveText("0.3");
+    await expectTrackTooltipText(page, "Tooltip aligned decimal", 1, "0.3");
   });
 
   test("@control the value bubble display mode gates visibility", async ({
