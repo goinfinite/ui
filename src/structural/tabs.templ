@@ -1,0 +1,286 @@
+package uiStructural
+
+import uiToolset "github.com/goinfinite/ui/src/toolset"
+
+const (
+	TabOrientationHorizontal string = "horizontal"
+	TabOrientationVertical   string = "vertical"
+
+	TabSideLeft  string = "left"
+	TabSideRight string = "right"
+
+	TabAlignmentTop    string = "top"
+	TabAlignmentCenter string = "center"
+	TabAlignmentBottom string = "bottom"
+
+	TabBorderRadiusNone string = "none"
+	TabBorderRadiusXs   string = "xs"
+	TabBorderRadiusSm   string = "sm"
+	TabBorderRadiusMd   string = "md"
+	TabBorderRadiusLg   string = "lg"
+	TabBorderRadiusXl   string = "xl"
+
+	TabGapSizeNone string = "none"
+	TabGapSizeXs   string = "xs"
+	TabGapSizeSm   string = "sm"
+	TabGapSizeMd   string = "md"
+	TabGapSizeLg   string = "lg"
+	TabGapSizeXl   string = "xl"
+
+	TabIconPositionLeft string = "left"
+	TabIconPositionTop  string = "top"
+
+	TabPaddingSizeNone string = "none"
+	TabPaddingSizeXs   string = "xs"
+	TabPaddingSizeSm   string = "sm"
+	TabPaddingSizeMd   string = "md"
+	TabPaddingSizeLg   string = "lg"
+	TabPaddingSizeXl   string = "xl"
+
+	TabRingThicknessXs string = "xs"
+	TabRingThicknessSm string = "sm"
+	TabRingThicknessMd string = "md"
+	TabRingThicknessLg string = "lg"
+	TabRingThicknessXl string = "xl"
+
+	TabShadowSizeNone string = "none"
+	TabShadowSizeXs   string = "xs"
+	TabShadowSizeSm   string = "sm"
+	TabShadowSizeMd   string = "md"
+	TabShadowSizeLg   string = "lg"
+	TabShadowSizeXl   string = "xl"
+)
+
+type TabItemSettings struct {
+	Label string
+	Value string
+
+	// OptionalFields
+	BadgeBackgroundColor      string
+	BadgeBorderRadius         string
+	BadgeCount                uint
+	BadgeCountOneWayStatePath string
+	BadgeRingColor            string
+	BadgeRingThickness        string
+	BadgeTextColor            string
+	Content                   templ.Component
+	Icon                      string
+	IconPosition              string
+}
+
+type TabSettings struct {
+	Items                        []TabItemSettings
+	SelectedValueTwoWayStatePath string
+
+	// OptionalFields
+	Alignment            string
+	AriaLabel            string
+	BackgroundColor      string
+	BorderRadius         string
+	ContentBackgroundColor string
+	ContentBorderRadius    string
+	ContentPaddingSize     string
+	ContentRingColor       string
+	ContentRingThickness   string
+	ContentShadowSize      string
+	ContentTextColor       string
+	GapSize                string
+	IsUrlHashSynced        bool
+	MaxHeightClass         string
+	MaxHeightPercent       uint
+	MaxWidthClass          string
+	MaxWidthPercent        uint
+	MinHeightClass         string
+	MinHeightPercent       uint
+	MinWidthClass          string
+	MinWidthPercent        uint
+	Orientation            string
+	PaddingSize            string
+	RingColor              string
+	RingThickness          string
+	ShadowSize             string
+	Side                   string
+	TextCase               string
+	TextColor              string
+}
+
+templ Tabs(componentSettings TabSettings) {
+	{{ selectedValuePath := componentSettings.SelectedValueTwoWayStatePath }}
+	{{ orientation := tabOrientationResolver(componentSettings.Orientation) }}
+	{{ isVertical := orientation == TabOrientationVertical }}
+	{{ isRight := isVertical && tabSideResolver(componentSettings.Side) == TabSideRight }}
+	{{ ariaLabel := tabAriaLabelResolver(componentSettings.AriaLabel) }}
+	{{ textCaseClass := uiToolset.TextCaseClassResolver(componentSettings.TextCase) }}
+	{{ idPrefix := generateTabIdPrefix() }}
+	{{ previousKeyExpression := tabArrowKeyExpressionBuilder(selectedValuePath, "previous") }}
+	{{ nextKeyExpression := tabArrowKeyExpressionBuilder(selectedValuePath, "next") }}
+	{{ homeKeyExpression := tabEdgeKeyExpressionBuilder(selectedValuePath, "firstElementChild") }}
+	{{ endKeyExpression := tabEdgeKeyExpressionBuilder(selectedValuePath, "lastElementChild") }}
+	{{ anySelectedExpression := tabAnySelectedExpressionBuilder(selectedValuePath, componentSettings.Items) }}
+	{{ rootClasses := "flex" }}
+	if isVertical {
+		{{ rootClasses += " w-full" }}
+		if isRight {
+			{{ rootClasses += " flex-row-reverse" }}
+		}
+	}
+	if !isVertical {
+		{{ rootClasses += " flex-col" }}
+	}
+	{{ verticalTabListBorderClass := "border-r" }}
+	if isRight {
+		{{ verticalTabListBorderClass = "border-l" }}
+	}
+	{{ tabListClasses := "flex w-full " + tabGapClassResolver(componentSettings.GapSize) + " overflow-x-auto border-b border-neutral-50/10" }}
+	if isVertical {
+		{{ tabListClasses = "flex w-fit flex-col " + tabGapClassResolver(componentSettings.GapSize) + " overflow-y-auto " + verticalTabListBorderClass + " border-neutral-50/10" }}
+		{{ tabListClasses += " " + tabAlignmentClassResolver(componentSettings.Alignment) }}
+	}
+	{{ constraintClasses := tabConstraintClassesResolver(componentSettings) }}
+	if constraintClasses != "" {
+		{{ tabListClasses += " " + constraintClasses }}
+	}
+	if componentSettings.PaddingSize != "" {
+		{{ tabListClasses += " " + tabPaddingClassResolver(componentSettings.PaddingSize) }}
+	}
+	if componentSettings.ShadowSize != "" {
+		{{ tabListClasses += " " + tabShadowClassResolver(componentSettings.ShadowSize) }}
+	}
+	{{ ringClasses := tabRingClassResolver(componentSettings.RingColor, componentSettings.RingThickness) }}
+	if ringClasses != "" {
+		{{ tabListClasses += " " + ringClasses }}
+	}
+	if componentSettings.BackgroundColor != "" {
+		{{ tabListClasses += " bg-" + componentSettings.BackgroundColor }}
+	}
+	{{ tabClasses := "flex cursor-pointer select-none items-center gap-1.5 px-3 py-2 text-sm transition-all" }}
+	{{ tabClasses += " " + tabTextColorClassResolver(componentSettings.TextColor) }}
+	{{ tabClasses += " bg-neutral-50/5 hover:bg-neutral-50/7.5" }}
+	{{ tabClasses += " " + tabEdgeClassResolver(componentSettings.BorderRadius, isVertical, isRight) }}
+	{{ tabActiveClasses := "!font-bold !text-secondary-500 !border-secondary-500" }}
+	{{ tabPanelsClasses := "pt-4" }}
+	if isVertical {
+		{{ tabPanelsClasses = "grow" }}
+		if isRight {
+			{{ tabPanelsClasses += " pr-4" }}
+		}
+		if !isRight {
+			{{ tabPanelsClasses += " pl-4" }}
+		}
+	}
+	if componentSettings.ContentPaddingSize != "" {
+		{{ contentPaddingClasses := tabPaddingClassResolver(componentSettings.ContentPaddingSize) }}
+		if isVertical {
+			{{ tabPanelsClasses = "grow " + contentPaddingClasses }}
+		}
+		if !isVertical {
+			{{ tabPanelsClasses = contentPaddingClasses }}
+		}
+	}
+	if componentSettings.ContentBackgroundColor != "" {
+		{{ tabPanelsClasses += " bg-" + componentSettings.ContentBackgroundColor }}
+	}
+	if componentSettings.ContentShadowSize != "" {
+		{{ tabPanelsClasses += " " + tabShadowClassResolver(componentSettings.ContentShadowSize) }}
+	}
+	{{ contentRingClasses := tabRingClassResolver(componentSettings.ContentRingColor, componentSettings.ContentRingThickness) }}
+	if contentRingClasses != "" {
+		{{ tabPanelsClasses += " " + contentRingClasses }}
+	}
+	if componentSettings.ContentBorderRadius != "" {
+		{{ tabPanelsClasses += " rounded-" + tabBorderRadiusTokenResolver(componentSettings.ContentBorderRadius) }}
+	}
+	if componentSettings.ContentTextColor != "" {
+		{{ tabPanelsClasses += " text-" + componentSettings.ContentTextColor }}
+	}
+	<!-- Tabs -->
+	<div
+		class={ rootClasses }
+		if componentSettings.IsUrlHashSynced {
+			x-init={ tabUrlHashSyncExpressionBuilder(selectedValuePath, componentSettings.Items) }
+			@hashchange.window={ tabUrlHashSyncExpressionBuilder(selectedValuePath, componentSettings.Items) }
+		}
+	>
+		<!-- TabList -->
+		<div
+			role="tablist"
+			aria-label={ ariaLabel }
+			class={ tabListClasses }
+			if isVertical {
+				aria-orientation="vertical"
+			}
+		>
+			for index, item := range componentSettings.Items {
+				{{ selectedExpression := tabSelectedExpressionBuilder(selectedValuePath, item.Value) }}
+				{{ tabId := tabIdTextBuilder(idPrefix, index) }}
+				{{ panelId := tabPanelIdTextBuilder(idPrefix, index) }}
+				{{ badgeClasses := tabBadgeClassesResolver(item) }}
+				{{ itemTabClasses := tabClasses }}
+				if item.IconPosition == TabIconPositionTop {
+					{{ itemTabClasses += " flex-col text-center" }}
+				}
+				if isVertical {
+					{{ itemTabClasses += " w-full" }}
+				}
+				<button
+					type="button"
+					role="tab"
+					id={ tabId }
+					:class={ selectedExpression + " && '" + tabActiveClasses + "'" }
+					:aria-selected={ selectedExpression + " ? 'true' : 'false'" }
+					:tabindex={ tabTabindexExpressionBuilder(selectedExpression, anySelectedExpression, index == 0) }
+					@click={ tabClickExpressionBuilder(selectedValuePath, item.Value, componentSettings.IsUrlHashSynced) }
+					if item.Content != nil {
+						aria-controls={ panelId }
+					}
+					data-tab-value={ item.Value }
+					class={ itemTabClasses }
+					if isVertical {
+						@keydown.arrow-up.prevent={ previousKeyExpression }
+						@keydown.arrow-down.prevent={ nextKeyExpression }
+					}
+					if !isVertical {
+						@keydown.arrow-left.prevent={ previousKeyExpression }
+						@keydown.arrow-right.prevent={ nextKeyExpression }
+					}
+					@keydown.home.prevent={ homeKeyExpression }
+					@keydown.end.prevent={ endKeyExpression }
+				>
+					if item.Icon != "" {
+						<i class={ "ph-duotone " + item.Icon + " text-lg" } aria-hidden="true"></i>
+					}
+					<span class={ textCaseClass }>{ item.Label }</span>
+					if item.BadgeCountOneWayStatePath != "" {
+						<span
+							class={ badgeClasses }
+							x-show={ item.BadgeCountOneWayStatePath + " > 0" }
+							x-text={ item.BadgeCountOneWayStatePath }
+						></span>
+					}
+					if item.BadgeCountOneWayStatePath == "" && item.BadgeCount > 0 {
+						<span class={ badgeClasses }>{ item.BadgeCount }</span>
+					}
+				</button>
+			}
+		</div>
+		<!-- TabPanels -->
+		<div class={ tabPanelsClasses }>
+			for index, item := range componentSettings.Items {
+				if item.Content != nil {
+					{{ selectedExpression := tabSelectedExpressionBuilder(selectedValuePath, item.Value) }}
+					{{ tabId := tabIdTextBuilder(idPrefix, index) }}
+					{{ panelId := tabPanelIdTextBuilder(idPrefix, index) }}
+					<div
+						role="tabpanel"
+						id={ panelId }
+						aria-labelledby={ tabId }
+						tabindex="0"
+						x-show={ selectedExpression }
+					>
+						@item.Content
+					</div>
+				}
+			}
+		</div>
+	</div>
+}

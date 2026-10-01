@@ -177,3 +177,39 @@ Vertical navigation panel. It renders inline or fixed, and it can collapse or sl
 - `IsOffCanvas` and `IsOffCanvasTwoWayStatePath` slide the panel over the content.
 - `Width` sets the expanded width.
 - Pass state paths from code, never from request data. The component embeds them into client-side expressions.
+
+## Tabs
+
+Horizontal and vertical tab headers bound to one selected value. Each tab carries a label, a value, and an optional icon and badge count. The panels switch with Alpine `x-show`.
+
+```go
+@uiStructural.Tabs(uiStructural.TabSettings{
+    Items: []uiStructural.TabItemSettings{
+        {Label: "General", Value: "general", Icon: "ph-gear", Content: GeneralPanel()},
+        {Label: "Security", Value: "security", Icon: "ph-shield-check", BadgeCount: 3, Content: SecurityPanel()},
+    },
+    SelectedValueTwoWayStatePath: "selectedTab",
+
+    // OptionalFields
+    Orientation: uiStructural.TabOrientationVertical,
+})
+```
+
+- `SelectedValueTwoWayStatePath` names the Alpine property that holds the active tab value. Clicking a tab writes its `Value` to that path.
+- Seed the bound property with one of the item `Value`s. When no value matches, no tab is active; the first tab stays reachable by keyboard so the group never traps focus.
+- Each item's `Content` renders in a panel with `x-show` bound to the selected value. Panels stay in the DOM, so their inputs keep state across switches.
+- `Orientation` accepts `TabOrientationHorizontal` (the default) or `TabOrientationVertical`. The vertical variant lays the tab list as a column beside the panels, for sidebar-style layouts.
+- `Side` accepts `TabSideLeft` (the default) or `TabSideRight`, and only applies with `TabOrientationVertical`. It places the tab list on the right side of the panels.
+- `Alignment` accepts `TabAlignmentTop` (the default), `TabAlignmentCenter`, or `TabAlignmentBottom`, and only applies with `TabOrientationVertical`. It aligns the tab list with the tab content.
+- `MaxWidthPercent`, `MinWidthPercent`, `MaxHeightPercent`, and `MinHeightPercent` bound the tab list on each axis as whole percentages of the tab area, 1 through 100; 100 renders the full class. `MaxWidthClass`, `MinWidthClass`, `MaxHeightClass`, and `MinHeightClass` take arbitrary Tailwind classes for the same bounds. The horizontal list scrolls on the x axis and the vertical list scrolls on the y axis when the tabs exceed the bounds.
+- Each item's `Icon` renders a Phosphor icon. `IconPosition` accepts `TabIconPositionLeft` (the default) or `TabIconPositionTop`; the top position stacks the icon above the label.
+- `BadgeCount` renders a static count on the tab. `BadgeCountOneWayStatePath` renders a count from Alpine state and hides itself at zero. `BadgeBackgroundColor`, `BadgeTextColor`, `BadgeRingColor`, `BadgeRingThickness`, and `BadgeBorderRadius` style the badge; the defaults render a neutral badge.
+- `IsUrlHashSynced` reads the URL hash on load and on every hash change, and writes the hash on click, so a link to `#security` opens the Security tab.
+- The component follows the ARIA tabs pattern: `role="tablist"`, `role="tab"`, `role="tabpanel"`, `aria-selected`, `aria-controls`, and `aria-labelledby`. Arrow keys move between tabs, Home and End jump to the ends. Horizontal tabs use Left and Right; vertical tabs use Up and Down.
+- `AriaLabel` names the tab list. Set a distinct label when a page holds more than one tab group.
+- `BackgroundColor` takes a color token, for example `"neutral-50/5"`, and paints the tab list. `BorderRadius` accepts `TabBorderRadiusNone` through `TabBorderRadiusXl` (the default is `TabBorderRadiusMd`) and rounds the tab edges. `TextColor` takes a color token and tints the unselected tab labels.
+- `PaddingSize` accepts `TabPaddingSizeNone` through `TabPaddingSizeXl` and insets the tab list; the default leaves the list flush. `GapSize` accepts `TabGapSizeNone` through `TabGapSizeXl` and sets the gap between the tabs; the default is `TabGapSizeXs`.
+- `RingColor` and `RingThickness` (`TabRingThicknessXs` through `TabRingThicknessXl`) frame the tab list when both are set. `ShadowSize` accepts `TabShadowSizeNone` through `TabShadowSizeXl`.
+- The `Content*` fields style the panel area: `ContentBackgroundColor`, `ContentPaddingSize`, `ContentBorderRadius`, `ContentRingColor`, `ContentRingThickness`, `ContentShadowSize`, and `ContentTextColor`. They take the same tokens as the tab list settings. `ContentPaddingSize` replaces the default inset that separates the content from the tab list; the default leaves the content flush.
+- `TextCase` takes a `uiToolset.TextCase*` value and transforms the tab labels.
+- Pass state paths, tab values, and the class-attribute inputs (`Icon`, `BackgroundColor`, `TextColor`, and the `Badge*` color and ring inputs) from code, never from request data. The component embeds them into client-side expressions and class attributes.

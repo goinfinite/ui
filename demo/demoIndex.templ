@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	UiVersion string = "0.2.3"
+	UiVersion string = "0.2.4"
 )
 
 templ DemoNavSection(label string) {
@@ -96,6 +96,7 @@ templ DemoNavigationContent() {
 		@DemoNavItem("FilterBar", "filter-bar-demo", "ph-funnel")
 		@DemoNavItem("PageHeading", "page-heading-demo", "ph-text-h")
 		@DemoNavItem("Pagination", "pagination-demo", "ph-caret-double-right")
+		@DemoNavItem("Tabs", "tabs-demo", "ph-tabs")
 	</ul>
 }
 
@@ -228,6 +229,7 @@ templ DemoIndex() {
 							@DataTableDemo()
 							@FilterBarDemo()
 							@PaginationDemo()
+							@TabsDemo()
 							@PageHeadingDemo()
 						</div>
 					</div>

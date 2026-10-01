@@ -1,6 +1,14 @@
 # Changelog
 
 ```log
+0.2.4 - 2026/10/01
+feat: add the tabs component with horizontal and vertical tab headers
+feat: add the badge count and the URL-hash syncing to the tabs
+feat: add the tab side, the icon position, the surface and content customization, the badge styling, the size constraints, and the alignment to the tabs
+test: cover the tabs expression builders and the rendered tab behavior
+docs: document the tabs component in the structural readme and the feature map
+chore(docs): regenerate the demo page
+
 0.2.3 - 2026/09/30
 feat: add the track tooltip to the range slider
 feat: add the value bubble display mode to the range slider
