@@ -8,7 +8,19 @@ package uiDisplay
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "strconv"
+import (
+	_ "embed"
+	"strconv"
+
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+//go:embed cloakLoadingState.js
+var cloakLoadingAlpineState string
+
+var cloakLoadingAlpineStateOnce = templ.NewOnceHandle(
+	templ.WithComponent(uiToolset.MinifierTemplateJs(&cloakLoadingAlpineState)),
+)
 
 const (
 	CloakLoadingIconSizeXs string = "2rem"
@@ -139,6 +151,10 @@ func CloakLoading(componentSettings CloakLoadingSettings) templ.Component {
 		if componentSettings.TextColor != "" {
 			textColor = componentSettings.TextColor
 		}
+		templ_7745c5c3_Err = cloakLoadingAlpineStateOnce.Once().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
 		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div style=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -157,20 +173,20 @@ func CloakLoading(componentSettings CloakLoadingSettings) templ.Component {
 			"flex-direction: column; " +
 			"gap: 1rem;")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/cloakLoading.templ`, Line: 138, Col: 15}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/cloakLoading.templ`, Line: 151, Col: 15}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" x-init=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" x-data=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.ResolveAttributeValue("setTimeout(() => { $el.style.display = 'none'; }, " + hideDelayMilliseconds + ");")
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.ResolveAttributeValue("cloakLoading(" + hideDelayMilliseconds + ")")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/cloakLoading.templ`, Line: 139, Col: 94}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/cloakLoading.templ`, Line: 152, Col: 56}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
 		if templ_7745c5c3_Err != nil {
@@ -207,7 +223,7 @@ func CloakLoading(componentSettings CloakLoadingSettings) templ.Component {
 			"color: " + iconColor + "; " +
 			iconAnimationStyle)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/cloakLoading.templ`, Line: 145, Col: 22}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/cloakLoading.templ`, Line: 158, Col: 22}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -225,7 +241,7 @@ func CloakLoading(componentSettings CloakLoadingSettings) templ.Component {
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues("font-size: " + textSize + "; color: " + textColor + ";")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/cloakLoading.templ`, Line: 148, Col: 73}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/cloakLoading.templ`, Line: 161, Col: 73}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -238,7 +254,7 @@ func CloakLoading(componentSettings CloakLoadingSettings) templ.Component {
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(textMessage)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/cloakLoading.templ`, Line: 148, Col: 89}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/cloakLoading.templ`, Line: 161, Col: 89}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {

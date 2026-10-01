@@ -1,6 +1,18 @@
 package uiDisplay
 
-import "strconv"
+import (
+	_ "embed"
+	"strconv"
+
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+//go:embed cloakLoadingState.js
+var cloakLoadingAlpineState string
+
+var cloakLoadingAlpineStateOnce = templ.NewOnceHandle(
+	templ.WithComponent(uiToolset.MinifierTemplateJs(&cloakLoadingAlpineState)),
+)
 
 const (
 	CloakLoadingIconSizeXs string = "2rem"
@@ -123,6 +135,7 @@ templ CloakLoading(componentSettings CloakLoadingSettings) {
 	if componentSettings.TextColor != "" {
 		{{ textColor = componentSettings.TextColor }}
 	}
+	@cloakLoadingAlpineStateOnce.Once()
 	<div
 		style={ "display: flex; " +
 			"align-items: center; " +
@@ -136,7 +149,7 @@ templ CloakLoading(componentSettings CloakLoadingSettings) {
 			"z-index: 9999; " +
 			"flex-direction: column; " +
 			"gap: 1rem;" }
-		x-init={ "setTimeout(() => { $el.style.display = 'none'; }, " + hideDelayMilliseconds + ");" }
+		x-data={ "cloakLoading(" + hideDelayMilliseconds + ")" }
 	>
 		<i
 			class={ iconClass }

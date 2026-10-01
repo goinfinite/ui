@@ -60,7 +60,7 @@ func renderDataTableDemoFragment(
 
 func buildDataTableDemoFragments() (map[string]string, error) {
 	fragments := map[string]string{}
-	for pageNumber := uint(1); pageNumber <= dataTableDemoPagesTotal; pageNumber++ {
+	for pageNumber := range dataTableDemoPagesTotal {
 		fragmentBody, err := renderDataTableDemoFragment(
 			pageNumber, dataTableDemoItemsPerPage,
 		)
@@ -73,11 +73,11 @@ func buildDataTableDemoFragments() (map[string]string, error) {
 		fragments[fragmentKey] = fragmentBody
 	}
 	allRecordsPageSize := uiStructural.DataTablePageSize(len(dataTableDemoRecords))
-	allRecordsBody, err := renderDataTableDemoFragment(1, allRecordsPageSize)
+	allRecordsBody, err := renderDataTableDemoFragment(0, allRecordsPageSize)
 	if err != nil {
 		return nil, err
 	}
-	allRecordsKey := formatDataTableDemoFragmentKey(1, allRecordsPageSize)
+	allRecordsKey := formatDataTableDemoFragmentKey(0, allRecordsPageSize)
 	fragments[allRecordsKey] = allRecordsBody
 	return fragments, nil
 }

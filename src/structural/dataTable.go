@@ -116,6 +116,7 @@ type DataTableSettings[Row any] struct {
 	RowLabelResolver                 func(row Row) string
 	SearchBox                        templ.Component
 	SearchBoxAlignment               DataTableAlignment
+	ShouldUseOneBasedPageDisplay     bool
 	TextCase                         string
 }
 
@@ -220,13 +221,6 @@ func (settings DataTableSettings[Row]) itemsPerPageResolver(
 		return uint(settings.ItemsPerPage)
 	}
 	return itemsPerPageSizeChoices[0]
-}
-
-func (settings DataTableSettings[Row]) pageNumberResolver() uint {
-	if settings.PageNumber > 0 {
-		return settings.PageNumber
-	}
-	return 1
 }
 
 func (settings DataTableSettings[Row]) paginationAriaLabelResolver() string {

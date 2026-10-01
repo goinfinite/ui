@@ -17,6 +17,9 @@ const (
 	RangeSliderThumbValueBubblePositionTop    string = "top"
 	RangeSliderThumbValueBubblePositionBottom string = "bottom"
 
+	RangeSliderThumbValueBubbleDisplayModeAlways string = "always"
+	RangeSliderThumbValueBubbleDisplayModeHover  string = "hover"
+
 	RangeSliderThumbValueBubbleSizeXs string = "xs"
 	RangeSliderThumbValueBubbleSizeSm string = "sm"
 	RangeSliderThumbValueBubbleSizeMd string = "md"
@@ -35,6 +38,15 @@ const (
 
 	RangeSliderTrackValueLabelPositionTop    string = "top"
 	RangeSliderTrackValueLabelPositionBottom string = "bottom"
+
+	RangeSliderTrackTooltipPositionTop    string = "top"
+	RangeSliderTrackTooltipPositionBottom string = "bottom"
+
+	RangeSliderTrackTooltipRingThicknessXs string = "xs"
+	RangeSliderTrackTooltipRingThicknessSm string = "sm"
+	RangeSliderTrackTooltipRingThicknessMd string = "md"
+	RangeSliderTrackTooltipRingThicknessLg string = "lg"
+	RangeSliderTrackTooltipRingThicknessXl string = "xl"
 )
 
 type RangeSliderSettings struct {
@@ -50,6 +62,7 @@ type RangeSliderSettings struct {
 	ThumbValue                           string
 	ThumbValueTwoWayStatePath            string
 	ThumbValueBubbleEnabled              bool
+	ThumbValueBubbleDisplayMode          string
 	ThumbValueBubbleBackgroundColor      string
 	ThumbValueBubbleTextColor            string
 	ThumbValueBubbleRingColor            string
@@ -67,6 +80,7 @@ type RangeSliderSettings struct {
 	ThumbUpperLabelIcon                  string
 	ThumbUpperAriaLabel                  string
 	ThumbUpperValueBubbleEnabled         bool
+	ThumbUpperValueBubbleDisplayMode     string
 	ThumbUpperValueBubbleBackgroundColor string
 	ThumbUpperValueBubbleTextColor       string
 	ThumbUpperValueBubbleRingColor       string
@@ -81,6 +95,12 @@ type RangeSliderSettings struct {
 	TrackSteps                           string
 	TrackTicksEnabled                    bool
 	TrackTickStep                        string
+	TrackTooltipEnabled                  bool
+	TrackTooltipPosition                 string
+	TrackTooltipBackgroundColor          string
+	TrackTooltipTextColor                string
+	TrackTooltipRingColor                string
+	TrackTooltipRingThickness            string
 	TrackFillColor                       string
 	TrackFillColorFrom                   string
 	TrackFillColorVia                    string
@@ -360,8 +380,18 @@ templ Thumb(componentSettings RangeSliderSettings, isUpper bool) {
 				}
 				{{ bubbleRingClasses += " " + bubbleRingThickness }}
 			}
+			{{ bubbleDisplayMode := componentSettings.ThumbValueBubbleDisplayMode }}
+			if isUpper && componentSettings.ThumbUpperValueBubbleDisplayMode != "" {
+				{{ bubbleDisplayMode = componentSettings.ThumbUpperValueBubbleDisplayMode }}
+			}
 			<div
+				data-ui-range-slider-thumb-bubble
 				class={ "absolute " + bubblePosition + " select-none flex items-center justify-center " + bubbleSize + " " + bubbleShape + " " + bubbleBackgroundColor + " " + bubbleTextColor + " " + bubbleRingClasses }
+				if bubbleDisplayMode == RangeSliderThumbValueBubbleDisplayModeHover {
+					x-show={ hoverState + " || " + focusState }
+					style="display: none"
+					x-transition.opacity.duration.150ms
+				}
 				x-text={ bubbleValue }
 				@mouseenter={ hoverState + " = true" }
 				@mouseleave={ hoverState + " = false" }
@@ -498,6 +528,9 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 	if componentSettings.TrackTicksEnabled {
 		{{ alpineData += ", trackTickStep: " + trackTickStep + ", get trackTickPercents() { const step = Number(this.trackTickStep); const start = Number(this.trackStartValue); const end = Number(this.trackEndValue); if (!(step > 0) || !(end > start)) return []; const tickCount = Math.floor((end - start) / step); if (!(tickCount > 0) || tickCount > 200) return []; const percents = []; for (let index = 0; index <= tickCount; index++) { percents.push(this.clampPercent((index * step) / (end - start) * 100)); } return percents; }" }}
 	}
+	if componentSettings.TrackTooltipEnabled {
+		{{ alpineData += ", trackTooltipVisible: false, trackTooltipPercent: 0, trackTooltipValue: 0, resolveTrackTooltipDecimalPlaces(valueText) { const exponentIndex = valueText.search(/[eE]/); const exponent = exponentIndex === -1 ? 0 : Number(valueText.slice(exponentIndex + 1)); const mantissaText = exponentIndex === -1 ? valueText : valueText.slice(0, exponentIndex); const dotIndex = mantissaText.indexOf('.'); const mantissaDecimalPlaces = dotIndex === -1 ? 0 : mantissaText.length - dotIndex - 1; return Math.max(mantissaDecimalPlaces - exponent, 0); }, showTrackTooltip(event) { const trackRect = event.currentTarget.getBoundingClientRect(); const hoverPercent = this.clampPercent((event.clientX - trackRect.left) / trackRect.width * 100); const startValue = Number(this.trackStartValue); const endValue = Number(this.trackEndValue); const stepSize = Number(this.trackSteps) > 0 ? Number(this.trackSteps) : 1; const rawValue = startValue + hoverPercent / 100 * (endValue - startValue); const stepIndexTolerance = 1e-9; const maximumStepIndex = Math.floor((endValue - startValue) / stepSize + stepIndexTolerance); const stepIndex = Math.min(Math.max(Math.round((rawValue - startValue) / stepSize), 0), maximumStepIndex); const steppedValue = startValue + stepIndex * stepSize; const valuePrecision = Math.max(this.resolveTrackTooltipDecimalPlaces(String(this.trackStartValue)), this.resolveTrackTooltipDecimalPlaces(String(this.trackSteps))); const clampedValue = Math.min(Math.max(steppedValue, startValue), endValue); const roundedValue = Number(clampedValue.toFixed(valuePrecision)); this.trackTooltipPercent = hoverPercent; this.trackTooltipValue = Math.min(Math.max(roundedValue, startValue), endValue); this.trackTooltipVisible = true; }" }}
+	}
 	{{ alpineData += "}" }}
 	{{ alpineWatch := resolveRangeSliderLowerWatch(componentSettings) + resolveRangeSliderUpperWatch(componentSettings) + resolveRangeSliderInitialStateNormalization(componentSettings) }}
 	{{ mainDivMinHeight := 6 }}
@@ -589,7 +622,13 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 						{{ trackBackgroundColor = trackBackgroundColor + " to-" + componentSettings.TrackBackgroundColorTo }}
 					}
 				}
-				<div class={ trackBackgroundColor + " flex items-center relative rounded-full w-full " + trackHeight }>
+				<div
+					class={ trackBackgroundColor + " flex items-center relative rounded-full w-full " + trackHeight }
+					if componentSettings.TrackTooltipEnabled {
+						@mousemove="showTrackTooltip($event)"
+						@mouseleave="trackTooltipVisible = false"
+					}
+				>
 					<!-- RangeInputs -->
 					{{ rangeInputHeight := "h-" + resolveRangeSliderThumbSizeUnit(componentSettings) }}
 					{{ rangeInputHoverHeight := 7 }}
@@ -699,6 +738,48 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 								></span>
 							</template>
 						</div>
+					}
+					<!-- TrackTooltip -->
+					if componentSettings.TrackTooltipEnabled {
+						{{ trackTooltipPositionClasses := "bottom-full mb-3" }}
+						if componentSettings.TrackTooltipPosition == RangeSliderTrackTooltipPositionBottom {
+							{{ trackTooltipPositionClasses = "top-full mt-3" }}
+						}
+						{{ trackTooltipBackgroundColor := "bg-neutral-800" }}
+						if componentSettings.TrackTooltipBackgroundColor != "" {
+							{{ trackTooltipBackgroundColor = "bg-" + componentSettings.TrackTooltipBackgroundColor }}
+						}
+						{{ trackTooltipTextColor := "text-neutral-50" }}
+						if componentSettings.TrackTooltipTextColor != "" {
+							{{ trackTooltipTextColor = "text-" + componentSettings.TrackTooltipTextColor }}
+						}
+						{{ trackTooltipRingClasses := "" }}
+						if componentSettings.TrackTooltipRingColor != "" {
+							{{ trackTooltipRingThickness := "ring-1" }}
+							switch componentSettings.TrackTooltipRingThickness {
+								case RangeSliderTrackTooltipRingThicknessXs:
+									{{ trackTooltipRingThickness = "ring-0.5" }}
+								case RangeSliderTrackTooltipRingThicknessSm:
+									{{ trackTooltipRingThickness = "ring-1" }}
+								case RangeSliderTrackTooltipRingThicknessMd:
+									{{ trackTooltipRingThickness = "ring-1.5" }}
+								case RangeSliderTrackTooltipRingThicknessLg:
+									{{ trackTooltipRingThickness = "ring-2" }}
+								case RangeSliderTrackTooltipRingThicknessXl:
+									{{ trackTooltipRingThickness = "ring-2.5" }}
+							}
+							{{ trackTooltipRingClasses = trackTooltipRingThickness + " ring-" + componentSettings.TrackTooltipRingColor }}
+						}
+						<div
+							data-ui-range-slider-track-tooltip
+							class={ "absolute z-50 -translate-x-1/2 pointer-events-none select-none flex items-center justify-center min-w-8 p-1 text-base rounded-full " + trackTooltipPositionClasses + " " + trackTooltipBackgroundColor + " " + trackTooltipTextColor + " " + trackTooltipRingClasses }
+							x-show="trackTooltipVisible"
+							style="display: none"
+							x-transition.opacity.duration.150ms
+							:style="'left: ' + trackTooltipPercent + '%'"
+							x-text="trackTooltipValue"
+							aria-hidden="true"
+						></div>
 					}
 					@Thumb(componentSettings, false)
 					if componentSettings.ThumbDualValueModeEnabled {

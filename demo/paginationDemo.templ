@@ -23,7 +23,7 @@ templ PaginationSizeChoicesExample() {
 		"/structural/pagination.templ",
 		choicesUsage,
 	) {
-		<div class="rounded-md border border-neutral-800 p-4" x-data="{pageNumber: 1, itemsPerPage: 5}">
+		<div class="rounded-md border border-neutral-800 p-4" x-data="{pageNumber: 0, itemsPerPage: 5}">
 			@uiStructural.Pagination(uiStructural.PaginationSettings{
 				PageNumberTwoWayStatePath:   "pageNumber",
 				ItemsPerPageTwoWayStatePath: "itemsPerPage",
@@ -52,7 +52,7 @@ templ PaginationDisabledExample() {
 		"/structural/pagination.templ",
 		disabledUsage,
 	) {
-		<div class="flex flex-col gap-3" x-data="{pageNumber: 2, itemsPerPage: 10, isPaginationDisabled: true}">
+		<div class="flex flex-col gap-3" x-data="{pageNumber: 1, itemsPerPage: 10, isPaginationDisabled: true}">
 			<div class="rounded-md border border-neutral-800 p-4">
 				@uiStructural.Pagination(uiStructural.PaginationSettings{
 					PageNumberTwoWayStatePath:   "pageNumber",
@@ -95,7 +95,7 @@ templ PaginationHiddenSinglePageExample() {
 				<div
 					class="rounded-md border border-neutral-800 p-4"
 					id="pagination-hidden-single"
-					x-data="{singlePageNumber: 1, singlePageItemsPerPage: 50}"
+					x-data="{singlePageNumber: 0, singlePageItemsPerPage: 50}"
 				>
 					@uiStructural.Pagination(uiStructural.PaginationSettings{
 						PageNumberTwoWayStatePath:   "singlePageNumber",
@@ -114,7 +114,7 @@ templ PaginationHiddenSinglePageExample() {
 				<div
 					class="rounded-md border border-neutral-800 p-4"
 					id="pagination-hidden-multi"
-					x-data="{multiPageNumber: 1, multiPageItemsPerPage: 5}"
+					x-data="{multiPageNumber: 0, multiPageItemsPerPage: 5}"
 				>
 					@uiStructural.Pagination(uiStructural.PaginationSettings{
 						PageNumberTwoWayStatePath:   "multiPageNumber",
@@ -125,6 +125,39 @@ templ PaginationHiddenSinglePageExample() {
 					})
 				</div>
 			</div>
+		</div>
+	}
+}
+
+templ PaginationOneBasedLabelsExample() {
+	{{
+		oneBasedUsage := `@uiStructural.Pagination(uiStructural.PaginationSettings{
+	PageNumberTwoWayStatePath:   "pageNumber",
+	ItemsPerPageTwoWayStatePath: "itemsPerPage",
+	ItemsTotal:                  240,
+
+	// OptionalFields
+	ShouldUseOneBasedPageDisplay: true,
+})`
+	}}
+	@DemoExampleCard(
+		"One-Based Labels",
+		"ShouldUseOneBasedPageDisplay keeps the 0-based state and labels the pages from 1. Without it, the first page is 0.",
+		"/structural/pagination.templ",
+		oneBasedUsage,
+	) {
+		<div
+			class="rounded-md border border-neutral-800 p-4"
+			id="pagination-one-based"
+			x-data="{oneBasedPageNumber: 0, oneBasedItemsPerPage: 10}"
+		>
+			@uiStructural.Pagination(uiStructural.PaginationSettings{
+				PageNumberTwoWayStatePath:    "oneBasedPageNumber",
+				ItemsPerPageTwoWayStatePath:  "oneBasedItemsPerPage",
+				ItemsTotal:                   240,
+				PagesTotal:                   24,
+				ShouldUseOneBasedPageDisplay: true,
+			})
 		</div>
 	}
 }
@@ -148,7 +181,7 @@ templ PaginationDemo() {
 			Title:                  ".Pagination",
 			UsageCode:              demoUsage,
 		}) {
-			<div class="flex flex-col gap-4" x-data="{pageNumber: 2, itemsPerPage: 10, changeCount: 0}">
+			<div class="flex flex-col gap-4" x-data="{pageNumber: 1, itemsPerPage: 10, changeCount: 0}">
 				<div class="rounded-md border border-neutral-800 p-4" id="pagination-demo-main">
 					@uiStructural.Pagination(uiStructural.PaginationSettings{
 						PageNumberTwoWayStatePath:   "pageNumber",
@@ -169,6 +202,7 @@ templ PaginationDemo() {
 			{Title: "Page-Size Choices", Icon: "ph-list-numbers", Content: PaginationSizeChoicesExample()},
 			{Title: "Disabled Binding", Icon: "ph-prohibit", Content: PaginationDisabledExample()},
 			{Title: "Hidden On Single Page", Icon: "ph-eye-slash", Content: PaginationHiddenSinglePageExample()},
+			{Title: "One-Based Labels", Icon: "ph-number-one", Content: PaginationOneBasedLabelsExample()},
 		})
 	</div>
 }

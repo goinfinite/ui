@@ -1,6 +1,23 @@
 # Changelog
 
 ```log
+0.2.3 - 2026/09/30
+feat: add the track tooltip to the range slider
+feat: add the value bubble display mode to the range slider
+feat: label the page strip from one without changing the bound state
+feat: make the page number zero-based across pagination and the data table
+fix: keep the button tooltip state from aborting on a second embed
+fix: hold the cloak loading screen until Alpine finishes initializing
+fix: keep the track tooltip preview on the step grid
+feat: animate the modal size transition
+feat: fade the loading overlay in and out
+test: cover the track tooltip, the value bubble, the one-based labels, the modal resize, and the loading overlay markup
+test: share the track tooltip hover helper across the slider specs
+docs: document the zero-based page number in the component readmes
+docs: add the favicon to the demo page
+docs: cover the demo page from the first paint with the cloak loading screen
+chore(docs): regenerate the demo page
+
 0.2.2 - 2026/09/22
 feat: add the button tooltip in the fixed body layer
 fix: always render the button type attribute

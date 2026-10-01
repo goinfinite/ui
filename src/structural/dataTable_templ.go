@@ -144,7 +144,7 @@ func DataTable[Row any](componentSettings DataTableSettings[Row]) templ.Componen
 		}
 		itemsPerPageSizeChoices := componentSettings.itemsPerPageSizeChoicesResolver()
 		itemsPerPage := componentSettings.itemsPerPageResolver(itemsPerPageSizeChoices)
-		pageNumber := componentSettings.pageNumberResolver()
+		pageNumber := componentSettings.PageNumber
 		paginationAriaLabel := componentSettings.paginationAriaLabelResolver()
 		templ_7745c5c3_Err = templ.JSONScript(settingsScriptId, componentSettings.clientSettingsResolver(itemsPerPage, pageNumber)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
@@ -726,16 +726,17 @@ func DataTable[Row any](componentSettings DataTableSettings[Row]) templ.Componen
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = Pagination(PaginationSettings{
-			PageNumberTwoWayStatePath:   "pageNumber",
-			ItemsPerPageTwoWayStatePath: "itemsPerPage",
-			ItemsTotal:                  componentSettings.ItemsTotal,
-			PagesTotal:                  componentSettings.PagesTotal,
-			AriaLabel:                   paginationAriaLabel,
-			IsDisabledOneWayStatePath:   "isLoading",
-			IsHiddenWhenSinglePage:      componentSettings.IsPaginationHiddenWhenSinglePage,
-			ItemsPerPageInputName:       tableId + "-itemsPerPage",
-			ItemsPerPageSizeChoices:     itemsPerPageSizeChoices,
-			OnChangeFunc:                "requestRefresh()",
+			PageNumberTwoWayStatePath:    "pageNumber",
+			ItemsPerPageTwoWayStatePath:  "itemsPerPage",
+			ItemsTotal:                   componentSettings.ItemsTotal,
+			PagesTotal:                   componentSettings.PagesTotal,
+			AriaLabel:                    paginationAriaLabel,
+			IsDisabledOneWayStatePath:    "isLoading",
+			IsHiddenWhenSinglePage:       componentSettings.IsPaginationHiddenWhenSinglePage,
+			ItemsPerPageInputName:        tableId + "-itemsPerPage",
+			ItemsPerPageSizeChoices:      itemsPerPageSizeChoices,
+			OnChangeFunc:                 "requestRefresh()",
+			ShouldUseOneBasedPageDisplay: componentSettings.ShouldUseOneBasedPageDisplay,
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

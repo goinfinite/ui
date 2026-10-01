@@ -88,9 +88,9 @@ test.describe("Pagination @structural", () => {
     page,
   }) => {
     const strip = page.locator(`${paginationSection} nav [aria-current=page]`);
-    await expect(strip).toHaveText("2");
+    await expect(strip).toHaveText("1");
 
-    for (const pageLabel of ["1", "2", "3", "24"]) {
+    for (const pageLabel of ["0", "1", "2", "23"]) {
       await expect(
         page
           .locator(`${paginationSection} nav button`)
@@ -107,7 +107,7 @@ test.describe("Pagination @structural", () => {
   }) => {
     await page
       .locator(`${paginationSection} nav button`)
-      .filter({ hasText: /^3$/ })
+      .filter({ hasText: /^2$/ })
       .click();
 
     await expect(page.locator(`${paginationSection} nav p`)).toHaveText(
@@ -115,7 +115,7 @@ test.describe("Pagination @structural", () => {
     );
     await expect(
       page.locator(`${paginationSection} nav [aria-current=page]`),
-    ).toHaveText("3");
+    ).toHaveText("2");
     await expect(page.locator("#pagination-demo-state span").nth(2)).toHaveText(
       "1",
     );
@@ -130,21 +130,25 @@ test.describe("Pagination @structural", () => {
 
     await expect(
       page.locator(`${paginationSection} nav [aria-current=page]`),
-    ).toHaveText("1");
+    ).toHaveText("0");
     await expect(
       page
         .locator(`${paginationSection} nav button`)
-        .filter({ hasText: /^2$/ }),
+        .filter({ hasText: /^1$/ }),
     ).toBeVisible();
     await expect(
       page
         .locator(`${paginationSection} nav button`)
-        .filter({ hasText: /^24$/ }),
+        .filter({ hasText: /^23$/ }),
     ).toBeVisible();
     await expect(
       page.locator(`${paginationSection} nav`).getByText("…", { exact: true }),
     ).toHaveCount(1);
 
+    await page
+      .locator(`${paginationSection} nav button`)
+      .filter({ hasText: /^1$/ })
+      .click();
     await page
       .locator(`${paginationSection} nav button`)
       .filter({ hasText: /^2$/ })
@@ -153,18 +157,14 @@ test.describe("Pagination @structural", () => {
       .locator(`${paginationSection} nav button`)
       .filter({ hasText: /^3$/ })
       .click();
-    await page
-      .locator(`${paginationSection} nav button`)
-      .filter({ hasText: /^4$/ })
-      .click();
 
     await expect(
       page.locator(`${paginationSection} nav [aria-current=page]`),
-    ).toHaveText("4");
+    ).toHaveText("3");
     await expect(
       page
         .locator(`${paginationSection} nav button`)
-        .filter({ hasText: /^2$/ }),
+        .filter({ hasText: /^1$/ }),
     ).toBeVisible();
     await expect(
       page.locator(`${paginationSection} nav`).getByText("…", { exact: true }),
@@ -176,11 +176,11 @@ test.describe("Pagination @structural", () => {
 
     await expect(
       page.locator(`${paginationSection} nav [aria-current=page]`),
-    ).toHaveText("24");
+    ).toHaveText("23");
     await expect(
       page
         .locator(`${paginationSection} nav button`)
-        .filter({ hasText: /^23$/ }),
+        .filter({ hasText: /^22$/ }),
     ).toBeVisible();
     await expect(
       page.locator(`${paginationSection} nav`).getByText("…", { exact: true }),
@@ -210,5 +210,24 @@ test.describe("Pagination @structural", () => {
       singleSection.locator('button[aria-label="Next page"]'),
     ).toBeVisible();
     await expect(page.locator("#pagination-hidden-multi nav")).toHaveCount(1);
+  });
+
+  test("@smoke ShouldUseOneBasedPageDisplay labels the pages from one", async ({
+    page,
+  }) => {
+    await openExamplePanel(page, "#pagination-demo", "One-Based Labels");
+
+    const oneBasedSection = page.locator("#pagination-one-based");
+    await expect(oneBasedSection.locator("nav > p")).toHaveText("1–10 of 240");
+    await expect(oneBasedSection.locator("nav [aria-current=page]")).toHaveText(
+      "1",
+    );
+    for (const pageLabel of ["1", "2", "24"]) {
+      await expect(
+        oneBasedSection
+          .locator("nav button")
+          .filter({ hasText: new RegExp(`^${pageLabel}$`) }),
+      ).toBeVisible();
+    }
   });
 });

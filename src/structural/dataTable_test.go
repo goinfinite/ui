@@ -1,7 +1,10 @@
 package uiStructural
 
 import (
+	"bytes"
+	"context"
 	"reflect"
+	"regexp"
 	"testing"
 
 	uiForm "github.com/goinfinite/ui/src/form"
@@ -373,20 +376,6 @@ func TestDataTableItemsPerPageResolver(t *testing.T) {
 	}
 }
 
-func TestDataTablePageNumberResolver(t *testing.T) {
-	defaultSettings := DataTableSettings[dataTableTestRecord]{}
-	actualDefaultPageNumber := defaultSettings.pageNumberResolver()
-	if actualDefaultPageNumber != 1 {
-		t.Errorf("PageNumberMismatch: got %d, want 1", actualDefaultPageNumber)
-	}
-
-	providedSettings := DataTableSettings[dataTableTestRecord]{PageNumber: 4}
-	actualProvidedPageNumber := providedSettings.pageNumberResolver()
-	if actualProvidedPageNumber != 4 {
-		t.Errorf("PageNumberMismatch: got %d, want 4", actualProvidedPageNumber)
-	}
-}
-
 func TestDataTableIdResolver(t *testing.T) {
 	explicitIdSettings := DataTableSettings[dataTableTestRecord]{
 		Id:      "records-table",
@@ -433,5 +422,24 @@ func TestDataTableIdResolver(t *testing.T) {
 	sortedId := sortedSettings.idResolver()
 	if sortedId == derivedId {
 		t.Errorf("IdCollidedForDifferentSortKeys: %q", sortedId)
+	}
+}
+
+func TestDataTableWiresOneBasedPageDisplayIntoPageStripBuilder(t *testing.T) {
+	settings := DataTableSettings[dataTableTestRecord]{
+		ItemsPerPage:                 10,
+		ItemsTotal:                   240,
+		ShouldUseOneBasedPageDisplay: true,
+	}
+	var buffer bytes.Buffer
+	renderErr := DataTable(settings).Render(context.Background(), &buffer)
+	if renderErr != nil {
+		t.Fatalf("DataTableRenderFailed: %v", renderErr)
+	}
+	oneBasedStripCallPattern := regexp.MustCompile(
+		`PaginationPageStripBuilder\(pageNumber, .+, 1\)`,
+	)
+	if !oneBasedStripCallPattern.MatchString(buffer.String()) {
+		t.Errorf("RenderedHtmlMissingOneBasedPageStripCall")
 	}
 }

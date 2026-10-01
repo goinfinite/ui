@@ -441,7 +441,7 @@ templ DataTableEmptyStateExample() {
 }
 
 templ DataTableDemo() {
-	{{ demoTableSettings := buildDemoDataTableSettings(dataTableDemoRecords, 1, dataTableDemoItemsPerPage) }}
+	{{ demoTableSettings := buildDemoDataTableSettings(dataTableDemoRecords, 0, dataTableDemoItemsPerPage) }}
 	{{
 		demoTableSettings.BulkActions = uiControl.Button(uiControl.ButtonSettings{
 			Label:           "Clear selection",

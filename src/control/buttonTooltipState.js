@@ -1,84 +1,84 @@
-const buttonTooltipOffsetPx = 6;
-const buttonTooltipViewportPaddingPx = 4;
+UiToolset.RegisterAlpineState(() => {
+  const buttonTooltipOffsetPx = 6;
+  const buttonTooltipViewportPaddingPx = 4;
 
-function clampNumber(value, minimum, maximum) {
-  return Math.min(Math.max(value, minimum), maximum);
-}
-
-function resolveFlippedAxisStart(
-  triggerStart,
-  triggerEnd,
-  tooltipSize,
-  viewportSize,
-  prefersAfter,
-) {
-  const beforeStart = triggerStart - tooltipSize - buttonTooltipOffsetPx;
-  const afterStart = triggerEnd + buttonTooltipOffsetPx;
-  let start = prefersAfter ? afterStart : beforeStart;
-  if (start < buttonTooltipViewportPaddingPx) {
-    start = afterStart;
+  function clampNumber(value, minimum, maximum) {
+    return Math.min(Math.max(value, minimum), maximum);
   }
-  if (start + tooltipSize > viewportSize - buttonTooltipViewportPaddingPx) {
-    start = beforeStart;
+
+  function resolveFlippedAxisStart(
+    triggerStart,
+    triggerEnd,
+    tooltipSize,
+    viewportSize,
+    prefersAfter,
+  ) {
+    const beforeStart = triggerStart - tooltipSize - buttonTooltipOffsetPx;
+    const afterStart = triggerEnd + buttonTooltipOffsetPx;
+    let start = prefersAfter ? afterStart : beforeStart;
+    if (start < buttonTooltipViewportPaddingPx) {
+      start = afterStart;
+    }
+    if (start + tooltipSize > viewportSize - buttonTooltipViewportPaddingPx) {
+      start = beforeStart;
+    }
+    const maximumStart = Math.max(
+      buttonTooltipViewportPaddingPx,
+      viewportSize - tooltipSize - buttonTooltipViewportPaddingPx,
+    );
+    return clampNumber(start, buttonTooltipViewportPaddingPx, maximumStart);
   }
-  const maximumStart = Math.max(
-    buttonTooltipViewportPaddingPx,
-    viewportSize - tooltipSize - buttonTooltipViewportPaddingPx,
-  );
-  return clampNumber(start, buttonTooltipViewportPaddingPx, maximumStart);
-}
 
-function resolveCenteredAxisStart(
-  triggerStart,
-  triggerSize,
-  tooltipSize,
-  viewportSize,
-) {
-  const centeredStart = triggerStart + triggerSize / 2 - tooltipSize / 2;
-  return clampNumber(
-    centeredStart,
-    buttonTooltipViewportPaddingPx,
-    viewportSize - tooltipSize - buttonTooltipViewportPaddingPx,
-  );
-}
+  function resolveCenteredAxisStart(
+    triggerStart,
+    triggerSize,
+    tooltipSize,
+    viewportSize,
+  ) {
+    const centeredStart = triggerStart + triggerSize / 2 - tooltipSize / 2;
+    return clampNumber(
+      centeredStart,
+      buttonTooltipViewportPaddingPx,
+      viewportSize - tooltipSize - buttonTooltipViewportPaddingPx,
+    );
+  }
 
-function resolveTooltipCoordinates(triggerRect, tooltipRect, position) {
-  const isVerticalAxisPrimary = position === "top" || position === "bottom";
-  if (isVerticalAxisPrimary) {
+  function resolveTooltipCoordinates(triggerRect, tooltipRect, position) {
+    const isVerticalAxisPrimary = position === "top" || position === "bottom";
+    if (isVerticalAxisPrimary) {
+      return {
+        top: resolveFlippedAxisStart(
+          triggerRect.top,
+          triggerRect.bottom,
+          tooltipRect.height,
+          window.innerHeight,
+          position === "bottom",
+        ),
+        left: resolveCenteredAxisStart(
+          triggerRect.left,
+          triggerRect.width,
+          tooltipRect.width,
+          window.innerWidth,
+        ),
+      };
+    }
     return {
-      top: resolveFlippedAxisStart(
+      top: resolveCenteredAxisStart(
         triggerRect.top,
-        triggerRect.bottom,
+        triggerRect.height,
         tooltipRect.height,
         window.innerHeight,
-        position === "bottom",
       ),
-      left: resolveCenteredAxisStart(
+      left: resolveFlippedAxisStart(
         triggerRect.left,
-        triggerRect.width,
+        triggerRect.right,
         tooltipRect.width,
         window.innerWidth,
+        position === "right",
       ),
     };
   }
-  return {
-    top: resolveCenteredAxisStart(
-      triggerRect.top,
-      triggerRect.height,
-      tooltipRect.height,
-      window.innerHeight,
-    ),
-    left: resolveFlippedAxisStart(
-      triggerRect.left,
-      triggerRect.right,
-      tooltipRect.width,
-      window.innerWidth,
-      position === "right",
-    ),
-  };
-}
 
-UiToolset.RegisterAlpineState(() => {
   Alpine.data("buttonTooltip", (position) => ({
     tooltipPosition: position || "top",
     isTooltipVisible: false,

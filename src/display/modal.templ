@@ -116,7 +116,7 @@ templ Modal(componentSettings ModalSettings) {
 	}
 	{{ backdropClasses += " " + backdropBackgroundColor }}
 	<!-- Modal Container Classes -->
-	{{ modalClasses := "relative flex flex-col gap-4" }}
+	{{ modalClasses := "relative flex flex-col gap-4 transition-all duration-300" }}
 	{{ backgroundColor := "bg-primary-900" }}
 	if componentSettings.BackgroundColor != "" {
 		{{ backgroundColor = "bg-" + componentSettings.BackgroundColor }}
@@ -166,13 +166,15 @@ templ Modal(componentSettings ModalSettings) {
 	}
 	{{ modalClasses += " " + modalSizeClasses }}
 	<!-- Modal Size Constraints -->
-	{{ modalClasses += " " + modalSizeConstraintClassesResolver(
-		componentSettings.MinWidthPercent,
-		componentSettings.MaxWidthPercent,
-		componentSettings.MinHeightPercent,
-		componentSettings.MaxHeightPercent,
-		componentSettings.ShouldHeightMatchContent,
-	) }}
+	{{
+		modalClasses += " " + modalSizeConstraintClassesResolver(
+			componentSettings.MinWidthPercent,
+			componentSettings.MaxWidthPercent,
+			componentSettings.MinHeightPercent,
+			componentSettings.MaxHeightPercent,
+			componentSettings.ShouldHeightMatchContent,
+		)
+	}}
 	<!-- Modal Border Radius -->
 	{{ borderRadiusClasses := "rounded" }}
 	switch componentSettings.BorderRadius {

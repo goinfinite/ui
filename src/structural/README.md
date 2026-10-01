@@ -51,7 +51,7 @@ The component requires a server that answers each request. The static demo serve
 
 Each column takes a `Label`, a `CellRenderer` function, and optional `SortKey`, `Alignment`, `WidthPercent`, width classes, and `CellClass`. `Alignment` takes a `DataTableAlignment` value: `DataTableAlignmentLeft`, `DataTableAlignmentCenter`, or `DataTableAlignmentRight`. `TextCase` takes a `uiToolset.TextCase*` value and transforms the header labels. The default, `TextCaseNone`, leaves them as typed. `Density` takes a `DataTableDensity` value: `DataTableDensityComfortable` (the default) or `DataTableDensityDense`. `InitialSortDirection` takes a `DataTableSortDirection` value: `DataTableSortDirectionAsc` or `DataTableSortDirectionDesc`. `ItemsPerPage` and each entry in `ItemsPerPageSizeChoices` are `DataTablePageSize` values. Set `PaginationAriaLabel` when a page holds more than one table, so each pagination landmark keeps a unique name.
 
-The `Initial*` fields seed the client state at render time: `InitialFilterValues`, `InitialSearchQuery`, `InitialSortKey`, and `InitialSortDirection`. The server renders the matching rows. `PageNumber` and `ItemsPerPage` also seed the client, but the component reads them to render the pagination readout.
+The `Initial*` fields seed the client state at render time: `InitialFilterValues`, `InitialSearchQuery`, `InitialSortKey`, and `InitialSortDirection`. The server renders the matching rows. `PageNumber` and `ItemsPerPage` also seed the client, but the component reads them to render the pagination readout. `PageNumber` is zero-based: the first page is 0, and the zero value is the first page. `ShouldUseOneBasedPageDisplay` changes only the labels, not the state.
 
 `HeaderClass` adds classes to the header row, `CellClass` adds classes to one column's cells, `RowClassResolver` returns classes for each row from its data, and `IsStriped` adds a zebra stripe. These classes append to elements that already carry base utilities, so when two utilities set the same property the generated stylesheet order decides the winner, not the field order. A cell component that sets its own color wins over the row color, so use `RowClassResolver` for cells that leave the color to the row. When `IsHeaderSticky` is set, the sticky header paints its own background, so a `HeaderClass` background does not show. The table renders a default search box when the query URL template carries the search placeholder; pass `SearchBox` to replace it. `SearchBoxAlignment` takes a `DataTableAlignment` value and places the search box left (the default), center, or right within the toolbar. `CheckboxShape` accepts `uiForm.CheckboxInputShapeSquare` (the default), `uiForm.CheckboxInputShapeRounded`, or `uiForm.CheckboxInputShapeCircular`; `CheckboxSize` accepts the `uiForm.CheckboxInputSize*` values and defaults to the medium size; `CheckboxCheckedColor` and `CheckboxUncheckedColor` take a color token and default to `secondary-500` and `neutral-50/20`.
 
@@ -64,6 +64,8 @@ QueryUrlTemplate: "/records?page=" + uiStructural.DataTableUrlPlaceholderPageNum
     "&direction=" + uiStructural.DataTableUrlPlaceholderSortDirection +
     "&q=" + uiStructural.DataTableUrlPlaceholderSearch
 ```
+
+`DataTableUrlPlaceholderPageNumber` emits the zero-based page index, where the first page is 0. APIs that treat the first page as 0 receive the value unchanged.
 
 Filter values append to the URL as `key=value` pairs. Number and date ranges append as `keyMin` and `keyMax`. Empty values are omitted. Set `QueryParamName` on a filter to send a different query key.
 
@@ -143,7 +145,8 @@ Page controls with a readout, a page-number strip, and an items-per-page selecto
 })
 ```
 
-- The readout follows the state paths. It shows the current range and the total.
+- The bound page number is zero-based: the first page is 0. The readout shows the current item range and the total, so it starts at 1.
+- `ShouldUseOneBasedPageDisplay` labels the strip from 1 while the bound state stays zero-based. The default labels the first page 0.
 - The component derives the page count from `ItemsTotal` and the bound `itemsPerPage`, so the strip and the controls react when the page size changes. `PagesTotal` is an optional fallback used only when `ItemsTotal` is zero.
 - The strip shows the first page, the last page, the pages around the current one, and ellipses for gaps. The current page carries `aria-current="page"`.
 - `ItemsPerPageSizeChoices` overrides the default page sizes.

@@ -49,6 +49,39 @@ func TestPaginationPagesTotalExpressionBuilder(t *testing.T) {
 	}
 }
 
+func TestPaginationLastPageNumberExpressionBuilder(t *testing.T) {
+	testCases := []struct {
+		name                 string
+		pagesTotalExpression string
+		expected             string
+	}{
+		{
+			name:                 "empty result set never yields a negative page number",
+			pagesTotalExpression: "0",
+			expected:             "Math.max(0, 0 - 1)",
+		},
+		{
+			name:                 "derived page count",
+			pagesTotalExpression: "Math.max(1, Math.ceil(240 / (itemsPerPage || 1)))",
+			expected:             "Math.max(0, Math.max(1, Math.ceil(240 / (itemsPerPage || 1))) - 1)",
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			actual := paginationLastPageNumberExpressionBuilder(
+				testCase.pagesTotalExpression,
+			)
+			if actual != testCase.expected {
+				t.Errorf(
+					"paginationLastPageNumberExpressionBuilder(%q) = %q; want %q",
+					testCase.pagesTotalExpression, actual, testCase.expected,
+				)
+			}
+		})
+	}
+}
+
 func TestPaginationReadoutExpression(t *testing.T) {
 	testCases := []struct {
 		name               string
@@ -62,8 +95,8 @@ func TestPaginationReadoutExpression(t *testing.T) {
 			pageNumberPath:   "pageNumber",
 			itemsPerPagePath: "itemsPerPage",
 			itemsTotal:       240,
-			expectedExpression: `(pageNumber - 1) * (itemsPerPage || 1) + 1 + "–" + ` +
-				`Math.min(pageNumber * (itemsPerPage || 1), 240) + " of 240"`,
+			expectedExpression: `pageNumber * (itemsPerPage || 1) + 1 + "–" + ` +
+				`Math.min((pageNumber + 1) * (itemsPerPage || 1), 240) + " of 240"`,
 		},
 		{
 			name:               "empty result set",
@@ -77,8 +110,8 @@ func TestPaginationReadoutExpression(t *testing.T) {
 			pageNumberPath:   "tableState.pageNumber",
 			itemsPerPagePath: "tableState.itemsPerPage",
 			itemsTotal:       30,
-			expectedExpression: `(tableState.pageNumber - 1) * (tableState.itemsPerPage || 1) + 1 + "–" + ` +
-				`Math.min(tableState.pageNumber * (tableState.itemsPerPage || 1), 30) + " of 30"`,
+			expectedExpression: `tableState.pageNumber * (tableState.itemsPerPage || 1) + 1 + "–" + ` +
+				`Math.min((tableState.pageNumber + 1) * (tableState.itemsPerPage || 1), 30) + " of 30"`,
 		},
 	}
 

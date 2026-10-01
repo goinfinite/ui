@@ -28,15 +28,10 @@ templ LoadingOverlay(componentSettings LoadingOverlaySettings) {
 	if componentSettings.Id != "" {
 		{{ loadingOverlayId = componentSettings.Id }}
 	}
-	{{ loadingOverlayStyle := ".htmx-request #" + loadingOverlayId + ",.htmx-request#" + loadingOverlayId + "{display:flex !important}" }}
+	{{ loadingOverlayStyle := ".htmx-request #" + loadingOverlayId + ",.htmx-request#" + loadingOverlayId + "{opacity:1 !important;visibility:visible !important}" }}
 	<!-- LoadingOverlay CSS -->
 	@templ.Raw("<style type=\"text/css\">" + loadingOverlayStyle + "</style>")
-	{{ loadingOverlayClasses := "z-100 fixed top-0 left-0 h-full w-full items-center justify-center" }}
-	if componentSettings.IsLoadingOneWayStatePath != "" {
-		{{ loadingOverlayClasses += " flex" }}
-	} else {
-		{{ loadingOverlayClasses += " hidden" }}
-	}
+	{{ loadingOverlayClasses := "z-100 fixed top-0 left-0 h-full w-full items-center justify-center flex transition-all duration-300" }}
 	{{ backgroundColor := "primary-500/60" }}
 	if componentSettings.BackgroundColor != "" {
 		{{ backgroundColor = componentSettings.BackgroundColor }}
@@ -77,12 +72,15 @@ templ LoadingOverlay(componentSettings LoadingOverlaySettings) {
 		{{ loadingOverlayIconAnimationDuration = componentSettings.AnimationDurationSeconds }}
 	}
 	{{ loadingOverlayIconClasses += " animate-duration-[" + loadingOverlayIconAnimationDuration + "s]" }}
+	{{ loadingOverlayHiddenStyle := "opacity: 0; visibility: hidden" }}
+	{{ loadingOverlayVisibleStyle := "opacity: 1; visibility: visible" }}
 	<!-- LoadingOverlay HTML -->
 	<div
 		id={ loadingOverlayId }
 		class={ loadingOverlayClasses }
+		style={ loadingOverlayHiddenStyle }
 		if componentSettings.IsLoadingOneWayStatePath != "" {
-			x-show={ componentSettings.IsLoadingOneWayStatePath }
+			:style={ componentSettings.IsLoadingOneWayStatePath + " ? '" + loadingOverlayVisibleStyle + "' : '" + loadingOverlayHiddenStyle + "'" }
 		}
 	>
 		<i class={ loadingOverlayIconClasses }></i>

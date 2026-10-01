@@ -63,7 +63,7 @@ templ DataTable[Row any](componentSettings DataTableSettings[Row]) {
 	}
 	{{ itemsPerPageSizeChoices := componentSettings.itemsPerPageSizeChoicesResolver() }}
 	{{ itemsPerPage := componentSettings.itemsPerPageResolver(itemsPerPageSizeChoices) }}
-	{{ pageNumber := componentSettings.pageNumberResolver() }}
+	{{ pageNumber := componentSettings.PageNumber }}
 	{{ paginationAriaLabel := componentSettings.paginationAriaLabelResolver() }}
 	@templ.JSONScript(settingsScriptId, componentSettings.clientSettingsResolver(itemsPerPage, pageNumber))
 	<div
@@ -234,16 +234,17 @@ templ DataTable[Row any](componentSettings DataTableSettings[Row]) {
 			</div>
 			<div class="border-t border-neutral-50/10">
 				@Pagination(PaginationSettings{
-					PageNumberTwoWayStatePath:   "pageNumber",
-					ItemsPerPageTwoWayStatePath: "itemsPerPage",
-					ItemsTotal:                  componentSettings.ItemsTotal,
-					PagesTotal:                  componentSettings.PagesTotal,
-					AriaLabel:                   paginationAriaLabel,
-					IsDisabledOneWayStatePath:   "isLoading",
-					IsHiddenWhenSinglePage:      componentSettings.IsPaginationHiddenWhenSinglePage,
-					ItemsPerPageInputName:       tableId + "-itemsPerPage",
-					ItemsPerPageSizeChoices:     itemsPerPageSizeChoices,
-					OnChangeFunc:                "requestRefresh()",
+					PageNumberTwoWayStatePath:    "pageNumber",
+					ItemsPerPageTwoWayStatePath:  "itemsPerPage",
+					ItemsTotal:                   componentSettings.ItemsTotal,
+					PagesTotal:                   componentSettings.PagesTotal,
+					AriaLabel:                    paginationAriaLabel,
+					IsDisabledOneWayStatePath:    "isLoading",
+					IsHiddenWhenSinglePage:       componentSettings.IsPaginationHiddenWhenSinglePage,
+					ItemsPerPageInputName:        tableId + "-itemsPerPage",
+					ItemsPerPageSizeChoices:      itemsPerPageSizeChoices,
+					OnChangeFunc:                 "requestRefresh()",
+					ShouldUseOneBasedPageDisplay: componentSettings.ShouldUseOneBasedPageDisplay,
 				})
 			</div>
 		</div>

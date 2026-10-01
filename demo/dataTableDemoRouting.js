@@ -1,7 +1,7 @@
 UiToolset.RegisterAlpineState(() => {
   const refreshAssetFile = "dataTableDemoRefreshFragments.json";
   const defaultItemsPerPage = 5;
-  const defaultPageNumber = 1;
+  const defaultPageNumber = 0;
 
   function isRefreshAssetRequest(requestUrl) {
     return (

@@ -4,24 +4,24 @@ UiToolset.RegisterAlpineState(() => {
 
 function paginationShownPageNumbersResolver(currentPageNumber, pagesTotal) {
   const candidatePageNumbers = [
-    1,
+    0,
     currentPageNumber - 1,
     currentPageNumber,
     currentPageNumber + 1,
-    pagesTotal,
+    pagesTotal - 1,
   ];
   const inRangePageNumbers = candidatePageNumbers.filter(
-    (pageNumber) => pageNumber >= 1 && pageNumber <= pagesTotal,
+    (pageNumber) => pageNumber >= 0 && pageNumber <= pagesTotal - 1,
   );
   return [...new Set(inRangePageNumbers)].sort(
     (leftPageNumber, rightPageNumber) => leftPageNumber - rightPageNumber,
   );
 }
 
-function paginationPageStripItemBuilder(pageNumber) {
+function paginationPageStripItemBuilder(pageNumber, displayBase) {
   return {
     key: `page${pageNumber}`,
-    label: String(pageNumber),
+    label: String(pageNumber + displayBase),
     pageNumber: pageNumber,
   };
 }
@@ -34,7 +34,11 @@ function paginationEllipsisStripItemBuilder(previousPageNumber) {
   };
 }
 
-function paginationPageStripBuilder(currentPageNumber, pagesTotal) {
+function paginationPageStripBuilder(
+  currentPageNumber,
+  pagesTotal,
+  displayBase,
+) {
   if (pagesTotal < 1) {
     return [];
   }
@@ -49,13 +53,15 @@ function paginationPageStripBuilder(currentPageNumber, pagesTotal) {
       const previousPageNumber = shownPageNumbers[pageIndex - 1];
       const skippedPageCount = pageNumber - previousPageNumber - 1;
       if (skippedPageCount === 1) {
-        stripItems.push(paginationPageStripItemBuilder(previousPageNumber + 1));
+        stripItems.push(
+          paginationPageStripItemBuilder(previousPageNumber + 1, displayBase),
+        );
       }
       if (skippedPageCount > 1) {
         stripItems.push(paginationEllipsisStripItemBuilder(previousPageNumber));
       }
     }
-    stripItems.push(paginationPageStripItemBuilder(pageNumber));
+    stripItems.push(paginationPageStripItemBuilder(pageNumber, displayBase));
   }
   return stripItems;
 }

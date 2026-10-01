@@ -47,7 +47,7 @@ Status message with title, description, and variation presets.
 
 ## CloakLoading
 
-Full-screen loader that covers the page before CSS and JavaScript load. Place it at the end of `<body>`.
+Full-screen loader that covers the page before CSS and JavaScript load. Place it as the first element in `<body>`.
 
 ```go
 @uiDisplay.CloakLoading(uiDisplay.CloakLoadingSettings{
@@ -57,7 +57,7 @@ Full-screen loader that covers the page before CSS and JavaScript load. Place it
 })
 ```
 
-It uses inline styles on purpose, so it renders before the stylesheet arrives. `HideDelaySeconds` hides it after the given delay. Icon sizes accept the `CloakLoadingIconSize*` constants, and animations accept the `CloakLoadingAnimationName*` constants.
+It uses inline styles on purpose, so it renders before the stylesheet arrives. It hides `HideDelaySeconds` after Alpine finishes initializing. Icon sizes accept the `CloakLoadingIconSize*` constants, and animations accept the `CloakLoadingAnimationName*` constants.
 
 ## ConfirmationDialog and Presets
 

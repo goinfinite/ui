@@ -7,7 +7,7 @@ UiToolset.RegisterAlpineState(() => {
     refreshDebounceMs: 300,
     refreshOnEvents: [],
     filterQueryParamNames: {},
-    pageNumber: 1,
+    pageNumber: 0,
     itemsPerPage: 5,
     sortKey: "",
     sortDirection: "",
@@ -271,12 +271,12 @@ UiToolset.RegisterAlpineState(() => {
     },
 
     resetPageAndRefresh() {
-      this.pageNumber = 1;
+      this.pageNumber = 0;
       this.requestRefresh();
     },
 
     toggleSort(columnSortKey) {
-      this.pageNumber = 1;
+      this.pageNumber = 0;
       if (this.sortKey !== columnSortKey) {
         this.sortKey = columnSortKey;
         this.sortDirection = "asc";
@@ -332,7 +332,7 @@ UiToolset.RegisterAlpineState(() => {
       this.filterQueryParamNames = clientSettings.filterQueryParamNames || {};
 
       const initialState = clientSettings.initialState || {};
-      this.pageNumber = initialState.pageNumber ?? 1;
+      this.pageNumber = initialState.pageNumber ?? 0;
       this.itemsPerPage = initialState.itemsPerPage ?? 5;
       this.sortKey = initialState.sortKey ?? "";
       this.sortDirection = initialState.sortDirection ?? "";

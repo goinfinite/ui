@@ -132,6 +132,7 @@ templ RangeSliderValueBubbleExample() {
 
 	// OptionalFields
 	ThumbValueBubbleEnabled:         true,
+	ThumbValueBubbleDisplayMode:     uiControl.RangeSliderThumbValueBubbleDisplayModeHover,
 	ThumbValueBubblePosition:        uiControl.RangeSliderThumbValueBubblePositionTop,
 	ThumbValueBubbleBackgroundColor: "red-500",
 	ThumbValueBubbleTextColor:       "neutral-50",
@@ -139,7 +140,7 @@ templ RangeSliderValueBubbleExample() {
 	}}
 	@DemoExampleCard(
 		"Value Bubble",
-		"ThumbValueBubbleEnabled shows the live value above or below the thumb. Bubble colors, size, shape, ring, and position style it.",
+		"ThumbValueBubbleEnabled shows the live value above or below the thumb. The default display mode always shows it; ThumbValueBubbleDisplayModeHover shows it only while the slider is hovered or dragged. Bubble colors, size, shape, ring, and position style it.",
 		"/control/rangeSlider.templ",
 		bubbleUsage,
 	) {
@@ -168,6 +169,13 @@ templ RangeSliderValueBubbleExample() {
 				ThumbValueBubbleShape:           uiControl.RangeSliderThumbValueBubbleShapeRounded,
 				ThumbValueBubbleRingColor:       "violet-500",
 				ThumbValueBubbleRingThickness:   uiControl.RangeSliderThumbValueBubbleRingThicknessXl,
+			})
+			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+				ThumbValueTwoWayStatePath:   "sliderValue",
+				ThumbValueBubbleEnabled:     true,
+				ThumbValueBubbleDisplayMode: uiControl.RangeSliderThumbValueBubbleDisplayModeHover,
+				ThumbValueBubblePosition:    uiControl.RangeSliderThumbValueBubblePositionTop,
+				ThumbAriaLabel:              "Hover bubble",
 			})
 		</div>
 	}
@@ -313,6 +321,86 @@ templ RangeSliderStepsTicksExample() {
 				ThumbAriaLabel:            "Ticks every step",
 				TrackSteps:                "20",
 				TrackTicksEnabled:         true,
+			})
+		</div>
+	}
+}
+
+templ RangeSliderTrackTooltipExample() {
+	{{
+		tooltipUsage := `@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+	ThumbValueTwoWayStatePath: "sliderValue",
+
+	// OptionalFields
+	TrackTooltipEnabled:         true,
+	TrackTooltipPosition:        uiControl.RangeSliderTrackTooltipPositionTop,
+	TrackTooltipBackgroundColor: "primary-500",
+	TrackTooltipTextColor:       "neutral-50",
+})`
+	}}
+	@DemoExampleCard(
+		"Track Tooltip",
+		"TrackTooltipEnabled previews the value under the pointer as it moves along the track. The preview snaps to TrackSteps and clamps to the track bounds.",
+		"/control/rangeSlider.templ",
+		tooltipUsage,
+	) {
+		<div
+			class="flex flex-col gap-3"
+			x-data="{sliderValue: 50, fractionValue: 0.3, tinyValue: 0.0000003, unalignedValue: 60, alignedValue: 0.3}"
+		>
+			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+				ThumbValueTwoWayStatePath:   "sliderValue",
+				ThumbAriaLabel:              "Tooltip top",
+				TrackTooltipEnabled:         true,
+				TrackTooltipPosition:        uiControl.RangeSliderTrackTooltipPositionTop,
+				TrackTooltipBackgroundColor: "primary-500",
+				TrackTooltipTextColor:       "neutral-50",
+			})
+			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+				ThumbValueTwoWayStatePath:   "fractionValue",
+				ThumbAriaLabel:              "Tooltip bottom",
+				TrackStartValue:             "0",
+				TrackEndValue:               "1",
+				TrackSteps:                  "0.1",
+				TrackTooltipEnabled:         true,
+				TrackTooltipPosition:        uiControl.RangeSliderTrackTooltipPositionBottom,
+				TrackTooltipBackgroundColor: "emerald-500",
+				TrackTooltipTextColor:       "neutral-50",
+				TrackTooltipRingColor:       "emerald-200",
+				TrackTooltipRingThickness:   uiControl.RangeSliderTrackTooltipRingThicknessMd,
+			})
+			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+				ThumbValueTwoWayStatePath:   "tinyValue",
+				ThumbAriaLabel:              "Tooltip tiny step",
+				TrackStartValue:             "0",
+				TrackEndValue:               "0.000001",
+				TrackSteps:                  "0.0000001",
+				TrackTooltipEnabled:         true,
+				TrackTooltipPosition:        uiControl.RangeSliderTrackTooltipPositionTop,
+				TrackTooltipBackgroundColor: "amber-500",
+				TrackTooltipTextColor:       "neutral-50",
+			})
+			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+				ThumbValueTwoWayStatePath:   "unalignedValue",
+				ThumbAriaLabel:              "Tooltip unaligned",
+				TrackStartValue:             "0",
+				TrackEndValue:               "100",
+				TrackSteps:                  "60",
+				TrackTooltipEnabled:         true,
+				TrackTooltipPosition:        uiControl.RangeSliderTrackTooltipPositionTop,
+				TrackTooltipBackgroundColor: "secondary-500",
+				TrackTooltipTextColor:       "neutral-50",
+			})
+			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+				ThumbValueTwoWayStatePath:   "alignedValue",
+				ThumbAriaLabel:              "Tooltip aligned decimal",
+				TrackStartValue:             "0",
+				TrackEndValue:               "0.3",
+				TrackSteps:                  "0.1",
+				TrackTooltipEnabled:         true,
+				TrackTooltipPosition:        uiControl.RangeSliderTrackTooltipPositionTop,
+				TrackTooltipBackgroundColor: "primary-500",
+				TrackTooltipTextColor:       "neutral-50",
 			})
 		</div>
 	}
@@ -481,6 +569,7 @@ templ RangeSliderDemo() {
 			{Title: "Track Labels", Icon: "ph-tag", Content: RangeSliderTrackLabelsExample()},
 			{Title: "Track Colors & Icons", Icon: "ph-paint-brush", Content: RangeSliderTrackColorsExample()},
 			{Title: "Steps & Ticks", Icon: "ph-dots-nine", Content: RangeSliderStepsTicksExample()},
+			{Title: "Track Tooltip", Icon: "ph-cursor-click", Content: RangeSliderTrackTooltipExample()},
 			{Title: "Dual-Thumb Mode", Icon: "ph-arrows-left-right", Content: RangeSliderDualModeExample()},
 			{Title: "Initial State Normalization", Icon: "ph-sort-ascending", Content: RangeSliderNormalizationExample()},
 		})
