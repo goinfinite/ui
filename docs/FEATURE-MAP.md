@@ -236,6 +236,19 @@ Page controls with a live readout, a page-number strip, first/previous/next/last
 
 ---
 
+## Tabs
+
+Horizontal and vertical tab headers bound to one selected value, with per-tab label, value, optional icon, and optional badge count. Content panels switch with Alpine `x-show`. Optional URL-hash syncing, tab side placement, icon position, and surface customization.
+
+**Flow:**
+
+1. `src/structural/tabs.templ` — Component definition with TabSettings and TabItemSettings; renders the tab list and the panels, with tab list and content surface settings
+2. `src/structural/tabs.go` — Unique id prefix generator, the selected, click, keyboard, and URL-hash sync expression builders, and the orientation, side, alignment, border radius, text color, aria-label, percent class, constraint class, and badge class resolvers
+3. `src/structural/tabs_test.go` — Table-driven tests for the expression builders and resolvers
+4. `src/structural/tabs_templ.go` — Compiled output rendering the ARIA tablist with roving tabindex, arrow and Home/End keyboard handlers, and the x-show panels
+
+---
+
 ## Filter Bar
 
 Standalone filter bar that renders one editor per declared filter (text contains, enum select, multi-enum select, number range, date range), shows active filters as removable chips, and resets everything with clear-all. A multi-enum filter holds an array and the refresh URL repeats its parameter once per selected value.
