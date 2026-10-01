@@ -52,10 +52,7 @@ test.describe("Tabs @structural", () => {
   test("reactive badge count follows its state path and hides at zero", async ({
     page,
   }) => {
-    await openExamplePanel(page, tabsSection, "Badge Counts");
-    const panel = page.locator(`${tabsSection} details`).filter({
-      has: page.locator("summary span.font-bold", { hasText: "Badge Counts" }),
-    });
+    const panel = await openExamplePanel(page, tabsSection, "Badge Counts");
 
     const notificationsTab = panel
       .locator("[role=tab]")
@@ -111,10 +108,7 @@ test.describe("Tabs @structural", () => {
   test("vertical orientation lays the list out as a column beside the panels", async ({
     page,
   }) => {
-    await openExamplePanel(page, tabsSection, "Vertical");
-    const panel = page.locator(`${tabsSection} details`).filter({
-      has: page.locator("summary span.font-bold", { hasText: "Vertical" }),
-    });
+    const panel = await openExamplePanel(page, tabsSection, "Vertical");
 
     const tablist = panel.locator("[role=tablist]").first();
     await expect(tablist.locator("[role=tab]")).toHaveCount(3);
@@ -138,10 +132,7 @@ test.describe("Tabs @structural", () => {
   test("right side places the vertical tab list beside the panels on the right", async ({
     page,
   }) => {
-    await openExamplePanel(page, tabsSection, "Right Side");
-    const panel = page.locator(`${tabsSection} details`).filter({
-      has: page.locator("summary span.font-bold", { hasText: "Right Side" }),
-    });
+    const panel = await openExamplePanel(page, tabsSection, "Right Side");
 
     const tablist = panel.locator("[role=tablist]").first();
     await expect(tablist.locator("[role=tab]")).toHaveCount(3);
@@ -165,12 +156,7 @@ test.describe("Tabs @structural", () => {
   test("icon position top stacks the icon above the label", async ({
     page,
   }) => {
-    await openExamplePanel(page, tabsSection, "Icon Position");
-    const panel = page.locator(`${tabsSection} details`).filter({
-      has: page.locator("summary span.font-bold", {
-        hasText: "Icon Position",
-      }),
-    });
+    const panel = await openExamplePanel(page, tabsSection, "Icon Position");
 
     const firstTab = panel.locator("[role=tab]").first();
     const tabClasses = await firstTab.getAttribute("class");
@@ -182,10 +168,7 @@ test.describe("Tabs @structural", () => {
   });
 
   test("border radius rounds the tab edges", async ({ page }) => {
-    await openExamplePanel(page, tabsSection, "Border Radius");
-    const panel = page.locator(`${tabsSection} details`).filter({
-      has: page.locator("summary span.font-bold", { hasText: "Border Radius" }),
-    });
+    const panel = await openExamplePanel(page, tabsSection, "Border Radius");
 
     const firstTab = panel.locator("[role=tab]").first();
     const tabClasses = await firstTab.getAttribute("class");
@@ -195,12 +178,11 @@ test.describe("Tabs @structural", () => {
   test("vertical alignment centers the tab list with the content", async ({
     page,
   }) => {
-    await openExamplePanel(page, tabsSection, "Vertical Alignment");
-    const panel = page.locator(`${tabsSection} details`).filter({
-      has: page.locator("summary span.font-bold", {
-        hasText: "Vertical Alignment",
-      }),
-    });
+    const panel = await openExamplePanel(
+      page,
+      tabsSection,
+      "Vertical Alignment",
+    );
 
     const tablist = panel.locator("[role=tablist]").first();
     const tablistClasses = await tablist.getAttribute("class");
@@ -219,12 +201,11 @@ test.describe("Tabs @structural", () => {
   });
 
   test("vertical overflow tab list scrolls vertically", async ({ page }) => {
-    await openExamplePanel(page, tabsSection, "Vertical Overflow Scroll");
-    const panel = page.locator(`${tabsSection} details`).filter({
-      has: page.locator("summary span.font-bold", {
-        hasText: "Vertical Overflow Scroll",
-      }),
-    });
+    const panel = await openExamplePanel(
+      page,
+      tabsSection,
+      "Vertical Overflow Scroll",
+    );
 
     const tablist = panel.locator("[role=tablist]").first();
     await expect(tablist.locator("[role=tab]")).toHaveCount(9);
@@ -246,12 +227,11 @@ test.describe("Tabs @structural", () => {
   test("surface customization applies the background, padding, ring, radius, and text color", async ({
     page,
   }) => {
-    await openExamplePanel(page, tabsSection, "Surface Customization");
-    const panel = page.locator(`${tabsSection} details`).filter({
-      has: page.locator("summary span.font-bold", {
-        hasText: "Surface Customization",
-      }),
-    });
+    const panel = await openExamplePanel(
+      page,
+      tabsSection,
+      "Surface Customization",
+    );
 
     const tablist = panel.locator("[role=tablist]").first();
     const tablistClasses = await tablist.getAttribute("class");
@@ -269,12 +249,7 @@ test.describe("Tabs @structural", () => {
   test("content surface applies the background, padding, ring, radius, shadow, and text color", async ({
     page,
   }) => {
-    await openExamplePanel(page, tabsSection, "Content Surface");
-    const panel = page.locator(`${tabsSection} details`).filter({
-      has: page.locator("summary span.font-bold", {
-        hasText: "Content Surface",
-      }),
-    });
+    const panel = await openExamplePanel(page, tabsSection, "Content Surface");
 
     const panels = panel.locator("[role=tabpanel]").first().locator("xpath=..");
     const panelsClasses = await panels.getAttribute("class");
@@ -291,12 +266,7 @@ test.describe("Tabs @structural", () => {
   });
 
   test("overflow tab list scrolls horizontally", async ({ page }) => {
-    await openExamplePanel(page, tabsSection, "Overflow Scroll");
-    const panel = page.locator(`${tabsSection} details`).filter({
-      has: page.locator("summary span.font-bold", {
-        hasText: "Overflow Scroll",
-      }),
-    });
+    const panel = await openExamplePanel(page, tabsSection, "Overflow Scroll");
 
     const tablist = panel.locator("[role=tablist]").first();
     await expect(tablist.locator("[role=tab]")).toHaveCount(9);
@@ -311,10 +281,7 @@ test.describe("Tabs @structural", () => {
   test("deep-linked tab writes the hash on click and reads it on change", async ({
     page,
   }) => {
-    await openExamplePanel(page, tabsSection, "Deep Linking");
-    const panel = page.locator(`${tabsSection} details`).filter({
-      has: page.locator("summary span.font-bold", { hasText: "Deep Linking" }),
-    });
+    const panel = await openExamplePanel(page, tabsSection, "Deep Linking");
 
     const tablist = panel.locator("[role=tablist]").first();
     await tablist.locator("[role=tab][data-tab-value=security]").click();
