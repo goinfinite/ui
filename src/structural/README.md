@@ -25,6 +25,43 @@ Surface container with an optional header block and content slots.
 - `GapSize` accepts `CardGapSizeNone` through `CardGapSizeXl`; the default is `CardGapSizeMd`, which renders `gap-3` between the header, body, and footer.
 - `ShadowSize`, `RingColor`, and `RingThickness` follow the same token scales as Modal and Alert. `BackgroundColor` and `TextColor` take color tokens. `TextCase` takes a `uiToolset.TextCase*` value and transforms the header title and sub-heading.
 
+## Carousel
+
+`@uiStructural.Carousel` slides a window of items inside a server page. The server returns a chunk of items; the window moves inside that chunk. The footer pages the chunk with the same `Pagination` component the DataTable uses, and the filter bar and search box refresh the chunk from your server.
+
+```go
+@uiStructural.Carousel(uiStructural.CarouselSettings[Record]{
+    ItemRenderer: func(record Record) templ.Component { return CarouselItem(record) },
+    Items:        records,
+    QueryUrlTemplate: "/records?page=" + uiStructural.CarouselUrlPlaceholderPageNumber +
+        "&itemsPerPage=" + uiStructural.CarouselUrlPlaceholderItemsPerPage,
+
+    // OptionalFields
+    ItemsPerView:   uiStructural.CarouselItemsPerViewSettings{Base: 1, Sm: 2, Lg: 3},
+    IsSwipeEnabled: true,
+})
+```
+
+- `ItemRenderer` renders one item. `Items` holds the chunk the server returned.
+- The carousel owns the item width. Each item fills an equal share of the visible area, so the visible count fits at every window size. Do not set a width on the item component; the carousel overrides it.
+- The visible count follows Tailwind's named breakpoints, mobile-first. `ItemsPerView` is a `CarouselItemsPerViewSettings` value: `Base` is the base (one when unset), and `Sm` (≥640px), `Md` (≥768px), `Lg` (≥1024px), `Xl` (≥1280px), and `TwoXl` (≥1536px) each raise the count from their width up. A breakpoint you leave unset inherits the lower one, exactly like a missing `md:` class. The count is measured against the browser window, the same basis the rest of the library uses.
+- `ItemsPerPage` and `ItemsPerPageSizeChoices` page the server chunk. `ItemsTotal` and `PagesTotal` feed the footer readout and page count, exactly like DataTable.
+- `QueryUrlTemplate` uses the same placeholders as DataTable: `CarouselUrlPlaceholderPageNumber`, `CarouselUrlPlaceholderItemsPerPage`, and `CarouselUrlPlaceholderSearch`.
+- `Filters` renders the shared `FilterBar` below the track, before the pagination. Filter values append to the URL as `key=value` pairs; number and date ranges append as `keyMin` and `keyMax`. The filter bar stays outside the swapped region, so a refresh cannot steal focus from a field you are typing in.
+- A search box renders centered above the track when the query URL template carries the search placeholder. Pass `SearchBox` to replace it. `SearchBoxAlignment` takes a `HorizontalAlignment` value and places it left, center (the default), or right. `SearchBoxPosition` takes `CarouselSearchBoxPositionTop` (the default) or `CarouselSearchBoxPositionBottom` and places the bar above or below the track.
+- `IsAutoplay` advances the window on a timer. `AutoplayIntervalMs` sets the interval, 4000 when unset. `IsAutoplayPausedOnHover` stops the timer while the pointer is over the carousel.
+- `IsSwipeEnabled` moves the window on a horizontal drag or swipe. The threshold is 40 pixels.
+- `IsPaginationHiddenWhenSinglePage` hides the page-number controls while every item fits on one page. The readout and the items-per-page selector stay.
+- Surface styling: `BackgroundColor`, `TextColor`, `BorderRadius` (`CarouselBorderRadiusNone` through `CarouselBorderRadiusXl`), `PaddingSize` and `ItemPaddingSize` (`CarouselPaddingSizeNone` through `CarouselPaddingSizeXl`), `GapSize` (`CarouselGapSizeNone` through `CarouselGapSizeXl`), `ShadowSize` (`CarouselShadowSizeNone` through `CarouselShadowSizeXl`), and `RingColor` with `RingThickness` (`CarouselRingThicknessXs` through `CarouselRingThicknessXl`).
+- Arrow styling: `ArrowsPosition` (`CarouselArrowsPositionOutside`, the default, or `CarouselArrowsPositionInside` to overlay the track), `ArrowsShape` (`CarouselArrowsShapeCircular`, the default, `CarouselArrowsShapeRounded`, or `CarouselArrowsShapeSquare`), `ArrowsSize` (`CarouselArrowsSizeSm/Md/Lg`), `ArrowsBackgroundColor`, and `ArrowsIconColor`.
+- Dot styling: `DotsPosition` (`CarouselDotsPositionBottom`, the default, or `CarouselDotsPositionTop`), `DotsSize` (`CarouselDotsSizeSm/Md/Lg`), `DotsActiveColor`, and `DotsInactiveColor`.
+- Item styling: `ItemBackgroundColor`, `ItemBorderRadius` (`CarouselBorderRadiusNone` through `CarouselBorderRadiusXl`), `ItemPaddingSize`, `ItemRingColor`, `ItemRingThickness`, and `ItemShadowSize` paint the item wrapper, so a plain renderer still gets a card.
+- `EmptyState` renders when the chunk holds no items. `RefreshOnEvents` lists window event names; dispatching one refreshes the carousel.
+- The refresh uses `htmx.ajax` when HTMX is present and falls back to `fetch` otherwise, and swaps two regions from one response: the carousel body (`data-ui-carousel`, holding the arrows, track, and dots) and the pagination (`data-ui-carousel-pagination`). The response must contain both. The pagination carries an `id` of the component id plus `-pagination`, and `hx-swap-oob` targets that id, so HTMX swaps it out of band into the component that refreshed while the body takes the selected swap, and the root carries `hx-sync` so a new refresh aborts the one in flight.
+- Client state lives in the component root: `pageNumber`, `itemsPerPage`, `searchQuery`, `filterValues`, `windowStart`, `itemsPerView`, and `itemsCount`. A failed refresh shows an inline error with a retry button.
+- The arrows carry accessible names, the dots carry `aria-label` and `aria-current`, off-window items are set `inert` so they leave the tab order, and the track is keyboard-operable through the prev and next buttons.
+- Pass state paths, the items-per-view values, filter keys, the query URL template, and the class-attribute inputs (`BackgroundColor`, `TextColor`, `RingColor`, `ArrowsBackgroundColor`, `ArrowsIconColor`, `DotsActiveColor`, `DotsInactiveColor`, `ItemBackgroundColor`, `ItemRingColor`, and `FilterDropdownBackgroundColor`) from code, never from request data. The component embeds them into client-side expressions and class attributes.
+
 ## DataTable
 
 `@uiStructural.DataTable` renders rows from your data and refreshes them from your server. Every sort, page, filter, or search change requests the URL template you provide. The table uses `htmx.ajax` when HTMX is present and falls back to `fetch` otherwise.
@@ -49,11 +86,11 @@ The component requires a server that answers each request. The static demo serve
 })
 ```
 
-Each column takes a `Label`, a `CellRenderer` function, and optional `SortKey`, `Alignment`, `WidthPercent`, width classes, and `CellClass`. `Alignment` takes a `DataTableAlignment` value: `DataTableAlignmentLeft`, `DataTableAlignmentCenter`, or `DataTableAlignmentRight`. `TextCase` takes a `uiToolset.TextCase*` value and transforms the header labels. The default, `TextCaseNone`, leaves them as typed. `Density` takes a `DataTableDensity` value: `DataTableDensityComfortable` (the default) or `DataTableDensityDense`. `InitialSortDirection` takes a `DataTableSortDirection` value: `DataTableSortDirectionAsc` or `DataTableSortDirectionDesc`. `ItemsPerPage` and each entry in `ItemsPerPageSizeChoices` are `DataTablePageSize` values. Set `PaginationAriaLabel` when a page holds more than one table, so each pagination landmark keeps a unique name.
+Each column takes a `Label`, a `CellRenderer` function, and optional `SortKey`, `Alignment`, `WidthPercent`, width classes, and `CellClass`. `Alignment` takes a `TextAlignment` value: `TextAlignmentLeft`, `TextAlignmentCenter`, or `TextAlignmentRight`. `TextCase` takes a `uiToolset.TextCase*` value and transforms the header labels. The default, `TextCaseNone`, leaves them as typed. `Density` takes a `DataTableDensity` value: `DataTableDensityComfortable` (the default) or `DataTableDensityDense`. `InitialSortDirection` takes a `DataTableSortDirection` value: `DataTableSortDirectionAsc` or `DataTableSortDirectionDesc`. `ItemsPerPage` and each entry in `ItemsPerPageSizeChoices` are `uiStructural.ItemsPerPage` values. Set `PaginationAriaLabel` when a page holds more than one table, so each pagination landmark keeps a unique name.
 
 The `Initial*` fields seed the client state at render time: `InitialFilterValues`, `InitialSearchQuery`, `InitialSortKey`, and `InitialSortDirection`. The server renders the matching rows. `PageNumber` and `ItemsPerPage` also seed the client, but the component reads them to render the pagination readout. `PageNumber` is zero-based: the first page is 0, and the zero value is the first page. `ShouldUseOneBasedPageDisplay` changes only the labels, not the state.
 
-`HeaderClass` adds classes to the header row, `CellClass` adds classes to one column's cells, `RowClassResolver` returns classes for each row from its data, and `IsStriped` adds a zebra stripe. These classes append to elements that already carry base utilities, so when two utilities set the same property the generated stylesheet order decides the winner, not the field order. A cell component that sets its own color wins over the row color, so use `RowClassResolver` for cells that leave the color to the row. When `IsHeaderSticky` is set, the sticky header paints its own background, so a `HeaderClass` background does not show. The table renders a default search box when the query URL template carries the search placeholder; pass `SearchBox` to replace it. `SearchBoxAlignment` takes a `DataTableAlignment` value and places the search box left (the default), center, or right within the toolbar. `CheckboxShape` accepts `uiForm.CheckboxInputShapeSquare` (the default), `uiForm.CheckboxInputShapeRounded`, or `uiForm.CheckboxInputShapeCircular`; `CheckboxSize` accepts the `uiForm.CheckboxInputSize*` values and defaults to the medium size; `CheckboxCheckedColor` and `CheckboxUncheckedColor` take a color token and default to `secondary-500` and `neutral-50/20`.
+`HeaderClass` adds classes to the header row, `CellClass` adds classes to one column's cells, `RowClassResolver` returns classes for each row from its data, and `IsStriped` adds a zebra stripe. These classes append to elements that already carry base utilities, so when two utilities set the same property the generated stylesheet order decides the winner, not the field order. A cell component that sets its own color wins over the row color, so use `RowClassResolver` for cells that leave the color to the row. When `IsHeaderSticky` is set, the sticky header paints its own background, so a `HeaderClass` background does not show. The table renders a default search box when the query URL template carries the search placeholder; pass `SearchBox` to replace it. `SearchBoxAlignment` takes a `HorizontalAlignment` value and places the search box left (the default), center, or right within the toolbar. `CheckboxShape` accepts `uiForm.CheckboxInputShapeSquare` (the default), `uiForm.CheckboxInputShapeRounded`, or `uiForm.CheckboxInputShapeCircular`; `CheckboxSize` accepts the `uiForm.CheckboxInputSize*` values and defaults to the medium size; `CheckboxCheckedColor` and `CheckboxUncheckedColor` take a color token and default to `secondary-500` and `neutral-50/20`.
 
 The query URL template uses fixed placeholders. Build it from the `DataTableUrlPlaceholder*` constants and name the query keys:
 
@@ -77,7 +114,7 @@ Client state lives in the component root: `pageNumber`, `itemsPerPage`, `sortKey
 
 A failed refresh shows an inline error row with a retry button. A refresh in flight dims the table and disables the controls.
 
-Pass filter keys, state paths, and the query URL template from code, never from request data. The component embeds them into client-side expressions. `HeaderClass`, `CellClass`, the `RowClassResolver` result, `CheckboxCheckedColor`, and `CheckboxUncheckedColor` become HTML class attributes, so keep untrusted data out of them too.
+Pass filter keys, state paths, the query URL template, and `Id` from code, never from request data. The component embeds them into client-side expressions and the root id. `HeaderClass`, `CellClass`, `MinWidthClass`, `MaxWidthClass`, the `RowClassResolver` result, `FilterDropdownBackgroundColor`, `CheckboxCheckedColor`, and `CheckboxUncheckedColor` become HTML class attributes, so keep untrusted data out of them too.
 
 ## FilterBar
 
@@ -147,9 +184,9 @@ Page controls with a readout, a page-number strip, and an items-per-page selecto
 
 - The bound page number is zero-based: the first page is 0. The readout shows the current item range and the total, so it starts at 1.
 - `ShouldUseOneBasedPageDisplay` labels the strip from 1 while the bound state stays zero-based. The default labels the first page 0.
-- The component derives the page count from `ItemsTotal` and the bound `itemsPerPage`, so the strip and the controls react when the page size changes. `PagesTotal` is an optional fallback used only when `ItemsTotal` is zero.
+- The component derives the page count from `ItemsTotal` and the bound `itemsPerPage`, so the strip and the controls react when the items-per-page value changes. `PagesTotal` is an optional fallback used only when `ItemsTotal` is zero.
 - The strip shows the first page, the last page, the pages around the current one, and ellipses for gaps. The current page carries `aria-current="page"`.
-- `ItemsPerPageSizeChoices` overrides the default page sizes.
+- `ItemsPerPageSizeChoices` overrides the default items-per-page choices.
 - Set `ItemsPerPageInputName` when a page holds more than one pagination bound to the same state path, so the two items-per-page radio groups stay independent.
 - `IsDisabledOneWayStatePath` disables every control while the path is truthy.
 - `IsHiddenWhenSinglePage` hides the page-number controls while every record fits on one page. The readout and the items-per-page select stay visible. DataTable forwards it as `IsPaginationHiddenWhenSinglePage`.
