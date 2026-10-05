@@ -155,14 +155,8 @@ templ Tag(componentSettings TagSettings) {
 		case TagSizeXl:
 			{{ initialInnerSizeClasses = "text-xl p-1.5 gap-1.5" }}
 	}
-	{{ initialInnerBackgroundColor := "neutral-50/10" }}
-	if componentSettings.InnerBackgroundColor != "" {
-		{{ initialInnerBackgroundColor = componentSettings.InnerBackgroundColor }}
-	}
-	{{ initialInnerTextColor := "neutral-50" }}
-	if componentSettings.InnerTextColor != "" {
-		{{ initialInnerTextColor = componentSettings.InnerTextColor }}
-	}
+	{{ initialInnerBackgroundColorClass := uiToolset.BackgroundColorClassResolver(componentSettings.InnerBackgroundColor, "bg-neutral-50/10") }}
+	{{ initialInnerTextColorClass := uiToolset.TextColorClassResolver(componentSettings.InnerTextColor, "text-neutral-50") }}
 	{{ initialInnerRadius := "rounded" }}
 	switch componentSettings.InnerRadius {
 		case TagRadiusNone:
@@ -182,8 +176,8 @@ templ Tag(componentSettings TagSettings) {
 	}
 	{{
 		initialInnerClasses := initialInnerSizeClasses + " " +
-			"bg-" + initialInnerBackgroundColor +
-			" text-" + initialInnerTextColor +
+			initialInnerBackgroundColorClass +
+			" " + initialInnerTextColorClass +
 			" " + initialInnerRadius
 	}}
 	{{ iconSizeClasses := "text-lg" }}

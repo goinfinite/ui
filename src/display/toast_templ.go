@@ -149,15 +149,8 @@ func Toast(componentSettings ToastSettings) templ.Component {
 			toastRadius = "rounded-full"
 		}
 		toastClasses += " " + toastRingThickness + toastRingColor + " " + toastRadius
-		toastBackgroundColor := "primary-300"
-		if componentSettings.BackgroundColor != "" {
-			toastBackgroundColor = componentSettings.BackgroundColor
-		}
-		toastClasses += " bg-" + toastBackgroundColor
-		toastTextColor := "text-neutral-50"
-		if componentSettings.TextColor != "" {
-			toastTextColor = "text-" + componentSettings.TextColor
-		}
+		toastClasses += " " + uiToolset.BackgroundColorClassResolver(componentSettings.BackgroundColor, "bg-primary-300")
+		toastTextColor := uiToolset.TextColorClassResolver(componentSettings.TextColor, "text-neutral-50")
 		toastClasses += " " + toastTextColor
 		var templ_7745c5c3_Var2 = []any{toastClasses}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var2...)
@@ -184,7 +177,7 @@ func Toast(componentSettings ToastSettings) templ.Component {
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue("$store.toast.displayDurationMs = " + autoDismissMilliseconds)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/toast.templ`, Line: 133, Col: 72}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/toast.templ`, Line: 126, Col: 72}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
 		if templ_7745c5c3_Err != nil {

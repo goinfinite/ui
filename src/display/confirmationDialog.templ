@@ -3,6 +3,7 @@ package uiDisplay
 import (
 	uiControl "github.com/goinfinite/ui/src/control"
 	uiForm "github.com/goinfinite/ui/src/form"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
 const (
@@ -66,7 +67,7 @@ templ confirmationDialogTargetReferences(settings ConfirmationDialogSettings, to
 		<strong
 			x-show={ settings.TargetNameStatePath + " !== ''" }
 			x-text={ settings.TargetNameStatePath }
-			class={ "inline-block rounded-md border-2 border-dashed px-2 py-1 border-" + tone.TargetChipBorderColor }
+			class={ "inline-block rounded-md border-2 border-dashed px-2 py-1 " + uiToolset.BorderColorClassResolver(tone.TargetChipBorderColor, "") }
 		></strong>
 	}
 	if settings.TargetIdStatePath != "" {

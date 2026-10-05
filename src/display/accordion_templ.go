@@ -9,9 +9,6 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
-	"fmt"
-	"sync/atomic"
-
 	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
@@ -55,29 +52,7 @@ type AccordionSettings struct {
 	TitleColor             string
 }
 
-var accordionGroupIdCounter atomic.Uint64
-
-func generateAccordionGroupName() string {
-	return fmt.Sprintf("ui-accordion-%d", accordionGroupIdCounter.Add(1))
-}
-
-func accordionPaddingClassResolver(paddingSize string, defaultClass string) string {
-	switch paddingSize {
-	case AccordionPaddingSizeNone:
-		return "p-0"
-	case AccordionPaddingSizeXs:
-		return "p-1"
-	case AccordionPaddingSizeSm:
-		return "p-1.5"
-	case AccordionPaddingSizeMd:
-		return "p-2"
-	case AccordionPaddingSizeLg:
-		return "p-2.5"
-	case AccordionPaddingSizeXl:
-		return "p-3"
-	}
-	return defaultClass
-}
+var accordionIdPrefixGenerator = uiToolset.NewComponentIdPrefixGenerator("ui-accordion")
 
 func accordionEdgeRadiusClassesResolver(borderRadius string) string {
 	switch borderRadius {
@@ -118,32 +93,20 @@ func Accordion(componentSettings AccordionSettings) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		itemPaddingClass := accordionPaddingClassResolver(componentSettings.PaddingSize, "p-3")
-		contentPaddingClass := accordionPaddingClassResolver(componentSettings.ContentPaddingSize, "p-4")
+		itemPaddingClass := uiToolset.CompactPaddingClassResolver(componentSettings.PaddingSize, "p-3")
+		contentPaddingClass := uiToolset.CompactPaddingClassResolver(componentSettings.ContentPaddingSize, "p-4")
 		itemEdgeRadiusClasses := accordionEdgeRadiusClassesResolver(componentSettings.BorderRadius)
-		backgroundColorClass := "bg-neutral-50/5"
-		if componentSettings.BackgroundColor != "" {
-			backgroundColorClass = "bg-" + componentSettings.BackgroundColor
-		}
+		backgroundColorClass := uiToolset.BackgroundColorClassResolver(componentSettings.BackgroundColor, "bg-neutral-50/5")
 		openBackgroundColorClass := "open:bg-neutral-50/7.5 hover:bg-neutral-50/7.5"
 		if componentSettings.OpenBackgroundColor != "" {
 			openBackgroundColorClass = "open:bg-" + componentSettings.OpenBackgroundColor + " hover:bg-" + componentSettings.OpenBackgroundColor
 		}
-		contentBackgroundColorClass := "bg-neutral-900"
-		if componentSettings.ContentBackgroundColor != "" {
-			contentBackgroundColorClass = "bg-" + componentSettings.ContentBackgroundColor
-		}
-		titleColorClass := "text-neutral-50/80"
-		if componentSettings.TitleColor != "" {
-			titleColorClass = "text-" + componentSettings.TitleColor
-		}
-		borderColorClass := "border-neutral-50/5"
-		if componentSettings.BorderColor != "" {
-			borderColorClass = "border-" + componentSettings.BorderColor
-		}
+		contentBackgroundColorClass := uiToolset.BackgroundColorClassResolver(componentSettings.ContentBackgroundColor, "bg-neutral-900")
+		titleColorClass := uiToolset.TextColorClassResolver(componentSettings.TitleColor, "text-neutral-50/80")
+		borderColorClass := uiToolset.BorderColorClassResolver(componentSettings.BorderColor, "border-neutral-50/5")
 		groupName := ""
 		if componentSettings.IsSingleOpen {
-			groupName = generateAccordionGroupName()
+			groupName = accordionIdPrefixGenerator.GenerateNext()
 		}
 		textCaseClass := uiToolset.TextCaseClassResolver(componentSettings.TextCase)
 		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!-- Accordion --><section class=\"w-full\">")
@@ -185,7 +148,7 @@ func Accordion(componentSettings AccordionSettings) templ.Component {
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue(groupName)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/accordion.templ`, Line: 128, Col: 21}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/accordion.templ`, Line: 91, Col: 21}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
 				if templ_7745c5c3_Err != nil {
@@ -271,7 +234,7 @@ func Accordion(componentSettings AccordionSettings) templ.Component {
 			var templ_7745c5c3_Var11 string
 			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(item.Title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/accordion.templ`, Line: 135, Col: 62}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/accordion.templ`, Line: 98, Col: 62}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {

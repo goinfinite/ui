@@ -112,15 +112,8 @@ templ Toast(componentSettings ToastSettings) {
 			{{ toastRadius = "rounded-full" }}
 	}
 	{{ toastClasses += " " + toastRingThickness + toastRingColor + " " + toastRadius }}
-	{{ toastBackgroundColor := "primary-300" }}
-	if componentSettings.BackgroundColor != "" {
-		{{ toastBackgroundColor = componentSettings.BackgroundColor }}
-	}
-	{{ toastClasses += " bg-" + toastBackgroundColor }}
-	{{ toastTextColor := "text-neutral-50" }}
-	if componentSettings.TextColor != "" {
-		{{ toastTextColor = "text-" + componentSettings.TextColor }}
-	}
+	{{ toastClasses += " " + uiToolset.BackgroundColorClassResolver(componentSettings.BackgroundColor, "bg-primary-300") }}
+	{{ toastTextColor := uiToolset.TextColorClassResolver(componentSettings.TextColor, "text-neutral-50") }}
 	{{ toastClasses += " " + toastTextColor }}
 	<div
 		id="toast"
