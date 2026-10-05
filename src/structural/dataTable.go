@@ -2,8 +2,6 @@ package uiStructural
 
 import (
 	"fmt"
-	"hash/fnv"
-	"maps"
 
 	"github.com/a-h/templ"
 	uiForm "github.com/goinfinite/ui/src/form"
@@ -17,42 +15,12 @@ const (
 	DataTableDensityDense       DataTableDensity = "dense"
 )
 
-type DataTableAlignment string
-
-const (
-	DataTableAlignmentLeft   DataTableAlignment = "left"
-	DataTableAlignmentCenter DataTableAlignment = "center"
-	DataTableAlignmentRight  DataTableAlignment = "right"
-)
-
-func (alignment DataTableAlignment) alignmentClassResolver() string {
-	switch alignment {
-	case DataTableAlignmentCenter:
-		return "text-center"
-	case DataTableAlignmentRight:
-		return "text-right"
-	}
-	return "text-left"
-}
-
-func (alignment DataTableAlignment) justifyClassResolver() string {
-	switch alignment {
-	case DataTableAlignmentCenter:
-		return "justify-center"
-	case DataTableAlignmentRight:
-		return "justify-end"
-	}
-	return "justify-start"
-}
-
 type DataTableSortDirection string
 
 const (
 	DataTableSortDirectionAsc  DataTableSortDirection = "asc"
 	DataTableSortDirectionDesc DataTableSortDirection = "desc"
 )
-
-type DataTablePageSize uint
 
 const (
 	DataTableUrlPlaceholderPageNumber    string = "{pageNumber}"
@@ -62,7 +30,6 @@ const (
 	DataTableUrlPlaceholderSearch        string = "{search}"
 
 	dataTableDefaultPaginationAriaLabel string = "Table pagination"
-	dataTableDefaultRefreshDebounceMs   uint   = 300
 )
 
 type DataTableColumnSettings[Row any] struct {
@@ -70,7 +37,7 @@ type DataTableColumnSettings[Row any] struct {
 	CellRenderer func(row Row) templ.Component
 
 	// OptionalFields
-	Alignment     DataTableAlignment
+	Alignment     TextAlignment
 	CellClass     string
 	MaxWidthClass string
 	MinWidthClass string
@@ -102,8 +69,8 @@ type DataTableSettings[Row any] struct {
 	IsHeaderSticky                   bool
 	IsPaginationHiddenWhenSinglePage bool
 	IsStriped                        bool
-	ItemsPerPage                     DataTablePageSize
-	ItemsPerPageSizeChoices          []DataTablePageSize
+	ItemsPerPage                     ItemsPerPage
+	ItemsPerPageSizeChoices          []ItemsPerPage
 	ItemsTotal                       uint
 	PageNumber                       uint
 	PaginationAriaLabel              string
@@ -115,7 +82,7 @@ type DataTableSettings[Row any] struct {
 	RowIdResolver                    func(row Row) string
 	RowLabelResolver                 func(row Row) string
 	SearchBox                        templ.Component
-	SearchBoxAlignment               DataTableAlignment
+	SearchBoxAlignment               HorizontalAlignment
 	ShouldUseOneBasedPageDisplay     bool
 	TextCase                         string
 }
@@ -137,90 +104,43 @@ type dataTableClientSettings struct {
 	QueryUrlTemplate      string                `json:"queryUrlTemplate"`
 }
 
-func (settings DataTableSettings[Row]) initialFilterValuesResolver() map[string]any {
-	initialValues := map[string]any{}
-	for _, filter := range settings.Filters {
-		switch filter.Kind {
-		case FilterKindNumberRange, FilterKindDateRange:
-			initialValues[filter.Key] = map[string]string{"min": "", "max": ""}
-		default:
-			initialValues[filter.Key] = ""
-		}
-	}
-	maps.Copy(initialValues, settings.InitialFilterValues)
-	return initialValues
-}
-
 func (settings DataTableSettings[Row]) clientSettingsResolver(
 	itemsPerPage, pageNumber uint,
 ) dataTableClientSettings {
-	filterQueryParamNames := map[string]string{}
-	for _, filter := range settings.Filters {
-		queryParamName := filter.QueryParamName
-		if queryParamName == "" {
-			queryParamName = filter.Key
-		}
-		filterQueryParamNames[filter.Key] = queryParamName
-	}
-	refreshDebounceMs := settings.RefreshDebounceMs
-	if refreshDebounceMs == 0 {
-		refreshDebounceMs = dataTableDefaultRefreshDebounceMs
-	}
 	return dataTableClientSettings{
-		FilterQueryParamNames: filterQueryParamNames,
+		FilterQueryParamNames: filterQueryParamNamesResolver(settings.Filters),
 		InitialState: dataTableInitialState{
-			FilterValues:  settings.initialFilterValuesResolver(),
+			FilterValues: initialFilterValuesResolver(
+				settings.Filters, settings.InitialFilterValues,
+			),
 			ItemsPerPage:  itemsPerPage,
 			PageNumber:    pageNumber,
 			SearchQuery:   settings.InitialSearchQuery,
 			SortDirection: string(settings.InitialSortDirection),
 			SortKey:       settings.InitialSortKey,
 		},
-		RefreshDebounceMs: refreshDebounceMs,
+		RefreshDebounceMs: refreshDebounceResolver(settings.RefreshDebounceMs),
 		RefreshOnEvents:   settings.RefreshOnEvents,
 		QueryUrlTemplate:  settings.QueryUrlTemplate,
 	}
 }
 
-func (settings DataTableSettings[Row]) tableIdentityHashResolver() uint64 {
-	hasher := fnv.New64a()
-	hasher.Write([]byte(settings.QueryUrlTemplate))
+func (settings DataTableSettings[Row]) tableIdHashResolver() uint64 {
+	idParts := []string{settings.QueryUrlTemplate}
 	for _, column := range settings.Columns {
-		hasher.Write([]byte(column.Label))
-		hasher.Write([]byte(column.SortKey))
+		idParts = append(idParts, column.Label, column.SortKey)
 	}
 	for _, filter := range settings.Filters {
-		hasher.Write([]byte(filter.Key))
-		hasher.Write([]byte(filter.QueryParamName))
+		idParts = append(idParts, filter.Key, filter.QueryParamName)
 	}
-	return hasher.Sum64()
+	return uiToolset.HashComponentIdParts(idParts...)
 }
 
 func (settings DataTableSettings[Row]) idResolver() string {
 	if settings.Id != "" {
 		return settings.Id
 	}
-	return fmt.Sprintf("dataTable-%x", settings.tableIdentityHashResolver())
-}
-
-func (settings DataTableSettings[Row]) itemsPerPageSizeChoicesResolver() []uint {
-	if len(settings.ItemsPerPageSizeChoices) == 0 {
-		return paginationDefaultItemsPerPageSizeChoices
-	}
-	itemsPerPageSizeChoices := make([]uint, len(settings.ItemsPerPageSizeChoices))
-	for index, pageSize := range settings.ItemsPerPageSizeChoices {
-		itemsPerPageSizeChoices[index] = uint(pageSize)
-	}
-	return itemsPerPageSizeChoices
-}
-
-func (settings DataTableSettings[Row]) itemsPerPageResolver(
-	itemsPerPageSizeChoices []uint,
-) uint {
-	if settings.ItemsPerPage > 0 {
-		return uint(settings.ItemsPerPage)
-	}
-	return itemsPerPageSizeChoices[0]
+	return fmt.Sprintf("dataTable-%x", settings.tableIdHashResolver())
 }
 
 func (settings DataTableSettings[Row]) paginationAriaLabelResolver() string {

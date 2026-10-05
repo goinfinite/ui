@@ -31,6 +31,7 @@ templ DataTableDefaultSearchBox() {
 }
 
 templ DataTable[Row any](componentSettings DataTableSettings[Row]) {
+	@refreshRequestAlpineStateOnce.Once()
 	@dataTableAlpineStateOnce.Once()
 	{{ tableId := componentSettings.idResolver() }}
 	{{ settingsScriptId := tableId + "-settings" }}
@@ -61,11 +62,10 @@ templ DataTable[Row any](componentSettings DataTableSettings[Row]) {
 	if hasSelection {
 		{{ columnCount = columnCount + 1 }}
 	}
-	{{ itemsPerPageSizeChoices := componentSettings.itemsPerPageSizeChoicesResolver() }}
-	{{ itemsPerPage := componentSettings.itemsPerPageResolver(itemsPerPageSizeChoices) }}
+	{{ itemsPerPageSizeChoices := itemsPerPageSizeChoicesResolver(componentSettings.ItemsPerPageSizeChoices) }}
+	{{ itemsPerPage := itemsPerPageResolver(componentSettings.ItemsPerPage, itemsPerPageSizeChoices) }}
 	{{ pageNumber := componentSettings.PageNumber }}
 	{{ paginationAriaLabel := componentSettings.paginationAriaLabelResolver() }}
-	@templ.JSONScript(settingsScriptId, componentSettings.clientSettingsResolver(itemsPerPage, pageNumber))
 	<div
 		class="flex flex-col overflow-hidden rounded-md border border-neutral-50/10 bg-neutral-50/2.5"
 		x-data={ templ.JSFuncCall("dataTable", settingsScriptId) }
@@ -74,6 +74,7 @@ templ DataTable[Row any](componentSettings DataTableSettings[Row]) {
 			id={ componentSettings.Id }
 		}
 	>
+		@templ.JSONScript(settingsScriptId, componentSettings.clientSettingsResolver(itemsPerPage, pageNumber))
 		if len(componentSettings.Filters) > 0 {
 			<div class="border-b border-neutral-50/10 p-2">
 				@FilterBar(FilterBarSettings{
