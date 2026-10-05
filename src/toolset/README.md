@@ -1,6 +1,33 @@
 # Toolset
 
-Toolset of Infinite UI. It provides a JavaScript utility object, a Go minifier, and shared Go text helpers. Part of [Infinite UI](../../README.md).
+Toolset of Infinite UI. It provides a JavaScript utility object, a Go minifier, and shared Go text and style helpers. Part of [Infinite UI](../../README.md).
+
+## Style tokens
+
+Shared token-to-class resolvers. Components accept a token and apply the matching Tailwind class. Each resolver takes the fallback class the caller wants when the token is empty or unknown.
+
+- `BackgroundColorClassResolver(backgroundColor, fallbackClass)`: returns `bg-` plus the token, or the fallback.
+- `TextColorClassResolver(textColor, fallbackClass)`: returns `text-` plus the token, or the fallback.
+- `BorderColorClassResolver(borderColor, fallbackClass)`: returns `border-` plus the token, or the fallback.
+- `BorderRadiusClassResolver(borderRadius, fallbackClass)`: maps `none` through `xl` to the `rounded-*` class, or the fallback.
+- `ShadowClassResolver(shadowSize, fallbackClass)`: maps `none` through `xl` to the `shadow-*` class, or the fallback.
+- `RingClassResolver(ringColor, ringThickness)`: returns the thickness and color classes, or an empty string when either is missing.
+- `PaddingClassResolver(paddingSize, fallbackClass)`: maps `none` through `xl` to the `p-*` class, or the fallback.
+- `CompactPaddingClassResolver(paddingSize, fallbackClass)`: the tighter padding scale for compact chips and list items; maps `none` through `xl` to the `p-*` class, or the fallback.
+- `GapClassResolver(gapSize, fallbackClass)`: maps `none` through `xl` to the `gap-*` class, or the fallback.
+
+## Component id
+
+Shared helpers that build the DOM id a component exposes. `Id` lets one page hold several copies of the same component without colliding on element ids, radio group names, or input names.
+
+`ComponentIdPrefixGenerator` mints a unique per-render id prefix from a component name and a counter. It serves components that render once and do not refresh, such as the tabs and the accordion.
+
+- `NewComponentIdPrefixGenerator(componentName)`: creates a generator for one component name.
+- `GenerateNext()`: returns `<componentName>-<n>`, where `n` increments per call.
+
+`HashComponentIdParts` hashes the inputs that identify a component. Components that refresh derive their id from this hash, so the id stays the same across the page render and every refresh render.
+
+- `HashComponentIdParts(idParts...)`: returns a stable hash of the parts.
 
 ## Text case
 
