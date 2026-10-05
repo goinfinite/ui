@@ -111,7 +111,7 @@ templ Tabs(componentSettings TabSettings) {
 	{{ isRight := isVertical && tabSideResolver(componentSettings.Side) == TabSideRight }}
 	{{ ariaLabel := tabAriaLabelResolver(componentSettings.AriaLabel) }}
 	{{ textCaseClass := uiToolset.TextCaseClassResolver(componentSettings.TextCase) }}
-	{{ idPrefix := generateTabIdPrefix() }}
+	{{ idPrefix := tabIdPrefixGenerator.GenerateNext() }}
 	{{ previousKeyExpression := tabArrowKeyExpressionBuilder(selectedValuePath, "previous") }}
 	{{ nextKeyExpression := tabArrowKeyExpressionBuilder(selectedValuePath, "next") }}
 	{{ homeKeyExpression := tabEdgeKeyExpressionBuilder(selectedValuePath, "firstElementChild") }}
@@ -131,9 +131,9 @@ templ Tabs(componentSettings TabSettings) {
 	if isRight {
 		{{ verticalTabListBorderClass = "border-l" }}
 	}
-	{{ tabListClasses := "flex w-full " + tabGapClassResolver(componentSettings.GapSize) + " overflow-x-auto border-b border-neutral-50/10" }}
+	{{ tabListClasses := "flex w-full " + uiToolset.GapClassResolver(componentSettings.GapSize, "gap-1") + " overflow-x-auto border-b border-neutral-50/10" }}
 	if isVertical {
-		{{ tabListClasses = "flex w-fit flex-col " + tabGapClassResolver(componentSettings.GapSize) + " overflow-y-auto " + verticalTabListBorderClass + " border-neutral-50/10" }}
+		{{ tabListClasses = "flex w-fit flex-col " + uiToolset.GapClassResolver(componentSettings.GapSize, "gap-1") + " overflow-y-auto " + verticalTabListBorderClass + " border-neutral-50/10" }}
 		{{ tabListClasses += " " + tabAlignmentClassResolver(componentSettings.Alignment) }}
 	}
 	{{ constraintClasses := tabConstraintClassesResolver(componentSettings) }}
@@ -141,20 +141,18 @@ templ Tabs(componentSettings TabSettings) {
 		{{ tabListClasses += " " + constraintClasses }}
 	}
 	if componentSettings.PaddingSize != "" {
-		{{ tabListClasses += " " + tabPaddingClassResolver(componentSettings.PaddingSize) }}
+		{{ tabListClasses += " " + uiToolset.PaddingClassResolver(componentSettings.PaddingSize, "") }}
 	}
 	if componentSettings.ShadowSize != "" {
-		{{ tabListClasses += " " + tabShadowClassResolver(componentSettings.ShadowSize) }}
+		{{ tabListClasses += " " + uiToolset.ShadowClassResolver(componentSettings.ShadowSize, "") }}
 	}
-	{{ ringClasses := tabRingClassResolver(componentSettings.RingColor, componentSettings.RingThickness) }}
+	{{ ringClasses := uiToolset.RingClassResolver(componentSettings.RingColor, componentSettings.RingThickness) }}
 	if ringClasses != "" {
 		{{ tabListClasses += " " + ringClasses }}
 	}
-	if componentSettings.BackgroundColor != "" {
-		{{ tabListClasses += " bg-" + componentSettings.BackgroundColor }}
-	}
+	{{ tabListClasses += " " + uiToolset.BackgroundColorClassResolver(componentSettings.BackgroundColor, "") }}
 	{{ tabClasses := "flex cursor-pointer select-none items-center gap-1.5 px-3 py-2 text-sm transition-all" }}
-	{{ tabClasses += " " + tabTextColorClassResolver(componentSettings.TextColor) }}
+	{{ tabClasses += " " + uiToolset.TextColorClassResolver(componentSettings.TextColor, "text-neutral-50/80") }}
 	{{ tabClasses += " bg-neutral-50/5 hover:bg-neutral-50/7.5" }}
 	{{ tabClasses += " " + tabEdgeClassResolver(componentSettings.BorderRadius, isVertical, isRight) }}
 	{{ tabActiveClasses := "!font-bold !text-secondary-500 !border-secondary-500" }}
@@ -169,7 +167,7 @@ templ Tabs(componentSettings TabSettings) {
 		}
 	}
 	if componentSettings.ContentPaddingSize != "" {
-		{{ contentPaddingClasses := tabPaddingClassResolver(componentSettings.ContentPaddingSize) }}
+		{{ contentPaddingClasses := uiToolset.PaddingClassResolver(componentSettings.ContentPaddingSize, "") }}
 		if isVertical {
 			{{ tabPanelsClasses = "grow " + contentPaddingClasses }}
 		}
@@ -177,22 +175,18 @@ templ Tabs(componentSettings TabSettings) {
 			{{ tabPanelsClasses = contentPaddingClasses }}
 		}
 	}
-	if componentSettings.ContentBackgroundColor != "" {
-		{{ tabPanelsClasses += " bg-" + componentSettings.ContentBackgroundColor }}
-	}
+	{{ tabPanelsClasses += " " + uiToolset.BackgroundColorClassResolver(componentSettings.ContentBackgroundColor, "") }}
 	if componentSettings.ContentShadowSize != "" {
-		{{ tabPanelsClasses += " " + tabShadowClassResolver(componentSettings.ContentShadowSize) }}
+		{{ tabPanelsClasses += " " + uiToolset.ShadowClassResolver(componentSettings.ContentShadowSize, "") }}
 	}
-	{{ contentRingClasses := tabRingClassResolver(componentSettings.ContentRingColor, componentSettings.ContentRingThickness) }}
+	{{ contentRingClasses := uiToolset.RingClassResolver(componentSettings.ContentRingColor, componentSettings.ContentRingThickness) }}
 	if contentRingClasses != "" {
 		{{ tabPanelsClasses += " " + contentRingClasses }}
 	}
 	if componentSettings.ContentBorderRadius != "" {
 		{{ tabPanelsClasses += " rounded-" + tabBorderRadiusTokenResolver(componentSettings.ContentBorderRadius) }}
 	}
-	if componentSettings.ContentTextColor != "" {
-		{{ tabPanelsClasses += " text-" + componentSettings.ContentTextColor }}
-	}
+	{{ tabPanelsClasses += " " + uiToolset.TextColorClassResolver(componentSettings.ContentTextColor, "") }}
 	<!-- Tabs -->
 	<div
 		class={ rootClasses }

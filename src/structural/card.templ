@@ -1,6 +1,9 @@
 package uiStructural
 
-import uiDisplay "github.com/goinfinite/ui/src/display"
+import (
+	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
 
 const (
 	CardBorderRadiusNone string = "none"
@@ -71,108 +74,14 @@ type CardSettings struct {
 
 templ Card(componentSettings CardSettings) {
 	<!-- Card -->
-	{{ backgroundColor := "bg-neutral-950/20" }}
-	if componentSettings.BackgroundColor != "" {
-		{{ backgroundColor = "bg-" + componentSettings.BackgroundColor }}
-	}
-	{{ textColor := "" }}
-	if componentSettings.TextColor != "" {
-		{{ textColor = "text-" + componentSettings.TextColor }}
-	}
-	<!-- Card Gap -->
-	{{ gapClasses := "gap-3" }}
-	if componentSettings.GapSize == "" {
-		{{ componentSettings.GapSize = CardGapSizeMd }}
-	}
-	switch componentSettings.GapSize {
-		case CardGapSizeNone:
-			{{ gapClasses = "gap-0" }}
-		case CardGapSizeXs:
-			{{ gapClasses = "gap-1" }}
-		case CardGapSizeSm:
-			{{ gapClasses = "gap-2" }}
-		case CardGapSizeMd:
-			{{ gapClasses = "gap-3" }}
-		case CardGapSizeLg:
-			{{ gapClasses = "gap-6" }}
-		case CardGapSizeXl:
-			{{ gapClasses = "gap-8" }}
-	}
+	{{ backgroundColor := uiToolset.BackgroundColorClassResolver(componentSettings.BackgroundColor, "bg-neutral-950/20") }}
+	{{ textColor := uiToolset.TextColorClassResolver(componentSettings.TextColor, "") }}
+	{{ gapClasses := uiToolset.GapClassResolver(componentSettings.GapSize, "gap-3") }}
 	{{ cardClasses := "flex flex-col " + gapClasses + " " + backgroundColor + " " + textColor }}
-	<!-- Card Padding -->
-	{{ paddingClasses := "p-5" }}
-	if componentSettings.PaddingSize == "" {
-		{{ componentSettings.PaddingSize = CardPaddingSizeMd }}
-	}
-	switch componentSettings.PaddingSize {
-		case CardPaddingSizeNone:
-			{{ paddingClasses = "p-0" }}
-		case CardPaddingSizeXs:
-			{{ paddingClasses = "p-3" }}
-		case CardPaddingSizeSm:
-			{{ paddingClasses = "p-4" }}
-		case CardPaddingSizeMd:
-			{{ paddingClasses = "p-5" }}
-		case CardPaddingSizeLg:
-			{{ paddingClasses = "p-6" }}
-		case CardPaddingSizeXl:
-			{{ paddingClasses = "p-8" }}
-	}
-	{{ cardClasses += " " + paddingClasses }}
-	<!-- Card Border Radius -->
-	{{ borderRadiusClasses := "rounded-lg" }}
-	if componentSettings.BorderRadius == "" {
-		{{ componentSettings.BorderRadius = CardBorderRadiusLg }}
-	}
-	switch componentSettings.BorderRadius {
-		case CardBorderRadiusNone:
-			{{ borderRadiusClasses = "rounded-none" }}
-		case CardBorderRadiusXs:
-			{{ borderRadiusClasses = "rounded-xs" }}
-		case CardBorderRadiusSm:
-			{{ borderRadiusClasses = "rounded-sm" }}
-		case CardBorderRadiusMd:
-			{{ borderRadiusClasses = "rounded" }}
-		case CardBorderRadiusLg:
-			{{ borderRadiusClasses = "rounded-lg" }}
-		case CardBorderRadiusXl:
-			{{ borderRadiusClasses = "rounded-xl" }}
-	}
-	{{ cardClasses += " " + borderRadiusClasses }}
-	<!-- Card Shadow -->
-	{{ shadowClasses := "" }}
-	switch componentSettings.ShadowSize {
-		case CardShadowSizeNone:
-			{{ shadowClasses = "shadow-none" }}
-		case CardShadowSizeXs:
-			{{ shadowClasses = "shadow-xs" }}
-		case CardShadowSizeSm:
-			{{ shadowClasses = "shadow-sm" }}
-		case CardShadowSizeMd:
-			{{ shadowClasses = "shadow-md" }}
-		case CardShadowSizeLg:
-			{{ shadowClasses = "shadow-lg" }}
-		case CardShadowSizeXl:
-			{{ shadowClasses = "shadow-xl" }}
-	}
-	{{ cardClasses += " " + shadowClasses }}
-	<!-- Card Ring -->
-	if componentSettings.RingColor != "" && componentSettings.RingThickness != "" {
-		{{ ringThickness := "ring-1" }}
-		switch componentSettings.RingThickness {
-			case CardRingThicknessXs:
-				{{ ringThickness = "ring-1" }}
-			case CardRingThicknessSm:
-				{{ ringThickness = "ring-1.5" }}
-			case CardRingThicknessMd:
-				{{ ringThickness = "ring-2" }}
-			case CardRingThicknessLg:
-				{{ ringThickness = "ring-2.5" }}
-			case CardRingThicknessXl:
-				{{ ringThickness = "ring-3" }}
-		}
-		{{ cardClasses += " " + ringThickness + " ring-" + componentSettings.RingColor }}
-	}
+	{{ cardClasses += " " + uiToolset.PaddingClassResolver(componentSettings.PaddingSize, "p-5") }}
+	{{ cardClasses += " " + uiToolset.BorderRadiusClassResolver(componentSettings.BorderRadius, "rounded-lg") }}
+	{{ cardClasses += " " + uiToolset.ShadowClassResolver(componentSettings.ShadowSize, "") }}
+	{{ cardClasses += " " + uiToolset.RingClassResolver(componentSettings.RingColor, componentSettings.RingThickness) }}
 	{{ hasHeaderBlockContent := componentSettings.HeaderTitle != "" || componentSettings.HeaderTitleOneWayStatePath != "" || componentSettings.HeaderSubHeading != "" || componentSettings.HeaderSubHeadingOneWayStatePath != "" || componentSettings.HeaderIcon != "" || componentSettings.ActionsContent != nil }}
 	<div class={ cardClasses }>
 		if componentSettings.HeaderContent != nil {

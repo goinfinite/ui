@@ -8,7 +8,10 @@ package uiStructural
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import uiDisplay "github.com/goinfinite/ui/src/display"
+import (
+	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
 
 const (
 	CardBorderRadiusNone string = "none"
@@ -102,134 +105,21 @@ func Card(componentSettings CardSettings) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		backgroundColor := "bg-neutral-950/20"
-		if componentSettings.BackgroundColor != "" {
-			backgroundColor = "bg-" + componentSettings.BackgroundColor
-		}
-		textColor := ""
-		if componentSettings.TextColor != "" {
-			textColor = "text-" + componentSettings.TextColor
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<!-- Card Gap -->")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		gapClasses := "gap-3"
-		if componentSettings.GapSize == "" {
-			componentSettings.GapSize = CardGapSizeMd
-		}
-		switch componentSettings.GapSize {
-		case CardGapSizeNone:
-			gapClasses = "gap-0"
-		case CardGapSizeXs:
-			gapClasses = "gap-1"
-		case CardGapSizeSm:
-			gapClasses = "gap-2"
-		case CardGapSizeMd:
-			gapClasses = "gap-3"
-		case CardGapSizeLg:
-			gapClasses = "gap-6"
-		case CardGapSizeXl:
-			gapClasses = "gap-8"
-		}
+		backgroundColor := uiToolset.BackgroundColorClassResolver(componentSettings.BackgroundColor, "bg-neutral-950/20")
+		textColor := uiToolset.TextColorClassResolver(componentSettings.TextColor, "")
+		gapClasses := uiToolset.GapClassResolver(componentSettings.GapSize, "gap-3")
 		cardClasses := "flex flex-col " + gapClasses + " " + backgroundColor + " " + textColor
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<!-- Card Padding -->")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		paddingClasses := "p-5"
-		if componentSettings.PaddingSize == "" {
-			componentSettings.PaddingSize = CardPaddingSizeMd
-		}
-		switch componentSettings.PaddingSize {
-		case CardPaddingSizeNone:
-			paddingClasses = "p-0"
-		case CardPaddingSizeXs:
-			paddingClasses = "p-3"
-		case CardPaddingSizeSm:
-			paddingClasses = "p-4"
-		case CardPaddingSizeMd:
-			paddingClasses = "p-5"
-		case CardPaddingSizeLg:
-			paddingClasses = "p-6"
-		case CardPaddingSizeXl:
-			paddingClasses = "p-8"
-		}
-		cardClasses += " " + paddingClasses
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<!-- Card Border Radius -->")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		borderRadiusClasses := "rounded-lg"
-		if componentSettings.BorderRadius == "" {
-			componentSettings.BorderRadius = CardBorderRadiusLg
-		}
-		switch componentSettings.BorderRadius {
-		case CardBorderRadiusNone:
-			borderRadiusClasses = "rounded-none"
-		case CardBorderRadiusXs:
-			borderRadiusClasses = "rounded-xs"
-		case CardBorderRadiusSm:
-			borderRadiusClasses = "rounded-sm"
-		case CardBorderRadiusMd:
-			borderRadiusClasses = "rounded"
-		case CardBorderRadiusLg:
-			borderRadiusClasses = "rounded-lg"
-		case CardBorderRadiusXl:
-			borderRadiusClasses = "rounded-xl"
-		}
-		cardClasses += " " + borderRadiusClasses
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<!-- Card Shadow -->")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		shadowClasses := ""
-		switch componentSettings.ShadowSize {
-		case CardShadowSizeNone:
-			shadowClasses = "shadow-none"
-		case CardShadowSizeXs:
-			shadowClasses = "shadow-xs"
-		case CardShadowSizeSm:
-			shadowClasses = "shadow-sm"
-		case CardShadowSizeMd:
-			shadowClasses = "shadow-md"
-		case CardShadowSizeLg:
-			shadowClasses = "shadow-lg"
-		case CardShadowSizeXl:
-			shadowClasses = "shadow-xl"
-		}
-		cardClasses += " " + shadowClasses
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<!-- Card Ring -->")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		if componentSettings.RingColor != "" && componentSettings.RingThickness != "" {
-			ringThickness := "ring-1"
-			switch componentSettings.RingThickness {
-			case CardRingThicknessXs:
-				ringThickness = "ring-1"
-			case CardRingThicknessSm:
-				ringThickness = "ring-1.5"
-			case CardRingThicknessMd:
-				ringThickness = "ring-2"
-			case CardRingThicknessLg:
-				ringThickness = "ring-2.5"
-			case CardRingThicknessXl:
-				ringThickness = "ring-3"
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, " ")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			cardClasses += " " + ringThickness + " ring-" + componentSettings.RingColor
-		}
+		cardClasses += " " + uiToolset.PaddingClassResolver(componentSettings.PaddingSize, "p-5")
+		cardClasses += " " + uiToolset.BorderRadiusClassResolver(componentSettings.BorderRadius, "rounded-lg")
+		cardClasses += " " + uiToolset.ShadowClassResolver(componentSettings.ShadowSize, "")
+		cardClasses += " " + uiToolset.RingClassResolver(componentSettings.RingColor, componentSettings.RingThickness)
 		hasHeaderBlockContent := componentSettings.HeaderTitle != "" || componentSettings.HeaderTitleOneWayStatePath != "" || componentSettings.HeaderSubHeading != "" || componentSettings.HeaderSubHeadingOneWayStatePath != "" || componentSettings.HeaderIcon != "" || componentSettings.ActionsContent != nil
 		var templ_7745c5c3_Var2 = []any{cardClasses}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var2...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -242,12 +132,12 @@ func Card(componentSettings CardSettings) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if componentSettings.HeaderContent != nil {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<!-- CardCustomHeader --> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<!-- CardCustomHeader --> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -257,7 +147,7 @@ func Card(componentSettings CardSettings) templ.Component {
 			}
 		}
 		if componentSettings.HeaderContent == nil && hasHeaderBlockContent {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<!-- CardHeader --> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<!-- CardHeader --> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -283,7 +173,7 @@ func Card(componentSettings CardSettings) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<!-- CardMiddleContent -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<!-- CardMiddleContent -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -292,7 +182,7 @@ func Card(componentSettings CardSettings) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if componentSettings.FooterContent != nil {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<!-- CardFooterContent --> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<!-- CardFooterContent --> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -301,7 +191,7 @@ func Card(componentSettings CardSettings) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
