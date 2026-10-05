@@ -61,5 +61,5 @@ Each package has its own README with the component list and usage snippets:
 - **[Form](src/form/README.md)** — text, choice, and switch inputs.
 - **[Control](src/control/README.md)** — buttons and sliders.
 - **[Display](src/display/README.md)** — alerts, confirmation dialogs, modals, header blocks, tags, toasts, and page chrome.
-- **[Structural](src/structural/README.md)** — the card, page headings, server-driven data table, filter bar, pagination, and sidebar.
+- **[Structural](src/structural/README.md)** — the card, page headings, server-driven data table and carousel, filter bar, pagination, sidebar, and tabs.
 - **[Toolset](src/toolset/README.md)** — the JavaScript `UiToolset` and the Go minifier.

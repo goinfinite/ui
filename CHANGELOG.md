@@ -1,6 +1,40 @@
 # Changelog
 
 ```log
+0.2.5 - 2026/10/02
+feat: add the carousel component with responsive items per view, prev/next arrows, dot indicators, swipe, and optional autoplay with pause-on-hover
+feat: add the server pagination and the filter bar to the carousel
+feat: add the surface, arrow, dot, and item styling to the carousel
+feat: add a top or bottom position to the carousel search box
+feat: share the refresh request builder and the filter-value, page-size, query-param, and debounce resolvers across the structural components
+refactor: rename the shared refreshQuery files and helper to refreshRequest so the name states the request they build
+refactor: rename the DataTableAlignment type to TextAlignment and add HorizontalAlignment so the search box no longer borrows a text type
+refactor: replace the CarouselPageSize and DataTablePageSize types with one shared ItemsPerPage type
+refactor: name the shared pagination resolvers itemsPerPage and call them directly so the settings structs drop their identical delegating methods
+refactor: move the border radius, shadow, ring, padding, gap, and background, text, and border color token resolvers into the toolset and call them from the structural and display components
+refactor: name the carousel prev/next buttons arrows and group the items-per-view breakpoints in one settings struct
+refactor: derive the carousel and data table id from a stable hash of their identity inputs so the id holds across refreshes, and keep the render counter for the tabs and the accordion
+refactor: name the shared component id helpers by the id they build so their files state their purpose
+refactor: keep the alignment types in one structural file and share the refresh fragment fetch between the carousel and the data table
+refactor: gather the demo output generation as methods on one type and name the conditional write by the action it performs
+feat: refresh the carousel through htmx when it is present, with the pagination swapped out of band
+chore: write the demo page and the refresh assets only when their content changed
+fix: read the carousel swipe from the pointer events alone so touch input works
+fix: pause the carousel autoplay on hover only when the setting is set
+fix: swap the carousel track and pagination together so the totals stay current
+fix: discard a stale carousel refresh and keep the filter bar outside the swapped region
+fix: apply the lg border-radius token on the carousel surface and item wrapper
+fix: keep the default outside carousel arrows on the light background
+fix: position the inside carousel arrows with left and right classes instead of an inline style
+fix: default the carousel border radius to the class its md token produces
+fix: fail the carousel refresh when the response carries no pagination region
+fix: read the settings script from the component root so two components with the same query template keep their own settings
+fix: swap the carousel pagination only into the component that refreshed
+fix: seed no filter in the demo carousel and describe the server example as paging only
+test: cover the carousel resolvers, the shared style token and id prefix helpers, the rendered track, the touch swipe, the settings script placement, the pagination swap target, and the accessibility
+docs: document the carousel in the structural readme and the feature map
+chore(docs): regenerate the demo page
+
 0.2.4 - 2026/10/01
 feat: add the tabs component with horizontal and vertical tab headers
 feat: add the badge count and the URL-hash syncing to the tabs
