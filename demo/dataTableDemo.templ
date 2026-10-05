@@ -50,8 +50,8 @@ templ DataTableColumnConfigExample() {
 	Columns: []uiStructural.DataTableColumnSettings[Record]{
 		{Label: "Name", SortKey: "name", WidthPercent: 20, CellRenderer: nameCell},
 		{Label: "Description", MaxWidthClass: "max-w-72 truncate", CellRenderer: descriptionCell},
-		{Label: "Status", Alignment: uiStructural.DataTableAlignmentCenter, WidthPercent: 15, CellRenderer: statusCell},
-		{Label: "CPU cores", SortKey: "cpuCores", Alignment: uiStructural.DataTableAlignmentRight, WidthPercent: 12, CellRenderer: cpuCell},
+		{Label: "Status", Alignment: uiStructural.TextAlignmentCenter, WidthPercent: 15, CellRenderer: statusCell},
+		{Label: "CPU cores", SortKey: "cpuCores", Alignment: uiStructural.TextAlignmentRight, WidthPercent: 12, CellRenderer: cpuCell},
 		{Label: "Created at", MinWidthClass: "min-w-28", CellRenderer: createdAtCell},
 	},
 	Rows: records,
@@ -148,7 +148,7 @@ templ DataTableSearchBoxExample() {
 		searchSettings.QueryUrlTemplate = "assets/dataTableDemoRefreshFragments.json?search=" +
 			uiStructural.DataTableUrlPlaceholderSearch
 		searchSettings.InitialSearchQuery = "alpha"
-		searchSettings.SearchBoxAlignment = uiStructural.DataTableAlignmentCenter
+		searchSettings.SearchBoxAlignment = uiStructural.HorizontalAlignmentCenter
 	}}
 	{{
 		searchUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
@@ -158,7 +158,7 @@ templ DataTableSearchBoxExample() {
 
 	// OptionalFields
 	InitialSearchQuery: "alpha",
-	SearchBoxAlignment: uiStructural.DataTableAlignmentCenter,
+	SearchBoxAlignment: uiStructural.HorizontalAlignmentCenter,
 })`
 	}}
 	@DemoExampleCard(
@@ -286,7 +286,7 @@ templ DataTableStylingExample() {
 	Columns: []uiStructural.DataTableColumnSettings[Record]{
 		{Label: "Name", CellClass: "font-bold", CellRenderer: nameCell},
 		{Label: "Status", CellRenderer: statusCell},
-		{Label: "CPU cores", Alignment: uiStructural.DataTableAlignmentRight, CellRenderer: cpuCell},
+		{Label: "CPU cores", Alignment: uiStructural.TextAlignmentRight, CellRenderer: cpuCell},
 	},
 	Rows: records,
 
@@ -529,7 +529,7 @@ templ DataTableDemo() {
 	</div>
 }
 
-templ DataTableRefreshFragment(pageNumber uint, itemsPerPage uiStructural.DataTablePageSize) {
+templ DataTableRefreshFragment(pageNumber uint, itemsPerPage uiStructural.ItemsPerPage) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>

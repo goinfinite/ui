@@ -8,14 +8,14 @@ import (
 	uiStructural "github.com/goinfinite/ui/src/structural"
 )
 
-const dataTableDemoItemsPerPage uiStructural.DataTablePageSize = 5
+const dataTableDemoItemsPerPage uiStructural.ItemsPerPage = 5
 
-var dataTableDemoStaticPageSizeOptions = []uiStructural.DataTablePageSize{5, 10, 25, 50}
+var dataTableDemoStaticItemsPerPageOptions = []uiStructural.ItemsPerPage{5, 10, 25, 50}
 
 var dataTableDemoRecords = buildDemoServerRecords()
 
 func demoTablePageCountResolver(
-	itemsTotal uint, itemsPerPage uiStructural.DataTablePageSize,
+	itemsTotal uint, itemsPerPage uiStructural.ItemsPerPage,
 ) uint {
 	itemsPerPageCount := uint(itemsPerPage)
 	return (itemsTotal + itemsPerPageCount - 1) / itemsPerPageCount
@@ -119,7 +119,7 @@ func buildDemoServerTableColumns() []uiStructural.DataTableColumnSettings[DemoSe
 		{
 			Label:        "CPU cores",
 			SortKey:      "cpuCores",
-			Alignment:    uiStructural.DataTableAlignmentRight,
+			Alignment:    uiStructural.TextAlignmentRight,
 			WidthPercent: 15,
 			CellRenderer: func(record DemoServerRecord) templ.Component {
 				return DemoServerTextCell(record.CpuCores)
@@ -152,7 +152,7 @@ func buildDemoPlainTableColumns() []uiStructural.DataTableColumnSettings[DemoSer
 		},
 		{
 			Label:     "CPU cores",
-			Alignment: uiStructural.DataTableAlignmentRight,
+			Alignment: uiStructural.TextAlignmentRight,
 			CellRenderer: func(record DemoServerRecord) templ.Component {
 				return DemoServerTextCell(record.CpuCores)
 			},
@@ -164,7 +164,7 @@ func buildDemoTooltipActionColumns() []uiStructural.DataTableColumnSettings[Demo
 	columns := buildDemoPlainTableColumns()
 	return append(columns, uiStructural.DataTableColumnSettings[DemoServerRecord]{
 		Label:     "Actions",
-		Alignment: uiStructural.DataTableAlignmentRight,
+		Alignment: uiStructural.TextAlignmentRight,
 		CellRenderer: func(record DemoServerRecord) templ.Component {
 			return DemoTooltipActionCell(record)
 		},
@@ -190,7 +190,7 @@ func buildDemoColumnShowcaseColumns() []uiStructural.DataTableColumnSettings[Dem
 		},
 		{
 			Label:        "Status",
-			Alignment:    uiStructural.DataTableAlignmentCenter,
+			Alignment:    uiStructural.TextAlignmentCenter,
 			WidthPercent: 15,
 			CellRenderer: func(record DemoServerRecord) templ.Component {
 				return DemoServerStatusCell(record.Status)
@@ -199,7 +199,7 @@ func buildDemoColumnShowcaseColumns() []uiStructural.DataTableColumnSettings[Dem
 		{
 			Label:        "CPU cores",
 			SortKey:      "cpuCores",
-			Alignment:    uiStructural.DataTableAlignmentRight,
+			Alignment:    uiStructural.TextAlignmentRight,
 			WidthPercent: 12,
 			CellRenderer: func(record DemoServerRecord) templ.Component {
 				return DemoServerTextCell(record.CpuCores)
@@ -232,7 +232,7 @@ func buildDemoStylingColumns() []uiStructural.DataTableColumnSettings[DemoServer
 		},
 		{
 			Label:     "CPU cores",
-			Alignment: uiStructural.DataTableAlignmentRight,
+			Alignment: uiStructural.TextAlignmentRight,
 			CellRenderer: func(record DemoServerRecord) templ.Component {
 				return DemoServerPlainTextCell(record.CpuCores)
 			},
@@ -242,7 +242,7 @@ func buildDemoStylingColumns() []uiStructural.DataTableColumnSettings[DemoServer
 
 func buildDemoDataTableSettings(
 	records []DemoServerRecord, pageNumber uint,
-	itemsPerPage uiStructural.DataTablePageSize,
+	itemsPerPage uiStructural.ItemsPerPage,
 ) uiStructural.DataTableSettings[DemoServerRecord] {
 	itemsPerPageCount := uint(itemsPerPage)
 	firstIndex := pageNumber * itemsPerPageCount
@@ -261,7 +261,7 @@ func buildDemoDataTableSettings(
 		Filters:                 buildDemoRecordFilters(),
 		Id:                      "data-table-demo-table",
 		ItemsPerPage:            itemsPerPage,
-		ItemsPerPageSizeChoices: []uiStructural.DataTablePageSize{dataTableDemoItemsPerPage, uiStructural.DataTablePageSize(len(records))},
+		ItemsPerPageSizeChoices: []uiStructural.ItemsPerPage{dataTableDemoItemsPerPage, uiStructural.ItemsPerPage(len(records))},
 		ItemsTotal:              uint(len(records)),
 		PageNumber:              pageNumber,
 		PagesTotal:              pagesTotal,
@@ -272,13 +272,13 @@ func buildDemoDataTableSettings(
 	}
 }
 
-func dataTableDemoStaticPageSizeResolver(itemsTotal uint) uiStructural.DataTablePageSize {
-	for _, pageSizeOption := range dataTableDemoStaticPageSizeOptions {
-		if uint(pageSizeOption) >= itemsTotal {
-			return pageSizeOption
+func dataTableDemoStaticItemsPerPageResolver(itemsTotal uint) uiStructural.ItemsPerPage {
+	for _, itemsPerPageOption := range dataTableDemoStaticItemsPerPageOptions {
+		if uint(itemsPerPageOption) >= itemsTotal {
+			return itemsPerPageOption
 		}
 	}
-	return uiStructural.DataTablePageSize(itemsTotal)
+	return uiStructural.ItemsPerPage(itemsTotal)
 }
 
 func buildDemoStaticTableSettings(
@@ -287,14 +287,14 @@ func buildDemoStaticTableSettings(
 	rows []DemoServerRecord,
 ) uiStructural.DataTableSettings[DemoServerRecord] {
 	itemsTotal := uint(len(rows))
-	itemsPerPage := dataTableDemoStaticPageSizeResolver(itemsTotal)
+	itemsPerPage := dataTableDemoStaticItemsPerPageResolver(itemsTotal)
 	pagesTotal := demoTablePageCountResolver(itemsTotal, itemsPerPage)
 	return uiStructural.DataTableSettings[DemoServerRecord]{
 		Columns:                 columns,
 		Rows:                    rows,
 		Id:                      id,
 		ItemsPerPage:            itemsPerPage,
-		ItemsPerPageSizeChoices: []uiStructural.DataTablePageSize{itemsPerPage},
+		ItemsPerPageSizeChoices: []uiStructural.ItemsPerPage{itemsPerPage},
 		ItemsTotal:              itemsTotal,
 		PageNumber:              0,
 		PaginationAriaLabel:     paginationAriaLabel,
