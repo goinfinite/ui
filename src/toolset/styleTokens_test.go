@@ -76,9 +76,10 @@ func TestBorderRadiusClassResolver(t *testing.T) {
 		{name: "none", borderRadius: "none", fallbackClass: "rounded-lg", want: "rounded-none"},
 		{name: "xs", borderRadius: "xs", fallbackClass: "rounded-lg", want: "rounded-xs"},
 		{name: "sm", borderRadius: "sm", fallbackClass: "rounded-lg", want: "rounded-sm"},
-		{name: "md", borderRadius: "md", fallbackClass: "rounded-lg", want: "rounded"},
+		{name: "md", borderRadius: "md", fallbackClass: "rounded-lg", want: "rounded-md"},
 		{name: "lg", borderRadius: "lg", fallbackClass: "rounded-lg", want: "rounded-lg"},
 		{name: "xl", borderRadius: "xl", fallbackClass: "rounded-lg", want: "rounded-xl"},
+		{name: "full", borderRadius: "full", fallbackClass: "rounded-lg", want: "rounded-full"},
 		{name: "unknown takes the fallback", borderRadius: "huge", fallbackClass: "rounded-lg", want: "rounded-lg"},
 	}
 	for _, testCase := range testCases {
@@ -86,6 +87,29 @@ func TestBorderRadiusClassResolver(t *testing.T) {
 			got := BorderRadiusClassResolver(testCase.borderRadius, testCase.fallbackClass)
 			if got != testCase.want {
 				t.Errorf("BorderRadiusClassResolver() = %q, want %q", got, testCase.want)
+			}
+		})
+	}
+}
+
+func TestShapeClassResolver(t *testing.T) {
+	testCases := []struct {
+		name          string
+		shape         string
+		fallbackClass string
+		want          string
+	}{
+		{name: "circular", shape: "circular", fallbackClass: "rounded", want: "rounded-full"},
+		{name: "rounded", shape: "rounded", fallbackClass: "rounded-full", want: "rounded"},
+		{name: "square", shape: "square", fallbackClass: "rounded", want: "rounded-none"},
+		{name: "empty takes the fallback", shape: "", fallbackClass: "rounded-full", want: "rounded-full"},
+		{name: "unknown takes the fallback", shape: "hexagon", fallbackClass: "rounded-full", want: "rounded-full"},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			got := ShapeClassResolver(testCase.shape, testCase.fallbackClass)
+			if got != testCase.want {
+				t.Errorf("ShapeClassResolver() = %q, want %q", got, testCase.want)
 			}
 		})
 	}
@@ -117,6 +141,31 @@ func TestShadowClassResolver(t *testing.T) {
 	}
 }
 
+func TestRingThicknessClassResolver(t *testing.T) {
+	testCases := []struct {
+		name          string
+		ringThickness string
+		fallbackClass string
+		want          string
+	}{
+		{name: "xs", ringThickness: "xs", fallbackClass: "ring-0", want: "ring-1"},
+		{name: "sm", ringThickness: "sm", fallbackClass: "ring-0", want: "ring-1.5"},
+		{name: "md", ringThickness: "md", fallbackClass: "ring-0", want: "ring-2"},
+		{name: "lg", ringThickness: "lg", fallbackClass: "ring-0", want: "ring-2.5"},
+		{name: "xl", ringThickness: "xl", fallbackClass: "ring-0", want: "ring-3"},
+		{name: "empty takes the fallback", ringThickness: "", fallbackClass: "ring-0", want: "ring-0"},
+		{name: "unknown takes the fallback", ringThickness: "huge", fallbackClass: "ring-0", want: "ring-0"},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			got := RingThicknessClassResolver(testCase.ringThickness, testCase.fallbackClass)
+			if got != testCase.want {
+				t.Errorf("RingThicknessClassResolver() = %q, want %q", got, testCase.want)
+			}
+		})
+	}
+}
+
 func TestRingClassResolver(t *testing.T) {
 	testCases := []struct {
 		name          string
@@ -138,6 +187,32 @@ func TestRingClassResolver(t *testing.T) {
 			got := RingClassResolver(testCase.ringColor, testCase.ringThickness)
 			if got != testCase.want {
 				t.Errorf("RingClassResolver() = %q, want %q", got, testCase.want)
+			}
+		})
+	}
+}
+
+func TestCompactRingClassResolver(t *testing.T) {
+	testCases := []struct {
+		name          string
+		ringColor     string
+		ringThickness string
+		want          string
+	}{
+		{name: "empty color renders no ring", ringColor: "", ringThickness: "md", want: ""},
+		{name: "empty thickness defaults to the thin ring", ringColor: "red-500/50", ringThickness: "", want: "ring-1 ring-red-500/50"},
+		{name: "xs thickness", ringColor: "red-500/50", ringThickness: "xs", want: "ring-0.5 ring-red-500/50"},
+		{name: "sm thickness", ringColor: "red-500/50", ringThickness: "sm", want: "ring-1 ring-red-500/50"},
+		{name: "md thickness", ringColor: "red-500/50", ringThickness: "md", want: "ring-1.5 ring-red-500/50"},
+		{name: "lg thickness", ringColor: "red-500/50", ringThickness: "lg", want: "ring-2 ring-red-500/50"},
+		{name: "xl thickness", ringColor: "red-500/50", ringThickness: "xl", want: "ring-2.5 ring-red-500/50"},
+		{name: "unknown thickness defaults to the thin ring", ringColor: "red-500/50", ringThickness: "huge", want: "ring-1 ring-red-500/50"},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			got := CompactRingClassResolver(testCase.ringColor, testCase.ringThickness)
+			if got != testCase.want {
+				t.Errorf("CompactRingClassResolver() = %q, want %q", got, testCase.want)
 			}
 		})
 	}

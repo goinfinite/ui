@@ -63,16 +63,6 @@ func checkboxInputSizeClassesResolver(size string) (
 	return "h-5 w-5", "text-xs", "text-sm"
 }
 
-func checkboxInputShapeClassResolver(shape string) string {
-	switch shape {
-	case CheckboxInputShapeSquare:
-		return "rounded-none"
-	case CheckboxInputShapeCircular:
-		return "rounded-full"
-	}
-	return "rounded"
-}
-
 func checkboxInputBoxBorderClassesResolver(
 	uncheckedColor, checkedColor, errorColor string,
 	isInvalid bool,
@@ -85,7 +75,7 @@ func checkboxInputBoxBorderClassesResolver(
 
 templ CheckboxInput(componentSettings CheckboxInputSettings) {
 	{{ boxSizeClasses, iconSizeClasses, labelSizeClasses := checkboxInputSizeClassesResolver(componentSettings.Size) }}
-	{{ shapeClass := checkboxInputShapeClassResolver(componentSettings.Shape) }}
+	{{ shapeClass := uiToolset.ShapeClassResolver(componentSettings.Shape, "rounded") }}
 	{{ checkedColor := "secondary-500" }}
 	if componentSettings.CheckedColor != "" {
 		{{ checkedColor = componentSettings.CheckedColor }}

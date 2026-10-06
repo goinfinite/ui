@@ -30,11 +30,25 @@ func BorderRadiusClassResolver(borderRadius, fallbackClass string) string {
 	case "sm":
 		return "rounded-sm"
 	case "md":
-		return "rounded"
+		return "rounded-md"
 	case "lg":
 		return "rounded-lg"
 	case "xl":
 		return "rounded-xl"
+	case "full":
+		return "rounded-full"
+	}
+	return fallbackClass
+}
+
+func ShapeClassResolver(shape, fallbackClass string) string {
+	switch shape {
+	case "circular":
+		return "rounded-full"
+	case "rounded":
+		return "rounded"
+	case "square":
+		return "rounded-none"
 	}
 	return fallbackClass
 }
@@ -57,20 +71,45 @@ func ShadowClassResolver(shadowSize, fallbackClass string) string {
 	return fallbackClass
 }
 
+func RingThicknessClassResolver(ringThickness, fallbackClass string) string {
+	switch ringThickness {
+	case "xs":
+		return "ring-1"
+	case "sm":
+		return "ring-1.5"
+	case "md":
+		return "ring-2"
+	case "lg":
+		return "ring-2.5"
+	case "xl":
+		return "ring-3"
+	}
+	return fallbackClass
+}
+
 func RingClassResolver(ringColor, ringThickness string) string {
 	if ringColor == "" || ringThickness == "" {
 		return ""
 	}
+	return RingThicknessClassResolver(ringThickness, "ring-1") + " ring-" + ringColor
+}
+
+func CompactRingClassResolver(ringColor, ringThickness string) string {
+	if ringColor == "" {
+		return ""
+	}
 	ringThicknessClass := "ring-1"
 	switch ringThickness {
+	case "xs":
+		ringThicknessClass = "ring-0.5"
 	case "sm":
-		ringThicknessClass = "ring-1.5"
+		ringThicknessClass = "ring-1"
 	case "md":
-		ringThicknessClass = "ring-2"
+		ringThicknessClass = "ring-1.5"
 	case "lg":
-		ringThicknessClass = "ring-2.5"
+		ringThicknessClass = "ring-2"
 	case "xl":
-		ringThicknessClass = "ring-3"
+		ringThicknessClass = "ring-2.5"
 	}
 	return ringThicknessClass + " ring-" + ringColor
 }

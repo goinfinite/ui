@@ -17,6 +17,7 @@ refactor: derive the carousel and data table id from a stable hash of their iden
 refactor: name the shared component id helpers by the id they build so their files state their purpose
 refactor: keep the alignment types in one structural file and share the refresh fragment fetch between the carousel and the data table
 refactor: gather the demo output generation as methods on one type and name the conditional write by the action it performs
+refactor: add the shape, ring thickness, and compact ring token resolvers and align the border radius token with the class it names
 feat: refresh the carousel through htmx when it is present, with the pagination swapped out of band
 chore: write the demo page and the refresh assets only when their content changed
 fix: read the carousel swipe from the pointer events alone so touch input works

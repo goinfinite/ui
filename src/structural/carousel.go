@@ -298,13 +298,7 @@ func carouselArrowPositionClassesResolver(
 func carouselArrowsClassesResolver(
 	position, shape, size, backgroundColor, iconColor string,
 ) string {
-	shapeClass := "rounded-full"
-	switch shape {
-	case CarouselArrowsShapeRounded:
-		shapeClass = "rounded"
-	case CarouselArrowsShapeSquare:
-		shapeClass = "rounded-none"
-	}
+	shapeClass := uiToolset.ShapeClassResolver(shape, "rounded-full")
 	sizeClass := "p-2 text-2xl"
 	switch size {
 	case CarouselArrowsSizeSm:

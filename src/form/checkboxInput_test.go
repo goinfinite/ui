@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"regexp"
+	"slices"
 	"strings"
 	"testing"
 )
@@ -38,7 +39,16 @@ func TestCheckboxInputSizeClassesResolver(t *testing.T) {
 	}
 }
 
-func TestCheckboxInputShapeClassResolver(t *testing.T) {
+func TestCheckboxInputRendersTheShapeClass(t *testing.T) {
+	containsExactClass := func(renderedHtml, targetClass string) bool {
+		classAttributePattern := regexp.MustCompile(`class="([^"]{1,1000})"`)
+		for _, classAttribute := range classAttributePattern.FindAllStringSubmatch(renderedHtml, -1) {
+			if slices.Contains(strings.Fields(classAttribute[1]), targetClass) {
+				return true
+			}
+		}
+		return false
+	}
 	testCases := []struct {
 		name              string
 		shape             string
@@ -52,11 +62,19 @@ func TestCheckboxInputShapeClassResolver(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			actualClassName := checkboxInputShapeClassResolver(testCase.shape)
-			if actualClassName != testCase.expectedClassName {
+			var buffer bytes.Buffer
+			renderErr := CheckboxInput(CheckboxInputSettings{
+				InputId: "terms",
+				Label:   "Accept the terms",
+				Shape:   testCase.shape,
+			}).Render(context.Background(), &buffer)
+			if renderErr != nil {
+				t.Fatalf("CheckboxRenderFailed: %v", renderErr)
+			}
+			if !containsExactClass(buffer.String(), testCase.expectedClassName) {
 				t.Errorf(
-					"ShapeClassMismatch(%q): got %q, want %q",
-					testCase.shape, actualClassName, testCase.expectedClassName,
+					"RenderedHtmlMissingShape(%q): want class %q in %q",
+					testCase.shape, testCase.expectedClassName, buffer.String(),
 				)
 			}
 		})
