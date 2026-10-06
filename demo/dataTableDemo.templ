@@ -39,8 +39,7 @@ templ DemoTooltipActionCell(record DemoServerRecord) {
 templ DataTableColumnConfigExample() {
 	{{
 		columnSettings := buildDemoStaticTableSettings(
-			"data-table-demo-columns",
-			"Column configuration table pagination",
+			"data-table-demo-columns", "Column configuration table pagination",
 			buildDemoColumnShowcaseColumns(),
 			dataTableDemoRecords[:4],
 		)
@@ -60,8 +59,7 @@ templ DataTableColumnConfigExample() {
 	@DemoExampleCard(
 		"Column Configuration",
 		"A column sets its alignment, width, and sortability. WidthPercent shares the row width, MaxWidthClass caps a long cell, and MinWidthClass holds a floor. A column with a SortKey renders a sort button; one without renders plain text.",
-		"/structural/dataTable.templ",
-		columnUsage,
+		"/structural/dataTable.templ", columnUsage,
 	) {
 		@uiStructural.DataTable(columnSettings)
 	}
@@ -70,8 +68,7 @@ templ DataTableColumnConfigExample() {
 templ DataTableRowsConfigExample() {
 	{{
 		rowsSettings := buildDemoStaticTableSettings(
-			"data-table-demo-rows",
-			"Rows configuration table pagination",
+			"data-table-demo-rows", "Rows configuration table pagination",
 			buildDemoPlainTableColumns(),
 			dataTableDemoRecords[:4],
 		)
@@ -97,8 +94,7 @@ templ DataTableRowsConfigExample() {
 	@DemoExampleCard(
 		"Rows Configuration",
 		"RowIdResolver adds the selection column and identifies each row. RowLabelResolver names the row checkbox for screen readers. CheckboxShape, CheckboxSize, and CheckboxCheckedColor change the selection checkbox. Select a row to see the emerald checkbox and the selection count.",
-		"/structural/dataTable.templ",
-		rowsUsage,
+		"/structural/dataTable.templ", rowsUsage,
 	) {
 		@uiStructural.DataTable(rowsSettings)
 	}
@@ -107,8 +103,7 @@ templ DataTableRowsConfigExample() {
 templ DataTableFiltersExample() {
 	{{
 		filterSettings := buildDemoStaticTableSettings(
-			"data-table-demo-filters",
-			"Filters table pagination",
+			"data-table-demo-filters", "Filters table pagination",
 			buildDemoPlainTableColumns(),
 			dataTableDemoRecords[:5],
 		)
@@ -128,8 +123,7 @@ templ DataTableFiltersExample() {
 	@DemoExampleCard(
 		"Filters",
 		"Each filter renders an editor and an active chip. InitialFilterValues seeds the starting values. A filter change updates the chips and the filter values.",
-		"/structural/dataTable.templ",
-		filtersUsage,
+		"/structural/dataTable.templ", filtersUsage,
 	) {
 		@uiStructural.DataTable(filterSettings)
 	}
@@ -138,8 +132,7 @@ templ DataTableFiltersExample() {
 templ DataTableSearchBoxExample() {
 	{{
 		searchSettings := buildDemoStaticTableSettings(
-			"data-table-demo-search",
-			"Search box table pagination",
+			"data-table-demo-search", "Search box table pagination",
 			buildDemoPlainTableColumns(),
 			dataTableDemoRecords[:5],
 		)
@@ -164,8 +157,7 @@ templ DataTableSearchBoxExample() {
 	@DemoExampleCard(
 		"Search Box",
 		"The table renders a default search box when the query template carries the search placeholder. InitialSearchQuery seeds the starting text. SearchBoxAlignment places the box left, center, or right. Pass SearchBox to replace the default box.",
-		"/structural/dataTable.templ",
-		searchUsage,
+		"/structural/dataTable.templ", searchUsage,
 	) {
 		@uiStructural.DataTable(searchSettings)
 	}
@@ -174,8 +166,7 @@ templ DataTableSearchBoxExample() {
 templ DataTableHeaderActionsExample() {
 	{{
 		headerSettings := buildDemoStaticTableSettings(
-			"data-table-demo-header-actions",
-			"Header actions table pagination",
+			"data-table-demo-header-actions", "Header actions table pagination",
 			buildDemoPlainTableColumns(),
 			dataTableDemoRecords[:4],
 		)
@@ -204,8 +195,7 @@ templ DataTableHeaderActionsExample() {
 		@DemoExampleHeader(
 			"Header Actions",
 			"HeaderActions renders in the toolbar. The button here dispatches an event the panel counts.",
-			"/structural/dataTable.templ",
-			headerUsage,
+			"/structural/dataTable.templ", headerUsage,
 		)
 		<div @demo:header-action.window="headerActionCount++">
 			@uiStructural.DataTable(headerSettings)
@@ -219,8 +209,7 @@ templ DataTableHeaderActionsExample() {
 templ DataTableBulkActionsExample() {
 	{{
 		bulkSettings := buildDemoStaticTableSettings(
-			"data-table-demo-bulk-actions",
-			"Bulk actions table pagination",
+			"data-table-demo-bulk-actions", "Bulk actions table pagination",
 			buildDemoPlainTableColumns(),
 			dataTableDemoRecords[:4],
 		)
@@ -255,8 +244,7 @@ templ DataTableBulkActionsExample() {
 	@DemoExampleCard(
 		"Bulk Actions",
 		"BulkActions renders in the toolbar only while at least one row is selected. Select a row to reveal the action.",
-		"/structural/dataTable.templ",
-		bulkUsage,
+		"/structural/dataTable.templ", bulkUsage,
 	) {
 		@uiStructural.DataTable(bulkSettings)
 	}
@@ -265,8 +253,7 @@ templ DataTableBulkActionsExample() {
 templ DataTableStylingExample() {
 	{{
 		stylingSettings := buildDemoStaticTableSettings(
-			"data-table-demo-styling",
-			"Styling table pagination",
+			"data-table-demo-styling", "Styling table pagination",
 			buildDemoStylingColumns(),
 			dataTableDemoRecords[:4],
 		)
@@ -304,8 +291,7 @@ templ DataTableStylingExample() {
 	@DemoExampleCard(
 		"Row and Column Styling",
 		"HeaderClass paints the header row. IsStriped adds a zebra stripe. CellClass styles one column, and RowClassResolver styles each row from its data. A cell component that sets its own color overrides the row color.",
-		"/structural/dataTable.templ",
-		stylingUsage,
+		"/structural/dataTable.templ", stylingUsage,
 	) {
 		@uiStructural.DataTable(stylingSettings)
 	}
@@ -314,16 +300,14 @@ templ DataTableStylingExample() {
 templ DataTableAppearanceExample() {
 	{{
 		comfortableSettings := buildDemoStaticTableSettings(
-			"data-table-demo-comfortable",
-			"Comfortable table pagination",
+			"data-table-demo-comfortable", "Comfortable table pagination",
 			buildDemoTooltipActionColumns(),
 			dataTableDemoRecords[:3],
 		)
 	}}
 	{{
 		denseSettings := buildDemoStaticTableSettings(
-			"data-table-demo-dense",
-			"Dense table pagination",
+			"data-table-demo-dense", "Dense table pagination",
 			buildDemoTooltipActionColumns(),
 			dataTableDemoRecords[:3],
 		)
@@ -344,8 +328,7 @@ templ DataTableAppearanceExample() {
 		@DemoExampleHeader(
 			"Density and Header Text Case",
 			"Density changes the cell padding. TextCase changes the header capitalization. Both tables use the same columns and rows. The last column holds an icon button with a tooltip.",
-			"/structural/dataTable.templ",
-			appearanceUsage,
+			"/structural/dataTable.templ", appearanceUsage,
 		)
 		<div class="grid gap-6 lg:grid-cols-2">
 			<div class="flex flex-col gap-2">
@@ -363,8 +346,7 @@ templ DataTableAppearanceExample() {
 templ DataTableStickyHeaderExample() {
 	{{
 		stickySettings := buildDemoStaticTableSettings(
-			"data-table-demo-sticky",
-			"Sticky header table pagination",
+			"data-table-demo-sticky", "Sticky header table pagination",
 			buildDemoPlainTableColumns(),
 			dataTableDemoRecords,
 		)
@@ -380,8 +362,7 @@ templ DataTableStickyHeaderExample() {
 	@DemoExampleCard(
 		"Sticky Header",
 		"IsHeaderSticky pins the header and caps the scroll container, so the header stays visible while the body scrolls.",
-		"/structural/dataTable.templ",
-		stickyUsage,
+		"/structural/dataTable.templ", stickyUsage,
 	) {
 		@uiStructural.DataTable(stickySettings)
 	}
@@ -398,8 +379,7 @@ templ DataTableDemoEmptyState() {
 templ DataTableEmptyStateExample() {
 	{{
 		customEmptySettings := buildDemoStaticTableSettings(
-			"data-table-demo-empty-custom",
-			"Custom empty state table pagination",
+			"data-table-demo-empty-custom", "Custom empty state table pagination",
 			buildDemoPlainTableColumns(),
 			nil,
 		)
@@ -407,8 +387,7 @@ templ DataTableEmptyStateExample() {
 	{{ customEmptySettings.EmptyState = DataTableDemoEmptyState() }}
 	{{
 		defaultEmptySettings := buildDemoStaticTableSettings(
-			"data-table-demo-empty-default",
-			"Default empty state table pagination",
+			"data-table-demo-empty-default", "Default empty state table pagination",
 			buildDemoPlainTableColumns(),
 			nil,
 		)
@@ -424,8 +403,7 @@ templ DataTableEmptyStateExample() {
 		@DemoExampleHeader(
 			"Empty States",
 			"With no rows the table renders the EmptyState slot. Without the slot it renders the default message.",
-			"/structural/dataTable.templ",
-			emptyUsage,
+			"/structural/dataTable.templ", emptyUsage,
 		)
 		<div class="grid gap-6 lg:grid-cols-2">
 			<div class="flex flex-col gap-2">

@@ -201,8 +201,7 @@ func Modal(componentSettings ModalSettings) templ.Component {
 		)
 		reachableSizes := modalReachableSizesResolver(componentSettings.InitialSize, possibleSizes)
 		modalSizeClasses := modalSizeClassesResolver(
-			componentSettings.InitialSize,
-			componentSettings.WidthPercent,
+			componentSettings.InitialSize, componentSettings.WidthPercent,
 			componentSettings.HeightPercent,
 			componentSettings.ShouldHeightMatchContent,
 		)
@@ -228,10 +227,8 @@ func Modal(componentSettings ModalSettings) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		modalClasses += " " + modalSizeConstraintClassesResolver(
-			componentSettings.MinWidthPercent,
-			componentSettings.MaxWidthPercent,
-			componentSettings.MinHeightPercent,
-			componentSettings.MaxHeightPercent,
+			componentSettings.MinWidthPercent, componentSettings.MaxWidthPercent,
+			componentSettings.MinHeightPercent, componentSettings.MaxHeightPercent,
 			componentSettings.ShouldHeightMatchContent,
 		)
 		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<!-- Modal Border Radius -->")
@@ -283,7 +280,7 @@ func Modal(componentSettings ModalSettings) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.IsVisibleTwoWayStatePath)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 182, Col: 54}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 179, Col: 54}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5)
 			if templ_7745c5c3_Err != nil {
@@ -306,7 +303,7 @@ func Modal(componentSettings ModalSettings) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.IsVisibleTwoWayStatePath + " = false;" + componentSettings.OnCloseFunc)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 188, Col: 109}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 185, Col: 109}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
 			if templ_7745c5c3_Err != nil {
@@ -323,10 +320,8 @@ func Modal(componentSettings ModalSettings) templ.Component {
 		}
 		modalInternalState := ""
 		isResizable := modalIsResizableResolver(
-			componentSettings.IsUnresizable,
-			componentSettings.WidthPercent,
-			componentSettings.HeightPercent,
-			reachableSizes,
+			componentSettings.IsUnresizable, componentSettings.WidthPercent,
+			componentSettings.HeightPercent, reachableSizes,
 		)
 		if componentSettings.CurrentSizeTwoWayStatePath == "" && isResizable {
 			modalInternalState = "{ modalSize: '" + componentSettings.InitialSize + "' }"
@@ -379,7 +374,7 @@ func Modal(componentSettings ModalSettings) templ.Component {
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.ResolveAttributeValue(modalInternalState)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 242, Col: 31}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 237, Col: 31}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var8)
 			if templ_7745c5c3_Err != nil {
@@ -415,12 +410,11 @@ func Modal(componentSettings ModalSettings) templ.Component {
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.ResolveAttributeValue(modalSizeClassMapExpressionBuilder(
 				componentSettings.CurrentSizeTwoWayStatePath,
-				componentSettings.WidthPercent,
-				componentSettings.HeightPercent,
+				componentSettings.WidthPercent, componentSettings.HeightPercent,
 				componentSettings.ShouldHeightMatchContent,
 			))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 251, Col: 5}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 245, Col: 5}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var10)
 			if templ_7745c5c3_Err != nil {
@@ -458,7 +452,7 @@ func Modal(componentSettings ModalSettings) templ.Component {
 					var templ_7745c5c3_Var11 string
 					templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.TitleOneWayStatePath)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 267, Col: 56}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 261, Col: 56}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var11)
 					if templ_7745c5c3_Err != nil {
@@ -476,7 +470,7 @@ func Modal(componentSettings ModalSettings) templ.Component {
 				var templ_7745c5c3_Var12 string
 				templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.Title)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 270, Col: 33}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 264, Col: 33}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 				if templ_7745c5c3_Err != nil {
@@ -540,7 +534,7 @@ func Modal(componentSettings ModalSettings) templ.Component {
 				var templ_7745c5c3_Var15 string
 				templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.TitleOneWayStatePath)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 287, Col: 54}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 281, Col: 54}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var15)
 				if templ_7745c5c3_Err != nil {
@@ -558,7 +552,7 @@ func Modal(componentSettings ModalSettings) templ.Component {
 			var templ_7745c5c3_Var16 string
 			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.Title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 290, Col: 31}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/modal.templ`, Line: 284, Col: 31}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 			if templ_7745c5c3_Err != nil {

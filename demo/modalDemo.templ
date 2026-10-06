@@ -103,8 +103,7 @@ templ ModalUncloseableExample() {
 	@DemoExampleCard(
 		"Uncloseable",
 		"IsUncloseable hides the close button and ignores backdrop clicks. Your content closes the modal through its own state path.",
-		"/display/modal.templ",
-		uncloseableUsage,
+		"/display/modal.templ", uncloseableUsage,
 	) {
 		<div class="flex flex-col gap-3" x-data="{isUncloseableModalVisible: false}">
 			@uiControl.Button(uiControl.ButtonSettings{
@@ -138,8 +137,7 @@ templ ModalUnresizableExample() {
 	@DemoExampleCard(
 		"Unresizable & OnResize",
 		"IsUnresizable hides the resize buttons. OnResizeFunc runs every time the user resizes a closeable modal through those buttons.",
-		"/display/modal.templ",
-		unresizableUsage,
+		"/display/modal.templ", unresizableUsage,
 	) {
 		<div
 			class="flex flex-col gap-3"
@@ -196,8 +194,7 @@ templ ModalHeaderFooterExample() {
 	@DemoExampleCard(
 		"Header & Footer Slots",
 		"HeaderContent replaces the title bar. FooterContent renders under the body for actions. Set Title as well to keep an accessible name when the header is custom.",
-		"/display/modal.templ",
-		slotsUsage,
+		"/display/modal.templ", slotsUsage,
 	) {
 		<div class="flex flex-col gap-3" x-data="{isSlotsModalVisible: false}">
 			@uiControl.Button(uiControl.ButtonSettings{
@@ -237,8 +234,7 @@ templ ModalCustomSurfaceExample() {
 	@DemoExampleCard(
 		"Custom Surface",
 		"Backdrop, background, ring, radius, shadow, and text colors accept Tailwind tokens.",
-		"/display/modal.templ",
-		surfaceUsage,
+		"/display/modal.templ", surfaceUsage,
 	) {
 		<div
 			class="flex flex-col gap-4"
@@ -469,8 +465,7 @@ templ ModalNearFullSizeExample() {
 	@DemoExampleCard(
 		"Near-Full Size",
 		"ModalSizeXxl spans about 90% of the viewport in both directions. Tall content like a terminal session is its usual partner.",
-		"/display/modal.templ",
-		nearFullUsage,
+		"/display/modal.templ", nearFullUsage,
 	) {
 		<div class="flex flex-col gap-3" x-data="{isTerminalModalVisible: false}">
 			@uiControl.Button(uiControl.ButtonSettings{
@@ -507,8 +502,7 @@ templ ModalCustomDimensionsExample() {
 	@DemoExampleCard(
 		"Custom Dimensions",
 		"WidthPercent and HeightPercent replace the width and height of InitialSize; InitialSize keeps its padding and header scale. Pinning both axes retires the resize controls. IsMiddleContentScrollDisabled pins the body for embedded apps like a terminal.",
-		"/display/modal.templ",
-		dimensionsUsage,
+		"/display/modal.templ", dimensionsUsage,
 	) {
 		<div class="flex flex-col gap-3" x-data="{isPinnedDimensionsModalVisible: false}">
 			@uiControl.Button(uiControl.ButtonSettings{
@@ -546,8 +540,7 @@ templ ModalSizeSliceExample() {
 	@DemoExampleCard(
 		"Size Slice",
 		"PossibleSizes is the ordered set of sizes and InitialSize is its first entry; entries below it are dropped. Enlarge steps up the set, reduce steps back down, and each control hides when it would do nothing.",
-		"/display/modal.templ",
-		sliceUsage,
+		"/display/modal.templ", sliceUsage,
 	) {
 		<div class="flex flex-col gap-3" x-data="{isSizeSliceModalVisible: false}">
 			@uiControl.Button(uiControl.ButtonSettings{

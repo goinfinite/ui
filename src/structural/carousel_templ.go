@@ -166,8 +166,7 @@ func carouselDots(dotsHeightClass string, dotClassesExpression string, dotCurren
 
 func carouselArrowButton(
 	ariaLabel string, arrowClasses string, positionClasses string,
-	disabledExpression string, clickExpression string,
-	icon string,
+	disabledExpression string, clickExpression string, icon string,
 ) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -201,7 +200,7 @@ func carouselArrowButton(
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.ResolveAttributeValue(ariaLabel)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/carousel.templ`, Line: 54, Col: 24}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/carousel.templ`, Line: 53, Col: 24}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var10)
 		if templ_7745c5c3_Err != nil {
@@ -227,7 +226,7 @@ func carouselArrowButton(
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.ResolveAttributeValue(disabledExpression)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/carousel.templ`, Line: 57, Col: 32}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/carousel.templ`, Line: 56, Col: 32}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var12)
 		if templ_7745c5c3_Err != nil {
@@ -240,7 +239,7 @@ func carouselArrowButton(
 		var templ_7745c5c3_Var13 string
 		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.ResolveAttributeValue(clickExpression)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/carousel.templ`, Line: 58, Col: 26}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/carousel.templ`, Line: 57, Col: 26}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var13)
 		if templ_7745c5c3_Err != nil {
@@ -431,7 +430,7 @@ func Carousel[Item any](componentSettings CarouselSettings[Item]) templ.Componen
 		var templ_7745c5c3_Var24 string
 		templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.ResolveAttributeValue(templ.JSFuncCall("carousel", settingsScriptId))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/carousel.templ`, Line: 104, Col: 57}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/carousel.templ`, Line: 103, Col: 57}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var24)
 		if templ_7745c5c3_Err != nil {
@@ -449,7 +448,7 @@ func Carousel[Item any](componentSettings CarouselSettings[Item]) templ.Componen
 			var templ_7745c5c3_Var25 string
 			templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.Id)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/carousel.templ`, Line: 107, Col: 28}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/carousel.templ`, Line: 106, Col: 28}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var25)
 			if templ_7745c5c3_Err != nil {
@@ -667,7 +666,7 @@ func Carousel[Item any](componentSettings CarouselSettings[Item]) templ.Componen
 		var templ_7745c5c3_Var32 string
 		templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.ResolveAttributeValue(paginationId)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/carousel.templ`, Line: 195, Col: 89}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/carousel.templ`, Line: 194, Col: 89}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var32)
 		if templ_7745c5c3_Err != nil {
@@ -680,7 +679,7 @@ func Carousel[Item any](componentSettings CarouselSettings[Item]) templ.Componen
 		var templ_7745c5c3_Var33 string
 		templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.ResolveAttributeValue("outerHTML:#" + paginationId)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/carousel.templ`, Line: 195, Col: 132}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/carousel.templ`, Line: 194, Col: 132}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var33)
 		if templ_7745c5c3_Err != nil {

@@ -81,8 +81,7 @@ templ SidebarAttachmentModeExample() {
 	@DemoExampleCard(
 		"Attachment Modes",
 		"inline keeps the sidebar in the page flow. fixed pins it to the viewport while the rest of the page scrolls.",
-		"/structural/sidebar.templ",
-		attachmentUsage,
+		"/structural/sidebar.templ", attachmentUsage,
 	) {
 		<div
 			class="grid items-center gap-10 md:grid-cols-2"
@@ -135,8 +134,7 @@ templ SidebarOffCanvasExample() {
 	@DemoExampleCard(
 		"Off-Canvas",
 		"IsOffCanvas overlays the sidebar on the content instead of pushing it. Pair it with IsVisibleTwoWayStatePath for a drawer.",
-		"/structural/sidebar.templ",
-		offCanvasUsage,
+		"/structural/sidebar.templ", offCanvasUsage,
 	) {
 		<div
 			class="grid items-center gap-10 md:grid-cols-2"
@@ -192,10 +190,8 @@ templ SidebarSideExample() {
 })`
 	}}
 	@DemoExampleCard(
-		"Side",
-		"Side attaches the sidebar to the left or right edge.",
-		"/structural/sidebar.templ",
-		sideUsage,
+		"Side", "Side attaches the sidebar to the left or right edge.",
+		"/structural/sidebar.templ", sideUsage,
 	) {
 		<div
 			class="grid items-center gap-10 md:grid-cols-2"
@@ -247,8 +243,7 @@ templ SidebarWidthBackgroundExample() {
 	@DemoExampleCard(
 		"Width & Background",
 		"Width accepts a Tailwind width class. BackgroundColor accepts a Tailwind background class, opacity included.",
-		"/structural/sidebar.templ",
-		widthUsage,
+		"/structural/sidebar.templ", widthUsage,
 	) {
 		<div class="h-128 flex-none overflow-hidden rounded-md border border-neutral-800" x-data="{isWidthVisible: true, isCollapsed: false}">
 			@uiStructural.Sidebar(uiStructural.SidebarSettings{

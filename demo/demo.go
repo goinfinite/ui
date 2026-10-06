@@ -91,8 +91,7 @@ func (generator demoGenerator) renderCarouselFragment(
 }
 
 func (generator demoGenerator) buildFragments(
-	pagesTotal uint,
-	itemsPerPage, allRecordsItemsPerPage uiStructural.ItemsPerPage,
+	pagesTotal uint, itemsPerPage, allRecordsItemsPerPage uiStructural.ItemsPerPage,
 	renderFragment func(
 		pageNumber uint, itemsPerPage uiStructural.ItemsPerPage,
 	) (string, error),
@@ -115,8 +114,7 @@ func (generator demoGenerator) buildFragments(
 
 func (generator demoGenerator) buildDataTableFragments() (map[string]string, error) {
 	return generator.buildFragments(
-		dataTableDemoPagesTotal,
-		dataTableDemoItemsPerPage,
+		dataTableDemoPagesTotal, dataTableDemoItemsPerPage,
 		uiStructural.ItemsPerPage(len(dataTableDemoRecords)),
 		generator.renderDataTableFragment,
 	)
@@ -128,8 +126,7 @@ func (generator demoGenerator) buildCarouselFragments() (map[string]string, erro
 		uint(len(dataTableDemoRecords)), carouselItemsPerPage,
 	)
 	return generator.buildFragments(
-		carouselDemoPagesTotal,
-		carouselItemsPerPage,
+		carouselDemoPagesTotal, carouselItemsPerPage,
 		uiStructural.ItemsPerPage(len(dataTableDemoRecords)),
 		generator.renderCarouselFragment,
 	)

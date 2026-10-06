@@ -534,8 +534,7 @@ func MultiSelectInput(componentSettings MultiSelectInputSettings) templ.Componen
 			}
 			templ_7745c5c3_Err = multiSelectInputOptionCheckbox(
 				componentSettings.InputId,
-				componentSettings.InputName,
-				option,
+				componentSettings.InputName, option,
 				selectedItemsStatePath,
 				componentSettings.OnChangeFunc,
 			).Render(ctx, templ_7745c5c3_Buffer)
@@ -583,7 +582,7 @@ func MultiSelectInput(componentSettings MultiSelectInputSettings) templ.Componen
 				var templ_7745c5c3_Var30 string
 				templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(option.Label)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/multiSelectInput.templ`, Line: 172, Col: 60}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/multiSelectInput.templ`, Line: 171, Col: 60}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 				if templ_7745c5c3_Err != nil {
@@ -596,8 +595,7 @@ func MultiSelectInput(componentSettings MultiSelectInputSettings) templ.Componen
 			}
 			templ_7745c5c3_Err = multiSelectInputOptionCheckbox(
 				componentSettings.InputId,
-				componentSettings.InputName,
-				option.Value,
+				componentSettings.InputName, option.Value,
 				selectedItemsStatePath,
 				componentSettings.OnChangeFunc,
 			).Render(ctx, templ_7745c5c3_Buffer)

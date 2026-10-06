@@ -155,8 +155,7 @@ templ MultiSelectInput(componentSettings MultiSelectInputSettings) {
 							<span class="text-sm text-neutral-50">{ option }</span>
 							@multiSelectInputOptionCheckbox(
 								componentSettings.InputId,
-								componentSettings.InputName,
-								option,
+								componentSettings.InputName, option,
 								selectedItemsStatePath,
 								componentSettings.OnChangeFunc,
 							)
@@ -173,8 +172,7 @@ templ MultiSelectInput(componentSettings MultiSelectInputSettings) {
 							}
 							@multiSelectInputOptionCheckbox(
 								componentSettings.InputId,
-								componentSettings.InputName,
-								option.Value,
+								componentSettings.InputName, option.Value,
 								selectedItemsStatePath,
 								componentSettings.OnChangeFunc,
 							)

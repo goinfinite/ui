@@ -15,10 +15,8 @@ templ AlertSizesExample() {
 })`
 	}}
 	@DemoExampleCard(
-		"Sizes",
-		"Size scales the alert padding and type: xs, sm, md, lg, or xl.",
-		"/display/alert.templ",
-		sizesUsage,
+		"Sizes", "Size scales the alert padding and type: xs, sm, md, lg, or xl.",
+		"/display/alert.templ", sizesUsage,
 	) {
 		<div class="flex flex-col gap-3">
 			for _, alertSize := range []string{uiDisplay.AlertSizeXs, uiDisplay.AlertSizeSm, uiDisplay.AlertSizeMd, uiDisplay.AlertSizeLg, uiDisplay.AlertSizeXl} {
@@ -53,8 +51,7 @@ templ AlertContentHtmlExample() {
 	@DemoExampleCard(
 		"Content Html Slot",
 		"ContentHtml replaces the plain description with a templ component of your own.",
-		"/display/alert.templ",
-		contentUsage,
+		"/display/alert.templ", contentUsage,
 	) {
 		@uiDisplay.Alert(uiDisplay.AlertSettings{
 			Title:       "Deploy finished",
@@ -81,8 +78,7 @@ templ AlertCloseTimeoutExample() {
 	@DemoExampleCard(
 		"Close & Timeout",
 		"IsCloseable adds the dismiss button and OnCloseFunc runs when it is pressed. DisplayTimeoutSeconds auto-dismisses the alert and runs OnTimeoutFunc.",
-		"/display/alert.templ",
-		closeUsage,
+		"/display/alert.templ", closeUsage,
 	) {
 		<div class="flex flex-col gap-3" x-data="{alertClosed: false, alertTimedOut: false}">
 			@uiDisplay.Alert(uiDisplay.AlertSettings{
@@ -127,8 +123,7 @@ templ AlertCustomSurfaceExample() {
 	@DemoExampleCard(
 		"Custom Surface",
 		"Background, text, ring, radius, shadow, and close-icon colors accept Tailwind tokens. Gradient backgrounds work too.",
-		"/display/alert.templ",
-		surfaceUsage,
+		"/display/alert.templ", surfaceUsage,
 	) {
 		<div class="flex flex-col gap-3">
 			@uiDisplay.Alert(uiDisplay.AlertSettings{
@@ -171,8 +166,7 @@ templ AlertStateBoundExample() {
 	@DemoExampleCard(
 		"State-Bound Content",
 		"DescriptionOneWayStatePath and IsCloseableOneWayStatePath drive the alert from Alpine state.",
-		"/display/alert.templ",
-		stateUsage,
+		"/display/alert.templ", stateUsage,
 	) {
 		<div class="grid gap-6 md:grid-cols-2" x-data="{alertMessage: 'Dynamic alert content!', isAlertCloseable: true}">
 			<div class="flex flex-col gap-3">

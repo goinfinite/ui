@@ -16,10 +16,8 @@ templ ToggleSwitchSizesExample() {
 })`
 	}}
 	@DemoExampleCard(
-		"Sizes",
-		"Size scales the track, thumb, and label: xs, sm, md, lg, or xl.",
-		"/form/toggleSwitch.templ",
-		sizesUsage,
+		"Sizes", "Size scales the track, thumb, and label: xs, sm, md, lg, or xl.",
+		"/form/toggleSwitch.templ", sizesUsage,
 	) {
 		<div class="flex flex-col gap-3" x-data="{isSizeExampleEnabled: false}">
 			for _, toggleSwitchSize := range []string{uiForm.ToggleSwitchSizeXs, uiForm.ToggleSwitchSizeSm, uiForm.ToggleSwitchSizeMd, uiForm.ToggleSwitchSizeLg, uiForm.ToggleSwitchSizeXl} {
@@ -46,8 +44,7 @@ templ ToggleSwitchLabelPositionExample() {
 	@DemoExampleCard(
 		"Label Position",
 		"LabelPosition places the label on the left or the right of the switch.",
-		"/form/toggleSwitch.templ",
-		labelPositionUsage,
+		"/form/toggleSwitch.templ", labelPositionUsage,
 	) {
 		<div class="flex flex-col gap-3" x-data="{isSizeExampleEnabled: false}">
 			@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
@@ -79,8 +76,7 @@ templ ToggleSwitchColorsExample() {
 	@DemoExampleCard(
 		"Color Variants",
 		"Track, thumb, and focus colors accept Tailwind color tokens.",
-		"/form/toggleSwitch.templ",
-		colorsUsage,
+		"/form/toggleSwitch.templ", colorsUsage,
 	) {
 		<div
 			class="flex flex-col gap-3"
@@ -128,8 +124,7 @@ templ ToggleSwitchStatesExample() {
 	@DemoExampleCard(
 		"Required & Disabled",
 		"IsRequired marks the switch as required. IsDisabled blocks edits.",
-		"/form/toggleSwitch.templ",
-		statesUsage,
+		"/form/toggleSwitch.templ", statesUsage,
 	) {
 		<div class="flex flex-col gap-3" x-data="{isRequiredExampleEnabled: false, isSizeExampleEnabled: false}">
 			@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{

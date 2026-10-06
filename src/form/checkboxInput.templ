@@ -64,8 +64,7 @@ func checkboxInputSizeClassesResolver(size string) (
 }
 
 func checkboxInputBoxBorderClassesResolver(
-	uncheckedColor, checkedColor, errorColor string,
-	isInvalid bool,
+	uncheckedColor, checkedColor, errorColor string, isInvalid bool,
 ) string {
 	if isInvalid {
 		return "border-" + errorColor + " peer-checked:border-" + errorColor

@@ -45,8 +45,7 @@ templ SelectInputLabelValueExample() {
 	@DemoExampleCard(
 		"LabelValueOptions",
 		"LabelValueOptions send a stored Value while showing a human Label. The bound state holds the Value.",
-		"/form/selectInput.templ",
-		labelValueUsage,
+		"/form/selectInput.templ", labelValueUsage,
 	) {
 		@DemoAlpineStateBlock(`<div x-data="{country: 'BR'}"></div>`)
 		<div x-data="{country: 'BR'}">
@@ -93,8 +92,7 @@ templ SelectInputHtmlOptionsExample() {
 	@DemoExampleCard(
 		"HTML Option Labels",
 		"LabelHtml replaces the plain option label with custom markup in the dropdown.",
-		"/form/selectInput.templ",
-		htmlOptionsUsage,
+		"/form/selectInput.templ", htmlOptionsUsage,
 	) {
 		@DemoAlpineStateBlock(`<div x-data="{country: 'BR'}"></div>`)
 		<div class="flex flex-col gap-3" x-data="{country: 'BR'}">
@@ -142,8 +140,7 @@ templ SelectInputHintsExample() {
 	@DemoExampleCard(
 		"Hints",
 		"HintValue explains the field. HintDisplay shows it as a description below the field or as a tooltip.",
-		"/form/selectInput.templ",
-		hintsUsage,
+		"/form/selectInput.templ", hintsUsage,
 	) {
 		<div class="flex flex-col gap-6" x-data="{country: 'Brazil'}">
 			@uiForm.SelectInput(uiForm.SelectInputSettings{
@@ -193,8 +190,7 @@ templ SelectInputHintIconStyleExample() {
 	@DemoExampleCard(
 		"Hint Icon Styles",
 		"HintIconStyle renders the hint trigger as an icon or as a boxed tooltip.",
-		"/form/selectInput.templ",
-		hintIconUsage,
+		"/form/selectInput.templ", hintIconUsage,
 	) {
 		<div x-data="{country: 'Brazil'}">
 			@uiForm.SelectInput(uiForm.SelectInputSettings{
@@ -231,8 +227,7 @@ templ SelectInputOnChangeExample() {
 	@DemoExampleCard(
 		"OnChangeFunc",
 		"OnChangeFunc runs when the selection changes and when the field is cleared.",
-		"/form/selectInput.templ",
-		onChangeUsage,
+		"/form/selectInput.templ", onChangeUsage,
 	) {
 		@DemoAlpineStateBlock(`<div x-data="{country: 'Brazil', changeCount: 0, onCountryChange() { this.changeCount++ }}"></div>`)
 		<div

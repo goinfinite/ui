@@ -15,10 +15,8 @@ templ RangeSliderSizesExample() {
 })`
 	}}
 	@DemoExampleCard(
-		"Sizes",
-		"Size scales the track, thumb, and labels: xs, sm, md, lg, or xl.",
-		"/control/rangeSlider.templ",
-		sizesUsage,
+		"Sizes", "Size scales the track, thumb, and labels: xs, sm, md, lg, or xl.",
+		"/control/rangeSlider.templ", sizesUsage,
 	) {
 		<div class="flex flex-col gap-3" x-data="{sliderValue: 50}">
 			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
@@ -57,8 +55,7 @@ templ RangeSliderThumbShapesExample() {
 	@DemoExampleCard(
 		"Thumb Shapes",
 		"ThumbShape draws the thumb as circular, rounded, square, or pipe.",
-		"/control/rangeSlider.templ",
-		shapesUsage,
+		"/control/rangeSlider.templ", shapesUsage,
 	) {
 		<div class="flex flex-col gap-3" x-data="{sliderValue: 50}">
 			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
@@ -96,8 +93,7 @@ templ RangeSliderThumbColorsExample() {
 	@DemoExampleCard(
 		"Thumb Colors & Icons",
 		"Thumb background and text colors accept Tailwind tokens. ThumbLabelIcon stamps an icon on the thumb and ThumbLabelOneWayStatePath prints live state on it.",
-		"/control/rangeSlider.templ",
-		colorsUsage,
+		"/control/rangeSlider.templ", colorsUsage,
 	) {
 		<div class="flex flex-col gap-3" x-data="{sliderValue: 50}">
 			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
@@ -141,8 +137,7 @@ templ RangeSliderValueBubbleExample() {
 	@DemoExampleCard(
 		"Value Bubble",
 		"ThumbValueBubbleEnabled shows the live value above or below the thumb. The default display mode always shows it; ThumbValueBubbleDisplayModeHover shows it only while the slider is hovered or dragged. Bubble colors, size, shape, ring, and position style it.",
-		"/control/rangeSlider.templ",
-		bubbleUsage,
+		"/control/rangeSlider.templ", bubbleUsage,
 	) {
 		<div class="flex flex-col gap-3" x-data="{sliderValue: 50}">
 			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
@@ -198,8 +193,7 @@ templ RangeSliderTrackLabelsExample() {
 	@DemoExampleCard(
 		"Track Labels",
 		"Track start and end labels print the range bounds. Their position moves them above or below the track.",
-		"/control/rangeSlider.templ",
-		labelsUsage,
+		"/control/rangeSlider.templ", labelsUsage,
 	) {
 		<div class="flex flex-col gap-3" x-data="{sliderValue: 50}">
 			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
@@ -249,8 +243,7 @@ templ RangeSliderTrackColorsExample() {
 	@DemoExampleCard(
 		"Track Colors & Icons",
 		"Track background colors paint a solid or gradient track. Label text colors and icons mark the bounds.",
-		"/control/rangeSlider.templ",
-		trackUsage,
+		"/control/rangeSlider.templ", trackUsage,
 	) {
 		<div class="flex flex-col gap-3" x-data="{sliderValue: 50}">
 			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
@@ -306,8 +299,7 @@ templ RangeSliderStepsTicksExample() {
 	@DemoExampleCard(
 		"Steps & Ticks",
 		"TrackSteps snaps the thumb to increments. TrackTicksEnabled draws tick marks every TrackTickStep.",
-		"/control/rangeSlider.templ",
-		stepsUsage,
+		"/control/rangeSlider.templ", stepsUsage,
 	) {
 		<div class="flex flex-col gap-3" x-data="{sliderValue: 50}">
 			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
@@ -341,8 +333,7 @@ templ RangeSliderTrackTooltipExample() {
 	@DemoExampleCard(
 		"Track Tooltip",
 		"TrackTooltipEnabled previews the value under the pointer as it moves along the track. The preview snaps to TrackSteps and clamps to the track bounds.",
-		"/control/rangeSlider.templ",
-		tooltipUsage,
+		"/control/rangeSlider.templ", tooltipUsage,
 	) {
 		<div
 			class="flex flex-col gap-3"
@@ -423,8 +414,7 @@ templ RangeSliderDualModeExample() {
 	@DemoExampleCard(
 		"Dual-Thumb Mode",
 		"ThumbDualValueModeEnabled turns the slider into a range picker. Each thumb binds its own state path and aria label.",
-		"/control/rangeSlider.templ",
-		dualUsage,
+		"/control/rangeSlider.templ", dualUsage,
 	) {
 		<div x-data="{lowerValue: 25, upperValue: 75}" class="flex flex-col gap-3">
 			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
@@ -486,8 +476,7 @@ templ RangeSliderNormalizationExample() {
 	@DemoExampleCard(
 		"Initial State Normalization",
 		"ShouldNormalizeInitialState orders crossed thumbs and pulls out-of-range values back into the track on load. Without it the thumbs start where the state says.",
-		"/control/rangeSlider.templ",
-		normalizeUsage,
+		"/control/rangeSlider.templ", normalizeUsage,
 	) {
 		<div id="range-slider-initial-state-demo" x-data="{lowerValue: 80, upperValue: 20, overflowLowerValue: 150, overflowUpperValue: 20, sliderValue: 150}" class="flex flex-col gap-3">
 			@uiControl.RangeSlider(uiControl.RangeSliderSettings{

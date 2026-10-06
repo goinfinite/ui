@@ -17,10 +17,8 @@ templ RadioInputSizesExample() {
 })`
 	}}
 	@DemoExampleCard(
-		"Sizes",
-		"Size scales the radio and its label: xs, sm, md, lg, or xl.",
-		"/form/radioInput.templ",
-		sizesUsage,
+		"Sizes", "Size scales the radio and its label: xs, sm, md, lg, or xl.",
+		"/form/radioInput.templ", sizesUsage,
 	) {
 		<div class="flex flex-col gap-3" x-data="{selectedOption: 'option1'}">
 			for _, radioSize := range []string{uiForm.RadioInputSizeXs, uiForm.RadioInputSizeSm, uiForm.RadioInputSizeMd, uiForm.RadioInputSizeLg, uiForm.RadioInputSizeXl} {

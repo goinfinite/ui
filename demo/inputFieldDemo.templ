@@ -21,8 +21,7 @@ templ InputFieldReadOnlyExample() {
 	@DemoExampleCard(
 		"Value & Read-Only",
 		"Value seeds the field content. IsReadOnly shows the value without accepting edits.",
-		"/form/inputField.templ",
-		readOnlyUsage,
+		"/form/inputField.templ", readOnlyUsage,
 	) {
 		@uiForm.InputField(uiForm.InputFieldSettings{
 			InputType:  uiForm.InputTypeText,
@@ -51,8 +50,7 @@ templ InputFieldNumberExample() {
 	@DemoExampleCard(
 		"Number Constraints",
 		"InputTypeNumber with InputNumberMin, InputNumberMax, and InputNumberStep bounds the accepted value.",
-		"/form/inputField.templ",
-		numberUsage,
+		"/form/inputField.templ", numberUsage,
 	) {
 		<div x-data="{name: ''}">
 			@uiForm.InputField(uiForm.InputFieldSettings{
@@ -84,8 +82,7 @@ templ InputFieldAffixesExample() {
 	@DemoExampleCard(
 		"Affixes",
 		"AffixLeftValue and AffixRightValue render fixed text on either side of the input.",
-		"/form/inputField.templ",
-		affixesUsage,
+		"/form/inputField.templ", affixesUsage,
 	) {
 		<div class="flex flex-col gap-3 lg:*:max-w-50" x-data="{name: '', slug: ''}">
 			@uiForm.InputField(uiForm.InputFieldSettings{
@@ -202,8 +199,7 @@ templ InputFieldAffixWidthExample() {
 	@DemoExampleCard(
 		"Affix Width",
 		"AffixLeftWidthPercent and AffixRightWidthPercent fix an affix to a percentage of the field width. Without them, an affix caps at half the width.",
-		"/form/inputField.templ",
-		widthUsage,
+		"/form/inputField.templ", widthUsage,
 	) {
 		<div class="flex flex-col gap-3 lg:*:max-w-80" x-data="{domain: '', name: ''}">
 			@uiForm.InputField(uiForm.InputFieldSettings{
@@ -242,8 +238,7 @@ templ InputFieldHintsExample() {
 	@DemoExampleCard(
 		"Hints",
 		"HintValue explains the field. HintDisplay shows it as a description below the field or as a tooltip.",
-		"/form/inputField.templ",
-		hintsUsage,
+		"/form/inputField.templ", hintsUsage,
 	) {
 		<div class="flex flex-col gap-3 lg:*:max-w-50" x-data="{name: '', tooltipName: ''}">
 			@uiForm.InputField(uiForm.InputFieldSettings{
@@ -283,8 +278,7 @@ templ InputFieldHintIconStyleExample() {
 	@DemoExampleCard(
 		"Hint Icon Styles",
 		"HintIconStyle renders the hint trigger as an icon or as a boxed tooltip.",
-		"/form/inputField.templ",
-		hintIconUsage,
+		"/form/inputField.templ", hintIconUsage,
 	) {
 		<div x-data="{name: ''}">
 			@uiForm.InputField(uiForm.InputFieldSettings{

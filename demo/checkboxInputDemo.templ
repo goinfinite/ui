@@ -16,10 +16,8 @@ templ CheckboxInputShapesExample() {
 })`
 	}}
 	@DemoExampleCard(
-		"Shapes",
-		"Shape rounds the checkbox frame: square, rounded, or circular.",
-		"/form/checkboxInput.templ",
-		shapesUsage,
+		"Shapes", "Shape rounds the checkbox frame: square, rounded, or circular.",
+		"/form/checkboxInput.templ", shapesUsage,
 	) {
 		<div class="flex flex-col gap-3" x-data="{isCheckboxExampleEnabled: false}">
 			for _, checkboxShape := range []string{uiForm.CheckboxInputShapeSquare, uiForm.CheckboxInputShapeRounded, uiForm.CheckboxInputShapeCircular} {
@@ -44,10 +42,8 @@ templ CheckboxInputSizesExample() {
 })`
 	}}
 	@DemoExampleCard(
-		"Sizes",
-		"Size scales the checkbox and its label: xs, sm, md, lg, or xl.",
-		"/form/checkboxInput.templ",
-		sizesUsage,
+		"Sizes", "Size scales the checkbox and its label: xs, sm, md, lg, or xl.",
+		"/form/checkboxInput.templ", sizesUsage,
 	) {
 		<div class="flex flex-col gap-3" x-data="{isCheckboxExampleEnabled: false}">
 			for _, checkboxSize := range []string{uiForm.CheckboxInputSizeXs, uiForm.CheckboxInputSizeSm, uiForm.CheckboxInputSizeMd, uiForm.CheckboxInputSizeLg, uiForm.CheckboxInputSizeXl} {
@@ -74,8 +70,7 @@ templ CheckboxInputLabelPositionExample() {
 	@DemoExampleCard(
 		"Label Position",
 		"LabelPosition places the label on the left or the right of the checkbox.",
-		"/form/checkboxInput.templ",
-		labelPositionUsage,
+		"/form/checkboxInput.templ", labelPositionUsage,
 	) {
 		<div class="flex flex-col gap-3" x-data="{isCheckboxExampleEnabled: false}">
 			@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
@@ -106,8 +101,7 @@ templ CheckboxInputStatesExample() {
 	@DemoExampleCard(
 		"States",
 		"IsChecked starts the box checked, IsDisabled blocks edits, and IsRequired marks the field as required.",
-		"/form/checkboxInput.templ",
-		statesUsage,
+		"/form/checkboxInput.templ", statesUsage,
 	) {
 		<div class="flex flex-col gap-3">
 			@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
@@ -145,8 +139,7 @@ templ CheckboxInputErrorStatesExample() {
 	@DemoExampleCard(
 		"Error States",
 		"IsInvalid shows the error style and ErrorMessage explains it. IsInvalidOneWayStatePath drives the error from Alpine state.",
-		"/form/checkboxInput.templ",
-		errorUsage,
+		"/form/checkboxInput.templ", errorUsage,
 	) {
 		<div class="flex flex-col gap-3" x-data="{isCheckboxExampleEnabled: false}">
 			@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
@@ -178,8 +171,7 @@ templ CheckboxInputCheckedColorsExample() {
 	@DemoExampleCard(
 		"Checked Colors",
 		"CheckedColor paints the filled box. UncheckedColor paints the empty box.",
-		"/form/checkboxInput.templ",
-		colorsUsage,
+		"/form/checkboxInput.templ", colorsUsage,
 	) {
 		<div class="flex flex-col gap-3">
 			@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{

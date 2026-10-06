@@ -51,8 +51,7 @@ templ CardSurfaceEdgesExample() {
 	@DemoExampleCard(
 		"Surface & Edges",
 		"Background, text, radius, shadow, ring, and padding accept Tailwind tokens.",
-		"/structural/card.templ",
-		surfaceUsage,
+		"/structural/card.templ", surfaceUsage,
 	) {
 		@uiStructural.Card(uiStructural.CardSettings{
 			MiddleContent:    CardDemoBody(),
@@ -93,8 +92,7 @@ templ CardHeaderIconExample() {
 	@DemoExampleCard(
 		"Header Icon Styles",
 		"HeaderIcon stamps a Phosphor icon in the header. Position, color, background, radius, and padding size style it.",
-		"/structural/card.templ",
-		iconUsage,
+		"/structural/card.templ", iconUsage,
 	) {
 		<div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
 			@uiStructural.Card(uiStructural.CardSettings{
@@ -130,8 +128,7 @@ templ CardContentOnlyExample() {
 	@DemoExampleCard(
 		"Content-Only Card",
 		"With no header settings the card is a bare surface around MiddleContent.",
-		"/structural/card.templ",
-		contentUsage,
+		"/structural/card.templ", contentUsage,
 	) {
 		@uiStructural.Card(uiStructural.CardSettings{
 			MiddleContent: CardDemoContentOnlyBody(),
@@ -155,8 +152,7 @@ templ CardStateBoundHeaderExample() {
 	@DemoExampleCard(
 		"State-Bound Header",
 		"HeaderTitleOneWayStatePath and HeaderSubHeadingOneWayStatePath drive the header text from Alpine state.",
-		"/structural/card.templ",
-		stateUsage,
+		"/structural/card.templ", stateUsage,
 	) {
 		<div x-data="{cardTitle: 'Live Title', cardSubHeading: 'Bound to Alpine state'}" class="flex flex-col gap-3">
 			@uiStructural.Card(uiStructural.CardSettings{
@@ -190,8 +186,7 @@ templ CardContentGapExample() {
 	@DemoExampleCard(
 		"Content Gap",
 		"GapSize sets the space between the header, body, and footer. The default CardGapSizeMd renders gap-3.",
-		"/structural/card.templ",
-		gapUsage,
+		"/structural/card.templ", gapUsage,
 	) {
 		<div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
 			@uiStructural.Card(uiStructural.CardSettings{

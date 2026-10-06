@@ -128,8 +128,7 @@ templ Modal(componentSettings ModalSettings) {
 		)
 		reachableSizes := modalReachableSizesResolver(componentSettings.InitialSize, possibleSizes)
 		modalSizeClasses := modalSizeClassesResolver(
-			componentSettings.InitialSize,
-			componentSettings.WidthPercent,
+			componentSettings.InitialSize, componentSettings.WidthPercent,
 			componentSettings.HeightPercent,
 			componentSettings.ShouldHeightMatchContent,
 		)
@@ -162,10 +161,8 @@ templ Modal(componentSettings ModalSettings) {
 	<!-- Modal Size Constraints -->
 	{{
 		modalClasses += " " + modalSizeConstraintClassesResolver(
-			componentSettings.MinWidthPercent,
-			componentSettings.MaxWidthPercent,
-			componentSettings.MinHeightPercent,
-			componentSettings.MaxHeightPercent,
+			componentSettings.MinWidthPercent, componentSettings.MaxWidthPercent,
+			componentSettings.MinHeightPercent, componentSettings.MaxHeightPercent,
 			componentSettings.ShouldHeightMatchContent,
 		)
 	}}
@@ -191,10 +188,8 @@ templ Modal(componentSettings ModalSettings) {
 		{{ modalInternalState := "" }}
 		{{
 			isResizable := modalIsResizableResolver(
-				componentSettings.IsUnresizable,
-				componentSettings.WidthPercent,
-				componentSettings.HeightPercent,
-				reachableSizes,
+				componentSettings.IsUnresizable, componentSettings.WidthPercent,
+				componentSettings.HeightPercent, reachableSizes,
 			)
 		}}
 		if componentSettings.CurrentSizeTwoWayStatePath == "" && isResizable {
@@ -245,8 +240,7 @@ templ Modal(componentSettings ModalSettings) {
 			if componentSettings.CurrentSizeTwoWayStatePath != "" {
 				:class={ modalSizeClassMapExpressionBuilder(
 					componentSettings.CurrentSizeTwoWayStatePath,
-					componentSettings.WidthPercent,
-					componentSettings.HeightPercent,
+					componentSettings.WidthPercent, componentSettings.HeightPercent,
 					componentSettings.ShouldHeightMatchContent,
 				) }
 			}

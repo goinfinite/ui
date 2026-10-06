@@ -303,8 +303,7 @@ func TestDataTableIdResolver(t *testing.T) {
 	rowVariantId := rowVariantSettings.idResolver()
 	if rowVariantId != derivedId {
 		t.Errorf(
-			"IdChangedWithDifferentRows: %q != %q",
-			rowVariantId, derivedId,
+			"IdChangedWithDifferentRows: %q != %q", rowVariantId, derivedId,
 		)
 	}
 

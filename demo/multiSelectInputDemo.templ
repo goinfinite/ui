@@ -44,8 +44,7 @@ templ MultiSelectInputLabelValueExample() {
 	@DemoExampleCard(
 		"LabelValueOptions",
 		"LabelValueOptions send a stored Value while showing a human Label. The bound state holds the selected Values.",
-		"/form/multiSelectInput.templ",
-		labelValueUsage,
+		"/form/multiSelectInput.templ", labelValueUsage,
 	) {
 		@DemoAlpineStateBlock(`<div x-data="{countries: ['BR']}"></div>`)
 		<div x-data="{countries: ['BR']}">
@@ -90,8 +89,7 @@ templ MultiSelectInputHtmlOptionsExample() {
 	@DemoExampleCard(
 		"HTML Option Labels",
 		"LabelHtml replaces the plain option label with custom markup in the dropdown.",
-		"/form/multiSelectInput.templ",
-		htmlOptionsUsage,
+		"/form/multiSelectInput.templ", htmlOptionsUsage,
 	) {
 		@DemoAlpineStateBlock(`<div x-data="{countries: ['BR']}"></div>`)
 		<div class="flex flex-col gap-3" x-data="{countries: ['BR']}">
@@ -138,8 +136,7 @@ templ MultiSelectInputHintsExample() {
 	@DemoExampleCard(
 		"Hints",
 		"HintValue explains the field. HintDisplay shows it as a description below the field or as a tooltip.",
-		"/form/multiSelectInput.templ",
-		hintsUsage,
+		"/form/multiSelectInput.templ", hintsUsage,
 	) {
 		<div class="flex flex-col gap-6" x-data="{countries: ['Brazil']}">
 			@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
@@ -179,8 +176,7 @@ templ MultiSelectInputHintIconStyleExample() {
 	@DemoExampleCard(
 		"Hint Icon Styles",
 		"HintIconStyle renders the hint trigger as an icon or as a boxed tooltip.",
-		"/form/multiSelectInput.templ",
-		hintIconUsage,
+		"/form/multiSelectInput.templ", hintIconUsage,
 	) {
 		<div x-data="{countries: ['Brazil']}">
 			@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
@@ -209,10 +205,8 @@ templ MultiSelectInputRequiredExample() {
 })`
 	}}
 	@DemoExampleCard(
-		"Required",
-		"IsRequired marks the field as required.",
-		"/form/multiSelectInput.templ",
-		requiredUsage,
+		"Required", "IsRequired marks the field as required.",
+		"/form/multiSelectInput.templ", requiredUsage,
 	) {
 		<div x-data="{countries: ['Brazil']}">
 			@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{

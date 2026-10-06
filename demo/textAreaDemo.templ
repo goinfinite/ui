@@ -20,8 +20,7 @@ templ TextAreaReadOnlyExample() {
 	@DemoExampleCard(
 		"Value & Read-Only",
 		"Value seeds the field content. IsReadOnly shows the value without accepting edits.",
-		"/form/textArea.templ",
-		readOnlyUsage,
+		"/form/textArea.templ", readOnlyUsage,
 	) {
 		@uiForm.TextArea(uiForm.TextAreaSettings{
 			InputName:  "description",
@@ -46,8 +45,7 @@ templ TextAreaCodeExample() {
 	@DemoExampleCard(
 		"Code Mode",
 		"IsCode switches the field to a monospace editor styled for source code.",
-		"/form/textArea.templ",
-		codeUsage,
+		"/form/textArea.templ", codeUsage,
 	) {
 		<div x-data="{snippet: 'echo hello world'}">
 			@uiForm.TextArea(uiForm.TextAreaSettings{
@@ -75,8 +73,7 @@ templ TextAreaHintsExample() {
 	@DemoExampleCard(
 		"Hints",
 		"HintValue explains the field. HintDisplay shows it as a description below the field or as a tooltip.",
-		"/form/textArea.templ",
-		hintsUsage,
+		"/form/textArea.templ", hintsUsage,
 	) {
 		<div class="flex flex-col gap-3" x-data="{description: ''}">
 			@uiForm.TextArea(uiForm.TextAreaSettings{
@@ -112,8 +109,7 @@ templ TextAreaHintStatePathExample() {
 	@DemoExampleCard(
 		"Hint State Path",
 		"HintStatePath reads the hint text from Alpine state, so the hint updates as the state changes.",
-		"/form/textArea.templ",
-		hintStateUsage,
+		"/form/textArea.templ", hintStateUsage,
 	) {
 		<div x-data="{description: '', hintText: 'First hint text.'}" class="flex flex-col gap-3">
 			@uiForm.TextArea(uiForm.TextAreaSettings{

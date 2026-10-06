@@ -22,8 +22,7 @@ templ InlineRadioGroupSizesExample() {
 	@DemoExampleCard(
 		"Sizes",
 		"Each radio carries its own Size, so the group can scale per option.",
-		"/form/inlineRadioGroup.templ",
-		sizesUsage,
+		"/form/inlineRadioGroup.templ", sizesUsage,
 	) {
 		<div x-data="{groupSizeSelection: 'md'}" class="flex flex-col gap-3">
 			@uiForm.InlineRadioGroup(uiForm.InlineRadioGroupSettings{

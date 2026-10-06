@@ -448,8 +448,7 @@ func TestCarouselRendersHtmxRefreshMarkup(t *testing.T) {
 		t.Errorf("RenderedHtmlMissingRootSyncStrategy")
 	}
 	if !strings.Contains(
-		renderedHtml,
-		`hx-swap-oob="outerHTML:#records-carousel-pagination"`,
+		renderedHtml, `hx-swap-oob="outerHTML:#records-carousel-pagination"`,
 	) {
 		t.Errorf("RenderedHtmlMissingPaginationOutOfBandSwap")
 	}
@@ -479,8 +478,7 @@ func TestCarouselPaginationOutOfBandSwapTargetsItsOwnComponent(t *testing.T) {
 			t.Errorf("PaginationIdMissing: %s", paginationId)
 		}
 		if !strings.Contains(
-			renderedHtml,
-			`hx-swap-oob="outerHTML:#`+paginationId+`"`,
+			renderedHtml, `hx-swap-oob="outerHTML:#`+paginationId+`"`,
 		) {
 			t.Errorf("PaginationOutOfBandSwapDoesNotTargetOwnComponent: %s",
 				paginationId)

@@ -13,8 +13,7 @@ $store.toast.displayToastWithApiResponse({readableMessage: "Server rebuilt"}, 20
 	@DemoExampleCard(
 		"API Response Toasts",
 		"displayToastWithApiResponse reads an Infinite API envelope and picks the tone from the status code: 207 is a partial success, 400 and above is an error, anything else is a success.",
-		"/display/toast.templ",
-		apiResponseUsage,
+		"/display/toast.templ", apiResponseUsage,
 	) {
 		<div class="flex flex-wrap gap-2" x-data>
 			@uiControl.Button(uiControl.ButtonSettings{
@@ -58,8 +57,7 @@ templ ToastMountSettingsExample() {
 	@DemoExampleCard(
 		"Mount Settings",
 		"AutoDismissSeconds sets how long each toast stays up; it defaults to 10 seconds. Background, text, ring, and radius accept Tailwind tokens. Mount one Toast per page: the mount configures the shared toast store.",
-		"/display/toast.templ",
-		mountUsage,
+		"/display/toast.templ", mountUsage,
 	) {
 		<p class="text-sm text-neutral-400">
 			The live example above already mounts a styled toast with a 6 second auto-dismiss. Every button on this page uses that mount.

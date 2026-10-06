@@ -32,8 +32,7 @@ templ PageHeadingTitleOnlyExample() {
 	@DemoExampleCard(
 		"Title Only",
 		"With no icon, sub-heading, or actions the heading is a single line.",
-		"/structural/pageHeading.templ",
-		titleOnlyUsage,
+		"/structural/pageHeading.templ", titleOnlyUsage,
 	) {
 		@uiStructural.PageHeading(uiStructural.PageHeadingSettings{
 			HeaderTitle: "Title Only",
@@ -55,8 +54,7 @@ templ PageHeadingLevelSizesExample() {
 	@DemoExampleCard(
 		"Levels & Sizes",
 		"Level page renders the h1 page header and defaults to xl. Level section renders the h2 section heading and defaults to lg. HeaderSize scales either level: xs, sm, md, lg, or xl.",
-		"/structural/pageHeading.templ",
-		levelsUsage,
+		"/structural/pageHeading.templ", levelsUsage,
 	) {
 		<div class="flex flex-col gap-4">
 			@uiStructural.PageHeading(uiStructural.PageHeadingSettings{
@@ -94,8 +92,7 @@ templ PageHeadingIconStylesExample() {
 	@DemoExampleCard(
 		"Icon Styles",
 		"HeaderIcon stamps a Phosphor icon on the heading. Color and position style it. A section-level icon carries a chip background by default.",
-		"/structural/pageHeading.templ",
-		iconUsage,
+		"/structural/pageHeading.templ", iconUsage,
 	) {
 		<div class="flex flex-col gap-4">
 			@uiStructural.PageHeading(uiStructural.PageHeadingSettings{
@@ -135,8 +132,7 @@ templ PageHeadingStateBoundExample() {
 	@DemoExampleCard(
 		"State-Bound Title",
 		"HeaderTitleOneWayStatePath and HeaderSubHeadingOneWayStatePath drive the heading text from Alpine state.",
-		"/structural/pageHeading.templ",
-		stateUsage,
+		"/structural/pageHeading.templ", stateUsage,
 	) {
 		<div x-data="{pageTitle: 'Live Title', pageSubHeading: 'Bound to Alpine state'}" class="flex flex-col gap-3">
 			@uiStructural.PageHeading(uiStructural.PageHeadingSettings{
