@@ -309,4 +309,29 @@ test.describe("Carousel @structural", () => {
       page.locator(`${serverRoot} [data-ui-carousel-track] > div`),
     ).toHaveCount(6);
   });
+
+  test("items per page dropdown stays inside the carousel surface", async ({
+    page,
+  }) => {
+    const selectTrigger = page.locator(`${carouselRoot} nav [role=button]`);
+    await selectTrigger.scrollIntoViewIfNeeded();
+    await selectTrigger.click();
+
+    const dropdown = page.locator(`${carouselRoot} nav ul`);
+    await expect(dropdown).toBeVisible();
+
+    const surface = page.locator(carouselRoot);
+    await expect
+      .poll(async () => {
+        const dropdownBox = await dropdown.boundingBox();
+        const surfaceBox = await surface.boundingBox();
+        return {
+          belowSurfaceTop: dropdownBox.y >= surfaceBox.y,
+          aboveSurfaceBottom:
+            dropdownBox.y + dropdownBox.height <=
+            surfaceBox.y + surfaceBox.height,
+        };
+      })
+      .toEqual({ belowSurfaceTop: true, aboveSurfaceBottom: true });
+  });
 });

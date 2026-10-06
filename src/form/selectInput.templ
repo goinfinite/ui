@@ -1,10 +1,18 @@
 package uiForm
 
 import (
+	_ "embed"
 	"fmt"
 	"sync/atomic"
 
 	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+//go:embed selectInputState.js
+var selectInputAlpineState string
+
+var selectInputAlpineStateOnce = templ.NewOnceHandle(
+	templ.WithComponent(uiToolset.MinifierTemplateJs(&selectInputAlpineState)),
 )
 
 var labelValueOptionsScriptIdCounter atomic.Uint64
@@ -66,10 +74,9 @@ func selectInputSizeClassesResolver(size string) (
 }
 
 templ SelectInput(componentSettings SelectInputSettings) {
-	{{ selectState := `{isOpen: false, openUpward: false, selectedValue: ''}` }}
+	@selectInputAlpineStateOnce.Once()
 	{{ selectValueStatePath := "selectedValue" }}
 	if componentSettings.TwoWayStatePath != "" {
-		{{ selectState = "{isOpen: false, openUpward: false}" }}
 		{{ selectValueStatePath = componentSettings.TwoWayStatePath }}
 	}
 	{{ selectedCheckExpression := "String(" + selectValueStatePath + ") === $el.value" }}
@@ -77,19 +84,18 @@ templ SelectInput(componentSettings SelectInputSettings) {
 	if componentSettings.OnChangeFunc != "" {
 		{{ onChangeFuncSuffix = "; " + componentSettings.OnChangeFunc }}
 	}
-	{{ openUpwardExpression := "$nextTick(() => { const triggerBottom = $refs.trigger.getBoundingClientRect().bottom; openUpward = window.innerHeight - triggerBottom < $refs.dropdown.offsetHeight + 8 })" }}
-	{{ toggleExpression := "isOpen = !isOpen; if (isOpen) { " + openUpwardExpression + " }" }}
+	{{ toggleExpression := "toggleDropdown()" }}
 	{{ isDisabledPath := componentSettings.IsDisabledOneWayStatePath }}
 	if isDisabledPath != "" {
-		{{ toggleExpression = "!(" + isDisabledPath + ") && (isOpen = !isOpen); if (isOpen) { " + openUpwardExpression + " }" }}
+		{{ toggleExpression = "!(" + isDisabledPath + ") && toggleDropdown()" }}
 	}
 	{{ legendSizeClasses, triggerSizeClasses, emptyPaddingClass := selectInputSizeClassesResolver(componentSettings.Size) }}
 	{{ textCaseClass := uiToolset.TextCaseClassResolver(componentSettings.TextCase) }}
 	<!-- SelectInput -->
 	<div
-		x-data={ selectState }
+		x-data="selectInput"
 		class="relative w-full"
-		@keydown.escape.window="isOpen = false"
+		@keydown.escape.window="closeDropdown()"
 		if isDisabledPath != "" {
 			:class={ isDisabledPath + " && 'pointer-events-none opacity-50'" }
 		}
@@ -118,7 +124,7 @@ templ SelectInput(componentSettings SelectInputSettings) {
 				</legend>
 				<!-- SelectField -->
 				<div
-					x-ref="trigger"
+					x-ref="selectTrigger"
 					class={ "group flex w-full cursor-pointer items-center justify-between text-neutral-100 " + triggerSizeClasses }
 					tabindex="0"
 					role="button"
@@ -148,7 +154,7 @@ templ SelectInput(componentSettings SelectInputSettings) {
 							<!-- SelectClearIcon -->
 							<i
 								x-show={ selectValueStatePath + " !== ''" }
-								@click.stop.prevent={ selectValueStatePath + " = ''; isOpen = false" + onChangeFuncSuffix }
+								@click.stop.prevent={ selectValueStatePath + " = ''; closeDropdown()" + onChangeFuncSuffix }
 								class="ph-bold ph-x-circle text-lg hover:text-neutral-300"
 							></i>
 						}
@@ -169,12 +175,12 @@ templ SelectInput(componentSettings SelectInputSettings) {
 					{{ initialDropdownBackgroundColor = componentSettings.DropdownBackgroundColor }}
 				}
 				<ul
-					x-ref="dropdown"
+					x-ref="selectDropdown"
 					class={ "absolute left-0 z-10 max-h-60 w-full overflow-auto rounded-md border border-neutral-50/5 bg-" + initialDropdownBackgroundColor + " shadow-lg hover:border-neutral-50/30" }
 					:class={ "openUpward ? 'bottom-full mb-1' : 'mt-1'" }
 					x-show="isOpen"
-					@click.away="isOpen = false"
-					@click="isOpen = false"
+					@click.away="closeDropdown()"
+					@click="closeDropdown()"
 					@change={ selectValueStatePath + " = $event.target.value" + onChangeFuncSuffix }
 					x-transition
 				>
