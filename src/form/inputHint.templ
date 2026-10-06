@@ -3,6 +3,8 @@ package uiForm
 import (
 	"fmt"
 	"sync/atomic"
+
+	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
 const (
@@ -39,8 +41,9 @@ func shouldRenderInputHintDescription(hintDisplay string) bool {
 }
 
 templ InputHintTooltip(componentSettings InputHintSettings) {
+	@uiToolset.TooltipAlpineStateOnce.Once()
 	{{ tooltipId := generateInputHintTooltipId() }}
-	{{ triggerClasses := "group/tooltip relative shrink-0 self-center inline-flex items-center" }}
+	{{ triggerClasses := "relative shrink-0 self-center inline-flex items-center" }}
 	{{ iconClasses := "ph-bold ph-info text-lg text-neutral-400 transition-colors hover:text-neutral-100" }}
 	if componentSettings.Size == InputHintSizeSm {
 		{{ triggerClasses += " px-2" }}
@@ -49,6 +52,11 @@ templ InputHintTooltip(componentSettings InputHintSettings) {
 	if componentSettings.IconStyle == InputHintIconStyleBoxed {
 		{{ iconClasses = "ph-bold ph-info text-base leading-none border-1 rounded border-neutral-50/5 bg-neutral-50/5 p-1 text-neutral-100 transition-colors hover:border-neutral-50/30 hover:bg-neutral-50/20" }}
 	}
+	{{
+		tooltipSurfaceClasses := uiToolset.TooltipSurfaceClassesResolver(
+			componentSettings.TooltipBackgroundColor, "", "", "",
+		)
+	}}
 	<!-- HintDisplayTooltip -->
 	<div
 		class={ triggerClasses }
@@ -58,24 +66,30 @@ templ InputHintTooltip(componentSettings InputHintSettings) {
 		@click.stop
 		@keydown.enter.stop.prevent
 		@keydown.space.stop.prevent
+		x-data={ templ.JSFuncCall("tooltip", uiToolset.TooltipPositionBottom) }
+		x-ref="trigger"
+		@mouseenter="showTooltip()"
+		@mouseleave="hideTooltip()"
+		@focusin="showTooltip()"
+		@focusout="hideTooltip()"
 	>
 		<i class={ iconClasses } aria-hidden="true"></i>
-		{{ tooltipBackgroundColor := "neutral-800/95" }}
-		if componentSettings.TooltipBackgroundColor != "" {
-			{{ tooltipBackgroundColor = componentSettings.TooltipBackgroundColor }}
-		}
-		<div
-			id={ tooltipId }
-			role="tooltip"
-			class={ "invisible absolute right-0 z-10 mt-1.5 min-w-32 max-w-128 rounded border border-neutral-50/10 bg-" + tooltipBackgroundColor + " p-2 text-xs text-neutral-100 opacity-0 shadow-md transition-all group-hover/tooltip:visible group-hover/tooltip:opacity-100 group-focus-within/tooltip:visible group-focus-within/tooltip:opacity-100 select-none" }
-			if componentSettings.StatePath != "" {
-				x-text={ componentSettings.StatePath }
-			}
-		>
-			if componentSettings.Value != "" {
-				{ componentSettings.Value }
-			}
-		</div>
+		<template x-teleport="body">
+			<div
+				x-ref="tooltip"
+				id={ tooltipId }
+				role="tooltip"
+				:style="resolvedTooltipStyle"
+				class={ tooltipSurfaceClasses }
+			>
+				if componentSettings.StatePath != "" {
+					<span x-text={ componentSettings.StatePath }></span>
+				}
+				if componentSettings.Value != "" {
+					{ componentSettings.Value }
+				}
+			</div>
+		</template>
 	</div>
 }
 

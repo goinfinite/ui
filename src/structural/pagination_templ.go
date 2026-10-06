@@ -168,7 +168,7 @@ func Pagination(componentSettings PaginationSettings) templ.Component {
 			OnClickFunc:               pageNumberPath + " = 0" + onChangeSuffix,
 			Size:                      uiControl.ButtonSizeXs,
 			TooltipContent:            "First page",
-			TooltipPosition:           uiControl.ButtonTooltipPositionTop,
+			TooltipPosition:           uiToolset.TooltipPositionTop,
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -180,7 +180,7 @@ func Pagination(componentSettings PaginationSettings) templ.Component {
 			OnClickFunc:               pageNumberPath + " = Math.max(0, " + pageNumberPath + " - 1)" + onChangeSuffix,
 			Size:                      uiControl.ButtonSizeXs,
 			TooltipContent:            "Previous page",
-			TooltipPosition:           uiControl.ButtonTooltipPositionTop,
+			TooltipPosition:           uiToolset.TooltipPositionTop,
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -271,7 +271,7 @@ func Pagination(componentSettings PaginationSettings) templ.Component {
 			OnClickFunc:               pageNumberPath + " = Math.min(" + lastPageNumberExpression + ", " + pageNumberPath + " + 1)" + onChangeSuffix,
 			Size:                      uiControl.ButtonSizeXs,
 			TooltipContent:            "Next page",
-			TooltipPosition:           uiControl.ButtonTooltipPositionTop,
+			TooltipPosition:           uiToolset.TooltipPositionTop,
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -283,7 +283,7 @@ func Pagination(componentSettings PaginationSettings) templ.Component {
 			OnClickFunc:               pageNumberPath + " = " + lastPageNumberExpression + onChangeSuffix,
 			Size:                      uiControl.ButtonSizeXs,
 			TooltipContent:            "Last page",
-			TooltipPosition:           uiControl.ButtonTooltipPositionTop,
+			TooltipPosition:           uiToolset.TooltipPositionTop,
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

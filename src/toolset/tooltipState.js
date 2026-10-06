@@ -1,6 +1,6 @@
 UiToolset.RegisterAlpineState(() => {
-  const buttonTooltipOffsetPx = 6;
-  const buttonTooltipViewportPaddingPx = 4;
+  const tooltipOffsetPx = 6;
+  const tooltipViewportPaddingPx = 4;
 
   function clampNumber(value, minimum, maximum) {
     return Math.min(Math.max(value, minimum), maximum);
@@ -13,20 +13,20 @@ UiToolset.RegisterAlpineState(() => {
     viewportSize,
     prefersAfter,
   ) {
-    const beforeStart = triggerStart - tooltipSize - buttonTooltipOffsetPx;
-    const afterStart = triggerEnd + buttonTooltipOffsetPx;
+    const beforeStart = triggerStart - tooltipSize - tooltipOffsetPx;
+    const afterStart = triggerEnd + tooltipOffsetPx;
     let start = prefersAfter ? afterStart : beforeStart;
-    if (start < buttonTooltipViewportPaddingPx) {
+    if (start < tooltipViewportPaddingPx) {
       start = afterStart;
     }
-    if (start + tooltipSize > viewportSize - buttonTooltipViewportPaddingPx) {
+    if (start + tooltipSize > viewportSize - tooltipViewportPaddingPx) {
       start = beforeStart;
     }
     const maximumStart = Math.max(
-      buttonTooltipViewportPaddingPx,
-      viewportSize - tooltipSize - buttonTooltipViewportPaddingPx,
+      tooltipViewportPaddingPx,
+      viewportSize - tooltipSize - tooltipViewportPaddingPx,
     );
-    return clampNumber(start, buttonTooltipViewportPaddingPx, maximumStart);
+    return clampNumber(start, tooltipViewportPaddingPx, maximumStart);
   }
 
   function resolveCenteredAxisStart(
@@ -36,11 +36,11 @@ UiToolset.RegisterAlpineState(() => {
     viewportSize,
   ) {
     const centeredStart = triggerStart + triggerSize / 2 - tooltipSize / 2;
-    return clampNumber(
-      centeredStart,
-      buttonTooltipViewportPaddingPx,
-      viewportSize - tooltipSize - buttonTooltipViewportPaddingPx,
+    const maximumStart = Math.max(
+      tooltipViewportPaddingPx,
+      viewportSize - tooltipSize - tooltipViewportPaddingPx,
     );
+    return clampNumber(centeredStart, tooltipViewportPaddingPx, maximumStart);
   }
 
   function resolveTooltipCoordinates(triggerRect, tooltipRect, position) {
@@ -79,7 +79,7 @@ UiToolset.RegisterAlpineState(() => {
     };
   }
 
-  Alpine.data("buttonTooltip", (position) => ({
+  Alpine.data("tooltip", (position) => ({
     tooltipPosition: position || "top",
     isTooltipVisible: false,
     tooltipCoordinates: { top: 0, left: 0 },
@@ -94,12 +94,11 @@ UiToolset.RegisterAlpineState(() => {
       };
     },
 
-    init() {
-      this.tooltipViewportChangeHandler = () => {
-        if (this.isTooltipVisible) {
-          this.showTooltip();
-        }
-      };
+    attachViewportListeners() {
+      if (this.tooltipViewportChangeHandler) {
+        return;
+      }
+      this.tooltipViewportChangeHandler = () => this.showTooltip();
       window.addEventListener(
         "scroll",
         this.tooltipViewportChangeHandler,
@@ -108,13 +107,17 @@ UiToolset.RegisterAlpineState(() => {
       window.addEventListener("resize", this.tooltipViewportChangeHandler);
     },
 
-    destroy() {
+    detachViewportListeners() {
+      if (!this.tooltipViewportChangeHandler) {
+        return;
+      }
       window.removeEventListener(
         "scroll",
         this.tooltipViewportChangeHandler,
         true,
       );
       window.removeEventListener("resize", this.tooltipViewportChangeHandler);
+      this.tooltipViewportChangeHandler = null;
     },
 
     showTooltip() {
@@ -129,10 +132,16 @@ UiToolset.RegisterAlpineState(() => {
         this.tooltipPosition,
       );
       this.isTooltipVisible = true;
+      this.attachViewportListeners();
     },
 
     hideTooltip() {
       this.isTooltipVisible = false;
+      this.detachViewportListeners();
+    },
+
+    destroy() {
+      this.detachViewportListeners();
     },
   }));
 });

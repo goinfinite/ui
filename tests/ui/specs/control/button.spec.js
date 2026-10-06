@@ -44,7 +44,7 @@ test.describe("Button", () => {
     await page.evaluate(() => {
       const tooltipScript = Array.from(
         document.querySelectorAll("script"),
-      ).find((script) => script.textContent.includes("buttonTooltip"));
+      ).find((script) => script.textContent.includes("showTooltip"));
       const reembeddedScript = document.createElement("script");
       reembeddedScript.textContent = tooltipScript.textContent;
       document.body.append(reembeddedScript);

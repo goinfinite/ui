@@ -1,6 +1,7 @@
 package main
 
 import (
+	uiControl "github.com/goinfinite/ui/src/control"
 	uiDisplay "github.com/goinfinite/ui/src/display"
 	uiStructural "github.com/goinfinite/ui/src/structural"
 )
@@ -35,6 +36,44 @@ templ CarouselDemoPlainItem(record DemoServerRecord) {
 			<span>{ record.CreatedAt }</span>
 		</div>
 	</div>
+}
+
+templ CarouselTooltipDemoItem(record DemoServerRecord) {
+	@uiStructural.CarouselItemTooltip(uiStructural.CarouselItemTooltipSettings{
+		Content:         record.Description,
+		BackgroundColor: "primary-900/95",
+		RingColor:       "primary-500/40",
+		RingThickness:   uiStructural.CarouselRingThicknessXs,
+	}) {
+		<div class="flex h-full flex-col gap-2 rounded-md border border-neutral-50/10 bg-neutral-50/5 p-4">
+			<div class="flex items-center justify-between gap-2">
+				<span class="text-base font-bold text-neutral-50">{ record.Name }</span>
+				@DemoServerStatusCell(record.Status)
+			</div>
+			<p class="line-clamp-2 text-sm text-neutral-400">{ record.Description }</p>
+			<div class="mt-auto flex items-center gap-2 text-xs text-neutral-400">
+				<i class="ph-bold ph-cpu"></i>
+				<span>{ record.CpuCores } cores</span>
+				<span>·</span>
+				<span>{ record.CreatedAt }</span>
+			</div>
+		</div>
+	}
+}
+
+templ CarouselTooltipDemoCarousel(id string) {
+	{{
+		tooltipSettings := buildDemoCarouselSettings(id, dataTableDemoRecords[:6], 0, 6)
+		tooltipSettings.Filters = nil
+		tooltipSettings.QueryUrlTemplate = ""
+		tooltipSettings.ItemsTotal = uint(len(tooltipSettings.Items))
+		tooltipSettings.PagesTotal = 1
+		tooltipSettings.ItemsPerPageSizeChoices = []uiStructural.ItemsPerPage{6}
+		tooltipSettings.ItemRenderer = func(record DemoServerRecord) templ.Component {
+			return CarouselTooltipDemoItem(record)
+		}
+	}}
+	@uiStructural.Carousel(tooltipSettings)
 }
 
 func buildDemoCarouselSettings(
@@ -185,6 +224,42 @@ templ CarouselDemoServerExample() {
 	</div>
 }
 
+templ CarouselDemoTooltipsExample() {
+	{{
+		tooltipsUsage := `templ CarouselTooltipDemoItem(record Record) {
+	@uiStructural.CarouselItemTooltip(uiStructural.CarouselItemTooltipSettings{
+		Content:         record.Description,
+		BackgroundColor: "primary-900/95",
+		RingColor:       "primary-500/40",
+		RingThickness:   uiStructural.CarouselRingThicknessXs,
+	}) {
+		// The item markup, with a clamped description.
+	}
+}`
+	}}
+	@DemoExampleCard(
+		"Item Tooltips",
+		"CarouselItemTooltip wraps one item and shows its tooltip on hover or on focus inside the item. The tooltip renders in a fixed layer on the document body, so the track viewport, a scroll container, and a modal cannot clip it. The card clamps its description to two lines; the tooltip carries the full text. The button opens the same carousel inside a modal.",
+		"/structural/carouselItemTooltip.templ",
+		tooltipsUsage,
+	) {
+		<div class="flex flex-col gap-4" x-data="{ isCarouselTooltipModalVisible: false }">
+			@CarouselTooltipDemoCarousel("carousel-demo-tooltips-carousel")
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "Open the carousel in a modal",
+				IconLeft:        "ph-arrows-out",
+				OnClickFunc:     "isCarouselTooltipModalVisible = true",
+			})
+			@uiDisplay.Modal(uiDisplay.ModalSettings{
+				MiddleContent:            CarouselTooltipDemoCarousel("carousel-demo-tooltips-modal-carousel"),
+				Title:                    "Carousel in a modal",
+				InitialSize:              uiDisplay.ModalSizeLg,
+				IsVisibleTwoWayStatePath: "isCarouselTooltipModalVisible",
+			})
+		</div>
+	}
+}
+
 templ CarouselDemo() {
 	{{
 		demoUsage := `@uiStructural.Carousel(uiStructural.CarouselSettings[Record]{
@@ -218,6 +293,7 @@ templ CarouselDemo() {
 			{Title: "Styling", Icon: "ph-paint-brush", Content: CarouselDemoStylingExample()},
 			{Title: "Autoplay", Icon: "ph-play-circle", Content: CarouselDemoAutoplayExample()},
 			{Title: "Server Pagination", Icon: "ph-database", Content: CarouselDemoServerExample()},
+			{Title: "Item Tooltips", Icon: "ph-chats-circle", Content: CarouselDemoTooltipsExample()},
 		})
 	</div>
 }

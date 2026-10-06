@@ -16,10 +16,8 @@ templ ButtonSizesExample() {
 })`
 	}}
 	@DemoExampleCard(
-		"Sizes",
-		"Size scales the button and its type: xs, sm, md, lg, or xl.",
-		"/control/button.templ",
-		sizesUsage,
+		"Sizes", "Size scales the button and its type: xs, sm, md, lg, or xl.",
+		"/control/button.templ", sizesUsage,
 	) {
 		<div class="flex flex-col gap-2">
 			@uiControl.Button(uiControl.ButtonSettings{
@@ -61,10 +59,8 @@ templ ButtonShapesExample() {
 })`
 	}}
 	@DemoExampleCard(
-		"Shapes",
-		"Shape rounds the button frame: square, rounded, or circular.",
-		"/control/button.templ",
-		shapesUsage,
+		"Shapes", "Shape rounds the button frame: square, rounded, or circular.",
+		"/control/button.templ", shapesUsage,
 	) {
 		<div class="flex flex-col gap-2">
 			@uiControl.Button(uiControl.ButtonSettings{
@@ -94,10 +90,8 @@ templ ButtonIconsExample() {
 })`
 	}}
 	@DemoExampleCard(
-		"Icons",
-		"IconLeft and IconRight flank the label with Phosphor icons.",
-		"/control/button.templ",
-		iconsUsage,
+		"Icons", "IconLeft and IconRight flank the label with Phosphor icons.",
+		"/control/button.templ", iconsUsage,
 	) {
 		<div class="flex flex-col gap-2">
 			@uiControl.Button(uiControl.ButtonSettings{
@@ -127,8 +121,7 @@ templ ButtonColorsExample() {
 	@DemoExampleCard(
 		"Colors",
 		"Background and text colors accept Tailwind tokens. The Hover variants paint the hover state.",
-		"/control/button.templ",
-		colorsUsage,
+		"/control/button.templ", colorsUsage,
 	) {
 		<div class="flex flex-col gap-2">
 			@uiControl.Button(uiControl.ButtonSettings{
@@ -170,8 +163,7 @@ templ ButtonRingsExample() {
 	@DemoExampleCard(
 		"Rings",
 		"RingColor and RingThickness outline the button. The Hover variants paint the hover ring.",
-		"/control/button.templ",
-		ringsUsage,
+		"/control/button.templ", ringsUsage,
 	) {
 		<div class="flex flex-col gap-3">
 			@uiControl.Button(uiControl.ButtonSettings{
@@ -216,39 +208,38 @@ templ ButtonTooltipsExample() {
 
 	// OptionalFields
 	TooltipContent:  "This tooltip appears on top",
-	TooltipPosition: uiControl.ButtonTooltipPositionTop,
+	TooltipPosition: uiToolset.TooltipPositionTop,
 })`
 	}}
 	@DemoExampleCard(
 		"Tooltips",
 		"TooltipContent renders a tooltip on hover. TooltipPosition places it on any side. TooltipContentHtml accepts a component, and TooltipContentOneWayStatePath binds live text.",
-		"/control/button.templ",
-		tooltipsUsage,
+		"/control/button.templ", tooltipsUsage,
 	) {
 		<div class="flex flex-col gap-2" x-data="{ dynamicTooltip: 'Live tooltip text' }">
 			@uiControl.Button(uiControl.ButtonSettings{
 				Label:           "Top Tooltip",
 				IconLeft:        "ph-arrow-up",
 				TooltipContent:  "This tooltip appears on top",
-				TooltipPosition: uiControl.ButtonTooltipPositionTop,
+				TooltipPosition: uiToolset.TooltipPositionTop,
 			})
 			@uiControl.Button(uiControl.ButtonSettings{
 				Label:           "Bottom Tooltip",
 				IconLeft:        "ph-arrow-down",
 				TooltipContent:  "This tooltip appears on bottom",
-				TooltipPosition: uiControl.ButtonTooltipPositionBottom,
+				TooltipPosition: uiToolset.TooltipPositionBottom,
 			})
 			@uiControl.Button(uiControl.ButtonSettings{
 				Label:           "Left Tooltip",
 				IconLeft:        "ph-arrow-left",
 				TooltipContent:  "This tooltip appears on left",
-				TooltipPosition: uiControl.ButtonTooltipPositionLeft,
+				TooltipPosition: uiToolset.TooltipPositionLeft,
 			})
 			@uiControl.Button(uiControl.ButtonSettings{
 				Label:           "Right Tooltip",
 				IconLeft:        "ph-arrow-right",
 				TooltipContent:  "This tooltip appears on right",
-				TooltipPosition: uiControl.ButtonTooltipPositionRight,
+				TooltipPosition: uiToolset.TooltipPositionRight,
 			})
 			@uiControl.Button(uiControl.ButtonSettings{
 				Label:              "HTML Tooltip",
@@ -277,8 +268,7 @@ templ ButtonDisabledBindingExample() {
 	@DemoExampleCard(
 		"Disabled Binding",
 		"IsDisabledOneWayStatePath disables the button from Alpine state. IsDisabled disables it outright.",
-		"/control/button.templ",
-		disabledUsage,
+		"/control/button.templ", disabledUsage,
 	) {
 		<div
 			x-data="{clickCount: 0, get shouldDisable() { return this.clickCount > 0 }}"
@@ -321,8 +311,7 @@ templ ButtonFullWidthSubmitExample() {
 	@DemoExampleCard(
 		"Full-Width & Submit",
 		"IsFullWidth stretches the button to its container. IsSubmit renders a submit input for forms.",
-		"/control/button.templ",
-		formUsage,
+		"/control/button.templ", formUsage,
 	) {
 		<div class="flex flex-col gap-2">
 			@uiControl.Button(uiControl.ButtonSettings{
