@@ -33,8 +33,9 @@ Dropdown select component with support for flat string options or label-value pa
 **Flow:**
 
 1. `src/form/selectInput.templ` — Component definition with SelectInputSettings struct and SelectLabelValueOption data structure
-2. `src/form/inputHint.templ` — Shared hint renderer for the tooltip and description display modes
-3. `src/form/selectInput_templ.go` — Compiled output rendering select with native radio options, an embedded JSON script for label lookup, and Alpine.js state management
+2. `src/form/selectInputState.js` — Alpine.js data component for the select dropdown: open toggle, close, and the open-direction decision that stops at the viewport bottom and at every clipping ancestor so the list never opens downward into an overflow-hidden container
+3. `src/form/inputHint.templ` — Shared hint renderer for the tooltip and description display modes
+4. `src/form/selectInput_templ.go` — Compiled output rendering select with native radio options, an embedded JSON script for label lookup, and Alpine.js state management
 
 Supports optional hint text rendered either as a focusable info-icon tooltip inside the dropdown row or as a description line below the fieldset.
 
@@ -110,8 +111,9 @@ Interactive button component with customizable label, icons (left/right using Ph
 **Flow:**
 
 1. `src/control/button.templ` — Component definition with ButtonSettings struct supporting OnClickFunc handlers, icon binding, the type attribute, and the optional tooltip
-2. `src/control/buttonTooltipState.js` — Alpine data component that teleports the tooltip to the document body, positions it with fixed coordinates on hover or focus, and flips it to stay inside the viewport
-3. `src/control/button_templ.go` — Compiled output rendering the button with Alpine.js event binding and the teleported tooltip
+2. `src/toolset/tooltipState.js` — Shared Alpine data component that teleports a tooltip to the document body, positions it with fixed coordinates on hover or focus, and flips it to stay inside the viewport
+3. `src/toolset/tooltip.go` — The once-handle that embeds the shared tooltip state, plus TooltipSurfaceClassesResolver for the shared fixed-layer tooltip classes and the shared TooltipPosition* placement values
+4. `src/control/button_templ.go` — Compiled output rendering the button with Alpine.js event binding and the teleported tooltip
 
 ---
 
@@ -282,20 +284,23 @@ Generic server-driven table taking column definitions and rows. Adds sortable he
 
 ## Carousel
 
-Multi-item slider over a server page. The server returns a chunk of items; the client slides a window of `ItemsPerView` inside that chunk. The visible count follows Tailwind's named breakpoints measured against the browser window. Adds prev/next arrows (outside or inside), dot indicators (top or bottom), a search box (top or bottom), swipe, optional autoplay with pause-on-hover, the filter bar below the track, a pagination footer, and loading and error states. Refresh reuses the DataTable query URL template and the shared refresh URL builder, and swaps the track and pagination regions from one response through `htmx.ajax` when HTMX is present and `fetch` otherwise.
+Multi-item slider over a server page. The server returns a chunk of items; the client slides a window of `ItemsPerView` inside that chunk. The visible count follows Tailwind's named breakpoints measured against the browser window. Adds prev/next arrows (outside or inside), dot indicators (top or bottom), a search box (top or bottom), swipe, optional autoplay with pause-on-hover, the filter bar below the track, a pagination footer, and loading and error states. Items can wrap in `CarouselItemTooltip`, which shows a hover tooltip that teleports to the document body so a scroll container or a modal cannot clip it. Refresh reuses the DataTable query URL template and the shared refresh URL builder, and swaps the track and pagination regions from one response through `htmx.ajax` when HTMX is present and `fetch` otherwise.
 
 **Flow:**
 
 1. `src/structural/carousel.templ` — Generic component (Carousel[T]) with CarouselSettings; renders the search box, arrows, track, dots, error state, filter bar, and pagination; the track sits in `data-ui-carousel` and the footer in `data-ui-carousel-pagination`; the settings script renders inside the component root
 2. `src/structural/carousel.go` — CarouselSettings and the CarouselItemsPerViewSettings type, the surface/arrows/dots/item token constants and class resolvers, plus the id, items-per-view, items-per-page, search-box position, autoplay interval, aria-label, and color resolvers and the client-settings builder
-3. `src/structural/alignment.go` — The HorizontalAlignment and TextAlignment types and their class methods
-4. `src/toolset/styleTokens.go` — Shared token-to-class resolvers that Carousel, Tabs, Card, Modal, Alert, and HeaderIcon call
-5. `src/structural/carouselState.js` — Alpine data component: clamps the window, derives the responsive items-per-view from the named breakpoints against the window width, applies the track transform, handles prev/next/dot/swipe input, runs the autoplay timer with pause-on-hover, sets off-window items inert, and refreshes through `htmx.ajax` when HTMX is present and `fetch` otherwise, swapping both regions
-6. `src/structural/refreshRequestState.js` — Shared refresh URL builder for the query template, the placeholders, and the filter values
-7. `src/structural/pagination.go` — The shared ItemsPerPage type and items-per-page resolvers
-8. `src/structural/pagination.templ` — Chunk footer pagination
-9. `src/structural/filterBar.templ` — Chunk filter bar
-10. `src/structural/carousel_templ.go` — Compiled output
+3. `src/structural/carouselItemTooltip.templ` — CarouselItemTooltip: wraps one item in a hover and focus trigger scope and renders a tooltip that teleports to the document body, with content, position, color, and compact-ring settings
+4. `src/structural/carouselItemTooltip_test.go` — Render tests for the teleport markup, the aria-describedby wiring, the plain wrapper without content, and the customization tokens
+5. `src/structural/alignment.go` — The HorizontalAlignment and TextAlignment types and their class methods
+6. `src/toolset/styleTokens.go` — Shared token-to-class resolvers that Carousel, Tabs, Card, Modal, Alert, HeaderIcon, Tag, and Toast call
+7. `src/toolset/tooltip.go` and `src/toolset/tooltipState.js` — The shared tooltip once-handle, surface classes, position values, and Alpine data component that CarouselItemTooltip, the Button, and the InputHint render
+8. `src/structural/carouselState.js` — Alpine data component: clamps the window, derives the responsive items-per-view from the named breakpoints against the window width, applies the track transform, handles prev/next/dot/swipe input, runs the autoplay timer with pause-on-hover, sets off-window items inert, and refreshes through `htmx.ajax` when HTMX is present and `fetch` otherwise, swapping both regions
+9. `src/structural/refreshRequestState.js` — Shared refresh URL builder for the query template, the placeholders, and the filter values
+10. `src/structural/pagination.go` — The shared ItemsPerPage type and items-per-page resolvers
+11. `src/structural/pagination.templ` — Chunk footer pagination
+12. `src/structural/filterBar.templ` — Chunk filter bar
+13. `src/structural/carousel_templ.go` — Compiled output
 
 ---
 
@@ -387,9 +392,10 @@ Shared token-to-class resolvers for components that expose a styling token. Each
 
 **Flow:**
 
-1. `src/toolset/styleTokens.go` — `BackgroundColorClassResolver()`, `TextColorClassResolver()`, `BorderColorClassResolver()`, `BorderRadiusClassResolver()`, `ShadowClassResolver()`, `RingClassResolver()`, `PaddingClassResolver()`, `CompactPaddingClassResolver()`, and `GapClassResolver()`
+1. `src/toolset/styleTokens.go` — `BackgroundColorClassResolver()`, `TextColorClassResolver()`, `BorderColorClassResolver()`, `BorderRadiusClassResolver()`, `ShapeClassResolver()`, `ShadowClassResolver()`, `RingThicknessClassResolver()`, `RingClassResolver()`, `CompactRingClassResolver()`, `PaddingClassResolver()`, `CompactPaddingClassResolver()`, and `GapClassResolver()`
 2. `src/structural/carousel.go`, `carousel.templ`, `tabs.go`, `tabs.templ`, `card.templ` — structural callers
 3. `src/display/modal.templ`, `alert.templ`, `headerIcon.templ`, `toast.templ`, `accordion.templ`, `tag.templ`, `confirmationDialog.templ` — display callers
+4. `src/control/button.templ`, `rangeSlider.templ`, `src/form/checkboxInput.templ` — control and form callers
 
 ---
 

@@ -2,6 +2,9 @@
 
 ```log
 0.2.5 - 2026/10/02
+BREAKING: rename ButtonTooltipPosition* and CarouselItemTooltipPosition* to the shared uiToolset.TooltipPosition* constants
+feat: add the CarouselItemTooltip component with text or component content, placement, and compact-ring settings
+feat: render the InputHint tooltip through the shared toolset tooltip so a scroll container or a modal cannot clip it
 feat: add the carousel component with responsive items per view, prev/next arrows, dot indicators, swipe, and optional autoplay with pause-on-hover
 feat: add the server pagination and the filter bar to the carousel
 feat: add the surface, arrow, dot, and item styling to the carousel
@@ -18,6 +21,9 @@ refactor: name the shared component id helpers by the id they build so their fil
 refactor: keep the alignment types in one structural file and share the refresh fragment fetch between the carousel and the data table
 refactor: gather the demo output generation as methods on one type and name the conditional write by the action it performs
 refactor: add the shape, ring thickness, and compact ring token resolvers and align the border radius token with the class it names
+refactor: move the shared hover tooltip into the toolset so the Button, the CarouselItemTooltip, and the InputHint render one mechanism
+refactor: turn the select dropdown into an Alpine data component so the open-direction decision stops being a global UiToolset helper
+refactor: attach the tooltip scroll and resize listeners only while the tooltip is visible
 feat: refresh the carousel through htmx when it is present, with the pagination swapped out of band
 chore: write the demo page and the refresh assets only when their content changed
 fix: read the carousel swipe from the pointer events alone so touch input works

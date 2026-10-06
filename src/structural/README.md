@@ -62,6 +62,34 @@ Surface container with an optional header block and content slots.
 - The arrows carry accessible names, the dots carry `aria-label` and `aria-current`, off-window items are set `inert` so they leave the tab order, and the track is keyboard-operable through the prev and next buttons.
 - Pass state paths, the items-per-view values, filter keys, the query URL template, and the class-attribute inputs (`BackgroundColor`, `TextColor`, `RingColor`, `ArrowsBackgroundColor`, `ArrowsIconColor`, `DotsActiveColor`, `DotsInactiveColor`, `ItemBackgroundColor`, `ItemRingColor`, and `FilterDropdownBackgroundColor`) from code, never from request data. The component embeds them into client-side expressions and class attributes.
 
+## CarouselItemTooltip
+
+Wraps one carousel item and shows a tooltip on hover or on focus inside the item.
+
+```go
+templ CarouselItem(record Record) {
+    @uiStructural.CarouselItemTooltip(uiStructural.CarouselItemTooltipSettings{
+        Content: record.Description,
+
+        // OptionalFields
+        Position:      uiToolset.TooltipPositionBottom,
+        RingColor:     "secondary-500/40",
+        RingThickness: uiStructural.CarouselRingThicknessXs,
+    }) {
+        <div class="flex h-full flex-col gap-2">
+            <span class="font-bold">{ record.Name }</span>
+            <p class="text-neutral-400">{ record.Description }</p>
+        </div>
+    }
+}
+```
+
+- `Content` is the tooltip text. `ContentHtml` accepts a component instead. Without both, the wrapper renders the item with no tooltip.
+- `Position` accepts `uiToolset.TooltipPositionTop` (the default), `uiToolset.TooltipPositionBottom`, `uiToolset.TooltipPositionLeft`, or `uiToolset.TooltipPositionRight`.
+- `BackgroundColor` and `TextColor` take color tokens. The defaults render `bg-neutral-800/95` on `text-neutral-50`.
+- `RingColor` takes a color token and `RingThickness` takes the `CarouselRingThickness*` values. The tooltip ring uses the compact ring scale: `xs` renders `ring-0.5` through `xl` renders `ring-2.5`.
+- The tooltip teleports to the document body with fixed coordinates, so the track viewport, a scroll container, or a modal cannot clip it. Alpine removes the teleported node when the item leaves the DOM, so a refresh does not leak tooltips.
+
 ## DataTable
 
 `@uiStructural.DataTable` renders rows from your data and refreshes them from your server. Every sort, page, filter, or search change requests the URL template you provide. The table uses `htmx.ajax` when HTMX is present and falls back to `fetch` otherwise.

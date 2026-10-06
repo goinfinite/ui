@@ -133,6 +133,7 @@ Shared hint helper for the fields above. It renders no field of its own.
 
 - `HintDisplay` accepts `InputHintDisplayTooltip` for an icon with a tooltip, or `InputHintDisplayDescription` for a line below the field.
 - `HintValue` carries static text; `HintStatePath` binds live text.
+- The tooltip display renders through the shared `uiToolset` tooltip, so it teleports to the document body and a scroll container or a modal cannot clip it.
 - `InputHintTooltip` and `InputHintDescription` can also render directly, when a hint sits next to custom markup.
 
 ## Non-obvious behaviors
@@ -140,5 +141,5 @@ Shared hint helper for the fields above. It renders no field of its own.
 - `SelectInput` and `MultiSelectInput` render a `templ.JSONScript` block for label-value options. The block feeds the selected label lookup.
 - The floating legend collapses while the field is empty, so the empty field shows the label as a placeholder.
 - `InputField` hides its empty legend with `display: none`. Chrome reserves scroll space for a zero-sized legend, so the opacity-based collapse the other field components use can phantom-scroll an overflow container.
-- A `SelectInput` dropdown opens upward when it would overflow the bottom of the viewport.
+- A `SelectInput` dropdown opens upward when the space below the trigger is too small for it. The space stops at the bottom of the viewport and at the bottom of every clipping ancestor, so the list never opens downward into an `overflow-hidden` panel such as the carousel surface.
 - `InputName` sets the key in an HTMX form submission. `InputId` is optional.
