@@ -1,6 +1,7 @@
 UiToolset.RegisterAlpineState(() => {
   const tooltipOffsetPx = 6;
   const tooltipViewportPaddingPx = 4;
+  const tooltipShowDelayMs = 200;
 
   function clampNumber(value, minimum, maximum) {
     return Math.min(Math.max(value, minimum), maximum);
@@ -84,6 +85,7 @@ UiToolset.RegisterAlpineState(() => {
     isTooltipVisible: false,
     tooltipCoordinates: { top: 0, left: 0 },
     tooltipViewportChangeHandler: null,
+    tooltipShowTimeoutId: null,
 
     get resolvedTooltipStyle() {
       return {
@@ -98,7 +100,7 @@ UiToolset.RegisterAlpineState(() => {
       if (this.tooltipViewportChangeHandler) {
         return;
       }
-      this.tooltipViewportChangeHandler = () => this.showTooltip();
+      this.tooltipViewportChangeHandler = () => this.revealTooltip();
       window.addEventListener(
         "scroll",
         this.tooltipViewportChangeHandler,
@@ -121,6 +123,14 @@ UiToolset.RegisterAlpineState(() => {
     },
 
     showTooltip() {
+      clearTimeout(this.tooltipShowTimeoutId);
+      this.tooltipShowTimeoutId = setTimeout(
+        () => this.revealTooltip(),
+        tooltipShowDelayMs,
+      );
+    },
+
+    revealTooltip() {
       const trigger = this.$refs.trigger;
       const tooltip = this.$refs.tooltip;
       if (!trigger || !tooltip) {
@@ -136,11 +146,13 @@ UiToolset.RegisterAlpineState(() => {
     },
 
     hideTooltip() {
+      clearTimeout(this.tooltipShowTimeoutId);
       this.isTooltipVisible = false;
       this.detachViewportListeners();
     },
 
     destroy() {
+      clearTimeout(this.tooltipShowTimeoutId);
       this.detachViewportListeners();
     },
   }));
