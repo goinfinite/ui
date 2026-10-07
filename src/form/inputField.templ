@@ -29,6 +29,7 @@ const (
 type inputFieldSizeTokens struct {
 	AffixPadding   string
 	InputPadding   string
+	LeftPadding    string
 	LabelOffset    string
 	LegendTextSize string
 	TextSize       string
@@ -39,6 +40,7 @@ func inputFieldSizeTokensResolver(size string) inputFieldSizeTokens {
 	case InputFieldSizeXs:
 		return inputFieldSizeTokens{
 			AffixPadding:   "p-1",
+			LeftPadding:    "pl-1",
 			InputPadding:   "p-1 pt-0",
 			LabelOffset:    "0.5",
 			LegendTextSize: "text-[0.625rem]",
@@ -47,6 +49,7 @@ func inputFieldSizeTokensResolver(size string) inputFieldSizeTokens {
 	case InputFieldSizeSm:
 		return inputFieldSizeTokens{
 			AffixPadding:   "p-1.5",
+			LeftPadding:    "pl-1.5",
 			InputPadding:   "p-1.5 pt-0",
 			LabelOffset:    "1",
 			LegendTextSize: "text-[0.625rem]",
@@ -55,6 +58,7 @@ func inputFieldSizeTokensResolver(size string) inputFieldSizeTokens {
 	case InputFieldSizeLg:
 		return inputFieldSizeTokens{
 			AffixPadding:   "p-2",
+			LeftPadding:    "pl-2",
 			InputPadding:   "p-2 pt-0",
 			LabelOffset:    "2",
 			LegendTextSize: "text-sm",
@@ -63,6 +67,7 @@ func inputFieldSizeTokensResolver(size string) inputFieldSizeTokens {
 	case InputFieldSizeXl:
 		return inputFieldSizeTokens{
 			AffixPadding:   "p-2.5",
+			LeftPadding:    "pl-2.5",
 			InputPadding:   "p-2.5 pt-0",
 			LabelOffset:    "2.5",
 			LegendTextSize: "text-base",
@@ -71,6 +76,7 @@ func inputFieldSizeTokensResolver(size string) inputFieldSizeTokens {
 	}
 	return inputFieldSizeTokens{
 		AffixPadding:   "p-1.5",
+		LeftPadding:    "pl-1.5",
 		InputPadding:   "p-1.5 pt-0",
 		LabelOffset:    "1.5",
 		LegendTextSize: "text-xs",
@@ -92,6 +98,7 @@ type InputFieldSettings struct {
 	AffixRightValue                   string
 	AffixRightStatePath               string
 	AffixRightWidthPercent            uint
+	IconLeft                          string
 	InputId                           string
 	InputNumberMin                    string
 	InputNumberMax                    string
@@ -103,6 +110,10 @@ type InputFieldSettings struct {
 	HintStatePath                     string
 	HintDisplay                       string
 	HintDisplayTooltipBackgroundColor string
+	HintDisplayTooltipMinWidthClass   string
+	HintDisplayTooltipMaxWidthClass   string
+	HintDisplayTooltipMinHeightClass  string
+	HintDisplayTooltipMaxHeightClass  string
 	HintIconStyle                     string
 	Size                              string
 }
@@ -157,7 +168,13 @@ templ InputField(componentSettings InputFieldSettings) {
 						}
 					</div>
 				}
+				if componentSettings.IconLeft != "" {
+					<i class={ "ph-bold shrink-0 self-center text-neutral-400 " + componentSettings.IconLeft + " " + sizeTokens.LeftPadding + " " + sizeTokens.TextSize } aria-hidden="true"></i>
+				}
 				{{ inputClasses := "w-full min-w-0 bg-transparent placeholder-text-neutral-50 placeholder-text-opacity-80 outline-none focus:outline-none peer " + sizeTokens.InputPadding + " " + sizeTokens.TextSize }}
+				if componentSettings.IconLeft != "" {
+					{{ inputClasses += " pl-1" }}
+				}
 				if textCaseClass != "" {
 					{{ inputClasses += " placeholder:" + textCaseClass }}
 				}
@@ -235,6 +252,10 @@ templ InputField(componentSettings InputFieldSettings) {
 							Value:                  componentSettings.HintValue,
 							StatePath:              componentSettings.HintStatePath,
 							TooltipBackgroundColor: componentSettings.HintDisplayTooltipBackgroundColor,
+							TooltipMinWidthClass:   componentSettings.HintDisplayTooltipMinWidthClass,
+							TooltipMaxWidthClass:   componentSettings.HintDisplayTooltipMaxWidthClass,
+							TooltipMinHeightClass:  componentSettings.HintDisplayTooltipMinHeightClass,
+							TooltipMaxHeightClass:  componentSettings.HintDisplayTooltipMaxHeightClass,
 							Size:                   InputHintSizeSm,
 							IconStyle:              componentSettings.HintIconStyle,
 						})
