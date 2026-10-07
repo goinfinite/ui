@@ -68,6 +68,7 @@ type DataTableSettings[Row any] struct {
 	InitialSortKey                   string
 	IsHeaderSticky                   bool
 	IsPaginationHiddenWhenSinglePage bool
+	IsSearchBoxCompact               bool
 	IsStriped                        bool
 	ItemsPerPage                     ItemsPerPage
 	ItemsPerPageSizeChoices          []ItemsPerPage

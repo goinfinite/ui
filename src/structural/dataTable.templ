@@ -26,6 +26,7 @@ templ DataTableDefaultSearchBox() {
 		InputType:       uiForm.InputTypeText,
 		InputName:       "search",
 		Label:           "Search",
+		IconLeft:        "ph-magnifying-glass",
 		TwoWayStatePath: "searchQuery",
 	})
 }
@@ -44,6 +45,10 @@ templ DataTable[Row any](componentSettings DataTableSettings[Row]) {
 	}
 	{{ checkboxShape := componentSettings.checkboxShapeResolver() }}
 	{{ searchBoxJustifyClass := componentSettings.SearchBoxAlignment.justifyClassResolver() }}
+	{{ searchBoxWidthClass := "w-full" }}
+	if componentSettings.IsSearchBoxCompact {
+		{{ searchBoxWidthClass = "w-72" }}
+	}
 	{{ searchBoxComponent := componentSettings.SearchBox }}
 	if searchBoxComponent == nil && strings.Contains(componentSettings.QueryUrlTemplate, DataTableUrlPlaceholderSearch) {
 		{{ searchBoxComponent = DataTableDefaultSearchBox() }}
@@ -90,7 +95,7 @@ templ DataTable[Row any](componentSettings DataTableSettings[Row]) {
 			<div class="flex flex-wrap items-center justify-between gap-2 border-b border-neutral-50/10 p-2">
 				<div class={ "flex flex-1 flex-wrap items-center gap-2 " + searchBoxJustifyClass }>
 					if searchBoxComponent != nil {
-						<div class="w-72" @input="resetPageAndRefresh()">
+						<div class={ searchBoxWidthClass } @input="resetPageAndRefresh()">
 							@searchBoxComponent
 						</div>
 					}
