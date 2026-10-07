@@ -20,7 +20,7 @@ Button with optional label, icons, tooltip, ring, and shape variants.
 - `IsDisabled` sets a static disabled state. `IsDisabledOneWayStatePath` disables the button while the path is truthy and dims it.
 - `IsVisibleOneWayStatePath` hides the button while the path is falsy.
 - `IsSubmit` renders `type="submit"` so the button submits its form. Every button renders a `type`; the default is `button`, so a button inside a form does not submit it.
-- `TooltipContent` renders a text tooltip. `TooltipContentHtml` accepts a component, and `TooltipContentOneWayStatePath` binds live text. `TooltipPosition` accepts the `uiToolset.TooltipPosition*` constants. The tooltip renders in a fixed layer on the document body. A scroll container cannot clip it or gain a scrollbar from it.
+- `TooltipContent` renders a text tooltip. `TooltipContentHtml` accepts a component, and `TooltipContentOneWayStatePath` binds live text. `TooltipPosition` accepts the `uiToolset.TooltipPosition*` constants. `TooltipMinWidthClass`, `TooltipMaxWidthClass`, `TooltipMinHeightClass`, and `TooltipMaxHeightClass` cap the tooltip size. The tooltip renders in a fixed layer on the document body. A scroll container cannot clip it or gain a scrollbar from it.
 - `BackgroundColor`, `TextColor`, and `RingColor` accept Tailwind color tokens, for example `"red-500/20"`. The `*Hover` fields set the hover state.
 - `TextCase` accepts a `uiToolset.TextCase*` value and transforms the label. The default, `TextCaseNone`, leaves it as typed.
 

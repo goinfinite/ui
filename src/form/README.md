@@ -37,7 +37,7 @@ Single-line input with a floating label, optional affixes, and an optional hint.
 })
 ```
 
-`InputType` accepts the `uiForm.InputType*` constants. An affix renders a static value (`AffixLeftValue`, `AffixRightValue`) or binds a state path (`AffixLeftStatePath`, `AffixRightStatePath`). Set `AffixLeftWidthPercent` or `AffixRightWidthPercent` to fix an affix to a percentage of the field width, for example `25` or `50`. Number inputs accept `InputNumberMin`, `InputNumberMax`, and `InputNumberStep`. `Size` accepts the `InputFieldSize*` constants and defaults to `md`; it scales the input, the affixes, and the floating label together. `TextCase` accepts a `uiToolset.TextCase*` value; it transforms the floating label and the placeholder. The default, `TextCaseNone`, leaves the text as typed.
+`InputType` accepts the `uiForm.InputType*` constants. `IconLeft` takes a Phosphor icon class and renders it inside the field before the input, for example `"ph-magnifying-glass"`. An affix renders a static value (`AffixLeftValue`, `AffixRightValue`) or binds a state path (`AffixLeftStatePath`, `AffixRightStatePath`). Set `AffixLeftWidthPercent` or `AffixRightWidthPercent` to fix an affix to a percentage of the field width, for example `25` or `50`. Number inputs accept `InputNumberMin`, `InputNumberMax`, and `InputNumberStep`. `Size` accepts the `InputFieldSize*` constants and defaults to `md`; it scales the input, the affixes, and the floating label together. `TextCase` accepts a `uiToolset.TextCase*` value; it transforms the floating label and the placeholder. The default, `TextCaseNone`, leaves the text as typed.
 
 ## TextArea
 
@@ -100,7 +100,7 @@ Single radio option. Group several inputs by sharing one `TwoWayStatePath`.
 
 ## InlineRadioGroup
 
-A row of radios with one shared label.
+A row of radios with one shared label. The label notches into the top border of the field, matching `InputField`, `SelectInput`, and the other notched fields.
 
 ```go
 @uiForm.InlineRadioGroup(uiForm.InlineRadioGroupSettings{
@@ -133,6 +133,7 @@ Shared hint helper for the fields above. It renders no field of its own.
 
 - `HintDisplay` accepts `InputHintDisplayTooltip` for an icon with a tooltip, or `InputHintDisplayDescription` for a line below the field.
 - `HintValue` carries static text; `HintStatePath` binds live text.
+- `HintDisplayTooltipMinWidthClass`, `HintDisplayTooltipMaxWidthClass`, `HintDisplayTooltipMinHeightClass`, and `HintDisplayTooltipMaxHeightClass` cap the hint tooltip on every field that offers hints. `HintDisplayTooltipBackgroundColor` paints it.
 - The tooltip display renders through the shared `uiToolset` tooltip, so it teleports to the document body and a scroll container or a modal cannot clip it.
 - `InputHintTooltip` and `InputHintDescription` can also render directly, when a hint sits next to custom markup.
 

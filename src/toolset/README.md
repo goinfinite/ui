@@ -45,10 +45,10 @@ Shared text-case values and a class resolver. Components accept one of these val
 Shared pieces for hover tooltips. A component sets `x-data` to the `tooltip` Alpine component, puts `x-ref="trigger"` on the trigger, and renders the tooltip node inside `<template x-teleport="body">`. The tooltip lands on the document body with fixed coordinates, so a scroll container, a transformed track, or a modal cannot clip it.
 
 - `TooltipAlpineStateOnce`: the once-handle that embeds `tooltipState.js`. Render `@uiToolset.TooltipAlpineStateOnce.Once()` above every component that opens a tooltip.
-- `TooltipSurfaceClassesResolver(backgroundColor, textColor, ringColor, ringThickness)`: returns the shared fixed-layer tooltip class string. Empty colors take the default `bg-neutral-800/95` and `text-neutral-50`. The ring uses the compact ring scale.
+- `TooltipSurfaceClassesResolver(TooltipSurfaceSettings{...})`: returns the shared fixed-layer tooltip class string. Empty colors take the default `bg-neutral-800/95` and `text-neutral-50`. The ring uses the compact ring scale. `MinWidthClass`, `MaxWidthClass`, `MinHeightClass`, and `MaxHeightClass` cap the tooltip size; `MaxWidthClass` defaults to `max-w-96` so a long text wraps instead of running off screen.
 - `TooltipPositionTop`, `TooltipPositionBottom`, `TooltipPositionLeft`, `TooltipPositionRight`: the shared placement values every tooltip component passes to the Alpine component.
 
-The Alpine component reads `position` (`top`, `bottom`, `left`, or `right`; empty means `top`), and exposes `showTooltip()` and `hideTooltip()` for the trigger's mouse and focus events. Keep every declaration of `tooltipState.js` inside the `RegisterAlpineState` callback: a second embed in a new render context must not redeclare a top-level `const`, which would abort the script with a SyntaxError.
+The Alpine component reads `position` (`top`, `bottom`, `left`, or `right`; empty means `top`), and exposes `showTooltip()` and `hideTooltip()` for the trigger's mouse and focus events. `showTooltip()` waits 200ms before it reveals, so a pointer that crosses the trigger does not flash the tooltip; `hideTooltip()` cancels a pending reveal. Keep every declaration of `tooltipState.js` inside the `RegisterAlpineState` callback: a second embed in a new render context must not redeclare a top-level `const`, which would abort the script with a SyntaxError.
 
 ## JavaScript toolset
 

@@ -2,9 +2,18 @@
 
 ```log
 0.2.5 - 2026/10/02
+BREAKING: replace the IsSearchBoxFullWidth setting with IsSearchBoxCompact and render the search box full width by default
+feat: forward the tooltip width and height caps through every hint-bearing field
+feat: add an icon-left example to the input field demo
+feat: add min and max width and height caps to the shared tooltip through TooltipSurfaceSettings
+feat: add a magnifier icon to the default carousel and data table search boxes
+feat: add an optional leading icon to InputField
+fix: clip the carousel item wrapper so a narrow item cannot paint into the track gap
+fix: keep the arrow hover feedback when a custom arrows background color is set
+fix: size the carousel arrows as fixed squares so they render circular instead of tall
 BREAKING: rename ButtonTooltipPosition* and CarouselItemTooltipPosition* to the shared uiToolset.TooltipPosition* constants
-feat: add the CarouselItemTooltip component with text or component content, placement, and compact-ring settings
 feat: render the InputHint tooltip through the shared toolset tooltip so a scroll container or a modal cannot clip it
+feat: add the CarouselItemTooltip component with text or component content, placement, and compact-ring settings
 feat: add the carousel component with responsive items per view, prev/next arrows, dot indicators, swipe, and optional autoplay with pause-on-hover
 feat: add the server pagination and the filter bar to the carousel
 feat: add the surface, arrow, dot, and item styling to the carousel
@@ -24,6 +33,8 @@ refactor: add the shape, ring thickness, and compact ring token resolvers and al
 refactor: move the shared hover tooltip into the toolset so the Button, the CarouselItemTooltip, and the InputHint render one mechanism
 refactor: turn the select dropdown into an Alpine data component so the open-direction decision stops being a global UiToolset helper
 refactor: attach the tooltip scroll and resize listeners only while the tooltip is visible
+refactor: delay the tooltip reveal so a passing pointer does not flash it
+refactor: render the tooltip through TooltipSurfaceSettings so the size caps travel with the surface
 feat: refresh the carousel through htmx when it is present, with the pagination swapped out of band
 chore: write the demo page and the refresh assets only when their content changed
 fix: read the carousel swipe from the pointer events alone so touch input works
