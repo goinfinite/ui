@@ -128,7 +128,7 @@ templ InputField(componentSettings InputFieldSettings) {
 	}
 	<div class="flex w-full flex-col">
 		<fieldset
-			class={ "bg-neutral-50/7.5 relative -mt-" + sizeTokens.LabelOffset + " w-full rounded border border-neutral-50/5 transition-colors autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30" }
+			class={ "bg-neutral-50/7.5 relative -mt-" + sizeTokens.LabelOffset + " w-full min-w-0 rounded border border-neutral-50/5 transition-colors autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30" }
 			if componentSettings.TwoWayStatePath != "" {
 				:class={ `!` + componentSettings.TwoWayStatePath + ` && 'mt-0'` }
 			}
