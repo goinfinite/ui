@@ -13,6 +13,9 @@ UiToolset.RegisterAlpineState(() => {
     sortDirection: "",
     searchQuery: "",
     filterValues: {},
+    maxVisibleRows: 0,
+    scrollViewportMaxHeightPx: 0,
+    scrollViewportResizeObserver: null,
     selectedRowIds: [],
     isLoading: false,
     hasRefreshError: false,
@@ -28,6 +31,59 @@ UiToolset.RegisterAlpineState(() => {
 
     tableBody() {
       return this.rootElement.querySelector("tbody");
+    },
+
+    scrollViewport() {
+      return this.rootElement.querySelector("[data-ui-data-table-scroll]");
+    },
+
+    scrollViewportTable() {
+      return this.scrollViewport()?.querySelector("table") ?? null;
+    },
+
+    applyScrollViewportMaxHeight() {
+      if (this.maxVisibleRows === 0) {
+        this.scrollViewportMaxHeightPx = 0;
+        return;
+      }
+      const viewport = this.scrollViewport();
+      const tableHeader = viewport?.querySelector("thead");
+      const dataRows = viewport
+        ? Array.from(viewport.querySelectorAll("tbody tr")).filter(
+            (row) => !row.querySelector("td[colspan]"),
+          )
+        : [];
+      if (!tableHeader || dataRows.length === 0) {
+        this.scrollViewportMaxHeightPx = 0;
+        return;
+      }
+      const rowHeight = Math.max(
+        ...dataRows.map((row) => row.getBoundingClientRect().height),
+      );
+      if (rowHeight === 0) {
+        return;
+      }
+      const visibleRows = Math.min(this.maxVisibleRows, dataRows.length);
+      this.scrollViewportMaxHeightPx = Math.ceil(
+        tableHeader.getBoundingClientRect().height + rowHeight * visibleRows,
+      );
+    },
+
+    observeScrollViewportTable() {
+      this.scrollViewportResizeObserver?.disconnect();
+      const table = this.scrollViewportTable();
+      if (!table || typeof ResizeObserver === "undefined") {
+        return;
+      }
+      this.scrollViewportResizeObserver = new ResizeObserver(() =>
+        this.applyScrollViewportMaxHeight(),
+      );
+      this.scrollViewportResizeObserver.observe(table);
+    },
+
+    refreshScrollViewportLayout() {
+      this.applyScrollViewportMaxHeight();
+      this.observeScrollViewportTable();
     },
 
     currentPageRowIds() {
@@ -131,6 +187,7 @@ UiToolset.RegisterAlpineState(() => {
           if (!this.hasRefreshError) {
             this.liveMessage = "Table refreshed";
           }
+          this.refreshScrollViewportLayout();
           return;
         }
         const freshTableRegion = await this.fetchTableRegion(
@@ -142,6 +199,7 @@ UiToolset.RegisterAlpineState(() => {
         }
         this.tableRegion().replaceWith(freshTableRegion);
         this.liveMessage = "Table refreshed";
+        this.refreshScrollViewportLayout();
       } catch (refreshError) {
         if (abortController.signal.aborted) {
           return;
@@ -203,6 +261,7 @@ UiToolset.RegisterAlpineState(() => {
       );
       this.refreshAbortController?.abort();
       clearTimeout(this.refreshTimeoutId);
+      this.scrollViewportResizeObserver?.disconnect();
     },
 
     init() {
@@ -235,6 +294,7 @@ UiToolset.RegisterAlpineState(() => {
       this.sortDirection = initialState.sortDirection ?? "";
       this.searchQuery = initialState.searchQuery ?? "";
       this.filterValues = initialState.filterValues ?? {};
+      this.maxVisibleRows = clientSettings.maxVisibleRows ?? 0;
 
       for (const refreshEventName of this.refreshOnEvents) {
         const refreshEventHandler = () => this.requestRefresh();
@@ -264,6 +324,8 @@ UiToolset.RegisterAlpineState(() => {
         "htmx:sendError",
         this.htmxErrorHandler,
       );
+
+      this.refreshScrollViewportLayout();
     },
   }));
 });

@@ -28,6 +28,7 @@ func TestDataTableClientSettingsResolver(t *testing.T) {
 		InitialSearchQuery:   "alpha",
 		InitialSortDirection: DataTableSortDirectionAsc,
 		InitialSortKey:       "name",
+		MaxVisibleRows:       3,
 		QueryUrlTemplate:     "/records?page={pageNumber}",
 	}
 	clientSettings := settings.clientSettingsResolver(5, 2)
@@ -72,6 +73,9 @@ func TestDataTableClientSettingsResolver(t *testing.T) {
 	}
 	if clientSettings.QueryUrlTemplate != "/records?page={pageNumber}" {
 		t.Errorf("QueryUrlTemplateMismatch: got %q, want %q", clientSettings.QueryUrlTemplate, "/records?page={pageNumber}")
+	}
+	if clientSettings.MaxVisibleRows != 3 {
+		t.Errorf("MaxVisibleRowsMismatch: got %d, want 3", clientSettings.MaxVisibleRows)
 	}
 
 	overrideSettings := settings
@@ -177,6 +181,79 @@ func TestDataTableRowStripeClassesResolver(t *testing.T) {
 	actualPlainClasses := plainSettings.rowStripeClassesResolver()
 	if actualPlainClasses != "" {
 		t.Errorf("RowStripeClassesNotEmpty: %q", actualPlainClasses)
+	}
+}
+
+func TestDataTableRootClassesResolver(t *testing.T) {
+	defaultSettings := DataTableSettings[dataTableTestRecord]{}
+	defaultClasses := defaultSettings.rootClassesResolver()
+	if !strings.Contains(defaultClasses, "rounded-md") {
+		t.Errorf("RootClassesMissingBase: %q", defaultClasses)
+	}
+
+	sizedSettings := DataTableSettings[dataTableTestRecord]{
+		MinWidthClass: "min-w-96",
+		MaxWidthClass: "max-w-7xl",
+	}
+	sizedClasses := sizedSettings.rootClassesResolver()
+	for _, expectedClass := range []string{"min-w-96", "max-w-7xl"} {
+		if !strings.Contains(sizedClasses, expectedClass) {
+			t.Errorf("RootClassesMissing(%q): %q", expectedClass, sizedClasses)
+		}
+	}
+}
+
+func TestDataTableStickyHeaderClassesResolver(t *testing.T) {
+	defaultSettings := DataTableSettings[dataTableTestRecord]{}
+	defaultClasses := defaultSettings.stickyHeaderClassesResolver()
+	for _, expectedClass := range []string{"sticky", "top-0", "z-10", "bg-neutral-900"} {
+		if !strings.Contains(defaultClasses, expectedClass) {
+			t.Errorf("StickyHeaderClassesMissing(%q): %q", expectedClass, defaultClasses)
+		}
+	}
+
+	staticSettings := DataTableSettings[dataTableTestRecord]{IsHeaderStatic: true}
+	if actualClasses := staticSettings.stickyHeaderClassesResolver(); actualClasses != "" {
+		t.Errorf("StaticHeaderClassesNotEmpty: %q", actualClasses)
+	}
+}
+
+func TestDataTableScrollContainerClassesResolver(t *testing.T) {
+	defaultSettings := DataTableSettings[dataTableTestRecord]{}
+	defaultClasses := defaultSettings.scrollContainerClassesResolver()
+	for _, expectedClass := range []string{"overflow-auto", "max-h-128"} {
+		if !strings.Contains(defaultClasses, expectedClass) {
+			t.Errorf("ScrollContainerClassesMissing(%q): %q", expectedClass, defaultClasses)
+		}
+	}
+
+	staticSettings := DataTableSettings[dataTableTestRecord]{IsHeaderStatic: true}
+	staticClasses := staticSettings.scrollContainerClassesResolver()
+	if !strings.Contains(staticClasses, "overflow-x-auto") {
+		t.Errorf("StaticScrollContainerClassesMissingOverflowX: %q", staticClasses)
+	}
+	if strings.Contains(staticClasses, "max-h-128") {
+		t.Errorf("StaticScrollContainerClassesCarryDefaultMaxHeight: %q", staticClasses)
+	}
+
+	explicitHeightSettings := DataTableSettings[dataTableTestRecord]{
+		MaxHeightClass: "max-h-64",
+		MinHeightClass: "min-h-32",
+	}
+	explicitHeightClasses := explicitHeightSettings.scrollContainerClassesResolver()
+	for _, expectedClass := range []string{"max-h-64", "min-h-32"} {
+		if !strings.Contains(explicitHeightClasses, expectedClass) {
+			t.Errorf("ScrollContainerClassesMissing(%q): %q", expectedClass, explicitHeightClasses)
+		}
+	}
+	if strings.Contains(explicitHeightClasses, "max-h-128") {
+		t.Errorf("ScrollContainerClassesCarryDefaultMaxHeight: %q", explicitHeightClasses)
+	}
+
+	measuredRowsSettings := DataTableSettings[dataTableTestRecord]{MaxVisibleRows: 6}
+	measuredRowsClasses := measuredRowsSettings.scrollContainerClassesResolver()
+	if !strings.Contains(measuredRowsClasses, "max-h-128") {
+		t.Errorf("MeasuredRowsFallbackMissing: %q", measuredRowsClasses)
 	}
 }
 

@@ -66,13 +66,18 @@ type DataTableSettings[Row any] struct {
 	InitialSearchQuery               string
 	InitialSortDirection             DataTableSortDirection
 	InitialSortKey                   string
-	IsHeaderSticky                   bool
+	IsHeaderStatic                   bool
 	IsPaginationHiddenWhenSinglePage bool
 	IsSearchBoxCompact               bool
 	IsStriped                        bool
 	ItemsPerPage                     ItemsPerPage
 	ItemsPerPageSizeChoices          []ItemsPerPage
 	ItemsTotal                       uint
+	MaxHeightClass                   string
+	MaxVisibleRows                   uint
+	MaxWidthClass                    string
+	MinHeightClass                   string
+	MinWidthClass                    string
 	PageNumber                       uint
 	PaginationAriaLabel              string
 	PagesTotal                       uint
@@ -100,6 +105,7 @@ type dataTableInitialState struct {
 type dataTableClientSettings struct {
 	FilterQueryParamNames map[string]string     `json:"filterQueryParamNames"`
 	InitialState          dataTableInitialState `json:"initialState"`
+	MaxVisibleRows        uint                  `json:"maxVisibleRows"`
 	RefreshDebounceMs     uint                  `json:"refreshDebounceMs"`
 	RefreshOnEvents       []string              `json:"refreshOnEvents"`
 	QueryUrlTemplate      string                `json:"queryUrlTemplate"`
@@ -123,6 +129,7 @@ func (settings DataTableSettings[Row]) clientSettingsResolver(
 		RefreshDebounceMs: refreshDebounceResolver(settings.RefreshDebounceMs),
 		RefreshOnEvents:   settings.RefreshOnEvents,
 		QueryUrlTemplate:  settings.QueryUrlTemplate,
+		MaxVisibleRows:    settings.MaxVisibleRows,
 	}
 }
 
@@ -188,4 +195,39 @@ func (settings DataTableSettings[Row]) rowStripeClassesResolver() string {
 		return "odd:bg-neutral-50/5 odd:hover:bg-neutral-50/10"
 	}
 	return ""
+}
+
+func (settings DataTableSettings[Row]) rootClassesResolver() string {
+	rootClasses := "flex flex-col overflow-hidden rounded-md border border-neutral-50/10 bg-neutral-50/2.5"
+	if settings.MinWidthClass != "" {
+		rootClasses += " " + settings.MinWidthClass
+	}
+	if settings.MaxWidthClass != "" {
+		rootClasses += " " + settings.MaxWidthClass
+	}
+	return rootClasses
+}
+
+func (settings DataTableSettings[Row]) stickyHeaderClassesResolver() string {
+	if settings.IsHeaderStatic {
+		return ""
+	}
+	return " sticky top-0 z-10 bg-neutral-900"
+}
+
+func (settings DataTableSettings[Row]) scrollContainerClassesResolver() string {
+	containerClasses := "overflow-x-auto"
+	if !settings.IsHeaderStatic {
+		containerClasses = "overflow-auto"
+		if settings.MaxHeightClass == "" {
+			containerClasses += " max-h-128"
+		}
+	}
+	if settings.MinHeightClass != "" {
+		containerClasses += " " + settings.MinHeightClass
+	}
+	if settings.MaxHeightClass != "" {
+		containerClasses += " " + settings.MaxHeightClass
+	}
+	return containerClasses
 }

@@ -141,9 +141,7 @@ test.describe("DataTable advanced examples @structural", () => {
       "Density and Header Text Case",
     );
     const denseTable = target.locator("#data-table-demo-dense");
-    const scroller = denseTable.locator(
-      "[data-ui-data-table] .overflow-x-auto",
-    );
+    const scroller = denseTable.locator("[data-ui-data-table-scroll]");
     const actionButton = denseTable
       .locator("tbody tr")
       .first()
@@ -180,5 +178,47 @@ test.describe("DataTable advanced examples @structural", () => {
       .locator(`${tableRoot} nav button[aria-label="Next page"]`)
       .click();
     await expect.poll(tooltipCount).toBe(initialCount);
+  });
+
+  test("sticky header caps the viewport to the configured rows", async ({
+    page,
+  }) => {
+    const target = await openExamplePanel(page, demoSection, "Sticky Header");
+    const stickyTable = target.locator("#data-table-demo-sticky");
+    const stickyViewport = stickyTable.locator("[data-ui-data-table-scroll]");
+    const geometry = () =>
+      stickyViewport.evaluate((element) => {
+        const headerCell = element.querySelector("thead th");
+        const firstRow = element.querySelector("tbody tr");
+        const rowHeight = firstRow.getBoundingClientRect().height;
+        return {
+          visibleRows: Math.round(
+            (element.clientHeight -
+              headerCell.getBoundingClientRect().height) /
+              rowHeight,
+          ),
+          scrolls: element.scrollHeight > element.clientHeight,
+          headerPosition: getComputedStyle(headerCell).position,
+        };
+      });
+
+    await expect.poll(geometry).toEqual({
+      visibleRows: 6,
+      scrolls: true,
+      headerPosition: "sticky",
+    });
+
+    const staticTable = target.locator("#data-table-demo-static");
+    const staticGeometry = await staticTable
+      .locator("[data-ui-data-table-scroll]")
+      .evaluate((element) => {
+        const headerCell = element.querySelector("thead th");
+        return {
+          headerPosition: getComputedStyle(headerCell).position,
+          scrolls: element.scrollHeight > element.clientHeight,
+        };
+      });
+    expect(staticGeometry.headerPosition).toBe("static");
+    expect(staticGeometry.scrolls).toBe(true);
   });
 });

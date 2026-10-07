@@ -54,14 +54,9 @@ templ DataTable[Row any](componentSettings DataTableSettings[Row]) {
 		{{ searchBoxComponent = DataTableDefaultSearchBox() }}
 	}
 	{{ rowStripeClasses := componentSettings.rowStripeClassesResolver() }}
-	{{ stickyHeaderClasses := "" }}
-	if componentSettings.IsHeaderSticky {
-		{{ stickyHeaderClasses = " sticky top-0 z-10 bg-neutral-900" }}
-	}
-	{{ scrollContainerClasses := "overflow-x-auto" }}
-	if componentSettings.IsHeaderSticky {
-		{{ scrollContainerClasses = "max-h-128 overflow-auto" }}
-	}
+	{{ rootClasses := componentSettings.rootClassesResolver() }}
+	{{ stickyHeaderClasses := componentSettings.stickyHeaderClassesResolver() }}
+	{{ scrollContainerClasses := componentSettings.scrollContainerClassesResolver() }}
 	{{ hasSelection := componentSettings.RowIdResolver != nil }}
 	{{ columnCount := len(componentSettings.Columns) }}
 	if hasSelection {
@@ -72,7 +67,7 @@ templ DataTable[Row any](componentSettings DataTableSettings[Row]) {
 	{{ pageNumber := componentSettings.PageNumber }}
 	{{ paginationAriaLabel := componentSettings.paginationAriaLabelResolver() }}
 	<div
-		class="flex flex-col overflow-hidden rounded-md border border-neutral-50/10 bg-neutral-50/2.5"
+		class={ rootClasses }
 		x-data={ templ.JSFuncCall("dataTable", settingsScriptId) }
 		hx-sync="this:replace"
 		if componentSettings.Id != "" {
@@ -121,7 +116,12 @@ templ DataTable[Row any](componentSettings DataTableSettings[Row]) {
 		<p class="sr-only" aria-live="polite" x-text="liveMessage"></p>
 		<div data-ui-data-table>
 			<div x-show="!hasRefreshError">
-				<div class={ scrollContainerClasses } :class="{ 'pointer-events-none opacity-50': isLoading }">
+				<div
+					data-ui-data-table-scroll
+					class={ scrollContainerClasses }
+					:class="{ 'pointer-events-none opacity-50': isLoading }"
+					:style="{ maxHeight: scrollViewportMaxHeightPx > 0 ? scrollViewportMaxHeightPx + 'px' : '' }"
+				>
 					<table class="w-full border-collapse text-sm">
 						<thead>
 							<tr class={ headerRowClasses }>
