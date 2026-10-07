@@ -2,6 +2,11 @@
 
 ```log
 0.2.5 - 2026/10/07
+fix: render the derived carousel and data table id on the component root
+fix: resolve the value bubble ring classes from the resolved ring color so an upper-only color renders
+fix: fail the carousel htmx refresh when the response does not replace the pagination region
+fix: separate the component id hash parts so two different part boundaries cannot collide
+fix: reposition the tooltip on a viewport change without revealing it
 BREAKING: replace the IsHeaderSticky setting with IsHeaderStatic and pin the data table header by default
 BREAKING: replace the IsSearchBoxFullWidth setting with IsSearchBoxCompact and render the search box full width by default
 feat: add min and max width and height classes and a max visible rows setting to the data table viewport

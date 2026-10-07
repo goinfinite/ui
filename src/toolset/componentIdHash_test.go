@@ -14,6 +14,11 @@ func TestHashComponentIdParts(t *testing.T) {
 		t.Errorf("HashCollidedForDifferentParts: %d", otherHash)
 	}
 
+	boundaryShiftedHash := HashComponentIdParts("/recordsname")
+	if boundaryShiftedHash == firstHash {
+		t.Errorf("HashCollidedAcrossPartBoundaries: %d", boundaryShiftedHash)
+	}
+
 	if HashComponentIdParts() == firstHash {
 		t.Errorf("HashCollidedForEmptyParts: %d", firstHash)
 	}

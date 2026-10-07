@@ -96,11 +96,29 @@ UiToolset.RegisterAlpineState(() => {
       };
     },
 
+    updateTooltipCoordinates() {
+      const trigger = this.$refs.trigger;
+      const tooltip = this.$refs.tooltip;
+      if (!trigger || !tooltip) {
+        return false;
+      }
+      this.tooltipCoordinates = resolveTooltipCoordinates(
+        trigger.getBoundingClientRect(),
+        tooltip.getBoundingClientRect(),
+        this.tooltipPosition,
+      );
+      return true;
+    },
+
     attachViewportListeners() {
       if (this.tooltipViewportChangeHandler) {
         return;
       }
-      this.tooltipViewportChangeHandler = () => this.revealTooltip();
+      this.tooltipViewportChangeHandler = () => {
+        if (this.isTooltipVisible) {
+          this.updateTooltipCoordinates();
+        }
+      };
       window.addEventListener(
         "scroll",
         this.tooltipViewportChangeHandler,
@@ -131,16 +149,9 @@ UiToolset.RegisterAlpineState(() => {
     },
 
     revealTooltip() {
-      const trigger = this.$refs.trigger;
-      const tooltip = this.$refs.tooltip;
-      if (!trigger || !tooltip) {
+      if (!this.updateTooltipCoordinates()) {
         return;
       }
-      this.tooltipCoordinates = resolveTooltipCoordinates(
-        trigger.getBoundingClientRect(),
-        tooltip.getBoundingClientRect(),
-        this.tooltipPosition,
-      );
       this.isTooltipVisible = true;
       this.attachViewportListeners();
     },

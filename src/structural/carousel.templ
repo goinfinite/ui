@@ -109,9 +109,7 @@ templ Carousel[Item any](componentSettings CarouselSettings[Item]) {
 		class={ surfaceClasses }
 		x-data={ templ.JSFuncCall("carousel", settingsScriptId) }
 		hx-sync="this:replace"
-		if componentSettings.Id != "" {
-			id={ componentSettings.Id }
-		}
+		id={ carouselId }
 	>
 		@templ.JSONScript(settingsScriptId, componentSettings.clientSettingsResolver(itemsPerPage, pageNumber))
 		if searchBoxComponent != nil && isSearchBoxOnTop {
@@ -198,7 +196,7 @@ templ Carousel[Item any](componentSettings CarouselSettings[Item]) {
 				})
 			</div>
 		}
-		<div data-ui-carousel-pagination class="border-t border-neutral-50/10" id={paginationId} hx-swap-oob={"outerHTML:#" + paginationId}>
+		<div data-ui-carousel-pagination class="border-t border-neutral-50/10" id={ paginationId } hx-swap-oob={ "outerHTML:#" + paginationId }>
 			@Pagination(PaginationSettings{
 				PageNumberTwoWayStatePath:    "pageNumber",
 				ItemsPerPageTwoWayStatePath:  "itemsPerPage",

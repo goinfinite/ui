@@ -266,6 +266,7 @@ UiToolset.RegisterAlpineState(() => {
 
       try {
         if (window.htmx?.ajax) {
+          const previousPaginationRegion = this.paginationRegion();
           await window.htmx.ajax("GET", refreshUrl, {
             source: this.carouselRegion(),
             target: this.carouselRegion(),
@@ -277,6 +278,13 @@ UiToolset.RegisterAlpineState(() => {
           }
           if (this.hasRefreshError) {
             return;
+          }
+          const refreshedPaginationRegion = this.paginationRegion();
+          if (
+            !refreshedPaginationRegion ||
+            refreshedPaginationRegion === previousPaginationRegion
+          ) {
+            throw new Error("PaginationRegionNotReplaced");
           }
           this.liveMessage = "Carousel refreshed";
           this.afterRegionReplaced();

@@ -352,10 +352,7 @@ templ Thumb(componentSettings RangeSliderSettings, isUpper bool) {
 			if isUpper && componentSettings.ThumbUpperValueBubbleRingThickness != "" {
 				{{ bubbleRingThickness = componentSettings.ThumbUpperValueBubbleRingThickness }}
 			}
-			{{ bubbleRingClasses := "" }}
-			if componentSettings.ThumbValueBubbleRingColor != "" {
-				{{ bubbleRingClasses = uiToolset.CompactRingClassResolver(bubbleRingColor, bubbleRingThickness) }}
-			}
+			{{ bubbleRingClasses := uiToolset.CompactRingClassResolver(bubbleRingColor, bubbleRingThickness) }}
 			{{ bubbleDisplayMode := componentSettings.ThumbValueBubbleDisplayMode }}
 			if isUpper && componentSettings.ThumbUpperValueBubbleDisplayMode != "" {
 				{{ bubbleDisplayMode = componentSettings.ThumbUpperValueBubbleDisplayMode }}

@@ -70,9 +70,7 @@ templ DataTable[Row any](componentSettings DataTableSettings[Row]) {
 		class={ rootClasses }
 		x-data={ templ.JSFuncCall("dataTable", settingsScriptId) }
 		hx-sync="this:replace"
-		if componentSettings.Id != "" {
-			id={ componentSettings.Id }
-		}
+		id={ tableId }
 	>
 		@templ.JSONScript(settingsScriptId, componentSettings.clientSettingsResolver(itemsPerPage, pageNumber))
 		if len(componentSettings.Filters) > 0 {
