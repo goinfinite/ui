@@ -244,11 +244,12 @@ Horizontal and vertical tab headers bound to one selected value, with per-tab la
 
 **Flow:**
 
-1. `src/structural/tabs.templ` — Component definition with TabSettings and TabItemSettings; renders the tab list and the panels, with tab list and content surface settings
+1. `src/structural/tabs.templ` — Component definition with TabSettings and TabItemSettings; renders the tab list and the panels, with tab list and content surface settings, and caps the vertical tab list to MaxVisibleTabs when set
 2. `src/structural/tabs.go` — The tab id prefix generator, the selected, click, keyboard, and URL-hash sync expression builders, and the orientation, side, alignment, border radius, aria-label, percent class, constraint class, and badge class resolvers
-3. `src/toolset/styleTokens.go` — Shared token-to-class resolvers that Tabs and the other components call
-4. `src/structural/tabs_test.go` — Table-driven tests for the expression builders and resolvers
-5. `src/structural/tabs_templ.go` — Compiled output rendering the ARIA tablist with roving tabindex, arrow and Home/End keyboard handlers, and the x-show panels
+3. `src/structural/tabsState.js` — Alpine data component that measures the tallest tab and caps the vertical tab list to MaxVisibleTabs, re-measuring on list resize
+4. `src/toolset/styleTokens.go` — Shared token-to-class resolvers that Tabs and the other components call
+5. `src/structural/tabs_test.go` — Table-driven tests for the expression builders and resolvers, and the MaxVisibleTabs render behavior
+6. `src/structural/tabs_templ.go` — Compiled output rendering the ARIA tablist with roving tabindex, arrow and Home/End keyboard handlers, and the x-show panels
 
 ---
 

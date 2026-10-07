@@ -5,6 +5,9 @@
 BREAKING: replace the IsHeaderSticky setting with IsHeaderStatic and pin the data table header by default
 BREAKING: replace the IsSearchBoxFullWidth setting with IsSearchBoxCompact and render the search box full width by default
 feat: add min and max width and height classes and a max visible rows setting to the data table viewport
+feat: add a max visible tabs setting to the tabs component
+fix: bind the alert title icon state path classes
+fix: keep a date filter input inside its range editor column
 feat: forward the tooltip width and height caps through every hint-bearing field
 feat: add an icon-left example to the input field demo
 feat: add min and max width and height caps to the shared tooltip through TooltipSurfaceSettings
