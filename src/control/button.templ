@@ -62,6 +62,10 @@ type ButtonSettings struct {
 	TooltipRingColor              string
 	TooltipRingThickness          string
 	TooltipTextColor              string
+	TooltipMinWidthClass          string
+	TooltipMaxWidthClass          string
+	TooltipMinHeightClass         string
+	TooltipMaxHeightClass         string
 	RingColor                     string
 	RingColorHover                string
 	RingThickness                 string
@@ -222,8 +226,16 @@ templ Button(componentSettings ButtonSettings) {
 		if hasTooltip {
 			{{
 				tooltipSurfaceClasses := uiToolset.TooltipSurfaceClassesResolver(
-					componentSettings.TooltipBackgroundColor, componentSettings.TooltipTextColor,
-					componentSettings.TooltipRingColor, componentSettings.TooltipRingThickness,
+					uiToolset.TooltipSurfaceSettings{
+						BackgroundColor: componentSettings.TooltipBackgroundColor,
+						TextColor:       componentSettings.TooltipTextColor,
+						RingColor:       componentSettings.TooltipRingColor,
+						RingThickness:   componentSettings.TooltipRingThickness,
+						MinWidthClass:   componentSettings.TooltipMinWidthClass,
+						MaxWidthClass:   componentSettings.TooltipMaxWidthClass,
+						MinHeightClass:  componentSettings.TooltipMinHeightClass,
+						MaxHeightClass:  componentSettings.TooltipMaxHeightClass,
+					},
 				)
 			}}
 			<template x-teleport="body">

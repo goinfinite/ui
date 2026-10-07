@@ -20,14 +20,41 @@ var TooltipAlpineStateOnce = templ.NewOnceHandle(
 	templ.WithComponent(MinifierTemplateJs(&tooltipAlpineState)),
 )
 
-func TooltipSurfaceClassesResolver(
-	backgroundColor, textColor, ringColor, ringThickness string,
-) string {
+type TooltipSurfaceSettings struct {
+	BackgroundColor string
+	TextColor       string
+	RingColor       string
+	RingThickness   string
+
+	// OptionalFields
+	MinWidthClass  string
+	MaxWidthClass  string
+	MinHeightClass string
+	MaxHeightClass string
+}
+
+func TooltipSurfaceClassesResolver(settings TooltipSurfaceSettings) string {
 	surfaceClasses := "fixed z-100 invisible w-fit p-1.5 text-xs rounded-md shadow-md"
-	surfaceClasses += " transition-opacity duration-150 pointer-events-none"
+	surfaceClasses += " transition-opacity duration-200 ease-out pointer-events-none"
 	surfaceClasses += " " + BackgroundColorClassResolver(
-		backgroundColor, "bg-neutral-800/95",
+		settings.BackgroundColor, "bg-neutral-800/95",
 	)
-	surfaceClasses += " " + TextColorClassResolver(textColor, "text-neutral-50")
-	return surfaceClasses + " " + CompactRingClassResolver(ringColor, ringThickness)
+	surfaceClasses += " " + TextColorClassResolver(settings.TextColor, "text-neutral-50")
+	surfaceClasses += " " + CompactRingClassResolver(settings.RingColor, settings.RingThickness)
+	surfaceClasses += " " + tooltipSizeClassResolver(settings.MaxWidthClass, "max-w-96")
+	for _, sizeClass := range []string{
+		settings.MinWidthClass, settings.MinHeightClass, settings.MaxHeightClass,
+	} {
+		if sizeClass != "" {
+			surfaceClasses += " " + sizeClass
+		}
+	}
+	return surfaceClasses
+}
+
+func tooltipSizeClassResolver(sizeClass, fallbackClass string) string {
+	if sizeClass != "" {
+		return sizeClass
+	}
+	return fallbackClass
 }

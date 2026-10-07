@@ -32,6 +32,10 @@ type InputHintSettings struct {
 	TooltipBackgroundColor string
 	Size                   string
 	IconStyle              string
+	TooltipMinWidthClass   string
+	TooltipMaxWidthClass   string
+	TooltipMinHeightClass  string
+	TooltipMaxHeightClass  string
 }
 
 var inputHintTooltipIdCounter atomic.Uint64
@@ -84,7 +88,13 @@ func InputHintTooltip(componentSettings InputHintSettings) templ.Component {
 			iconClasses = "ph-bold ph-info text-base leading-none border-1 rounded border-neutral-50/5 bg-neutral-50/5 p-1 text-neutral-100 transition-colors hover:border-neutral-50/30 hover:bg-neutral-50/20"
 		}
 		tooltipSurfaceClasses := uiToolset.TooltipSurfaceClassesResolver(
-			componentSettings.TooltipBackgroundColor, "", "", "",
+			uiToolset.TooltipSurfaceSettings{
+				BackgroundColor: componentSettings.TooltipBackgroundColor,
+				MinWidthClass:   componentSettings.TooltipMinWidthClass,
+				MaxWidthClass:   componentSettings.TooltipMaxWidthClass,
+				MinHeightClass:  componentSettings.TooltipMinHeightClass,
+				MaxHeightClass:  componentSettings.TooltipMaxHeightClass,
+			},
 		)
 		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!-- HintDisplayTooltip -->")
 		if templ_7745c5c3_Err != nil {
@@ -115,7 +125,7 @@ func InputHintTooltip(componentSettings InputHintSettings) templ.Component {
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue(tooltipId)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputHint.templ`, Line: 65, Col: 30}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputHint.templ`, Line: 75, Col: 30}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
 		if templ_7745c5c3_Err != nil {
@@ -128,7 +138,7 @@ func InputHintTooltip(componentSettings InputHintSettings) templ.Component {
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.ResolveAttributeValue(templ.JSFuncCall("tooltip", uiToolset.TooltipPositionBottom))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputHint.templ`, Line: 69, Col: 71}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputHint.templ`, Line: 79, Col: 71}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5)
 		if templ_7745c5c3_Err != nil {
@@ -172,7 +182,7 @@ func InputHintTooltip(componentSettings InputHintSettings) templ.Component {
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.ResolveAttributeValue(tooltipId)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputHint.templ`, Line: 80, Col: 18}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputHint.templ`, Line: 90, Col: 18}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var9)
 		if templ_7745c5c3_Err != nil {
@@ -203,7 +213,7 @@ func InputHintTooltip(componentSettings InputHintSettings) templ.Component {
 			var templ_7745c5c3_Var11 string
 			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.StatePath)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputHint.templ`, Line: 86, Col: 47}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputHint.templ`, Line: 96, Col: 47}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var11)
 			if templ_7745c5c3_Err != nil {
@@ -218,7 +228,7 @@ func InputHintTooltip(componentSettings InputHintSettings) templ.Component {
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.Value)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputHint.templ`, Line: 89, Col: 30}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputHint.templ`, Line: 99, Col: 30}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
@@ -262,7 +272,7 @@ func InputHintDescription(componentSettings InputHintSettings) templ.Component {
 			var templ_7745c5c3_Var14 string
 			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.Value)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputHint.templ`, Line: 100, Col: 28}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputHint.templ`, Line: 110, Col: 28}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 			if templ_7745c5c3_Err != nil {
@@ -281,7 +291,7 @@ func InputHintDescription(componentSettings InputHintSettings) templ.Component {
 			var templ_7745c5c3_Var15 string
 			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.StatePath)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputHint.templ`, Line: 103, Col: 45}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inputHint.templ`, Line: 113, Col: 45}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var15)
 			if templ_7745c5c3_Err != nil {

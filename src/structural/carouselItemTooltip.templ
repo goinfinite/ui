@@ -22,6 +22,10 @@ type CarouselItemTooltipSettings struct {
 	RingColor       string
 	RingThickness   string
 	TextColor       string
+	MinWidthClass   string
+	MaxWidthClass   string
+	MinHeightClass  string
+	MaxHeightClass  string
 }
 
 templ CarouselItemTooltip(componentSettings CarouselItemTooltipSettings) {
@@ -48,8 +52,16 @@ templ CarouselItemTooltip(componentSettings CarouselItemTooltipSettings) {
 		if hasTooltip {
 			{{
 				tooltipSurfaceClasses := uiToolset.TooltipSurfaceClassesResolver(
-					componentSettings.BackgroundColor, componentSettings.TextColor,
-					componentSettings.RingColor, componentSettings.RingThickness,
+					uiToolset.TooltipSurfaceSettings{
+						BackgroundColor: componentSettings.BackgroundColor,
+						TextColor:       componentSettings.TextColor,
+						RingColor:       componentSettings.RingColor,
+						RingThickness:   componentSettings.RingThickness,
+						MinWidthClass:   componentSettings.MinWidthClass,
+						MaxWidthClass:   componentSettings.MaxWidthClass,
+						MinHeightClass:  componentSettings.MinHeightClass,
+						MaxHeightClass:  componentSettings.MaxHeightClass,
+					},
 				)
 			}}
 			<template x-teleport="body">

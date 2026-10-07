@@ -24,6 +24,10 @@ type InputHintSettings struct {
 	TooltipBackgroundColor string
 	Size                   string
 	IconStyle              string
+	TooltipMinWidthClass   string
+	TooltipMaxWidthClass   string
+	TooltipMinHeightClass  string
+	TooltipMaxHeightClass  string
 }
 
 var inputHintTooltipIdCounter atomic.Uint64
@@ -54,7 +58,13 @@ templ InputHintTooltip(componentSettings InputHintSettings) {
 	}
 	{{
 		tooltipSurfaceClasses := uiToolset.TooltipSurfaceClassesResolver(
-			componentSettings.TooltipBackgroundColor, "", "", "",
+			uiToolset.TooltipSurfaceSettings{
+				BackgroundColor: componentSettings.TooltipBackgroundColor,
+				MinWidthClass:   componentSettings.TooltipMinWidthClass,
+				MaxWidthClass:   componentSettings.TooltipMaxWidthClass,
+				MinHeightClass:  componentSettings.TooltipMinHeightClass,
+				MaxHeightClass:  componentSettings.TooltipMaxHeightClass,
+			},
 		)
 	}}
 	<!-- HintDisplayTooltip -->

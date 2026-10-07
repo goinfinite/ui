@@ -30,6 +30,10 @@ type CarouselItemTooltipSettings struct {
 	RingColor       string
 	RingThickness   string
 	TextColor       string
+	MinWidthClass   string
+	MaxWidthClass   string
+	MinHeightClass  string
+	MaxHeightClass  string
 }
 
 func CarouselItemTooltip(componentSettings CarouselItemTooltipSettings) templ.Component {
@@ -78,7 +82,7 @@ func CarouselItemTooltip(componentSettings CarouselItemTooltipSettings) templ.Co
 			var templ_7745c5c3_Var2 string
 			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.ResolveAttributeValue(templ.JSFuncCall("tooltip", componentSettings.Position))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/carouselItemTooltip.templ`, Line: 37, Col: 67}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/carouselItemTooltip.templ`, Line: 41, Col: 67}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var2)
 			if templ_7745c5c3_Err != nil {
@@ -91,7 +95,7 @@ func CarouselItemTooltip(componentSettings CarouselItemTooltipSettings) templ.Co
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.ResolveAttributeValue(tooltipId)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/carouselItemTooltip.templ`, Line: 40, Col: 31}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/carouselItemTooltip.templ`, Line: 44, Col: 31}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
 			if templ_7745c5c3_Err != nil {
@@ -112,8 +116,16 @@ func CarouselItemTooltip(componentSettings CarouselItemTooltipSettings) templ.Co
 		}
 		if hasTooltip {
 			tooltipSurfaceClasses := uiToolset.TooltipSurfaceClassesResolver(
-				componentSettings.BackgroundColor, componentSettings.TextColor,
-				componentSettings.RingColor, componentSettings.RingThickness,
+				uiToolset.TooltipSurfaceSettings{
+					BackgroundColor: componentSettings.BackgroundColor,
+					TextColor:       componentSettings.TextColor,
+					RingColor:       componentSettings.RingColor,
+					RingThickness:   componentSettings.RingThickness,
+					MinWidthClass:   componentSettings.MinWidthClass,
+					MaxWidthClass:   componentSettings.MaxWidthClass,
+					MinHeightClass:  componentSettings.MinHeightClass,
+					MaxHeightClass:  componentSettings.MaxHeightClass,
+				},
 			)
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<template x-teleport=\"body\">")
 			if templ_7745c5c3_Err != nil {
@@ -131,7 +143,7 @@ func CarouselItemTooltip(componentSettings CarouselItemTooltipSettings) templ.Co
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.ResolveAttributeValue(tooltipId)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/carouselItemTooltip.templ`, Line: 58, Col: 19}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/carouselItemTooltip.templ`, Line: 70, Col: 19}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5)
 			if templ_7745c5c3_Err != nil {
@@ -158,7 +170,7 @@ func CarouselItemTooltip(componentSettings CarouselItemTooltipSettings) templ.Co
 				var templ_7745c5c3_Var7 string
 				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.Content)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/carouselItemTooltip.templ`, Line: 64, Col: 33}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/carouselItemTooltip.templ`, Line: 76, Col: 33}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 				if templ_7745c5c3_Err != nil {
