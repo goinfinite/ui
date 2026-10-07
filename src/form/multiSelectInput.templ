@@ -56,6 +56,10 @@ type MultiSelectInputSettings struct {
 	HintStatePath                     string
 	HintDisplay                       string
 	HintDisplayTooltipBackgroundColor string
+	HintDisplayTooltipMinWidthClass   string
+	HintDisplayTooltipMaxWidthClass   string
+	HintDisplayTooltipMinHeightClass  string
+	HintDisplayTooltipMaxHeightClass  string
 	HintIconStyle                     string
 }
 
@@ -132,6 +136,10 @@ templ MultiSelectInput(componentSettings MultiSelectInputSettings) {
 							Value:                  componentSettings.HintValue,
 							StatePath:              componentSettings.HintStatePath,
 							TooltipBackgroundColor: componentSettings.HintDisplayTooltipBackgroundColor,
+							TooltipMinWidthClass:   componentSettings.HintDisplayTooltipMinWidthClass,
+							TooltipMaxWidthClass:   componentSettings.HintDisplayTooltipMaxWidthClass,
+							TooltipMinHeightClass:  componentSettings.HintDisplayTooltipMinHeightClass,
+							TooltipMaxHeightClass:  componentSettings.HintDisplayTooltipMaxHeightClass,
 							Size:                   InputHintSizeLg,
 							IconStyle:              componentSettings.HintIconStyle,
 						})

@@ -62,6 +62,10 @@ type SelectInputSettings struct {
 	HintStatePath                     string
 	HintDisplay                       string
 	HintDisplayTooltipBackgroundColor string
+	HintDisplayTooltipMinWidthClass   string
+	HintDisplayTooltipMaxWidthClass   string
+	HintDisplayTooltipMinHeightClass  string
+	HintDisplayTooltipMaxHeightClass  string
 	HintIconStyle                     string
 }
 
@@ -134,7 +138,7 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 			var templ_7745c5c3_Var2 string
 			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.ResolveAttributeValue(isDisabledPath + " && 'pointer-events-none opacity-50'")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 100, Col: 67}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 104, Col: 67}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var2)
 			if templ_7745c5c3_Err != nil {
@@ -168,7 +172,7 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.ResolveAttributeValue(`!` + componentSettings.TwoWayStatePath + ` && 'mt-0'`)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 111, Col: 68}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 115, Col: 68}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
 			if templ_7745c5c3_Err != nil {
@@ -213,7 +217,7 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.ResolveAttributeValue(`!` + componentSettings.TwoWayStatePath + ` && 'opacity-0 !p-0 w-0 h-0'`)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 117, Col: 87}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 121, Col: 87}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
 			if templ_7745c5c3_Err != nil {
@@ -231,7 +235,7 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.Label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 120, Col: 30}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 124, Col: 30}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -276,7 +280,7 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.ResolveAttributeValue(toggleExpression)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 132, Col: 46}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 136, Col: 46}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var10)
 		if templ_7745c5c3_Err != nil {
@@ -289,7 +293,7 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.ResolveAttributeValue(toggleExpression)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 133, Col: 46}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 137, Col: 46}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var11)
 		if templ_7745c5c3_Err != nil {
@@ -307,7 +311,7 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.ResolveAttributeValue(`!` + componentSettings.TwoWayStatePath + ` && '` + emptyPaddingClass + `'`)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 135, Col: 90}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 139, Col: 90}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var12)
 			if templ_7745c5c3_Err != nil {
@@ -326,7 +330,7 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.ResolveAttributeValue(isDisabledPath)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 138, Col: 37}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 142, Col: 37}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var13)
 			if templ_7745c5c3_Err != nil {
@@ -344,7 +348,7 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 		var templ_7745c5c3_Var14 string
 		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.ResolveAttributeValue(toggleExpression)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 140, Col: 30}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 144, Col: 30}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var14)
 		if templ_7745c5c3_Err != nil {
@@ -365,7 +369,7 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 		var templ_7745c5c3_Var15 string
 		templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.ResolveAttributeValue(selectedLabelText)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 147, Col: 38}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 151, Col: 38}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var15)
 		if templ_7745c5c3_Err != nil {
@@ -378,7 +382,7 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 		var templ_7745c5c3_Var16 string
 		templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.ResolveAttributeValue(selectedLabelText)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 147, Col: 67}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 151, Col: 67}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var16)
 		if templ_7745c5c3_Err != nil {
@@ -413,7 +417,7 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 		var templ_7745c5c3_Var19 string
 		templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.ResolveAttributeValue("!(" + selectedLabelText + ")")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 148, Col: 75}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 152, Col: 75}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var19)
 		if templ_7745c5c3_Err != nil {
@@ -426,7 +430,7 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 		var templ_7745c5c3_Var20 string
 		templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.Label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 148, Col: 103}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 152, Col: 103}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 		if templ_7745c5c3_Err != nil {
@@ -444,7 +448,7 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 			var templ_7745c5c3_Var21 string
 			templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.ResolveAttributeValue(selectValueStatePath + " !== ''")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 156, Col: 49}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 160, Col: 49}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var21)
 			if templ_7745c5c3_Err != nil {
@@ -457,7 +461,7 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 			var templ_7745c5c3_Var22 string
 			templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.ResolveAttributeValue(selectValueStatePath + " = ''; closeDropdown()" + onChangeFuncSuffix)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 157, Col: 98}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 161, Col: 98}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var22)
 			if templ_7745c5c3_Err != nil {
@@ -473,6 +477,10 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 				Value:                  componentSettings.HintValue,
 				StatePath:              componentSettings.HintStatePath,
 				TooltipBackgroundColor: componentSettings.HintDisplayTooltipBackgroundColor,
+				TooltipMinWidthClass:   componentSettings.HintDisplayTooltipMinWidthClass,
+				TooltipMaxWidthClass:   componentSettings.HintDisplayTooltipMaxWidthClass,
+				TooltipMinHeightClass:  componentSettings.HintDisplayTooltipMinHeightClass,
+				TooltipMaxHeightClass:  componentSettings.HintDisplayTooltipMaxHeightClass,
 				Size:                   InputHintSizeLg,
 				IconStyle:              componentSettings.HintIconStyle,
 			}).Render(ctx, templ_7745c5c3_Buffer)
@@ -513,7 +521,7 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 		var templ_7745c5c3_Var25 string
 		templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.ResolveAttributeValue("openUpward ? 'bottom-full mb-1' : 'mt-1'")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 180, Col: 56}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 188, Col: 56}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var25)
 		if templ_7745c5c3_Err != nil {
@@ -526,7 +534,7 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 		var templ_7745c5c3_Var26 string
 		templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.ResolveAttributeValue(selectValueStatePath + " = $event.target.value" + onChangeFuncSuffix)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 184, Col: 83}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 192, Col: 83}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var26)
 		if templ_7745c5c3_Err != nil {
@@ -587,7 +595,7 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 			var templ_7745c5c3_Var31 string
 			templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.InputName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 195, Col: 43}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 203, Col: 43}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var31)
 			if templ_7745c5c3_Err != nil {
@@ -600,7 +608,7 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 			var templ_7745c5c3_Var32 string
 			templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.ResolveAttributeValue(selectedCheckExpression)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 197, Col: 43}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 205, Col: 43}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var32)
 			if templ_7745c5c3_Err != nil {
@@ -618,7 +626,7 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 				var templ_7745c5c3_Var33 string
 				templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.ResolveAttributeValue(isDisabledPath)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 199, Col: 36}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 207, Col: 36}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var33)
 				if templ_7745c5c3_Err != nil {
@@ -682,7 +690,7 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 			var templ_7745c5c3_Var38 string
 			templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.InputName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 213, Col: 43}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 221, Col: 43}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var38)
 			if templ_7745c5c3_Err != nil {
@@ -695,7 +703,7 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 			var templ_7745c5c3_Var39 string
 			templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.ResolveAttributeValue(option)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 214, Col: 23}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 222, Col: 23}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var39)
 			if templ_7745c5c3_Err != nil {
@@ -708,7 +716,7 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 			var templ_7745c5c3_Var40 string
 			templ_7745c5c3_Var40, templ_7745c5c3_Err = templ.ResolveAttributeValue(selectedCheckExpression)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 215, Col: 43}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 223, Col: 43}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var40)
 			if templ_7745c5c3_Err != nil {
@@ -726,7 +734,7 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 				var templ_7745c5c3_Var41 string
 				templ_7745c5c3_Var41, templ_7745c5c3_Err = templ.ResolveAttributeValue(isDisabledPath)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 217, Col: 36}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 225, Col: 36}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var41)
 				if templ_7745c5c3_Err != nil {
@@ -744,7 +752,7 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 			var templ_7745c5c3_Var42 string
 			templ_7745c5c3_Var42, templ_7745c5c3_Err = templ.JoinStringErrs(option)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 222, Col: 22}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 230, Col: 22}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var42))
 			if templ_7745c5c3_Err != nil {
@@ -803,7 +811,7 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 			var templ_7745c5c3_Var47 string
 			templ_7745c5c3_Var47, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.InputName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 231, Col: 43}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 239, Col: 43}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var47)
 			if templ_7745c5c3_Err != nil {
@@ -816,7 +824,7 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 			var templ_7745c5c3_Var48 string
 			templ_7745c5c3_Var48, templ_7745c5c3_Err = templ.ResolveAttributeValue(option.Value)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 232, Col: 29}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 240, Col: 29}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var48)
 			if templ_7745c5c3_Err != nil {
@@ -829,7 +837,7 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 			var templ_7745c5c3_Var49 string
 			templ_7745c5c3_Var49, templ_7745c5c3_Err = templ.ResolveAttributeValue(selectedCheckExpression)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 233, Col: 43}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 241, Col: 43}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var49)
 			if templ_7745c5c3_Err != nil {
@@ -847,7 +855,7 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 				var templ_7745c5c3_Var50 string
 				templ_7745c5c3_Var50, templ_7745c5c3_Err = templ.ResolveAttributeValue(isDisabledPath)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 235, Col: 36}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 243, Col: 36}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var50)
 				if templ_7745c5c3_Err != nil {
@@ -875,7 +883,7 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 				var templ_7745c5c3_Var51 string
 				templ_7745c5c3_Var51, templ_7745c5c3_Err = templ.JoinStringErrs(option.Label)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 243, Col: 29}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 251, Col: 29}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var51))
 				if templ_7745c5c3_Err != nil {
