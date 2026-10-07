@@ -262,7 +262,8 @@ UiToolset.RegisterAlpineState(() => {
       this.refreshAbortController = abortController;
       this.isLoading = true;
       this.hasRefreshError = false;
-      const refreshUrl = UiToolset.BuildRefreshUrl(this);
+      const refreshUrl =
+        UiToolset.ServerFragmentRefreshComponent.refreshUrlBuilder(this);
 
       try {
         if (window.htmx?.ajax) {
@@ -290,10 +291,11 @@ UiToolset.RegisterAlpineState(() => {
           this.afterRegionReplaced();
           return;
         }
-        const responseDocument = await UiToolset.FetchRefreshFragment(
-          refreshUrl,
-          abortController.signal,
-        );
+        const responseDocument =
+          await UiToolset.ServerFragmentRefreshComponent.fragmentFetcher(
+            refreshUrl,
+            abortController.signal,
+          );
         if (abortController.signal.aborted) {
           return;
         }
@@ -301,77 +303,49 @@ UiToolset.RegisterAlpineState(() => {
         this.liveMessage = "Carousel refreshed";
         this.afterRegionReplaced();
       } catch (refreshError) {
-        if (abortController.signal.aborted) {
-          return;
-        }
-        this.hasRefreshError = true;
-        console.error(
-          `CarouselRefreshFailed: ${refreshError?.message ?? refreshError}`,
+        UiToolset.ServerFragmentRefreshComponent.failureHandler(
+          this,
+          abortController,
+          refreshError,
+          "Carousel",
         );
       } finally {
-        if (!abortController.signal.aborted) {
-          this.isLoading = false;
-        }
+        UiToolset.ServerFragmentRefreshComponent.loadingClearer(
+          this,
+          abortController,
+        );
       }
     },
 
     requestRefresh() {
-      clearTimeout(this.refreshTimeoutId);
-      this.refreshTimeoutId = setTimeout(
-        () => this.refresh(),
-        this.refreshDebounceMs,
-      );
+      UiToolset.ServerFragmentRefreshComponent.requestDebouncer(this);
     },
 
-    resetPageAndRefresh() {
+    refreshFromFirstPage() {
       this.pageNumber = 0;
-      this.requestRefresh();
+      UiToolset.ServerFragmentRefreshComponent.requestDebouncer(this);
     },
 
     destroy() {
-      for (const { refreshEventName, refreshEventHandler } of this
-        .refreshEventHandlers) {
-        window.removeEventListener(refreshEventName, refreshEventHandler);
-      }
-      this.rootElement.removeEventListener(
-        "htmx:responseError",
-        this.htmxErrorHandler,
-      );
-      this.rootElement.removeEventListener(
-        "htmx:sendError",
-        this.htmxErrorHandler,
-      );
+      UiToolset.ServerFragmentRefreshComponent.handlersDetacher(this);
       if (this.resizeHandler) {
         window.removeEventListener("resize", this.resizeHandler);
       }
       this.resizeObserver?.disconnect();
       this.stopAutoplay();
-      this.refreshAbortController?.abort();
-      clearTimeout(this.refreshTimeoutId);
     },
 
     init() {
       this.rootElement = this.$el;
-      const settingsElement = [...this.rootElement.children].find(
-        (child) => child.id === settingsScriptId,
-      );
-      if (!settingsElement) {
-        console.error(`CarouselSettingsScriptMissing: ${settingsScriptId}`);
+      const clientSettings =
+        UiToolset.ServerFragmentRefreshComponent.settingsResolver(
+          this,
+          settingsScriptId,
+          "Carousel",
+        );
+      if (!clientSettings) {
         return;
       }
-
-      let clientSettings;
-      try {
-        clientSettings = JSON.parse(settingsElement.textContent);
-      } catch (parseError) {
-        console.error(`CarouselSettingsParseFailed: ${parseError.message}`);
-        return;
-      }
-
-      this.queryUrlTemplate = clientSettings.queryUrlTemplate || "";
-      this.refreshDebounceMs = clientSettings.refreshDebounceMs || 300;
-      this.refreshOnEvents = clientSettings.refreshOnEvents || [];
-      this.filterQueryParamNames = clientSettings.filterQueryParamNames || {};
       this.itemsPerViewSettings = clientSettings.itemsPerView || { base: 1 };
       this.isAutoplay = clientSettings.isAutoplay || false;
       this.isAutoplayPausedOnHover =
@@ -385,14 +359,7 @@ UiToolset.RegisterAlpineState(() => {
       this.searchQuery = initialState.searchQuery ?? "";
       this.filterValues = initialState.filterValues ?? {};
 
-      for (const refreshEventName of this.refreshOnEvents) {
-        const refreshEventHandler = () => this.requestRefresh();
-        this.refreshEventHandlers.push({
-          refreshEventName,
-          refreshEventHandler,
-        });
-        window.addEventListener(refreshEventName, refreshEventHandler);
-      }
+      UiToolset.ServerFragmentRefreshComponent.eventsWatcher(this);
 
       this.resizeObserver = new ResizeObserver(() =>
         this.updateCarouselLayout(),
@@ -405,18 +372,7 @@ UiToolset.RegisterAlpineState(() => {
       this.updateCarouselLayout();
       this.startAutoplay();
 
-      this.htmxErrorHandler = () => {
-        this.hasRefreshError = true;
-        this.isLoading = false;
-      };
-      this.rootElement.addEventListener(
-        "htmx:responseError",
-        this.htmxErrorHandler,
-      );
-      this.rootElement.addEventListener(
-        "htmx:sendError",
-        this.htmxErrorHandler,
-      );
+      UiToolset.ServerFragmentRefreshComponent.errorHandlersAttacher(this);
     },
 
     observeViewport() {

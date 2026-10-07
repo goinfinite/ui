@@ -5,6 +5,31 @@ import (
 	"testing"
 )
 
+func assertFilterSettings(
+	t *testing.T,
+	filterQueryParamNames map[string]string,
+	filterValues map[string]any,
+) {
+	t.Helper()
+	expectedQueryParamNames := map[string]string{"status": "status", "cpu": "cores"}
+	if !reflect.DeepEqual(filterQueryParamNames, expectedQueryParamNames) {
+		t.Errorf(
+			"FilterQueryParamNamesMismatch: got %v, want %v",
+			filterQueryParamNames, expectedQueryParamNames,
+		)
+	}
+	expectedFilterValues := map[string]any{
+		"status": "running",
+		"cpu":    map[string]string{"min": "", "max": ""},
+	}
+	if !reflect.DeepEqual(filterValues, expectedFilterValues) {
+		t.Errorf(
+			"FilterValuesMismatch: got %v, want %v",
+			filterValues, expectedFilterValues,
+		)
+	}
+}
+
 func TestInitialFilterValuesResolver(t *testing.T) {
 	testCases := []struct {
 		name           string

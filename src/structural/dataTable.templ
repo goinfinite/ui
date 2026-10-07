@@ -32,7 +32,7 @@ templ DataTableDefaultSearchBox() {
 }
 
 templ DataTable[Row any](componentSettings DataTableSettings[Row]) {
-	@refreshRequestAlpineStateOnce.Once()
+	@serverFragmentRefreshComponentAlpineStateOnce.Once()
 	@dataTableAlpineStateOnce.Once()
 	{{ tableId := componentSettings.idResolver() }}
 	{{ settingsScriptId := tableId + "-settings" }}
@@ -79,7 +79,7 @@ templ DataTable[Row any](componentSettings DataTableSettings[Row]) {
 					Filters:                        componentSettings.Filters,
 					ValuesTwoWayStatePath:          "filterValues",
 					EnumSelectRadioGroupNamePrefix: tableId + "-",
-					OnChangeFunc:                   "resetPageAndRefresh()",
+					OnChangeFunc:                   "refreshFromFirstPage()",
 					DropdownBackgroundColor:        componentSettings.FilterDropdownBackgroundColor,
 				})
 			</div>
@@ -88,7 +88,7 @@ templ DataTable[Row any](componentSettings DataTableSettings[Row]) {
 			<div class="flex flex-wrap items-center justify-between gap-2 border-b border-neutral-50/10 p-2">
 				<div class={ "flex flex-1 flex-wrap items-center gap-2 " + searchBoxJustifyClass }>
 					if searchBoxComponent != nil {
-						<div class={ searchBoxWidthClass } @input="resetPageAndRefresh()">
+						<div class={ searchBoxWidthClass } @input="refreshFromFirstPage()">
 							@searchBoxComponent
 						</div>
 					}

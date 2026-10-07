@@ -33,23 +33,11 @@ func TestDataTableClientSettingsResolver(t *testing.T) {
 	}
 	clientSettings := settings.clientSettingsResolver(5, 2)
 
-	expectedQueryParamNames := map[string]string{"status": "status", "cpu": "cores"}
-	if !reflect.DeepEqual(clientSettings.FilterQueryParamNames, expectedQueryParamNames) {
-		t.Errorf(
-			"FilterQueryParamNamesMismatch: got %v, want %v",
-			clientSettings.FilterQueryParamNames, expectedQueryParamNames,
-		)
-	}
-	expectedFilterValues := map[string]any{
-		"status": "running",
-		"cpu":    map[string]string{"min": "", "max": ""},
-	}
-	if !reflect.DeepEqual(clientSettings.InitialState.FilterValues, expectedFilterValues) {
-		t.Errorf(
-			"FilterValuesMismatch: got %v, want %v",
-			clientSettings.InitialState.FilterValues, expectedFilterValues,
-		)
-	}
+	assertFilterSettings(
+		t,
+		clientSettings.FilterQueryParamNames,
+		clientSettings.InitialState.FilterValues,
+	)
 	if clientSettings.InitialState.ItemsPerPage != 5 {
 		t.Errorf("ItemsPerPageMismatch: got %d, want 5", clientSettings.InitialState.ItemsPerPage)
 	}

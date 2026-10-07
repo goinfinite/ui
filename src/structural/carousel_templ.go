@@ -361,7 +361,7 @@ func carouselSearchBoxBar(
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\" @input=\"resetPageAndRefresh()\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\" @input=\"refreshFromFirstPage()\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -398,7 +398,7 @@ func Carousel[Item any](componentSettings CarouselSettings[Item]) templ.Componen
 			templ_7745c5c3_Var23 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = refreshRequestAlpineStateOnce.Once().Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = serverFragmentRefreshComponentAlpineStateOnce.Once().Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -667,7 +667,7 @@ func Carousel[Item any](componentSettings CarouselSettings[Item]) templ.Componen
 				Filters:                        componentSettings.Filters,
 				ValuesTwoWayStatePath:          "filterValues",
 				EnumSelectRadioGroupNamePrefix: carouselId + "-",
-				OnChangeFunc:                   "resetPageAndRefresh()",
+				OnChangeFunc:                   "refreshFromFirstPage()",
 				DropdownBackgroundColor:        componentSettings.FilterDropdownBackgroundColor,
 			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {

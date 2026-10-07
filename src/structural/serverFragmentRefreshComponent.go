@@ -8,11 +8,11 @@ import (
 	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
-//go:embed refreshRequestState.js
-var refreshRequestAlpineState string
+//go:embed serverFragmentRefreshComponentState.js
+var serverFragmentRefreshComponentAlpineState string
 
-var refreshRequestAlpineStateOnce = templ.NewOnceHandle(
-	templ.WithComponent(uiToolset.MinifierTemplateJs(&refreshRequestAlpineState)),
+var serverFragmentRefreshComponentAlpineStateOnce = templ.NewOnceHandle(
+	templ.WithComponent(uiToolset.MinifierTemplateJs(&serverFragmentRefreshComponentAlpineState)),
 )
 
 const defaultRefreshDebounceMs uint = 300

@@ -66,7 +66,7 @@ templ carouselSearchBoxBar(
 ) {
 	<div class={ "flex flex-wrap items-center gap-2 border-neutral-50/10 p-2 " + separatorClass }>
 		<div class={ "flex flex-1 flex-wrap items-center gap-2 " + searchBoxJustifyClass }>
-			<div class={ searchBoxWidthClass } @input="resetPageAndRefresh()">
+			<div class={ searchBoxWidthClass } @input="refreshFromFirstPage()">
 				@searchBoxComponent
 			</div>
 		</div>
@@ -75,7 +75,7 @@ templ carouselSearchBoxBar(
 }
 
 templ Carousel[Item any](componentSettings CarouselSettings[Item]) {
-	@refreshRequestAlpineStateOnce.Once()
+	@serverFragmentRefreshComponentAlpineStateOnce.Once()
 	@carouselAlpineStateOnce.Once()
 	{{ carouselId := componentSettings.idResolver() }}
 	{{ settingsScriptId := carouselId + "-settings" }}
@@ -191,7 +191,7 @@ templ Carousel[Item any](componentSettings CarouselSettings[Item]) {
 					Filters:                        componentSettings.Filters,
 					ValuesTwoWayStatePath:          "filterValues",
 					EnumSelectRadioGroupNamePrefix: carouselId + "-",
-					OnChangeFunc:                   "resetPageAndRefresh()",
+					OnChangeFunc:                   "refreshFromFirstPage()",
 					DropdownBackgroundColor:        componentSettings.FilterDropdownBackgroundColor,
 				})
 			</div>
