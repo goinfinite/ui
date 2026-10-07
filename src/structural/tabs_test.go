@@ -1,6 +1,11 @@
 package uiStructural
 
-import "testing"
+import (
+	"bytes"
+	"context"
+	"strings"
+	"testing"
+)
 
 func TestTabOrientationResolver(t *testing.T) {
 	tests := []struct {
@@ -497,5 +502,51 @@ func TestTabTabindexExpressionBuilder(t *testing.T) {
 				t.Errorf("tabTabindexExpressionBuilder() = %q, want %q", got, tt.want)
 			}
 		})
+	}
+}
+
+func TestTabsRendersVisibleTabsCap(t *testing.T) {
+	settings := TabSettings{
+		Items: []TabItemSettings{
+			{Label: "General", Value: "general"},
+			{Label: "Security", Value: "security"},
+			{Label: "Notifications", Value: "notifications"},
+		},
+		SelectedValueTwoWayStatePath: "selectedTab",
+		Orientation:                  TabOrientationVertical,
+		MaxVisibleTabs:               2,
+	}
+	var buffer bytes.Buffer
+	renderErr := Tabs(settings).Render(context.Background(), &buffer)
+	if renderErr != nil {
+		t.Fatalf("TabsRenderFailed: %v", renderErr)
+	}
+	renderedHtml := buffer.String()
+	for _, expectedMarkup := range []string{
+		"data-ui-tabs-list",
+		`x-data="tabs(2)"`,
+		"tabsViewportMaxHeightPx",
+	} {
+		if !strings.Contains(renderedHtml, expectedMarkup) {
+			t.Errorf("RenderedHtmlMissing: %s", expectedMarkup)
+		}
+	}
+}
+
+func TestTabsIgnoresVisibleTabsCapWhenHorizontal(t *testing.T) {
+	settings := TabSettings{
+		Items: []TabItemSettings{
+			{Label: "General", Value: "general"},
+		},
+		SelectedValueTwoWayStatePath: "selectedTab",
+		MaxVisibleTabs:               2,
+	}
+	var buffer bytes.Buffer
+	renderErr := Tabs(settings).Render(context.Background(), &buffer)
+	if renderErr != nil {
+		t.Fatalf("TabsRenderFailed: %v", renderErr)
+	}
+	if strings.Contains(buffer.String(), "tabs(2)") {
+		t.Errorf("HorizontalTabsRenderedVisibleTabsCap")
 	}
 }

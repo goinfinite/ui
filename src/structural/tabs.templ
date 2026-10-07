@@ -1,6 +1,18 @@
 package uiStructural
 
-import uiToolset "github.com/goinfinite/ui/src/toolset"
+import (
+	_ "embed"
+	"strconv"
+
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+//go:embed tabsState.js
+var tabsAlpineState string
+
+var tabsAlpineStateOnce = templ.NewOnceHandle(
+	templ.WithComponent(uiToolset.MinifierTemplateJs(&tabsAlpineState)),
+)
 
 const (
 	TabOrientationHorizontal string = "horizontal"
@@ -90,6 +102,7 @@ type TabSettings struct {
 	MaxHeightPercent       uint
 	MaxWidthClass          string
 	MaxWidthPercent        uint
+	MaxVisibleTabs         uint
 	MinHeightClass         string
 	MinHeightPercent       uint
 	MinWidthClass          string
@@ -105,11 +118,14 @@ type TabSettings struct {
 }
 
 templ Tabs(componentSettings TabSettings) {
+	@tabsAlpineStateOnce.Once()
 	{{ selectedValuePath := componentSettings.SelectedValueTwoWayStatePath }}
 	{{ orientation := tabOrientationResolver(componentSettings.Orientation) }}
 	{{ isVertical := orientation == TabOrientationVertical }}
 	{{ isRight := isVertical && tabSideResolver(componentSettings.Side) == TabSideRight }}
 	{{ ariaLabel := tabAriaLabelResolver(componentSettings.AriaLabel) }}
+	{{ hasVisibleTabsCap := isVertical && componentSettings.MaxVisibleTabs > 0 }}
+	{{ visibleTabsArgument := strconv.FormatUint(uint64(componentSettings.MaxVisibleTabs), 10) }}
 	{{ textCaseClass := uiToolset.TextCaseClassResolver(componentSettings.TextCase) }}
 	{{ idPrefix := tabIdPrefixGenerator.GenerateNext() }}
 	{{ previousKeyExpression := tabArrowKeyExpressionBuilder(selectedValuePath, "previous") }}
@@ -199,9 +215,14 @@ templ Tabs(componentSettings TabSettings) {
 		<div
 			role="tablist"
 			aria-label={ ariaLabel }
+			data-ui-tabs-list
 			class={ tabListClasses }
 			if isVertical {
 				aria-orientation="vertical"
+			}
+			if hasVisibleTabsCap {
+				x-data={ templ.JSFuncCall("tabs", templ.JSExpression(visibleTabsArgument)) }
+				:style="{ maxHeight: tabsViewportMaxHeightPx > 0 ? tabsViewportMaxHeightPx + 'px' : '' }"
 			}
 		>
 			for index, item := range componentSettings.Items {
