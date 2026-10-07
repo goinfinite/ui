@@ -15,28 +15,31 @@ type InlineRadioGroupSettings struct {
 
 templ InlineRadioGroup(componentSettings InlineRadioGroupSettings) {
 	<!-- InlineRadioGroup -->
-	<div class="border-1 bg-neutral-50/7.5 flex min-h-10 flex-col rounded border-neutral-50/5 px-2 py-2">
-		if componentSettings.InputName != "" && componentSettings.TwoWayStatePath != "" {
-			<input
-				type="hidden"
-				if componentSettings.InputId != "" {
-					id={ componentSettings.InputId }
-				}
-				if componentSettings.InputName != "" {
-					name={ componentSettings.InputName }
-				}
-				if componentSettings.TwoWayStatePath != "" {
-					x-model:value={ componentSettings.TwoWayStatePath }
-				}
-			/>
-		}
-		<p class={ "-mt-2 mb-0.5 w-fit select-none text-xs font-bold text-neutral-50/80 " + uiToolset.TextCaseClassResolver(componentSettings.TextCase) }>
-			{ componentSettings.Label }
-		</p>
-		<div class="flex flex-row gap-2">
-			for _, componentSettings := range componentSettings.InputSettings {
-				@RadioInput(componentSettings)
+	{{ legendClasses := "ml-1 select-none px-1 text-xs font-bold leading-none text-neutral-50/80 " + uiToolset.TextCaseClassResolver(componentSettings.TextCase) }}
+	<div class="flex w-full flex-col">
+		<fieldset class="bg-neutral-50/7.5 relative -mt-1.5 w-full rounded border border-neutral-50/5 transition-colors focus-within:border-neutral-50/30 hover:border-neutral-50/30">
+			<legend class={ legendClasses }>
+				{ componentSettings.Label }
+			</legend>
+			if componentSettings.InputName != "" && componentSettings.TwoWayStatePath != "" {
+				<input
+					type="hidden"
+					if componentSettings.InputId != "" {
+						id={ componentSettings.InputId }
+					}
+					if componentSettings.InputName != "" {
+						name={ componentSettings.InputName }
+					}
+					if componentSettings.TwoWayStatePath != "" {
+						x-model:value={ componentSettings.TwoWayStatePath }
+					}
+				/>
 			}
-		</div>
+			<div class="flex min-h-8 flex-row items-center gap-2 p-1.5">
+				for _, inputSettings := range componentSettings.InputSettings {
+					@RadioInput(inputSettings)
+				}
+			</div>
+		</fieldset>
 	</div>
 }
