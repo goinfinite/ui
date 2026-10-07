@@ -188,15 +188,16 @@ templ ModalHeaderFooterExample() {
 	// OptionalFields
 	HeaderContent:            ModalDemoHeader(),
 	FooterContent:            ModalDemoFooter(),
+	TitleOneWayStatePath:     "slotsModalTitle",
 	IsVisibleTwoWayStatePath: "isSlotsModalVisible",
 })`
 	}}
 	@DemoExampleCard(
 		"Header & Footer Slots",
-		"HeaderContent replaces the title bar. FooterContent renders under the body for actions. Set Title as well to keep an accessible name when the header is custom.",
+		"HeaderContent replaces the title bar. FooterContent renders under the body for actions. Set Title or TitleOneWayStatePath as well to keep an accessible name when the header is custom.",
 		"/display/modal.templ", slotsUsage,
 	) {
-		<div class="flex flex-col gap-3" x-data="{isSlotsModalVisible: false}">
+		<div class="flex flex-col gap-3" x-data="{isSlotsModalVisible: false, slotsModalTitle: 'Slots Modal'}">
 			@uiControl.Button(uiControl.ButtonSettings{
 				Label:           "Open Slots Modal",
 				IconLeft:        "ph-columns",
@@ -207,6 +208,7 @@ templ ModalHeaderFooterExample() {
 			@uiDisplay.Modal(uiDisplay.ModalSettings{
 				MiddleContent:            ModalDemoContent(),
 				Title:                    "Slots Modal",
+				TitleOneWayStatePath:     "slotsModalTitle",
 				HeaderContent:            ModalDemoHeader(),
 				FooterContent:            ModalDemoFooter(),
 				InitialSize:              uiDisplay.ModalSizeMd,
@@ -225,6 +227,8 @@ templ ModalCustomSurfaceExample() {
 	// OptionalFields
 	BackdropColor:            "blue-900/60",
 	BackgroundColor:          "primary-900",
+	TextColor:                "neutral-100",
+	ShadowSize:               uiDisplay.ModalShadowSizeXl,
 	RingColor:                "primary-500",
 	RingThickness:            "md",
 	BorderRadius:             "lg",
@@ -364,6 +368,8 @@ templ ModalCustomSurfaceExample() {
 				Title:                    "Primary Background Modal",
 				InitialSize:              uiDisplay.ModalSizeMd,
 				BackgroundColor:          "primary-900",
+				TextColor:                "neutral-100",
+				ShadowSize:               uiDisplay.ModalShadowSizeXl,
 				IsVisibleTwoWayStatePath: "isPrimaryModalVisible",
 			})
 			@uiDisplay.Modal(uiDisplay.ModalSettings{
@@ -495,31 +501,68 @@ templ ModalCustomDimensionsExample() {
 	InitialSize:                   uiDisplay.ModalSizeMd,
 	WidthPercent:                  70,
 	HeightPercent:                 45,
+	MinWidthPercent:               50,
+	MaxWidthPercent:               90,
+	MinHeightPercent:              30,
+	MaxHeightPercent:              60,
 	IsMiddleContentScrollDisabled: true,
 	IsVisibleTwoWayStatePath:      "isPinnedDimensionsModalVisible",
+})
+
+@uiDisplay.Modal(uiDisplay.ModalSettings{
+	MiddleContent:            ModalDemoContent(),
+	Title:                    "Content Height Modal",
+
+	// OptionalFields
+	InitialSize:              uiDisplay.ModalSizeMd,
+	ShouldHeightMatchContent: true,
+	IsVisibleTwoWayStatePath: "isContentHeightModalVisible",
 })`
 	}}
 	@DemoExampleCard(
 		"Custom Dimensions",
-		"WidthPercent and HeightPercent replace the width and height of InitialSize; InitialSize keeps its padding and header scale. Pinning both axes retires the resize controls. IsMiddleContentScrollDisabled pins the body for embedded apps like a terminal.",
+		"WidthPercent and HeightPercent replace the width and height of InitialSize; InitialSize keeps its padding and header scale. The Min and Max fields clamp each axis. Pinning both axes retires the resize controls. IsMiddleContentScrollDisabled pins the body for embedded apps like a terminal. ShouldHeightMatchContent sizes the height to the content.",
 		"/display/modal.templ", dimensionsUsage,
 	) {
-		<div class="flex flex-col gap-3" x-data="{isPinnedDimensionsModalVisible: false}">
-			@uiControl.Button(uiControl.ButtonSettings{
-				Label:           "Open Pinned Dimensions",
-				IconLeft:        "ph-arrows-out",
-				OnClickFunc:     "isPinnedDimensionsModalVisible = true",
-				Size:            uiControl.ButtonSizeSm,
-				BackgroundColor: "violet-800",
-			})
+		<div
+			class="flex flex-col gap-3"
+			x-data="{isPinnedDimensionsModalVisible: false, isContentHeightModalVisible: false}"
+		>
+			<div class="flex flex-wrap gap-2">
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:           "Open Pinned Dimensions",
+					IconLeft:        "ph-arrows-out",
+					OnClickFunc:     "isPinnedDimensionsModalVisible = true",
+					Size:            uiControl.ButtonSizeSm,
+					BackgroundColor: "violet-800",
+				})
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:           "Open Content Height",
+					IconLeft:        "ph-arrows-in",
+					OnClickFunc:     "isContentHeightModalVisible = true",
+					Size:            uiControl.ButtonSizeSm,
+					BackgroundColor: "violet-800",
+				})
+			</div>
 			@uiDisplay.Modal(uiDisplay.ModalSettings{
 				MiddleContent:                 TerminalModalDemoContent(),
 				Title:                         "Pinned Dimensions Modal",
 				InitialSize:                   uiDisplay.ModalSizeMd,
 				WidthPercent:                  70,
 				HeightPercent:                 45,
+				MinWidthPercent:               50,
+				MaxWidthPercent:               90,
+				MinHeightPercent:              30,
+				MaxHeightPercent:              60,
 				IsMiddleContentScrollDisabled: true,
 				IsVisibleTwoWayStatePath:      "isPinnedDimensionsModalVisible",
+			})
+			@uiDisplay.Modal(uiDisplay.ModalSettings{
+				MiddleContent:            ModalDemoContent(),
+				Title:                    "Content Height Modal",
+				InitialSize:              uiDisplay.ModalSizeMd,
+				ShouldHeightMatchContent: true,
+				IsVisibleTwoWayStatePath: "isContentHeightModalVisible",
 			})
 		</div>
 	}

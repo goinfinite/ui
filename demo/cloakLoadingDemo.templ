@@ -140,11 +140,7 @@ templ CloakLoadingHideDelayExample() {
 
 templ CloakLoadingDemo() {
 	{{
-		demoUsage := `@uiDisplay.CloakLoading(uiDisplay.CloakLoadingSettings{
-	// OptionalFields
-	BackgroundColor: "rgb(23, 23, 23)",
-	Icon:            "ph-compass-rose",
-})`
+		demoUsage := `@uiDisplay.CloakLoading(uiDisplay.CloakLoadingSettings{})`
 	}}
 	<div class="flex flex-col gap-4" id="cloak-loading-demo">
 		@DemoComponentSection(DemoComponentSectionSettings{

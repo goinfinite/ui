@@ -78,13 +78,14 @@ templ TagOuterRingColorsExample() {
 
 	// OptionalFields
 	OuterRingColor:       "emerald-500",
+	OuterRingThickness:   uiDisplay.TagRingThicknessLg,
 	OuterBackgroundColor: "transparent",
 	OuterTextColor:       "neutral-50",
 })`
 	}}
 	@DemoExampleCard(
 		"Outer Ring Colors",
-		"OuterRingColor outlines the outer segment. Pair it with a transparent OuterBackgroundColor for an outlined tag.",
+		"OuterRingColor outlines the outer segment. OuterRingThickness sets the outline width. Pair it with a transparent OuterBackgroundColor for an outlined tag.",
 		"/display/tag.templ", ringUsage,
 	) {
 		<div class="flex flex-row flex-wrap items-center gap-2">
@@ -93,6 +94,7 @@ templ TagOuterRingColorsExample() {
 					OuterLeftIcon:        "ph-info",
 					OuterLeftLabel:       "Info",
 					OuterRingColor:       tagRingColor,
+					OuterRingThickness:   uiDisplay.TagRingThicknessLg,
 					OuterBackgroundColor: "transparent",
 					OuterTextColor:       "neutral-50",
 					InnerIcon:            "ph-warning",
@@ -160,6 +162,7 @@ templ TagInnerColorsExample() {
 					InnerIcon:            "ph-warning",
 					InnerLabel:           "Warning",
 					InnerBackgroundColor: innerColor,
+					InnerTextColor:       "neutral-50",
 				})
 			}
 		</div>
@@ -177,14 +180,21 @@ templ TagSideElementActionsExample() {
 	OuterRightOnClickFunc:     "if(clickCount > 0) clickCount--",
 	InnerIcon:                 "ph-hash",
 	InnerLabelOneWayStatePath: "clickCount",
+})
+
+@uiDisplay.Tag(uiDisplay.TagSettings{
+	OuterLeftIcon:                  "ph-pencil",
+	OuterLeftLabelOneWayStatePath:  "leftActionLabel",
+	OuterRightIcon:                 "ph-pencil",
+	OuterRightLabelOneWayStatePath: "rightActionLabel",
 })`
 	}}
 	@DemoExampleCard(
 		"Side Element Actions",
-		"OuterLeftOnClickFunc and OuterRightOnClickFunc run on the outer side labels. InnerLabelOneWayStatePath and InnerValueOneWayStatePath mirror Alpine state into the inner segment.",
+		"OuterLeftOnClickFunc and OuterRightOnClickFunc run on the outer side labels. OuterLeftLabelOneWayStatePath and OuterRightLabelOneWayStatePath bind the side labels to Alpine state. InnerLabelOneWayStatePath and InnerValueOneWayStatePath mirror Alpine state into the inner segment.",
 		"/display/tag.templ", actionsUsage,
 	) {
-		<div x-data="{clickCount: 0}" class="flex flex-col gap-2">
+		<div x-data="{clickCount: 0, leftActionLabel: 'Add', rightActionLabel: 'Remove'}" class="flex flex-col gap-2">
 			<div class="flex flex-row flex-wrap items-center gap-2">
 				@uiDisplay.Tag(uiDisplay.TagSettings{
 					OuterLeftIcon:             "ph-plus",
@@ -199,6 +209,20 @@ templ TagSideElementActionsExample() {
 				@uiDisplay.Tag(uiDisplay.TagSettings{
 					OuterLeftLabel:            "count",
 					InnerValueOneWayStatePath: "clickCount",
+				})
+				@uiDisplay.Tag(uiDisplay.TagSettings{
+					OuterLeftIcon:                  "ph-pencil",
+					OuterLeftLabelOneWayStatePath:  "leftActionLabel",
+					OuterRightIcon:                 "ph-pencil",
+					OuterRightLabelOneWayStatePath: "rightActionLabel",
+				})
+			</div>
+			<div class="flex flex-wrap gap-2">
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:       "Rename Actions",
+					IconLeft:    "ph-pencil",
+					OnClickFunc: "leftActionLabel = leftActionLabel === 'Add' ? 'Increase' : 'Add'; rightActionLabel = rightActionLabel === 'Remove' ? 'Decrease' : 'Remove'",
+					Size:        uiControl.ButtonSizeSm,
 				})
 			</div>
 			<p class={ DemoLiveStateClasses }>

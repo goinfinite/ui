@@ -3,6 +3,7 @@ package main
 import (
 	uiControl "github.com/goinfinite/ui/src/control"
 	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
 templ ConfirmationDialogDemoTargetReference() {
@@ -19,35 +20,59 @@ templ ConfirmationDialogTypeToConfirmExample() {
 	OnConfirmFunc:            "runAction()",
 
 	// OptionalFields
-	IsTypeToConfirmEnabled:     true,
-	TypeToConfirmExpectedValue: "proceed",
+	IsTypeToConfirmEnabled:            true,
+	TypeToConfirmExpectedValue:        "proceed",
+	TypeToConfirmValueTwoWayStatePath: "typedConfirmationValue",
+
+	// Or match the bound target name and id
+	TargetNameStatePath: "demoTargetName",
+	TargetIdStatePath:   "demoTargetId",
 })`
 	}}
 	@DemoExampleCard(
 		"Type-to-Confirm",
-		"IsTypeToConfirmEnabled gates the confirm button behind a typed match. The match comes from TargetNameStatePath, TargetIdStatePath, or TypeToConfirmExpectedValue. The delete and critical presets enable this by default.",
+		"IsTypeToConfirmEnabled gates the confirm button behind a typed match. The first dialog matches the TypeToConfirmExpectedValue phrase; the second matches the bound TargetNameStatePath and TargetIdStatePath. TypeToConfirmValueTwoWayStatePath binds the typed value to your own Alpine state. The delete and critical presets enable this by default.",
 		"/display/confirmationDialog.templ", typeToConfirmUsage,
 	) {
 		<div
 			class="flex flex-col gap-4"
-			x-data="{isTypeToConfirmVisible: false, typedConfirmationValue: '', typeToConfirmDone: false}"
+			x-data="{isTypeToConfirmVisible: false, isTargetConfirmVisible: false, demoTargetName: 'primary-database', demoTargetId: '42', typedConfirmationValue: '', targetConfirmationValue: '', typeToConfirmDone: false}"
 		>
-			@uiControl.Button(uiControl.ButtonSettings{
-				Label:           "Open Typed Prompt",
-				IconLeft:        "ph-shield-check",
-				OnClickFunc:     "isTypeToConfirmVisible = true",
-				Size:            uiControl.ButtonSizeSm,
-				BackgroundColor: "primary-800",
-			})
+			<div class="flex flex-wrap gap-2">
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:           "Open Typed Prompt",
+					IconLeft:        "ph-shield-check",
+					OnClickFunc:     "isTypeToConfirmVisible = true",
+					Size:            uiControl.ButtonSizeSm,
+					BackgroundColor: "primary-800",
+				})
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:           "Open Target Prompt",
+					IconLeft:        "ph-target",
+					OnClickFunc:     "isTargetConfirmVisible = true",
+					Size:            uiControl.ButtonSizeSm,
+					BackgroundColor: "primary-800",
+				})
+			</div>
 			<p class={ DemoLiveStateClasses }>
 				Confirmed: <span x-text="typeToConfirmDone"></span>
 			</p>
 			@uiDisplay.ConfirmDialog(uiDisplay.ConfirmationDialogSettings{
-				IsVisibleTwoWayStatePath:   "isTypeToConfirmVisible",
-				OnConfirmFunc:              "typeToConfirmDone = true; isTypeToConfirmVisible = false",
-				HeaderTitle:                "Typed Prompt",
-				IsTypeToConfirmEnabled:     true,
-				TypeToConfirmExpectedValue: "proceed",
+				IsVisibleTwoWayStatePath:          "isTypeToConfirmVisible",
+				OnConfirmFunc:                     "typeToConfirmDone = true; isTypeToConfirmVisible = false",
+				HeaderTitle:                       "Typed Prompt",
+				IsTypeToConfirmEnabled:            true,
+				TypeToConfirmExpectedValue:        "proceed",
+				TypeToConfirmValueTwoWayStatePath: "typedConfirmationValue",
+			})
+			@uiDisplay.ConfirmDialog(uiDisplay.ConfirmationDialogSettings{
+				IsVisibleTwoWayStatePath:          "isTargetConfirmVisible",
+				OnConfirmFunc:                     "typeToConfirmDone = true; isTargetConfirmVisible = false",
+				HeaderTitle:                       "Target Prompt",
+				IsTypeToConfirmEnabled:            true,
+				TargetNameStatePath:               "demoTargetName",
+				TargetIdStatePath:                 "demoTargetId",
+				TypeToConfirmValueTwoWayStatePath: "targetConfirmationValue",
 			})
 		</div>
 	}
@@ -158,6 +183,7 @@ templ ConfirmationDialogCustomSlotsExample() {
 	OnConfirmFunc:            "runAction()",
 
 	// OptionalFields
+	Message:        "This action cannot be undone.",
 	MessageContent: ConfirmationDialogDemoCustomMessage(),
 	HeaderContent:  ConfirmationDialogDemoCustomHeader(),
 	Size:           uiDisplay.ConfirmationDialogSizeLg,
@@ -165,7 +191,7 @@ templ ConfirmationDialogCustomSlotsExample() {
 	}}
 	@DemoExampleCard(
 		"Custom Message & Header",
-		"MessageContent replaces the question copy. HeaderContent replaces the icon and title block. Size sets the dialog width.",
+		"Message sets the note under the question. MessageContent replaces the whole question block, so it wins when both are set. HeaderContent replaces the icon and title block. Size sets the dialog width.",
 		"/display/confirmationDialog.templ", slotsUsage,
 	) {
 		<div
@@ -185,6 +211,7 @@ templ ConfirmationDialogCustomSlotsExample() {
 			@uiDisplay.ConfirmDialog(uiDisplay.ConfirmationDialogSettings{
 				IsVisibleTwoWayStatePath: "isSlotsVisible",
 				OnConfirmFunc:            "slotsDone = true; isSlotsVisible = false",
+				Message:                  "This action cannot be undone.",
 				MessageContent:           ConfirmationDialogDemoCustomMessage(),
 				HeaderContent:            ConfirmationDialogDemoCustomHeader(),
 				Size:                     uiDisplay.ConfirmationDialogSizeLg,
@@ -200,12 +227,18 @@ templ ConfirmationDialogIconPositionExample() {
 	OnConfirmFunc:            "runAction()",
 
 	// OptionalFields
-	HeaderIconPosition: uiDisplay.HeaderIconPositionLeft,
+	HeaderIcon:                "ph-rocket-launch",
+	HeaderIconPosition:        uiDisplay.HeaderIconPositionLeft,
+	HeaderIconColor:           "sky-300",
+	HeaderIconBackgroundColor: "sky-500/20",
+	HeaderIconBorderRadius:    uiDisplay.HeaderIconBorderRadiusSm,
+	HeaderIconPaddingSize:     uiDisplay.HeaderIconPaddingSizeSm,
+	HeaderSize:                uiDisplay.HeaderSizeMd,
 })`
 	}}
 	@DemoExampleCard(
 		"Icon On Left",
-		"HeaderIconPosition defaults to Top, which centers the icon above the title. HeaderIconPositionLeft places it beside the title.",
+		"HeaderIconPosition defaults to Top, which centers the icon above the title. HeaderIconPositionLeft places it beside the title. HeaderIcon swaps the preset icon. HeaderIconColor, HeaderIconBackgroundColor, HeaderIconBorderRadius, and HeaderIconPaddingSize shape it. HeaderSize scales the title and icon.",
 		"/display/confirmationDialog.templ", iconPositionUsage,
 	) {
 		<div
@@ -220,10 +253,154 @@ templ ConfirmationDialogIconPositionExample() {
 				BackgroundColor: "amber-800",
 			})
 			@uiDisplay.WarningDialog(uiDisplay.ConfirmationDialogSettings{
-				IsVisibleTwoWayStatePath: "isIconPositionVisible",
-				OnConfirmFunc:            "isIconPositionVisible = false",
-				HeaderTitle:              "Icon Beside Title",
-				HeaderIconPosition:       uiDisplay.HeaderIconPositionLeft,
+				IsVisibleTwoWayStatePath:  "isIconPositionVisible",
+				OnConfirmFunc:             "isIconPositionVisible = false",
+				HeaderTitle:               "Icon Beside Title",
+				HeaderIcon:                "ph-rocket-launch",
+				HeaderIconPosition:        uiDisplay.HeaderIconPositionLeft,
+				HeaderIconColor:           "sky-300",
+				HeaderIconBackgroundColor: "sky-500/20",
+				HeaderIconBorderRadius:    uiDisplay.HeaderIconBorderRadiusSm,
+				HeaderIconPaddingSize:     uiDisplay.HeaderIconPaddingSizeSm,
+				HeaderSize:                uiDisplay.HeaderSizeMd,
+			})
+		</div>
+	}
+}
+
+templ ConfirmationDialogHeaderTextExample() {
+	{{
+		headerTextUsage := `@uiDisplay.ConfirmDialog(uiDisplay.ConfirmationDialogSettings{
+	IsVisibleTwoWayStatePath: "isHeaderTextVisible",
+	OnConfirmFunc:            "runAction()",
+
+	// OptionalFields
+	HeaderTitle:                     "Reindex Storage",
+	HeaderTitleColor:                "amber-300",
+	HeaderTitleOneWayStatePath:      "headerTextTitle",
+	HeaderSubHeading:                "Runs in the background",
+	HeaderSubHeadingColor:           "emerald-300",
+	HeaderSubHeadingOneWayStatePath: "headerTextSubHeading",
+	TextCase:                        uiToolset.TextCaseUpper,
+	TextColor:                       "neutral-200",
+})`
+	}}
+	@DemoExampleCard(
+		"Header Text Styling",
+		"HeaderSubHeading adds a line under the title. HeaderTitleColor, HeaderSubHeadingColor, and TextColor color the title, the sub-heading, and the block text. HeaderTitleOneWayStatePath and HeaderSubHeadingOneWayStatePath bind both lines to Alpine state. TextCase transforms the text.",
+		"/display/confirmationDialog.templ", headerTextUsage,
+	) {
+		<div
+			class="flex flex-col gap-4"
+			x-data="{isHeaderTextVisible: false, headerTextTitle: 'Reindex Storage', headerTextSubHeading: 'Runs in the background'}"
+		>
+			<div class="flex flex-wrap gap-2">
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:           "Open Styled Header",
+					IconLeft:        "ph-text-aa",
+					OnClickFunc:     "isHeaderTextVisible = true",
+					Size:            uiControl.ButtonSizeSm,
+					BackgroundColor: "violet-800",
+				})
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:       "Swap Text",
+					IconLeft:    "ph-arrows-clockwise",
+					OnClickFunc: "headerTextTitle = 'Rebuild Search Index'; headerTextSubHeading = 'Queued for tonight'",
+					Size:        uiControl.ButtonSizeSm,
+				})
+			</div>
+			@uiDisplay.ConfirmDialog(uiDisplay.ConfirmationDialogSettings{
+				IsVisibleTwoWayStatePath:        "isHeaderTextVisible",
+				OnConfirmFunc:                   "isHeaderTextVisible = false",
+				HeaderTitle:                     "Reindex Storage",
+				HeaderTitleColor:                "amber-300",
+				HeaderTitleOneWayStatePath:      "headerTextTitle",
+				HeaderSubHeading:                "Runs in the background",
+				HeaderSubHeadingColor:           "emerald-300",
+				HeaderSubHeadingOneWayStatePath: "headerTextSubHeading",
+				TextCase:                        uiToolset.TextCaseUpper,
+				TextColor:                       "neutral-200",
+			})
+		</div>
+	}
+}
+
+templ ConfirmationDialogSizingBoundsExample() {
+	{{
+		sizingUsage := `@uiDisplay.ConfirmDialog(uiDisplay.ConfirmationDialogSettings{
+	IsVisibleTwoWayStatePath: "isSizingVisible",
+	OnConfirmFunc:            "runAction()",
+
+	// OptionalFields
+	HeightPercent:    50,
+	MinWidthPercent:  60,
+	MaxWidthPercent:  70,
+	MaxHeightPercent: 40,
+})`
+	}}
+	@DemoExampleCard(
+		"Sizing Bounds",
+		"HeightPercent fixes the dialog height instead of matching the content. MinWidthPercent and MaxWidthPercent clamp the width. MaxHeightPercent caps the height.",
+		"/display/confirmationDialog.templ", sizingUsage,
+	) {
+		<div class="flex flex-col gap-4" x-data="{isSizingVisible: false}">
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "Open Bounded Dialog",
+				IconLeft:        "ph-arrows-out",
+				OnClickFunc:     "isSizingVisible = true",
+				Size:            uiControl.ButtonSizeSm,
+				BackgroundColor: "teal-800",
+			})
+			@uiDisplay.ConfirmDialog(uiDisplay.ConfirmationDialogSettings{
+				IsVisibleTwoWayStatePath: "isSizingVisible",
+				OnConfirmFunc:            "isSizingVisible = false",
+				HeaderTitle:              "Bounded Dialog",
+				HeightPercent:            50,
+				MinWidthPercent:          60,
+				MaxWidthPercent:          70,
+				MaxHeightPercent:         40,
+			})
+		</div>
+	}
+}
+
+templ ConfirmationDialogDemoHeaderActions() {
+	@uiDisplay.Tag(uiDisplay.TagSettings{
+		Size:                 uiDisplay.TagSizeSm,
+		OuterBackgroundColor: "amber-500/20",
+		OuterLeftLabel:       "Review",
+		OuterTextColor:       "amber-200",
+	})
+}
+
+templ ConfirmationDialogHeaderActionsExample() {
+	{{
+		actionsUsage := `@uiDisplay.ConfirmDialog(uiDisplay.ConfirmationDialogSettings{
+	IsVisibleTwoWayStatePath: "isActionsVisible",
+	OnConfirmFunc:            "runAction()",
+
+	// OptionalFields
+	ActionsContent: ConfirmationDialogDemoHeaderActions(),
+})`
+	}}
+	@DemoExampleCard(
+		"Header Actions",
+		"ActionsContent renders custom controls at the end of the dialog header. The close button stays at the top right.",
+		"/display/confirmationDialog.templ", actionsUsage,
+	) {
+		<div class="flex flex-col gap-4" x-data="{isActionsVisible: false}">
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "Open With Actions",
+				IconLeft:        "ph-dots-three",
+				OnClickFunc:     "isActionsVisible = true",
+				Size:            uiControl.ButtonSizeSm,
+				BackgroundColor: "sky-800",
+			})
+			@uiDisplay.ConfirmDialog(uiDisplay.ConfirmationDialogSettings{
+				IsVisibleTwoWayStatePath: "isActionsVisible",
+				OnConfirmFunc:            "isActionsVisible = false",
+				HeaderTitle:              "Review Changes",
+				ActionsContent:           ConfirmationDialogDemoHeaderActions(),
 			})
 		</div>
 	}
@@ -238,6 +415,8 @@ templ ConfirmationDialogDemo() {
 	// OptionalFields
 	TargetNameStatePath: "demoTargetName",
 	TargetIdStatePath:   "demoTargetId",
+	WidthPercent:        32,
+	MinHeightPercent:    42,
 })`
 	}}
 	<div class="flex flex-col gap-4" id="confirmation-dialog-demo">
@@ -342,6 +521,9 @@ templ ConfirmationDialogDemo() {
 			{Title: "Button Labels & Icons", Icon: "ph-hand-tap", Content: ConfirmationDialogButtonLabelsExample()},
 			{Title: "Custom Message & Header", Icon: "ph-columns", Content: ConfirmationDialogCustomSlotsExample()},
 			{Title: "Icon On Left", Icon: "ph-arrow-left", Content: ConfirmationDialogIconPositionExample()},
+			{Title: "Header Text Styling", Icon: "ph-text-aa", Content: ConfirmationDialogHeaderTextExample()},
+			{Title: "Sizing Bounds", Icon: "ph-arrows-out", Content: ConfirmationDialogSizingBoundsExample()},
+			{Title: "Header Actions", Icon: "ph-dots-three", Content: ConfirmationDialogHeaderActionsExample()},
 		})
 	</div>
 }

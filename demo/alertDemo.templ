@@ -12,10 +12,11 @@ templ AlertSizesExample() {
 	Description: "This is an alert message.",
 	Variation:   uiDisplay.AlertVariationInfo,
 	Size:        uiDisplay.AlertSizeMd,
+	MaxWidth:    "md",
 })`
 	}}
 	@DemoExampleCard(
-		"Sizes", "Size scales the alert padding and type: xs, sm, md, lg, or xl.",
+		"Sizes", "Size scales the alert padding and type: xs, sm, md, lg, or xl. MaxWidth caps the width with a Tailwind size token.",
 		"/display/alert.templ", sizesUsage,
 	) {
 		<div class="flex flex-col gap-3">
@@ -25,6 +26,7 @@ templ AlertSizesExample() {
 					Description: "This is an alert message.",
 					Variation:   uiDisplay.AlertVariationInfo,
 					Size:        alertSize,
+					MaxWidth:    "md",
 				})
 			}
 		</div>
@@ -114,15 +116,19 @@ templ AlertCustomSurfaceExample() {
 	// OptionalFields
 	BackgroundColor:          "cyan-500/20",
 	TextColor:                "cyan-100",
+	TextTitleColor:           "cyan-50",
+	TextDescriptionColor:     "cyan-200",
 	RingThickness:            uiDisplay.AlertRingThicknessLg,
 	RingColor:                "cyan-400",
 	ShadowSize:               uiDisplay.AlertShadowSizeXl,
+	BorderRadius:             uiDisplay.AlertBorderRadiusLg,
 	CloseIconBackgroundColor: "cyan-500/30",
+	CloseIconTextColor:       "white",
 })`
 	}}
 	@DemoExampleCard(
 		"Custom Surface",
-		"Background, text, ring, radius, shadow, and close-icon colors accept Tailwind tokens. Gradient backgrounds work too.",
+		"Background, text, ring, radius, shadow, and close-icon colors accept Tailwind tokens. TextTitleColor and TextDescriptionColor style the title and description separately. Gradient backgrounds work too.",
 		"/display/alert.templ", surfaceUsage,
 	) {
 		<div class="flex flex-col gap-3">
@@ -132,11 +138,15 @@ templ AlertCustomSurfaceExample() {
 				Size:                     uiDisplay.AlertSizeSm,
 				BackgroundColor:          "cyan-500/20",
 				TextColor:                "cyan-100",
+				TextTitleColor:           "cyan-50",
+				TextDescriptionColor:     "cyan-200",
 				RingThickness:            uiDisplay.AlertRingThicknessLg,
 				RingColor:                "cyan-400",
 				ShadowSize:               uiDisplay.AlertShadowSizeXl,
+				BorderRadius:             uiDisplay.AlertBorderRadiusLg,
 				IsCloseable:              true,
 				CloseIconBackgroundColor: "cyan-500/30",
+				CloseIconTextColor:       "white",
 			})
 			@uiDisplay.Alert(uiDisplay.AlertSettings{
 				Title:                    "Gradient Alert",
@@ -156,6 +166,7 @@ templ AlertStateBoundExample() {
 	{{
 		stateUsage := `@uiDisplay.Alert(uiDisplay.AlertSettings{
 	Title:                      "Dynamic Content Alert",
+	TitleOneWayStatePath:       "alertTitle",
 	DescriptionOneWayStatePath: "alertMessage",
 	Variation:                  uiDisplay.AlertVariationInfo,
 
@@ -165,13 +176,14 @@ templ AlertStateBoundExample() {
 	}}
 	@DemoExampleCard(
 		"State-Bound Content",
-		"DescriptionOneWayStatePath and IsCloseableOneWayStatePath drive the alert from Alpine state.",
+		"TitleOneWayStatePath, DescriptionOneWayStatePath, and IsCloseableOneWayStatePath drive the alert from Alpine state.",
 		"/display/alert.templ", stateUsage,
 	) {
-		<div class="grid gap-6 md:grid-cols-2" x-data="{alertMessage: 'Dynamic alert content!', isAlertCloseable: true}">
+		<div class="grid gap-6 md:grid-cols-2" x-data="{alertTitle: 'Dynamic Content Alert', alertMessage: 'Dynamic alert content!', isAlertCloseable: true}">
 			<div class="flex flex-col gap-3">
 				@uiDisplay.Alert(uiDisplay.AlertSettings{
 					Title:                      "Dynamic Content Alert",
+					TitleOneWayStatePath:       "alertTitle",
 					DescriptionOneWayStatePath: "alertMessage",
 					Variation:                  uiDisplay.AlertVariationInfo,
 					Size:                       uiDisplay.AlertSizeMd,
@@ -179,9 +191,9 @@ templ AlertStateBoundExample() {
 				})
 				<div class="flex gap-2">
 					@uiControl.Button(uiControl.ButtonSettings{
-						Label:       "Change Message",
+						Label:       "Change Content",
 						IconLeft:    "ph-pencil",
-						OnClickFunc: "alertMessage = 'Message updated at ' + new Date().toLocaleTimeString()",
+						OnClickFunc: "alertTitle = 'Title updated at ' + new Date().toLocaleTimeString(); alertMessage = 'Message updated at ' + new Date().toLocaleTimeString()",
 						Size:        uiControl.ButtonSizeSm,
 					})
 				</div>
@@ -205,6 +217,47 @@ templ AlertStateBoundExample() {
 					})
 				</div>
 			</div>
+		</div>
+	}
+}
+
+templ AlertIconsExample() {
+	{{
+		iconsUsage := `@uiDisplay.Alert(uiDisplay.AlertSettings{
+	Title:          "Rocket deploy",
+	Description:    "TitleLeftIcon and TitleRightIcon frame the content.",
+	TitleLeftIcon:  "ph-rocket-launch",
+	TitleRightIcon: "ph-arrow-right",
+})`
+	}}
+	@DemoExampleCard(
+		"Icons",
+		"TitleLeftIcon replaces the variation icon on the left. TitleRightIcon adds an icon on the right. The TwoWayStatePath variants bind the icon classes to Alpine state.",
+		"/display/alert.templ", iconsUsage,
+	) {
+		<div class="flex flex-col gap-3" x-data="{alertLeftIcon: 'ph-rocket-launch', alertRightIcon: 'ph-arrow-right'}">
+			@uiDisplay.Alert(uiDisplay.AlertSettings{
+				Title:          "Static icons",
+				Description:    "The left and right icons frame the content.",
+				Variation:      uiDisplay.AlertVariationInfo,
+				Size:           uiDisplay.AlertSizeMd,
+				TitleLeftIcon:  "ph-rocket-launch",
+				TitleRightIcon: "ph-arrow-right",
+			})
+			@uiDisplay.Alert(uiDisplay.AlertSettings{
+				Title:                         "State-bound icons",
+				Description:                   "The icon classes come from Alpine state.",
+				Variation:                     uiDisplay.AlertVariationSuccess,
+				Size:                          uiDisplay.AlertSizeMd,
+				TitleLeftIconTwoWayStatePath:  "alertLeftIcon",
+				TitleRightIconTwoWayStatePath: "alertRightIcon",
+			})
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:       "Switch Icons",
+				IconLeft:    "ph-arrows-clockwise",
+				OnClickFunc: "alertLeftIcon = alertLeftIcon === 'ph-rocket-launch' ? 'ph-bell' : 'ph-rocket-launch'; alertRightIcon = alertRightIcon === 'ph-arrow-right' ? 'ph-arrow-left' : 'ph-arrow-right'",
+				Size:        uiControl.ButtonSizeSm,
+			})
 		</div>
 	}
 }
@@ -261,6 +314,7 @@ templ AlertDemo() {
 		@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
 			{Title: "Sizes", Icon: "ph-ruler", Content: AlertSizesExample()},
 			{Title: "Content Html Slot", Icon: "ph-code", Content: AlertContentHtmlExample()},
+			{Title: "Icons", Icon: "ph-rocket-launch", Content: AlertIconsExample()},
 			{Title: "Close & Timeout", Icon: "ph-timer", Content: AlertCloseTimeoutExample()},
 			{Title: "Custom Surface", Icon: "ph-palette", Content: AlertCustomSurfaceExample()},
 			{Title: "State-Bound Content", Icon: "ph-arrows-clockwise", Content: AlertStateBoundExample()},
