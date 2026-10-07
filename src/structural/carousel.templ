@@ -25,6 +25,7 @@ templ CarouselDefaultSearchBox() {
 		InputType:       uiForm.InputTypeText,
 		InputName:       "search",
 		Label:           "Search",
+		IconLeft:        "ph-magnifying-glass",
 		TwoWayStatePath: "searchQuery",
 	})
 }
@@ -60,10 +61,12 @@ templ carouselArrowButton(
 	</button>
 }
 
-templ carouselSearchBoxBar(searchBoxComponent templ.Component, searchBoxJustifyClass, separatorClass string) {
+templ carouselSearchBoxBar(
+	searchBoxComponent templ.Component, searchBoxJustifyClass, searchBoxWidthClass, separatorClass string,
+) {
 	<div class={ "flex flex-wrap items-center gap-2 border-neutral-50/10 p-2 " + separatorClass }>
 		<div class={ "flex flex-1 flex-wrap items-center gap-2 " + searchBoxJustifyClass }>
-			<div class="w-72" @input="resetPageAndRefresh()">
+			<div class={ searchBoxWidthClass } @input="resetPageAndRefresh()">
 				@searchBoxComponent
 			</div>
 		</div>
@@ -90,6 +93,10 @@ templ Carousel[Item any](componentSettings CarouselSettings[Item]) {
 	{{ areDotsOnTop := componentSettings.DotsPosition == CarouselDotsPositionTop }}
 	{{ itemClasses := carouselItemClassesResolver(componentSettings.ItemBackgroundColor, componentSettings.ItemBorderRadius, componentSettings.ItemPaddingSize, componentSettings.ItemRingColor, componentSettings.ItemRingThickness, componentSettings.ItemShadowSize) }}
 	{{ searchBoxJustifyClass := componentSettings.searchBoxAlignmentResolver().justifyClassResolver() }}
+	{{ searchBoxWidthClass := "w-full" }}
+	if componentSettings.IsSearchBoxCompact {
+		{{ searchBoxWidthClass = "w-72" }}
+	}
 	{{ isSearchBoxOnTop := componentSettings.searchBoxPositionResolver() == CarouselSearchBoxPositionTop }}
 	{{ searchBoxComponent := componentSettings.SearchBox }}
 	if searchBoxComponent == nil && strings.Contains(componentSettings.QueryUrlTemplate, CarouselUrlPlaceholderSearch) {
@@ -108,7 +115,7 @@ templ Carousel[Item any](componentSettings CarouselSettings[Item]) {
 	>
 		@templ.JSONScript(settingsScriptId, componentSettings.clientSettingsResolver(itemsPerPage, pageNumber))
 		if searchBoxComponent != nil && isSearchBoxOnTop {
-			@carouselSearchBoxBar(searchBoxComponent, searchBoxJustifyClass, "border-b")
+			@carouselSearchBoxBar(searchBoxComponent, searchBoxJustifyClass, searchBoxWidthClass, "border-b")
 		}
 		<p class="sr-only" aria-live="polite" x-text="liveMessage"></p>
 		<div data-ui-carousel>
@@ -147,7 +154,7 @@ templ Carousel[Item any](componentSettings CarouselSettings[Item]) {
 						if len(componentSettings.Items) > 0 {
 							<div data-ui-carousel-track class={ "flex transition-transform duration-300 ease-out " + trackGapClasses }>
 								for _, item := range componentSettings.Items {
-									<div class={ "shrink-0 " + itemClasses }>
+									<div class={ "min-w-0 shrink-0 overflow-hidden " + itemClasses }>
 										@componentSettings.ItemRenderer(item)
 									</div>
 								}
@@ -178,7 +185,7 @@ templ Carousel[Item any](componentSettings CarouselSettings[Item]) {
 			</div>
 		</div>
 		if searchBoxComponent != nil && !isSearchBoxOnTop {
-			@carouselSearchBoxBar(searchBoxComponent, searchBoxJustifyClass, "border-t")
+			@carouselSearchBoxBar(searchBoxComponent, searchBoxJustifyClass, searchBoxWidthClass, "border-t")
 		}
 		if len(componentSettings.Filters) > 0 {
 			<div class="border-t border-neutral-50/10 p-2">

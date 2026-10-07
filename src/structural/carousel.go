@@ -110,6 +110,7 @@ type CarouselSettings[Item any] struct {
 	IsAutoplay                       bool
 	IsAutoplayPausedOnHover          bool
 	IsPaginationHiddenWhenSinglePage bool
+	IsSearchBoxCompact               bool
 	IsSwipeEnabled                   bool
 	ItemBackgroundColor              string
 	ItemBorderRadius                 string
@@ -299,22 +300,23 @@ func carouselArrowsClassesResolver(
 	position, shape, size, backgroundColor, iconColor string,
 ) string {
 	shapeClass := uiToolset.ShapeClassResolver(shape, "rounded-full")
-	sizeClass := "p-2 text-2xl"
+	sizeClass := "h-8 w-8 text-base"
 	switch size {
 	case CarouselArrowsSizeSm:
-		sizeClass = "p-1.5 text-xl"
+		sizeClass = "h-7 w-7 text-sm"
 	case CarouselArrowsSizeLg:
-		sizeClass = "p-2.5 text-3xl"
+		sizeClass = "h-9 w-9 text-lg"
 	}
 	backgroundClass := "bg-neutral-50/7.5 hover:bg-neutral-50/12.5"
 	if position == CarouselArrowsPositionInside {
 		backgroundClass = "bg-neutral-900/70 hover:bg-neutral-900/90"
 	}
 	if backgroundColor != "" {
-		backgroundClass = uiToolset.BackgroundColorClassResolver(backgroundColor, backgroundClass)
+		backgroundClass = uiToolset.BackgroundColorClassResolver(backgroundColor, backgroundClass) + " hover:brightness-125"
 	}
 	iconColorClass := uiToolset.TextColorClassResolver(iconColor, "text-neutral-50")
-	return shapeClass + " " + sizeClass + " " + backgroundClass + " " + iconColorClass
+	return "flex shrink-0 items-center justify-center " +
+		shapeClass + " " + sizeClass + " " + backgroundClass + " " + iconColorClass
 }
 
 func carouselDotsSizeClassesResolver(

@@ -322,7 +322,7 @@ func TestCarouselArrowsClassesResolver(t *testing.T) {
 		CarouselArrowsPositionOutside, CarouselArrowsShapeRounded,
 		CarouselArrowsSizeSm, "", "",
 	)
-	for _, expectedClass := range []string{"rounded", "p-1.5", "bg-neutral-50/7.5"} {
+	for _, expectedClass := range []string{"rounded", "h-7", "w-7", "bg-neutral-50/7.5"} {
 		if !strings.Contains(outsideClasses, expectedClass) {
 			t.Errorf("OutsideArrowsClassesMissing: %q in %q", expectedClass, outsideClasses)
 		}
@@ -332,7 +332,10 @@ func TestCarouselArrowsClassesResolver(t *testing.T) {
 		CarouselArrowsPositionInside, CarouselArrowsShapeSquare,
 		CarouselArrowsSizeLg, "secondary-500/20", "secondary-100",
 	)
-	for _, expectedClass := range []string{"rounded-none", "p-2.5", "bg-secondary-500/20", "text-secondary-100"} {
+	for _, expectedClass := range []string{
+		"rounded-none", "h-9", "w-9", "bg-secondary-500/20",
+		"hover:brightness-125", "text-secondary-100",
+	} {
 		if !strings.Contains(insideClasses, expectedClass) {
 			t.Errorf("InsideArrowsClassesMissing: %q in %q", expectedClass, insideClasses)
 		}
