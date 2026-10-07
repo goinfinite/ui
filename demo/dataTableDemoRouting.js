@@ -2,6 +2,10 @@ UiToolset.RegisterAlpineState(() => {
   const refreshAssets = [
     { assetFile: "dataTableDemoRefreshFragments.json", defaultItemsPerPage: 5 },
     { assetFile: "carouselDemoRefreshFragments.json", defaultItemsPerPage: 6 },
+    {
+      assetFile: "carouselTooltipDemoRefreshFragments.json",
+      defaultItemsPerPage: 6,
+    },
   ];
   const defaultPageNumber = 0;
 

@@ -17,9 +17,10 @@ import (
 var dataTableDemoRoutingScript string
 
 const (
-	dataTableDemoFragmentsAssetPath = "docs/assets/dataTableDemoRefreshFragments.json"
-	carouselDemoFragmentsAssetPath  = "docs/assets/carouselDemoRefreshFragments.json"
-	carouselDemoItemsPerPage        = 6
+	dataTableDemoFragmentsAssetPath       = "docs/assets/dataTableDemoRefreshFragments.json"
+	carouselDemoFragmentsAssetPath        = "docs/assets/carouselDemoRefreshFragments.json"
+	carouselTooltipDemoFragmentsAssetPath = "docs/assets/carouselTooltipDemoRefreshFragments.json"
+	carouselDemoItemsPerPage              = 6
 )
 
 type demoGenerator struct{}
@@ -132,6 +133,32 @@ func (generator demoGenerator) buildCarouselFragments() (map[string]string, erro
 	)
 }
 
+func (generator demoGenerator) renderCarouselTooltipFragment(
+	pageNumber uint, itemsPerPage uiStructural.ItemsPerPage,
+) (string, error) {
+	fragmentBody := &bytes.Buffer{}
+	renderErr := CarouselTooltipRefreshFragment(pageNumber, itemsPerPage).
+		Render(context.Background(), fragmentBody)
+	if renderErr != nil {
+		return "", errors.New(
+			"RenderCarouselTooltipFragmentFailed: " + renderErr.Error(),
+		)
+	}
+	return fragmentBody.String(), nil
+}
+
+func (generator demoGenerator) buildCarouselTooltipFragments() (map[string]string, error) {
+	carouselItemsPerPage := uiStructural.ItemsPerPage(carouselDemoItemsPerPage)
+	carouselDemoPagesTotal := demoTablePageCountResolver(
+		uint(len(dataTableDemoRecords)), carouselItemsPerPage,
+	)
+	return generator.buildFragments(
+		carouselDemoPagesTotal, carouselItemsPerPage,
+		uiStructural.ItemsPerPage(len(dataTableDemoRecords)),
+		generator.renderCarouselTooltipFragment,
+	)
+}
+
 func (generator demoGenerator) writeFragmentsAsset(
 	assetPath string, buildFragments func() (map[string]string, error),
 ) error {
@@ -173,6 +200,11 @@ func main() {
 			assetPath:      carouselDemoFragmentsAssetPath,
 			buildFragments: generator.buildCarouselFragments,
 			failureLogKey:  "WriteCarouselDemoFragmentsFailed",
+		},
+		{
+			assetPath:      carouselTooltipDemoFragmentsAssetPath,
+			buildFragments: generator.buildCarouselTooltipFragments,
+			failureLogKey:  "WriteCarouselTooltipDemoFragmentsFailed",
 		},
 	}
 	for _, fragmentAsset := range fragmentAssets {

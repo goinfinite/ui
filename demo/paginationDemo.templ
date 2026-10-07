@@ -14,6 +14,7 @@ templ PaginationSizeChoicesExample() {
 	ItemsTotal:                  240,
 
 	// OptionalFields
+	PagesTotal:              48,
 	ItemsPerPageSizeChoices: []uint{5, 10, 25},
 })`
 	}}
@@ -42,6 +43,7 @@ templ PaginationDisabledExample() {
 	ItemsTotal:                  240,
 
 	// OptionalFields
+	PagesTotal:                24,
 	IsDisabledOneWayStatePath: "isPaginationDisabled",
 })`
 	}}
@@ -78,6 +80,7 @@ templ PaginationHiddenSinglePageExample() {
 	ItemsTotal:                  10,
 
 	// OptionalFields
+	PagesTotal:             1,
 	IsHiddenWhenSinglePage: true,
 })`
 	}}
@@ -134,6 +137,7 @@ templ PaginationOneBasedLabelsExample() {
 	ItemsTotal:                  240,
 
 	// OptionalFields
+	PagesTotal:                   24,
 	ShouldUseOneBasedPageDisplay: true,
 })`
 	}}
@@ -158,6 +162,40 @@ templ PaginationOneBasedLabelsExample() {
 	}
 }
 
+templ PaginationChangeCallbackExample() {
+	{{
+		changeCallbackUsage := `@uiStructural.Pagination(uiStructural.PaginationSettings{
+	PageNumberTwoWayStatePath:   "pageNumber",
+	ItemsPerPageTwoWayStatePath: "itemsPerPage",
+	ItemsTotal:                  240,
+
+	// OptionalFields
+	PagesTotal:   24,
+	OnChangeFunc: "changeCount = changeCount + 1",
+})`
+	}}
+	@DemoExampleCard(
+		"Change Callback",
+		"OnChangeFunc runs after a page change or a page-size change. It can drive a fetch or update local state.",
+		"/structural/pagination.templ", changeCallbackUsage,
+	) {
+		<div class="flex flex-col gap-3" x-data="{pageNumber: 1, itemsPerPage: 10, changeCount: 0}">
+			<div class="rounded-md border border-neutral-800 p-4">
+				@uiStructural.Pagination(uiStructural.PaginationSettings{
+					PageNumberTwoWayStatePath:   "pageNumber",
+					ItemsPerPageTwoWayStatePath: "itemsPerPage",
+					ItemsTotal:                  240,
+					PagesTotal:                  24,
+					OnChangeFunc:                "changeCount = changeCount + 1",
+				})
+			</div>
+			<p class={ DemoLiveStateClasses }>
+				OnChangeFunc calls: <span x-text="changeCount"></span>
+			</p>
+		</div>
+	}
+}
+
 templ PaginationDemo() {
 	{{
 		demoUsage := `@uiStructural.Pagination(uiStructural.PaginationSettings{
@@ -166,6 +204,7 @@ templ PaginationDemo() {
 	ItemsTotal:                  240,
 
 	// OptionalFields
+	PagesTotal:   24,
 	OnChangeFunc: "changeCount = changeCount + 1",
 })`
 	}}
@@ -199,6 +238,7 @@ templ PaginationDemo() {
 			{Title: "Disabled Binding", Icon: "ph-prohibit", Content: PaginationDisabledExample()},
 			{Title: "Hidden On Single Page", Icon: "ph-eye-slash", Content: PaginationHiddenSinglePageExample()},
 			{Title: "One-Based Labels", Icon: "ph-number-one", Content: PaginationOneBasedLabelsExample()},
+			{Title: "Change Callback", Icon: "ph-arrows-clockwise", Content: PaginationChangeCallbackExample()},
 		})
 	</div>
 }

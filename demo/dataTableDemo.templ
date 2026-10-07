@@ -45,6 +45,10 @@ templ DataTableColumnConfigExample() {
 		)
 	}}
 	{{
+		columnSettings.InitialSortKey = "name"
+		columnSettings.InitialSortDirection = uiStructural.DataTableSortDirectionAsc
+	}}
+	{{
 		columnUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
 	Columns: []uiStructural.DataTableColumnSettings[Record]{
 		{Label: "Name", SortKey: "name", WidthPercent: 20, CellRenderer: nameCell},
@@ -54,11 +58,15 @@ templ DataTableColumnConfigExample() {
 		{Label: "Created at", MinWidthClass: "min-w-28", CellRenderer: createdAtCell},
 	},
 	Rows: records,
+
+	// OptionalFields
+	InitialSortKey:       "name",
+	InitialSortDirection: uiStructural.DataTableSortDirectionAsc,
 })`
 	}}
 	@DemoExampleCard(
 		"Column Configuration",
-		"A column sets its alignment, width, and sortability. WidthPercent shares the row width, MaxWidthClass caps a long cell, and MinWidthClass holds a floor. A column with a SortKey renders a sort button; one without renders plain text.",
+		"A column sets its alignment, width, and sortability. WidthPercent shares the row width, MaxWidthClass caps a long cell, and MinWidthClass holds a floor. A column with a SortKey renders a sort button; InitialSortKey and InitialSortDirection seed the active sort indicator.",
 		"/structural/dataTable.templ", columnUsage,
 	) {
 		@uiStructural.DataTable(columnSettings)
@@ -79,6 +87,7 @@ templ DataTableRowsConfigExample() {
 		rowsSettings.CheckboxShape = uiForm.CheckboxInputShapeRounded
 		rowsSettings.CheckboxSize = uiForm.CheckboxInputSizeSm
 		rowsSettings.CheckboxCheckedColor = "emerald-500"
+		rowsSettings.CheckboxUncheckedColor = "sky-500"
 	}}
 	{{
 		rowsUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
@@ -89,11 +98,12 @@ templ DataTableRowsConfigExample() {
 	CheckboxShape:        uiForm.CheckboxInputShapeRounded,
 	CheckboxSize:         uiForm.CheckboxInputSizeSm,
 	CheckboxCheckedColor: "emerald-500",
+	CheckboxUncheckedColor: "sky-500",
 })`
 	}}
 	@DemoExampleCard(
 		"Rows Configuration",
-		"RowIdResolver adds the selection column and identifies each row. RowLabelResolver names the row checkbox for screen readers. CheckboxShape, CheckboxSize, and CheckboxCheckedColor change the selection checkbox. Select a row to see the emerald checkbox and the selection count.",
+		"RowIdResolver adds the selection column and identifies each row. RowLabelResolver names the row checkbox for screen readers. CheckboxShape, CheckboxSize, CheckboxCheckedColor, and CheckboxUncheckedColor change the selection checkbox. Select a row to see the colors change.",
 		"/structural/dataTable.templ", rowsUsage,
 	) {
 		@uiStructural.DataTable(rowsSettings)
@@ -110,23 +120,35 @@ templ DataTableFiltersExample() {
 	}}
 	{{
 		filterSettings.Filters = buildDemoRecordFilters()
+		filterSettings.FilterDropdownBackgroundColor = "neutral-800"
 		filterSettings.InitialFilterValues = map[string]any{"status": "running"}
 	}}
 	{{
 		filtersUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
-	Columns:             columns,
-	Rows:                records,
-	Filters:             filters,
-	InitialFilterValues: map[string]any{"status": "running"},
+	Columns:                       columns,
+	Rows:                          records,
+	Filters:                       filters,
+	FilterDropdownBackgroundColor: "neutral-800",
+	InitialFilterValues:           map[string]any{"status": "running"},
 })`
 	}}
 	@DemoExampleCard(
 		"Filters",
-		"Each filter renders an editor and an active chip. InitialFilterValues seeds the starting values. A filter change updates the chips and the filter values.",
+		"Each filter renders an editor and an active chip. InitialFilterValues seeds the starting values. FilterDropdownBackgroundColor paints the dropdown panel. A filter change updates the chips and the filter values.",
 		"/structural/dataTable.templ", filtersUsage,
 	) {
 		@uiStructural.DataTable(filterSettings)
 	}
+}
+
+templ DataTableCustomSearchBox() {
+	@uiForm.InputField(uiForm.InputFieldSettings{
+		InputType:       uiForm.InputTypeText,
+		InputName:       "customSearch",
+		Label:           "Custom search",
+		IconLeft:        "ph-funnel",
+		TwoWayStatePath: "searchQuery",
+	})
 }
 
 templ DataTableSearchBoxExample() {
@@ -138,10 +160,19 @@ templ DataTableSearchBoxExample() {
 		)
 	}}
 	{{
+		customSearchSettings := buildDemoStaticTableSettings(
+			"data-table-demo-search-custom", "Custom search box table pagination",
+			buildDemoPlainTableColumns(),
+			dataTableDemoRecords[:5],
+		)
+	}}
+	{{
 		searchSettings.QueryUrlTemplate = "assets/dataTableDemoRefreshFragments.json?search=" +
 			uiStructural.DataTableUrlPlaceholderSearch
 		searchSettings.InitialSearchQuery = "alpha"
+		searchSettings.IsSearchBoxCompact = true
 		searchSettings.SearchBoxAlignment = uiStructural.HorizontalAlignmentCenter
+		customSearchSettings.SearchBox = DataTableCustomSearchBox()
 	}}
 	{{
 		searchUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
@@ -151,15 +182,28 @@ templ DataTableSearchBoxExample() {
 
 	// OptionalFields
 	InitialSearchQuery: "alpha",
+	IsSearchBoxCompact: true,
 	SearchBoxAlignment: uiStructural.HorizontalAlignmentCenter,
+
+	// Or replace the default box
+	SearchBox: CustomSearchBox(),
 })`
 	}}
 	@DemoExampleCard(
 		"Search Box",
-		"The table renders a default search box when the query template carries the search placeholder. InitialSearchQuery seeds the starting text. SearchBoxAlignment places the box left, center, or right. Pass SearchBox to replace the default box.",
+		"The table renders a default search box when the query template carries the search placeholder. The box stretches to the available space by default; IsSearchBoxCompact fixes it to a narrow width so SearchBoxAlignment can place it left, center, or right. InitialSearchQuery seeds the starting text. Pass SearchBox to replace the default box with any component that binds to searchQuery.",
 		"/structural/dataTable.templ", searchUsage,
 	) {
-		@uiStructural.DataTable(searchSettings)
+		<div class="grid gap-6 lg:grid-cols-2">
+			<div class="flex flex-col gap-2">
+				<p class="text-sm text-neutral-400">Default box, compact and centered</p>
+				@uiStructural.DataTable(searchSettings)
+			</div>
+			<div class="flex flex-col gap-2">
+				<p class="text-sm text-neutral-400">Custom SearchBox, full width</p>
+				@uiStructural.DataTable(customSearchSettings)
+			</div>
+		</div>
 	}
 }
 
@@ -343,28 +387,88 @@ templ DataTableAppearanceExample() {
 	</div>
 }
 
-templ DataTableStickyHeaderExample() {
+templ DataTableStaticHeaderExample() {
 	{{
-		stickySettings := buildDemoStaticTableSettings(
-			"data-table-demo-sticky", "Sticky header table pagination",
+		staticSettings := buildDemoStaticTableSettings(
+			"data-table-demo-static", "Static header table pagination",
 			buildDemoPlainTableColumns(),
 			dataTableDemoRecords,
 		)
 	}}
-	{{ stickySettings.IsHeaderSticky = true }}
 	{{
-		stickyUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
+		staticSettings.IsHeaderStatic = true
+		staticSettings.MinWidthClass = "min-w-96"
+		staticSettings.MaxWidthClass = "max-w-2xl"
+		staticSettings.MinHeightClass = "min-h-24"
+		staticSettings.MaxHeightClass = "max-h-40"
+	}}
+	{{
+		staticUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
 	Columns:        columns,
 	Rows:           records,
-	IsHeaderSticky: true,
+	IsHeaderStatic: true,
+	MinWidthClass:  "min-w-96",
+	MaxWidthClass:  "max-w-2xl",
+	MinHeightClass: "min-h-24",
+	MaxHeightClass: "max-h-40",
 })`
 	}}
 	@DemoExampleCard(
-		"Sticky Header",
-		"IsHeaderSticky pins the header and caps the scroll container, so the header stays visible while the body scrolls.",
-		"/structural/dataTable.templ", stickyUsage,
+		"Static Header",
+		"The header pins to the top of the scroll viewport by default; IsHeaderStatic lets it scroll away with the body. MinWidthClass and MaxWidthClass size the table surface. MinHeightClass and MaxHeightClass size the scroll viewport. MaxVisibleRows measures the header and the tallest row and caps the viewport to that row count instead; the live table above uses it.",
+		"/structural/dataTable.templ", staticUsage,
 	) {
-		@uiStructural.DataTable(stickySettings)
+		@uiStructural.DataTable(staticSettings)
+	}
+}
+
+templ DataTablePaginationDisplayExample() {
+	{{
+		oneBasedSettings := buildDemoStaticTableSettings(
+			"data-table-demo-pagination-one-based", "One-based pagination table pagination",
+			buildDemoPlainTableColumns(),
+			dataTableDemoRecords[:4],
+		)
+	}}
+	{{
+		hiddenSettings := buildDemoStaticTableSettings(
+			"data-table-demo-pagination-hidden", "Hidden pagination table pagination",
+			buildDemoPlainTableColumns(),
+			dataTableDemoRecords[:4],
+		)
+	}}
+	{{
+		oneBasedSettings.ShouldUseOneBasedPageDisplay = true
+		oneBasedSettings.PaginationAriaLabel = "Servers, one-based labels"
+		hiddenSettings.IsPaginationHiddenWhenSinglePage = true
+		hiddenSettings.PaginationAriaLabel = "Servers, hidden on a single page"
+	}}
+	{{
+		paginationUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
+	Columns: columns,
+	Rows:    records,
+
+	// OptionalFields
+	ShouldUseOneBasedPageDisplay:   true,
+	IsPaginationHiddenWhenSinglePage: true,
+	PaginationAriaLabel:            "Servers",
+})`
+	}}
+	@DemoExampleCard(
+		"Pagination Display",
+		"Page numbers are zero-based by default; ShouldUseOneBasedPageDisplay shifts the labels to start at 1. IsPaginationHiddenWhenSinglePage hides the page controls when a single page holds every row. PaginationAriaLabel names the footer navigation for screen readers.",
+		"/structural/dataTable.templ", paginationUsage,
+	) {
+		<div class="grid gap-6 lg:grid-cols-2">
+			<div class="flex flex-col gap-2">
+				<p class="text-sm text-neutral-400">One-based labels</p>
+				@uiStructural.DataTable(oneBasedSettings)
+			</div>
+			<div class="flex flex-col gap-2">
+				<p class="text-sm text-neutral-400">Hidden on a single page</p>
+				@uiStructural.DataTable(hiddenSettings)
+			</div>
+		</div>
 	}
 }
 
@@ -439,6 +543,8 @@ templ DataTableDemo() {
 		})
 	}}
 	{{ demoTableSettings.RefreshOnEvents = []string{"refresh:data-table-demo"} }}
+	{{ demoTableSettings.MaxVisibleRows = 4 }}
+	{{ demoTableSettings.RefreshDebounceMs = 300 }}
 	{{
 		overviewUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
 	Columns:          columns,
@@ -449,6 +555,8 @@ templ DataTableDemo() {
 	Filters:              filters,
 	RowIdResolver:        func(record Record) string { return record.Id },
 	RefreshOnEvents:      []string{"refresh:records-table"},
+	RefreshDebounceMs:    300,
+	MaxVisibleRows:       4,
 	InitialSortKey:       "name",
 	InitialSortDirection: uiStructural.DataTableSortDirectionAsc,
 })`
@@ -499,7 +607,8 @@ templ DataTableDemo() {
 					{Title: "Bulk Actions", Icon: "ph-checks", Content: DataTableBulkActionsExample()},
 					{Title: "Row and Column Styling", Icon: "ph-paint-brush", Content: DataTableStylingExample()},
 					{Title: "Density and Header Text Case", Icon: "ph-text-aa", Content: DataTableAppearanceExample()},
-					{Title: "Sticky Header", Icon: "ph-arrow-line-down", Content: DataTableStickyHeaderExample()},
+					{Title: "Static Header", Icon: "ph-arrow-line-down", Content: DataTableStaticHeaderExample()},
+					{Title: "Pagination Display", Icon: "ph-number-circle-one", Content: DataTablePaginationDisplayExample()},
 					{Title: "Empty States", Icon: "ph-tray", Content: DataTableEmptyStateExample()},
 				},
 			})

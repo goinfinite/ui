@@ -149,6 +149,73 @@ templ FilterBarMultiValueExample() {
 	}
 }
 
+templ FilterBarDateRangeExample() {
+	{{
+		dateRangeUsage := `@uiStructural.FilterBar(uiStructural.FilterBarSettings{
+	Filters: []uiStructural.FilterSettings{
+		{Key: "createdAt", Label: "Created", Kind: uiStructural.FilterKindDateRange},
+	},
+	ValuesTwoWayStatePath: "filterValues",
+})`
+	}}
+	@DemoExampleCard(
+		"Date Range Filter",
+		"FilterKindDateRange renders a min and a max date input. The active chip shows the selected span, and clearing the chip resets both dates.",
+		"/structural/filterBar.templ", dateRangeUsage,
+	) {
+		<div
+			class="flex flex-col gap-3"
+			x-data="{dateFilterValues: {createdAt: {min: '2026-01-01', max: '2026-01-31'}}}"
+		>
+			<div class="rounded-md border border-neutral-800 p-4">
+				@uiStructural.FilterBar(uiStructural.FilterBarSettings{
+					Filters: []uiStructural.FilterSettings{
+						{Key: "createdAt", Label: "Created", Kind: uiStructural.FilterKindDateRange},
+					},
+					ValuesTwoWayStatePath: "dateFilterValues",
+				})
+			</div>
+			<p class={ DemoLiveStateClasses }>
+				Values: <span x-text="JSON.stringify(dateFilterValues)"></span>
+			</p>
+		</div>
+	}
+}
+
+templ FilterBarChangeCallbackExample() {
+	{{
+		changeCallbackUsage := `@uiStructural.FilterBar(uiStructural.FilterBarSettings{
+	Filters: []uiStructural.FilterSettings{
+		{Key: "name", Label: "Name", Kind: uiStructural.FilterKindTextContains},
+	},
+	ValuesTwoWayStatePath: "filterValues",
+
+	// OptionalFields
+	OnChangeFunc: "changeCount = changeCount + 1",
+})`
+	}}
+	@DemoExampleCard(
+		"Change Callback",
+		"OnChangeFunc runs on every filter edit and on chip removal. It can drive a fetch or update local state.",
+		"/structural/filterBar.templ", changeCallbackUsage,
+	) {
+		<div class="flex flex-col gap-3" x-data="{changeCallbackFilterValues: {name: ''}, changeCount: 0}">
+			<div class="rounded-md border border-neutral-800 p-4">
+				@uiStructural.FilterBar(uiStructural.FilterBarSettings{
+					Filters: []uiStructural.FilterSettings{
+						{Key: "name", Label: "Name", Kind: uiStructural.FilterKindTextContains},
+					},
+					ValuesTwoWayStatePath: "changeCallbackFilterValues",
+					OnChangeFunc:          "changeCount = changeCount + 1",
+				})
+			</div>
+			<p class={ DemoLiveStateClasses }>
+				OnChangeFunc calls: <span x-text="changeCount"></span>
+			</p>
+		</div>
+	}
+}
+
 templ FilterBarDemo() {
 	{{
 		demoUsage := `@uiStructural.FilterBar(uiStructural.FilterBarSettings{
@@ -192,6 +259,8 @@ templ FilterBarDemo() {
 			{Title: "Enum Radio Group Prefix", Icon: "ph-tag", Content: FilterBarEnumPrefixExample()},
 			{Title: "Dropdown Background", Icon: "ph-palette", Content: FilterBarDropdownBackgroundExample()},
 			{Title: "Multi-Value Filter", Icon: "ph-list-checks", Content: FilterBarMultiValueExample()},
+			{Title: "Date Range Filter", Icon: "ph-calendar-blank", Content: FilterBarDateRangeExample()},
+			{Title: "Change Callback", Icon: "ph-arrows-clockwise", Content: FilterBarChangeCallbackExample()},
 		})
 	</div>
 }
