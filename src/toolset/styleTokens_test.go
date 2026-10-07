@@ -166,106 +166,72 @@ func TestRingThicknessClassResolver(t *testing.T) {
 	}
 }
 
-func TestRingClassResolver(t *testing.T) {
+func TestRingClassResolvers(t *testing.T) {
 	testCases := []struct {
 		name          string
+		resolver      func(ringColor, ringThickness string) string
 		ringColor     string
 		ringThickness string
 		want          string
 	}{
-		{name: "empty color and thickness render no ring", ringColor: "", ringThickness: "", want: ""},
-		{name: "color without thickness renders no ring", ringColor: "red-500/50", ringThickness: "", want: ""},
-		{name: "thickness without color renders no ring", ringColor: "", ringThickness: "md", want: ""},
-		{name: "xs thickness", ringColor: "red-500/50", ringThickness: "xs", want: "ring-1 ring-red-500/50"},
-		{name: "sm thickness", ringColor: "red-500/50", ringThickness: "sm", want: "ring-1.5 ring-red-500/50"},
-		{name: "md thickness", ringColor: "red-500/50", ringThickness: "md", want: "ring-2 ring-red-500/50"},
-		{name: "lg thickness", ringColor: "red-500/50", ringThickness: "lg", want: "ring-2.5 ring-red-500/50"},
-		{name: "xl thickness", ringColor: "red-500/50", ringThickness: "xl", want: "ring-3 ring-red-500/50"},
+		{name: "RingClassResolver empty color and thickness render no ring", resolver: RingClassResolver, ringColor: "", ringThickness: "", want: ""},
+		{name: "RingClassResolver color without thickness renders no ring", resolver: RingClassResolver, ringColor: "red-500/50", ringThickness: "", want: ""},
+		{name: "RingClassResolver thickness without color renders no ring", resolver: RingClassResolver, ringColor: "", ringThickness: "md", want: ""},
+		{name: "RingClassResolver xs thickness", resolver: RingClassResolver, ringColor: "red-500/50", ringThickness: "xs", want: "ring-1 ring-red-500/50"},
+		{name: "RingClassResolver sm thickness", resolver: RingClassResolver, ringColor: "red-500/50", ringThickness: "sm", want: "ring-1.5 ring-red-500/50"},
+		{name: "RingClassResolver md thickness", resolver: RingClassResolver, ringColor: "red-500/50", ringThickness: "md", want: "ring-2 ring-red-500/50"},
+		{name: "RingClassResolver lg thickness", resolver: RingClassResolver, ringColor: "red-500/50", ringThickness: "lg", want: "ring-2.5 ring-red-500/50"},
+		{name: "RingClassResolver xl thickness", resolver: RingClassResolver, ringColor: "red-500/50", ringThickness: "xl", want: "ring-3 ring-red-500/50"},
+		{name: "CompactRingClassResolver empty color renders no ring", resolver: CompactRingClassResolver, ringColor: "", ringThickness: "md", want: ""},
+		{name: "CompactRingClassResolver empty thickness defaults to the thin ring", resolver: CompactRingClassResolver, ringColor: "red-500/50", ringThickness: "", want: "ring-1 ring-red-500/50"},
+		{name: "CompactRingClassResolver xs thickness", resolver: CompactRingClassResolver, ringColor: "red-500/50", ringThickness: "xs", want: "ring-0.5 ring-red-500/50"},
+		{name: "CompactRingClassResolver sm thickness", resolver: CompactRingClassResolver, ringColor: "red-500/50", ringThickness: "sm", want: "ring-1 ring-red-500/50"},
+		{name: "CompactRingClassResolver md thickness", resolver: CompactRingClassResolver, ringColor: "red-500/50", ringThickness: "md", want: "ring-1.5 ring-red-500/50"},
+		{name: "CompactRingClassResolver lg thickness", resolver: CompactRingClassResolver, ringColor: "red-500/50", ringThickness: "lg", want: "ring-2 ring-red-500/50"},
+		{name: "CompactRingClassResolver xl thickness", resolver: CompactRingClassResolver, ringColor: "red-500/50", ringThickness: "xl", want: "ring-2.5 ring-red-500/50"},
+		{name: "CompactRingClassResolver unknown thickness defaults to the thin ring", resolver: CompactRingClassResolver, ringColor: "red-500/50", ringThickness: "huge", want: "ring-1 ring-red-500/50"},
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			got := RingClassResolver(testCase.ringColor, testCase.ringThickness)
+			got := testCase.resolver(testCase.ringColor, testCase.ringThickness)
 			if got != testCase.want {
-				t.Errorf("RingClassResolver() = %q, want %q", got, testCase.want)
+				t.Errorf("RingClassMismatch: got %q, want %q", got, testCase.want)
 			}
 		})
 	}
 }
 
-func TestCompactRingClassResolver(t *testing.T) {
+func TestPaddingClassResolvers(t *testing.T) {
 	testCases := []struct {
 		name          string
-		ringColor     string
-		ringThickness string
-		want          string
-	}{
-		{name: "empty color renders no ring", ringColor: "", ringThickness: "md", want: ""},
-		{name: "empty thickness defaults to the thin ring", ringColor: "red-500/50", ringThickness: "", want: "ring-1 ring-red-500/50"},
-		{name: "xs thickness", ringColor: "red-500/50", ringThickness: "xs", want: "ring-0.5 ring-red-500/50"},
-		{name: "sm thickness", ringColor: "red-500/50", ringThickness: "sm", want: "ring-1 ring-red-500/50"},
-		{name: "md thickness", ringColor: "red-500/50", ringThickness: "md", want: "ring-1.5 ring-red-500/50"},
-		{name: "lg thickness", ringColor: "red-500/50", ringThickness: "lg", want: "ring-2 ring-red-500/50"},
-		{name: "xl thickness", ringColor: "red-500/50", ringThickness: "xl", want: "ring-2.5 ring-red-500/50"},
-		{name: "unknown thickness defaults to the thin ring", ringColor: "red-500/50", ringThickness: "huge", want: "ring-1 ring-red-500/50"},
-	}
-	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
-			got := CompactRingClassResolver(testCase.ringColor, testCase.ringThickness)
-			if got != testCase.want {
-				t.Errorf("CompactRingClassResolver() = %q, want %q", got, testCase.want)
-			}
-		})
-	}
-}
-
-func TestPaddingClassResolver(t *testing.T) {
-	testCases := []struct {
-		name          string
+		resolver      func(paddingSize, fallbackClass string) string
 		paddingSize   string
 		fallbackClass string
 		want          string
 	}{
-		{name: "empty takes the fallback", paddingSize: "", fallbackClass: "", want: ""},
-		{name: "none", paddingSize: "none", fallbackClass: "", want: "p-0"},
-		{name: "xs", paddingSize: "xs", fallbackClass: "", want: "p-3"},
-		{name: "sm", paddingSize: "sm", fallbackClass: "", want: "p-4"},
-		{name: "md", paddingSize: "md", fallbackClass: "", want: "p-5"},
-		{name: "lg", paddingSize: "lg", fallbackClass: "", want: "p-6"},
-		{name: "xl", paddingSize: "xl", fallbackClass: "", want: "p-8"},
-		{name: "unknown without a fallback stays unset", paddingSize: "huge", fallbackClass: "", want: ""},
-		{name: "unknown takes the fallback", paddingSize: "huge", fallbackClass: "p-5", want: "p-5"},
+		{name: "PaddingClassResolver empty takes the fallback", resolver: PaddingClassResolver, paddingSize: "", fallbackClass: "", want: ""},
+		{name: "PaddingClassResolver none", resolver: PaddingClassResolver, paddingSize: "none", fallbackClass: "", want: "p-0"},
+		{name: "PaddingClassResolver xs", resolver: PaddingClassResolver, paddingSize: "xs", fallbackClass: "", want: "p-3"},
+		{name: "PaddingClassResolver sm", resolver: PaddingClassResolver, paddingSize: "sm", fallbackClass: "", want: "p-4"},
+		{name: "PaddingClassResolver md", resolver: PaddingClassResolver, paddingSize: "md", fallbackClass: "", want: "p-5"},
+		{name: "PaddingClassResolver lg", resolver: PaddingClassResolver, paddingSize: "lg", fallbackClass: "", want: "p-6"},
+		{name: "PaddingClassResolver xl", resolver: PaddingClassResolver, paddingSize: "xl", fallbackClass: "", want: "p-8"},
+		{name: "PaddingClassResolver unknown without a fallback stays unset", resolver: PaddingClassResolver, paddingSize: "huge", fallbackClass: "", want: ""},
+		{name: "PaddingClassResolver unknown takes the fallback", resolver: PaddingClassResolver, paddingSize: "huge", fallbackClass: "p-5", want: "p-5"},
+		{name: "CompactPaddingClassResolver empty takes the fallback", resolver: CompactPaddingClassResolver, paddingSize: "", fallbackClass: "p-3", want: "p-3"},
+		{name: "CompactPaddingClassResolver none", resolver: CompactPaddingClassResolver, paddingSize: "none", fallbackClass: "p-3", want: "p-0"},
+		{name: "CompactPaddingClassResolver xs", resolver: CompactPaddingClassResolver, paddingSize: "xs", fallbackClass: "p-3", want: "p-1"},
+		{name: "CompactPaddingClassResolver sm", resolver: CompactPaddingClassResolver, paddingSize: "sm", fallbackClass: "p-3", want: "p-1.5"},
+		{name: "CompactPaddingClassResolver md", resolver: CompactPaddingClassResolver, paddingSize: "md", fallbackClass: "p-3", want: "p-2"},
+		{name: "CompactPaddingClassResolver lg", resolver: CompactPaddingClassResolver, paddingSize: "lg", fallbackClass: "p-3", want: "p-2.5"},
+		{name: "CompactPaddingClassResolver xl", resolver: CompactPaddingClassResolver, paddingSize: "xl", fallbackClass: "p-3", want: "p-3"},
+		{name: "CompactPaddingClassResolver unknown takes the fallback", resolver: CompactPaddingClassResolver, paddingSize: "huge", fallbackClass: "p-2", want: "p-2"},
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			got := PaddingClassResolver(testCase.paddingSize, testCase.fallbackClass)
+			got := testCase.resolver(testCase.paddingSize, testCase.fallbackClass)
 			if got != testCase.want {
-				t.Errorf("PaddingClassResolver() = %q, want %q", got, testCase.want)
-			}
-		})
-	}
-}
-
-func TestCompactPaddingClassResolver(t *testing.T) {
-	testCases := []struct {
-		name          string
-		paddingSize   string
-		fallbackClass string
-		want          string
-	}{
-		{name: "empty takes the fallback", paddingSize: "", fallbackClass: "p-3", want: "p-3"},
-		{name: "none", paddingSize: "none", fallbackClass: "p-3", want: "p-0"},
-		{name: "xs", paddingSize: "xs", fallbackClass: "p-3", want: "p-1"},
-		{name: "sm", paddingSize: "sm", fallbackClass: "p-3", want: "p-1.5"},
-		{name: "md", paddingSize: "md", fallbackClass: "p-3", want: "p-2"},
-		{name: "lg", paddingSize: "lg", fallbackClass: "p-3", want: "p-2.5"},
-		{name: "xl", paddingSize: "xl", fallbackClass: "p-3", want: "p-3"},
-		{name: "unknown takes the fallback", paddingSize: "huge", fallbackClass: "p-2", want: "p-2"},
-	}
-	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
-			got := CompactPaddingClassResolver(testCase.paddingSize, testCase.fallbackClass)
-			if got != testCase.want {
-				t.Errorf("CompactPaddingClassResolver() = %q, want %q", got, testCase.want)
+				t.Errorf("PaddingClassMismatch: got %q, want %q", got, testCase.want)
 			}
 		})
 	}
