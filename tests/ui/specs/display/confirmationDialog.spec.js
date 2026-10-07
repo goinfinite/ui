@@ -254,7 +254,7 @@ test.describe("ConfirmationDialog", () => {
 
     const title = modal.locator("h2", { hasText: "Icon Beside Title" });
     await expect(title).toBeVisible();
-    const icon = modal.locator("i.ph-warning-circle");
+    const icon = modal.locator("i.ph-rocket-launch");
     await expect(icon).toBeVisible();
     await expect
       .poll(async () => {
