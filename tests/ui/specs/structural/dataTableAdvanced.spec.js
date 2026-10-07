@@ -180,14 +180,13 @@ test.describe("DataTable advanced examples @structural", () => {
     await expect.poll(tooltipCount).toBe(initialCount);
   });
 
-  test("sticky header caps the viewport to the configured rows", async ({
+  test("the sticky header caps the viewport to the configured rows", async ({
     page,
   }) => {
-    const target = await openExamplePanel(page, demoSection, "Sticky Header");
-    const stickyTable = target.locator("#data-table-demo-sticky");
-    const stickyViewport = stickyTable.locator("[data-ui-data-table-scroll]");
+    const liveTable = page.locator("#data-table-demo-table");
+    const liveViewport = liveTable.locator("[data-ui-data-table-scroll]");
     const geometry = () =>
-      stickyViewport.evaluate((element) => {
+      liveViewport.evaluate((element) => {
         const headerCell = element.querySelector("thead th");
         const firstRow = element.querySelector("tbody tr");
         const rowHeight = firstRow.getBoundingClientRect().height;
@@ -203,11 +202,12 @@ test.describe("DataTable advanced examples @structural", () => {
       });
 
     await expect.poll(geometry).toEqual({
-      visibleRows: 6,
+      visibleRows: 4,
       scrolls: true,
       headerPosition: "sticky",
     });
 
+    const target = await openExamplePanel(page, demoSection, "Static Header");
     const staticTable = target.locator("#data-table-demo-static");
     const staticGeometry = await staticTable
       .locator("[data-ui-data-table-scroll]")
