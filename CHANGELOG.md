@@ -2,6 +2,13 @@
 
 ```log
 0.2.5 - 2026/10/07
+BREAKING: move the refresh URL builder, the fragment fetcher, and the refresh lifecycle helpers under UiToolset.ServerFragmentRefreshComponent
+refactor: share the refresh settings, event wiring, error handling, and cleanup between the carousel and the data table
+refactor: rename the shared refresh files and helpers so each name states its subject
+test: share the filter settings assertion between the carousel and the data table tests
+test: gather the ring and the padding resolver cases in one table each
+fix: use the safer bash conditional syntax in the test runners
+fix: mark the demo file serve promise as ignored
 fix: render the derived carousel and data table id on the component root
 fix: resolve the value bubble ring classes from the resolved ring color so an upper-only color renders
 fix: fail the carousel htmx refresh when the response does not replace the pagination region
