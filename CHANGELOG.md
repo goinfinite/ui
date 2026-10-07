@@ -1,7 +1,7 @@
 # Changelog
 
 ```log
-0.2.5 - 2026/10/02
+0.2.5 - 2026/10/07
 BREAKING: replace the IsHeaderSticky setting with IsHeaderStatic and pin the data table header by default
 BREAKING: replace the IsSearchBoxFullWidth setting with IsSearchBoxCompact and render the search box full width by default
 feat: add min and max width and height classes and a max visible rows setting to the data table viewport
