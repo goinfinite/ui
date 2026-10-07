@@ -3,6 +3,7 @@ package main
 import (
 	uiDisplay "github.com/goinfinite/ui/src/display"
 	uiForm "github.com/goinfinite/ui/src/form"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
 templ CheckboxInputShapesExample() {
@@ -93,17 +94,19 @@ templ CheckboxInputStatesExample() {
 	Label: "Accept the terms",
 
 	// OptionalFields
-	IsChecked:  true,
-	IsDisabled: false,
-	IsRequired: false,
+	IsChecked:                 true,
+	IsDisabled:                false,
+	IsRequired:                false,
+	IsDisabledOneWayStatePath: "!isCheckboxExampleEnabled",
+	TextCase:                  uiToolset.TextCaseUpper,
 })`
 	}}
 	@DemoExampleCard(
 		"States",
-		"IsChecked starts the box checked, IsDisabled blocks edits, and IsRequired marks the field as required.",
+		"IsChecked starts the box checked, IsDisabled blocks edits, and IsRequired marks the field as required. IsDisabledOneWayStatePath blocks edits from Alpine state, and TextCase transforms the label.",
 		"/form/checkboxInput.templ", statesUsage,
 	) {
-		<div class="flex flex-col gap-3">
+		<div class="flex flex-col gap-3" x-data="{isCheckboxExampleEnabled: false}">
 			@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
 				Label:     "Checked",
 				IsChecked: true,
@@ -120,7 +123,64 @@ templ CheckboxInputStatesExample() {
 			@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
 				Label:      "Required",
 				IsRequired: true,
+				TextCase:   uiToolset.TextCaseUpper,
 			})
+			@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+				Label:           "Enable the box below",
+				TwoWayStatePath: "isCheckboxExampleEnabled",
+			})
+			@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+				Label:                     "Disabled until enabled",
+				IsDisabledOneWayStatePath: "!isCheckboxExampleEnabled",
+			})
+		</div>
+	}
+}
+
+templ CheckboxInputArrayBindingExample() {
+	{{
+		arrayBindingUsage := `@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+	Label:                        "Select all",
+	InputName:                    "selectedFruits",
+	IndeterminateOneWayStatePath: "selectedFruits.length > 0 && selectedFruits.length < fruitOptions.length",
+	IsCheckedOneWayStatePath:     "selectedFruits.length === fruitOptions.length",
+	OnChangeFunc:                 "selectedFruits = selectedFruits.length === fruitOptions.length ? [] : [...fruitOptions]",
+})
+
+@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+	Label:           "Apple",
+	InputName:       "selectedFruits",
+	TwoWayStatePath: "selectedFruits",
+	Value:           "apple",
+})`
+	}}
+	@DemoExampleCard(
+		"Array and Indeterminate Binding",
+		"Value binds one array item to each checkbox. IndeterminateOneWayStatePath, IsCheckedOneWayStatePath, and OnChangeFunc drive a select-all parent. InputName includes the bound state in form submission.",
+		"/form/checkboxInput.templ", arrayBindingUsage,
+	) {
+		<div
+			class="flex flex-col gap-3"
+			x-data="{selectedFruits: ['apple'], fruitOptions: ['apple', 'banana', 'orange']}"
+		>
+			@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+				Label:                        "Select all",
+				InputName:                    "selectedFruits",
+				IndeterminateOneWayStatePath: "selectedFruits.length > 0 && selectedFruits.length < fruitOptions.length",
+				IsCheckedOneWayStatePath:     "selectedFruits.length === fruitOptions.length",
+				OnChangeFunc:                 "selectedFruits = selectedFruits.length === fruitOptions.length ? [] : [...fruitOptions]",
+			})
+			for _, fruitOption := range []string{"apple", "banana", "orange"} {
+				@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+					Label:           fruitOption,
+					InputName:       "selectedFruits",
+					TwoWayStatePath: "selectedFruits",
+					Value:           fruitOption,
+				})
+			}
+			<p class={ DemoLiveStateClasses }>
+				Values: <span x-text="selectedFruits"></span>
+			</p>
 		</div>
 	}
 }
@@ -131,28 +191,35 @@ templ CheckboxInputErrorStatesExample() {
 	Label: "Accept the terms",
 
 	// OptionalFields
-	IsInvalid:                 true,
-	ErrorMessage:              "You must accept the terms to continue.",
-	IsInvalidOneWayStatePath:  "!hasAcceptedTerms",
+	InputId:                     "checkbox-demo-terms",
+	IsInvalid:                   true,
+	ErrorMessage:                "You must accept the terms to continue.",
+	ErrorColor:                  "orange-500",
+	IsInvalidOneWayStatePath:    "!hasAcceptedTerms",
+	ErrorMessageOneWayStatePath: "errorMessage",
 })`
 	}}
 	@DemoExampleCard(
 		"Error States",
-		"IsInvalid shows the error style and ErrorMessage explains it. IsInvalidOneWayStatePath drives the error from Alpine state.",
+		"IsInvalid shows the error style and ErrorMessage explains it. ErrorColor paints the error style, IsInvalidOneWayStatePath drives the error from Alpine state, and ErrorMessageOneWayStatePath prints the message from it.",
 		"/form/checkboxInput.templ", errorUsage,
 	) {
-		<div class="flex flex-col gap-3" x-data="{isCheckboxExampleEnabled: false}">
+		<div
+			class="flex flex-col gap-3"
+			x-data="{isCheckboxExampleEnabled: false, errorMessage: 'Checking the box clears this error.'}"
+		>
 			@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
 				InputId:      "checkbox-demo-terms",
 				Label:        "Accept the terms",
 				IsInvalid:    true,
+				ErrorColor:   "orange-500",
 				ErrorMessage: "You must accept the terms to continue.",
 			})
 			@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
-				Label:                    "Accept the terms (bound error)",
-				TwoWayStatePath:          "isCheckboxExampleEnabled",
-				IsInvalidOneWayStatePath: "!isCheckboxExampleEnabled",
-				ErrorMessage:             "Checking the box clears this error.",
+				Label:                        "Accept the terms (bound error)",
+				TwoWayStatePath:              "isCheckboxExampleEnabled",
+				IsInvalidOneWayStatePath:     "!isCheckboxExampleEnabled",
+				ErrorMessageOneWayStatePath:  "errorMessage",
 			})
 		</div>
 	}
@@ -164,13 +231,16 @@ templ CheckboxInputCheckedColorsExample() {
 	Label: "Primary",
 
 	// OptionalFields
-	IsChecked:    true,
-	CheckedColor: "primary-500",
+	IsChecked:      true,
+	CheckedColor:   "primary-500",
+	UncheckedColor: "neutral-500",
+	FocusRingColor: "primary-500",
+	TextColor:      "neutral-50",
 })`
 	}}
 	@DemoExampleCard(
 		"Checked Colors",
-		"CheckedColor paints the filled box. UncheckedColor paints the empty box.",
+		"CheckedColor paints the filled box and UncheckedColor paints the empty box. FocusRingColor colors the focus ring, and TextColor colors the label.",
 		"/form/checkboxInput.templ", colorsUsage,
 	) {
 		<div class="flex flex-col gap-3">
@@ -183,6 +253,12 @@ templ CheckboxInputCheckedColorsExample() {
 				CheckedColor: "emerald-500",
 				Label:        "Emerald",
 				IsChecked:    true,
+			})
+			@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
+				Label:          "Emerald outline",
+				UncheckedColor: "emerald-500",
+				FocusRingColor: "emerald-400",
+				TextColor:      "emerald-300",
 			})
 		</div>
 	}
@@ -252,6 +328,7 @@ templ CheckboxInputDemo() {
 			{Title: "Sizes", Icon: "ph-ruler", Content: CheckboxInputSizesExample()},
 			{Title: "Label Position", Icon: "ph-text-align-left", Content: CheckboxInputLabelPositionExample()},
 			{Title: "States", Icon: "ph-check-circle", Content: CheckboxInputStatesExample()},
+			{Title: "Array and Indeterminate Binding", Icon: "ph-list-checks", Content: CheckboxInputArrayBindingExample()},
 			{Title: "Error States", Icon: "ph-warning-circle", Content: CheckboxInputErrorStatesExample()},
 			{Title: "Checked Colors", Icon: "ph-palette", Content: CheckboxInputCheckedColorsExample()},
 		})

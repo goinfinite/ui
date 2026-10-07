@@ -3,6 +3,7 @@ package main
 import (
 	uiDisplay "github.com/goinfinite/ui/src/display"
 	uiForm "github.com/goinfinite/ui/src/form"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
 templ RadioInputSizesExample() {
@@ -13,11 +14,14 @@ templ RadioInputSizesExample() {
 	TwoWayStatePath: "selectedOption",
 
 	// OptionalFields
-	Size: uiForm.RadioInputSizeMd,
+	InputName: "options",
+	Size:      uiForm.RadioInputSizeMd,
+	TextCase:  uiToolset.TextCaseUpper,
 })`
 	}}
 	@DemoExampleCard(
-		"Sizes", "Size scales the radio and its label: xs, sm, md, lg, or xl.",
+		"Sizes",
+		"Size scales the radio and its label: xs, sm, md, lg, or xl. TextCase transforms the label, and InputName names the radio in the form.",
 		"/form/radioInput.templ", sizesUsage,
 	) {
 		<div class="flex flex-col gap-3" x-data="{selectedOption: 'option1'}">
@@ -26,7 +30,9 @@ templ RadioInputSizesExample() {
 					Label:           radioSize,
 					StateValue:      radioSize,
 					TwoWayStatePath: "selectedOption",
+					InputName:       "options",
 					Size:            radioSize,
+					TextCase:        uiToolset.TextCaseUpper,
 				})
 			}
 		</div>

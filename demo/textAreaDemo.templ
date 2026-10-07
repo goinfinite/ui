@@ -4,6 +4,7 @@ import (
 	uiControl "github.com/goinfinite/ui/src/control"
 	uiDisplay "github.com/goinfinite/ui/src/display"
 	uiForm "github.com/goinfinite/ui/src/form"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
 templ TextAreaReadOnlyExample() {
@@ -65,14 +66,19 @@ templ TextAreaHintsExample() {
 	Label:     "Description",
 
 	// OptionalFields
-	TwoWayStatePath: "description",
-	HintValue:       "This is a helpful hint.",
-	HintDisplay:     uiForm.InputHintDisplayDescription,
+	TwoWayStatePath:                   "description",
+	HintValue:                         "This is a helpful hint.",
+	HintDisplay:                       uiForm.InputHintDisplayTooltip,
+	HintDisplayTooltipBackgroundColor: "violet-950/95",
+	HintDisplayTooltipMinWidthClass:   "min-w-40",
+	HintDisplayTooltipMaxWidthClass:   "max-w-64",
+	HintDisplayTooltipMinHeightClass:  "min-h-10",
+	HintDisplayTooltipMaxHeightClass:  "max-h-24",
 })`
 	}}
 	@DemoExampleCard(
 		"Hints",
-		"HintValue explains the field. HintDisplay shows it as a description below the field or as a tooltip.",
+		"HintValue explains the field. HintDisplay shows it as a description below the field or as a tooltip. The HintDisplayTooltip fields shape the tooltip surface.",
 		"/form/textArea.templ", hintsUsage,
 	) {
 		<div class="flex flex-col gap-3" x-data="{description: ''}">
@@ -84,11 +90,16 @@ templ TextAreaHintsExample() {
 				HintDisplay:     uiForm.InputHintDisplayDescription,
 			})
 			@uiForm.TextArea(uiForm.TextAreaSettings{
-				InputName:       "description",
-				Label:           "Description",
-				TwoWayStatePath: "description",
-				HintValue:       "This is a helpful hint displayed as a tooltip.",
-				HintDisplay:     uiForm.InputHintDisplayTooltip,
+				InputName:                         "description",
+				Label:                             "Description",
+				TwoWayStatePath:                   "description",
+				HintValue:                         "This is a helpful hint displayed as a tooltip.",
+				HintDisplay:                       uiForm.InputHintDisplayTooltip,
+				HintDisplayTooltipBackgroundColor: "violet-950/95",
+				HintDisplayTooltipMinWidthClass:   "min-w-40",
+				HintDisplayTooltipMaxWidthClass:   "max-w-64",
+				HintDisplayTooltipMinHeightClass:  "min-h-10",
+				HintDisplayTooltipMaxHeightClass:  "max-h-24",
 			})
 		</div>
 	}
@@ -130,6 +141,101 @@ templ TextAreaHintStatePathExample() {
 	}
 }
 
+templ TextAreaSizesExample() {
+	{{
+		sizesUsage := `@uiForm.TextArea(uiForm.TextAreaSettings{
+	InputName: "description",
+	Label:     "Description",
+
+	// OptionalFields
+	TwoWayStatePath: "description",
+	Size:            uiForm.TextAreaSizeLg,
+})`
+	}}
+	@DemoExampleCard(
+		"Sizes",
+		"Size scales the textarea height and font: xs, sm, md (the default), lg, or xl.",
+		"/form/textArea.templ", sizesUsage,
+	) {
+		<div class="flex flex-col gap-3" x-data="{xs: '', sm: '', md: '', lg: '', xl: ''}">
+			for _, textAreaSize := range []string{
+				uiForm.TextAreaSizeXs,
+				uiForm.TextAreaSizeSm,
+				uiForm.TextAreaSizeMd,
+				uiForm.TextAreaSizeLg,
+				uiForm.TextAreaSizeXl,
+			} {
+				@uiForm.TextArea(uiForm.TextAreaSettings{
+					InputName:       "description",
+					Label:           "Description (" + textAreaSize + ")",
+					TwoWayStatePath: textAreaSize,
+					Size:            textAreaSize,
+				})
+			}
+		</div>
+	}
+}
+
+templ TextAreaTextCaseExample() {
+	{{
+		textCaseUsage := `@uiForm.TextArea(uiForm.TextAreaSettings{
+	InputName: "description",
+	Label:     "Description",
+
+	// OptionalFields
+	TwoWayStatePath: "description",
+	TextCase:        uiToolset.TextCaseUpper,
+})`
+	}}
+	@DemoExampleCard(
+		"Text Case",
+		"TextCase transforms the label and the placeholder. It accepts uiToolset.TextCaseNone (the default, as typed), TextCaseLower, TextCaseUpper, or TextCaseCapitalize.",
+		"/form/textArea.templ", textCaseUsage,
+	) {
+		<div class="flex flex-col gap-3" x-data="{none: '', lower: '', upper: '', capitalize: ''}">
+			for _, textCase := range []string{
+				uiToolset.TextCaseNone,
+				uiToolset.TextCaseLower,
+				uiToolset.TextCaseUpper,
+				uiToolset.TextCaseCapitalize,
+			} {
+				@uiForm.TextArea(uiForm.TextAreaSettings{
+					InputName:       "description",
+					Label:           "Description (" + textCase + ")",
+					TwoWayStatePath: textCase,
+					TextCase:        textCase,
+				})
+			}
+		</div>
+	}
+}
+
+templ TextAreaRequiredExample() {
+	{{
+		requiredUsage := `@uiForm.TextArea(uiForm.TextAreaSettings{
+	InputName: "description",
+	Label:     "Description",
+
+	// OptionalFields
+	TwoWayStatePath: "description",
+	IsRequired:      true,
+})`
+	}}
+	@DemoExampleCard(
+		"Required", "IsRequired marks the field as required.",
+		"/form/textArea.templ", requiredUsage,
+	) {
+		<div x-data="{description: ''}">
+			@uiForm.TextArea(uiForm.TextAreaSettings{
+				InputName:       "description",
+				Label:           "Description",
+				TwoWayStatePath: "description",
+				IsRequired:      true,
+			})
+		</div>
+	}
+}
+
 templ TextAreaDemo() {
 	{{
 		demoUsage := `@uiForm.TextArea(uiForm.TextAreaSettings{
@@ -165,6 +271,9 @@ templ TextAreaDemo() {
 			{Title: "Code Mode", Icon: "ph-code", Content: TextAreaCodeExample()},
 			{Title: "Hints", Icon: "ph-info", Content: TextAreaHintsExample()},
 			{Title: "Hint State Path", Icon: "ph-arrows-clockwise", Content: TextAreaHintStatePathExample()},
+			{Title: "Sizes", Icon: "ph-ruler", Content: TextAreaSizesExample()},
+			{Title: "Text Case", Icon: "ph-text-t", Content: TextAreaTextCaseExample()},
+			{Title: "Required", Icon: "ph-asterisk", Content: TextAreaRequiredExample()},
 		})
 	</div>
 }

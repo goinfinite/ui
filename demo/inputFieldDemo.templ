@@ -16,11 +16,12 @@ templ InputFieldReadOnlyExample() {
 	// OptionalFields
 	Value:      "Lorem ipsum dolor sit amet.",
 	IsReadOnly: true,
+	IsRequired: true,
 })`
 	}}
 	@DemoExampleCard(
 		"Value & Read-Only",
-		"Value seeds the field content. IsReadOnly shows the value without accepting edits.",
+		"Value seeds the field content. IsReadOnly shows the value without accepting edits. IsRequired marks the field as required.",
 		"/form/inputField.templ", readOnlyUsage,
 	) {
 		@uiForm.InputField(uiForm.InputFieldSettings{
@@ -29,6 +30,12 @@ templ InputFieldReadOnlyExample() {
 			Label:      "Name",
 			Value:      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
 			IsReadOnly: true,
+		})
+		@uiForm.InputField(uiForm.InputFieldSettings{
+			InputType:  uiForm.InputTypeText,
+			InputName:  "name",
+			Label:      "Name",
+			IsRequired: true,
 		})
 	}
 }
@@ -74,17 +81,22 @@ templ InputFieldAffixesExample() {
 	Label:     "Name",
 
 	// OptionalFields
-	TwoWayStatePath: "name",
-	AffixLeftValue:  "goinfinite.net/",
-	AffixRightValue: ".jpg",
+	TwoWayStatePath:     "name",
+	AffixLeftValue:      "goinfinite.net/",
+	AffixLeftStatePath:  "leftAffix",
+	AffixRightValue:     ".jpg",
+	AffixRightStatePath: "rightAffix",
 })`
 	}}
 	@DemoExampleCard(
 		"Affixes",
-		"AffixLeftValue and AffixRightValue render fixed text on either side of the input.",
+		"AffixLeftValue and AffixRightValue render fixed text on either side of the input. AffixLeftStatePath and AffixRightStatePath read the affix text from Alpine state.",
 		"/form/inputField.templ", affixesUsage,
 	) {
-		<div class="flex flex-col gap-3 lg:*:max-w-50" x-data="{name: '', slug: ''}">
+		<div
+			class="flex flex-col gap-3 lg:*:max-w-50"
+			x-data="{name: '', slug: '', leftAffix: 'goinfinite.net/', rightAffix: '.jpg'}"
+		>
 			@uiForm.InputField(uiForm.InputFieldSettings{
 				InputType:       uiForm.InputTypeText,
 				InputName:       "name",
@@ -105,6 +117,43 @@ templ InputFieldAffixesExample() {
 				Label:           "Slug",
 				TwoWayStatePath: "slug",
 				AffixRightValue: "ui.demo.goinfinite.net",
+			})
+			@uiForm.InputField(uiForm.InputFieldSettings{
+				InputType:           uiForm.InputTypeText,
+				InputName:           "name",
+				Label:               "Name",
+				TwoWayStatePath:     "name",
+				AffixLeftStatePath:  "leftAffix",
+				AffixRightStatePath: "rightAffix",
+			})
+		</div>
+	}
+}
+
+templ InputFieldIconExample() {
+	{{
+		iconUsage := `@uiForm.InputField(uiForm.InputFieldSettings{
+	InputType: uiForm.InputTypeText,
+	InputName: "name",
+	Label:     "Name",
+
+	// OptionalFields
+	TwoWayStatePath: "name",
+	IconLeft:        "ph-magnifying-glass",
+})`
+	}}
+	@DemoExampleCard(
+		"Icon Left",
+		"IconLeft renders a Phosphor icon inside the field before the input.",
+		"/form/inputField.templ", iconUsage,
+	) {
+		<div class="lg:*:max-w-50" x-data="{name: ''}">
+			@uiForm.InputField(uiForm.InputFieldSettings{
+				InputType:       uiForm.InputTypeText,
+				InputName:       "name",
+				Label:           "Name",
+				TwoWayStatePath: "name",
+				IconLeft:        "ph-magnifying-glass",
 			})
 		</div>
 	}
@@ -230,17 +279,26 @@ templ InputFieldHintsExample() {
 	Label:     "Name",
 
 	// OptionalFields
-	TwoWayStatePath: "name",
-	HintValue:       "This is a helpful hint.",
-	HintDisplay:     uiForm.InputHintDisplayDescription,
+	TwoWayStatePath:                   "name",
+	HintValue:                         "This is a helpful hint.",
+	HintStatePath:                     "hintText",
+	HintDisplay:                       uiForm.InputHintDisplayTooltip,
+	HintDisplayTooltipBackgroundColor: "violet-950/95",
+	HintDisplayTooltipMinWidthClass:   "min-w-40",
+	HintDisplayTooltipMaxWidthClass:   "max-w-64",
+	HintDisplayTooltipMinHeightClass:  "min-h-10",
+	HintDisplayTooltipMaxHeightClass:  "max-h-24",
 })`
 	}}
 	@DemoExampleCard(
 		"Hints",
-		"HintValue explains the field. HintDisplay shows it as a description below the field or as a tooltip.",
+		"HintValue explains the field. HintDisplay shows it as a description below the field or as a tooltip. HintStatePath reads the hint text from Alpine state. The HintDisplayTooltip fields shape the tooltip surface.",
 		"/form/inputField.templ", hintsUsage,
 	) {
-		<div class="flex flex-col gap-3 lg:*:max-w-50" x-data="{name: '', tooltipName: ''}">
+		<div
+			class="flex flex-col gap-3 lg:*:max-w-50"
+			x-data="{name: '', tooltipName: '', stateName: '', hintText: 'This hint comes from Alpine state.'}"
+		>
 			@uiForm.InputField(uiForm.InputFieldSettings{
 				InputType:       uiForm.InputTypeText,
 				InputName:       "name",
@@ -256,6 +314,19 @@ templ InputFieldHintsExample() {
 				TwoWayStatePath: "tooltipName",
 				HintValue:       "This is a helpful hint displayed as a tooltip.",
 				HintDisplay:     uiForm.InputHintDisplayTooltip,
+			})
+			@uiForm.InputField(uiForm.InputFieldSettings{
+				InputType:                         uiForm.InputTypeText,
+				InputName:                         "name",
+				Label:                             "Name",
+				TwoWayStatePath:                   "stateName",
+				HintStatePath:                     "hintText",
+				HintDisplay:                       uiForm.InputHintDisplayTooltip,
+				HintDisplayTooltipBackgroundColor: "violet-950/95",
+				HintDisplayTooltipMinWidthClass:   "min-w-40",
+				HintDisplayTooltipMaxWidthClass:   "max-w-64",
+				HintDisplayTooltipMinHeightClass:  "min-h-10",
+				HintDisplayTooltipMaxHeightClass:  "max-h-24",
 			})
 		</div>
 	}
@@ -330,6 +401,7 @@ templ InputFieldDemo() {
 			{Title: "Value & Read-Only", Icon: "ph-lock", Content: InputFieldReadOnlyExample()},
 			{Title: "Number Constraints", Icon: "ph-hash", Content: InputFieldNumberExample()},
 			{Title: "Affixes", Icon: "ph-text-aa", Content: InputFieldAffixesExample()},
+			{Title: "Icon Left", Icon: "ph-magnifying-glass", Content: InputFieldIconExample()},
 			{Title: "Affix Width", Icon: "ph-arrows-horizontal", Content: InputFieldAffixWidthExample()},
 			{Title: "Sizes", Icon: "ph-ruler", Content: InputFieldSizesExample()},
 			{Title: "Label Case", Icon: "ph-text-t", Content: InputFieldLabelCaseExample()},

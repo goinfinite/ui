@@ -3,6 +3,7 @@ package main
 import (
 	uiDisplay "github.com/goinfinite/ui/src/display"
 	uiForm "github.com/goinfinite/ui/src/form"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
 templ MultiSelectInputDemoOption1() {
@@ -127,18 +128,24 @@ templ MultiSelectInputHintsExample() {
 	Label:     "Countries",
 
 	// OptionalFields
-	FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
-	TwoWayStatePath: "countries",
-	HintValue:        "This is a helpful hint.",
-	HintDisplay:      uiForm.InputHintDisplayDescription,
+	FlatOptions:                       []string{"Argentina", "Brazil", "Chile"},
+	TwoWayStatePath:                   "countries",
+	HintValue:                         "This is a helpful hint.",
+	HintStatePath:                     "hintText",
+	HintDisplay:                       uiForm.InputHintDisplayTooltip,
+	HintDisplayTooltipBackgroundColor: "violet-950/95",
+	HintDisplayTooltipMinWidthClass:   "min-w-40",
+	HintDisplayTooltipMaxWidthClass:   "max-w-64",
+	HintDisplayTooltipMinHeightClass:  "min-h-10",
+	HintDisplayTooltipMaxHeightClass:  "max-h-24",
 })`
 	}}
 	@DemoExampleCard(
 		"Hints",
-		"HintValue explains the field. HintDisplay shows it as a description below the field or as a tooltip.",
+		"HintValue explains the field. HintDisplay shows it as a description below the field or as a tooltip. HintStatePath reads the hint text from Alpine state. The HintDisplayTooltip fields shape the tooltip surface.",
 		"/form/multiSelectInput.templ", hintsUsage,
 	) {
-		<div class="flex flex-col gap-6" x-data="{countries: ['Brazil']}">
+		<div class="flex flex-col gap-6" x-data="{countries: ['Brazil'], hintText: 'This hint comes from Alpine state.'}">
 			@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
 				InputName:       "countriesHintDescription",
 				Label:           "Countries",
@@ -154,6 +161,19 @@ templ MultiSelectInputHintsExample() {
 				TwoWayStatePath: "countries",
 				HintValue:       "This is a helpful hint displayed as a tooltip.",
 				HintDisplay:     uiForm.InputHintDisplayTooltip,
+			})
+			@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
+				InputName:                         "countriesHintState",
+				Label:                             "Countries",
+				FlatOptions:                       []string{"Argentina", "Brazil", "Chile"},
+				TwoWayStatePath:                   "countries",
+				HintStatePath:                     "hintText",
+				HintDisplay:                       uiForm.InputHintDisplayTooltip,
+				HintDisplayTooltipBackgroundColor: "violet-950/95",
+				HintDisplayTooltipMinWidthClass:   "min-w-40",
+				HintDisplayTooltipMaxWidthClass:   "max-w-64",
+				HintDisplayTooltipMinHeightClass:  "min-h-10",
+				HintDisplayTooltipMaxHeightClass:  "max-h-24",
 			})
 		</div>
 	}
@@ -220,6 +240,112 @@ templ MultiSelectInputRequiredExample() {
 	}
 }
 
+templ MultiSelectInputOnChangeExample() {
+	{{
+		onChangeUsage := `@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
+	InputName: "countriesChange",
+	Label:     "Countries",
+
+	// OptionalFields
+	FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+	TwoWayStatePath: "countries",
+	OnChangeFunc:    "onCountryChange()",
+})`
+	}}
+	@DemoExampleCard(
+		"OnChangeFunc",
+		"OnChangeFunc runs when a selection changes and when the field is cleared.",
+		"/form/multiSelectInput.templ", onChangeUsage,
+	) {
+		@DemoAlpineStateBlock(`<div x-data="{countries: ['BR'], changeCount: 0, onCountryChange() { this.changeCount++ }}"></div>`)
+		<div
+			class="grid gap-6"
+			x-data="{countries: ['BR'], changeCount: 0, onCountryChange() { this.changeCount++ }}"
+		>
+			<p class="text-sm text-neutral-400">Toggle an option or clear the field to see the function run.</p>
+			@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
+				InputName:       "countriesChange",
+				Label:           "Countries",
+				FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+				TwoWayStatePath: "countries",
+				OnChangeFunc:    "onCountryChange()",
+			})
+			<p class={ DemoLiveStateClasses }>
+				Change count: <span x-text="changeCount"></span>
+			</p>
+		</div>
+	}
+}
+
+templ MultiSelectInputDropdownBackgroundExample() {
+	{{
+		dropdownBackgroundUsage := `@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
+	InputName: "countriesDropdown",
+	Label:     "Countries",
+
+	// OptionalFields
+	FlatOptions:             []string{"Argentina", "Brazil", "Chile"},
+	TwoWayStatePath:         "countries",
+	DropdownBackgroundColor: "emerald-900",
+})`
+	}}
+	@DemoExampleCard(
+		"Dropdown Background",
+		"DropdownBackgroundColor sets the dropdown surface color. It accepts a Tailwind token.",
+		"/form/multiSelectInput.templ", dropdownBackgroundUsage,
+	) {
+		<div class="flex flex-col gap-3" x-data="{countries: ['BR']}">
+			<p class="text-sm text-neutral-400">Open the dropdown to see the background color.</p>
+			@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
+				InputName:               "countriesDropdown",
+				Label:                   "Countries",
+				FlatOptions:             []string{"Argentina", "Brazil", "Chile"},
+				TwoWayStatePath:         "countries",
+				DropdownBackgroundColor: "emerald-900",
+			})
+		</div>
+	}
+}
+
+templ MultiSelectInputTextCaseExample() {
+	{{
+		textCaseUsage := `@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
+	InputName: "countriesTextCase",
+	Label:     "Countries",
+
+	// OptionalFields
+	FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+	TwoWayStatePath: "countries",
+	TextCase:        uiToolset.TextCaseUpper,
+})`
+	}}
+	@DemoExampleCard(
+		"Text Case",
+		"TextCase transforms the field label. It accepts uiToolset.TextCaseNone (the default, as typed), TextCaseLower, TextCaseUpper, or TextCaseCapitalize.",
+		"/form/multiSelectInput.templ", textCaseUsage,
+	) {
+		<div
+			class="flex flex-col gap-3"
+			x-data="{none: [], lower: [], upper: [], capitalize: []}"
+		>
+			for _, textCase := range []string{
+				uiToolset.TextCaseNone,
+				uiToolset.TextCaseLower,
+				uiToolset.TextCaseUpper,
+				uiToolset.TextCaseCapitalize,
+			} {
+				@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
+					InputName:       "countries",
+					Label:           "Countries (" + textCase + ")",
+					FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+					TwoWayStatePath: textCase,
+					TextCase:        textCase,
+				})
+			}
+		</div>
+	}
+}
+
 templ MultiSelectInputDemo() {
 	{{
 		demoUsage := `@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
@@ -258,6 +384,9 @@ templ MultiSelectInputDemo() {
 			{Title: "Hints", Icon: "ph-info", Content: MultiSelectInputHintsExample()},
 			{Title: "Hint Icon Styles", Icon: "ph-question", Content: MultiSelectInputHintIconStyleExample()},
 			{Title: "Required", Icon: "ph-asterisk", Content: MultiSelectInputRequiredExample()},
+			{Title: "OnChangeFunc", Icon: "ph-arrows-clockwise", Content: MultiSelectInputOnChangeExample()},
+			{Title: "Dropdown Background", Icon: "ph-paint-brush", Content: MultiSelectInputDropdownBackgroundExample()},
+			{Title: "Text Case", Icon: "ph-text-t", Content: MultiSelectInputTextCaseExample()},
 		})
 	</div>
 }

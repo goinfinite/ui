@@ -3,6 +3,7 @@ package main
 import (
 	uiDisplay "github.com/goinfinite/ui/src/display"
 	uiForm "github.com/goinfinite/ui/src/form"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
 templ InlineRadioGroupSizesExample() {
@@ -13,15 +14,23 @@ templ InlineRadioGroupSizesExample() {
 		{
 			Label:           "Option 1",
 			StateValue:      "option1",
-			TwoWayStatePath: "groupSelection",
+			TwoWayStatePath: "groupSizeSelection",
+			InputId:         "groupOption1",
+			InputName:       "groupSizes",
 			Size:            uiForm.RadioInputSizeSm,
+			TextCase:        uiToolset.TextCaseUpper,
 		},
 	},
+
+	// OptionalFields
+	TwoWayStatePath: "groupSizeSelection",
+	InputName:       "groupSizeSelection",
+	TextCase:        uiToolset.TextCaseUpper,
 })`
 	}}
 	@DemoExampleCard(
 		"Sizes",
-		"Each radio carries its own Size, so the group can scale per option.",
+		"Each radio carries its own Size, so the group can scale per option. TextCase transforms the legend and the labels, and InputName includes the selected value in form submission.",
 		"/form/inlineRadioGroup.templ", sizesUsage,
 	) {
 		<div x-data="{groupSizeSelection: 'md'}" class="flex flex-col gap-3">
@@ -35,6 +44,7 @@ templ InlineRadioGroupSizesExample() {
 						InputId:         "groupSizeSm",
 						InputName:       "groupSizes",
 						Size:            uiForm.RadioInputSizeSm,
+						TextCase:        uiToolset.TextCaseUpper,
 					},
 					{
 						Label:           "Medium",
@@ -43,6 +53,7 @@ templ InlineRadioGroupSizesExample() {
 						InputId:         "groupSizeMd",
 						InputName:       "groupSizes",
 						Size:            uiForm.RadioInputSizeMd,
+						TextCase:        uiToolset.TextCaseUpper,
 					},
 					{
 						Label:           "Large",
@@ -51,9 +62,12 @@ templ InlineRadioGroupSizesExample() {
 						InputId:         "groupSizeLg",
 						InputName:       "groupSizes",
 						Size:            uiForm.RadioInputSizeLg,
+						TextCase:        uiToolset.TextCaseUpper,
 					},
 				},
 				TwoWayStatePath: "groupSizeSelection",
+				InputName:       "groupSizeSelection",
+				TextCase:        uiToolset.TextCaseUpper,
 			})
 		</div>
 	}
