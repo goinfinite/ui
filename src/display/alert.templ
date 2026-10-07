@@ -192,7 +192,7 @@ templ Alert(componentSettings AlertSettings) {
 			<i
 				class={ "ph-duotone " + componentSettings.TitleLeftIcon + " " + iconClasses }
 				if componentSettings.TitleLeftIconTwoWayStatePath != "" {
-					:class={ "'" + componentSettings.TitleLeftIconTwoWayStatePath + "'" }
+					:class={ componentSettings.TitleLeftIconTwoWayStatePath }
 				}
 			></i>
 		} else if componentSettings.Variation != "" {
@@ -243,7 +243,7 @@ templ Alert(componentSettings AlertSettings) {
 			<i
 				class={ "ph-duotone " + componentSettings.TitleRightIcon + " " + iconClasses }
 				if componentSettings.TitleRightIconTwoWayStatePath != "" {
-					:class={ "'" + componentSettings.TitleRightIconTwoWayStatePath + "'" }
+					:class={ componentSettings.TitleRightIconTwoWayStatePath }
 				}
 			></i>
 		}

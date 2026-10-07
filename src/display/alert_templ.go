@@ -296,9 +296,9 @@ func Alert(componentSettings AlertSettings) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var8 string
-				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.ResolveAttributeValue("'" + componentSettings.TitleLeftIconTwoWayStatePath + "'")
+				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.TitleLeftIconTwoWayStatePath)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/alert.templ`, Line: 195, Col: 72}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/alert.templ`, Line: 195, Col: 60}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var8)
 				if templ_7745c5c3_Err != nil {
@@ -547,9 +547,9 @@ func Alert(componentSettings AlertSettings) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var21 string
-				templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.ResolveAttributeValue("'" + componentSettings.TitleRightIconTwoWayStatePath + "'")
+				templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.TitleRightIconTwoWayStatePath)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/alert.templ`, Line: 246, Col: 73}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/alert.templ`, Line: 246, Col: 61}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var21)
 				if templ_7745c5c3_Err != nil {
