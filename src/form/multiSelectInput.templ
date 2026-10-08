@@ -147,12 +147,12 @@ templ MultiSelectInput(componentSettings MultiSelectInputSettings) {
 				</div>
 			</div>
 			<!-- SelectDropdown -->
-			{{ initialDropdownBackgroundColor := "neutral-800/95" }}
+			{{ dropdownBackgroundClass := "bg-neutral-800/95" }}
 			if componentSettings.DropdownBackgroundColor != "" {
-				{{ initialDropdownBackgroundColor = componentSettings.DropdownBackgroundColor }}
+				{{ dropdownBackgroundClass = "bg-" + componentSettings.DropdownBackgroundColor }}
 			}
 			<ul
-				class={ "absolute left-0 z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border border-neutral-50/5 bg-" + initialDropdownBackgroundColor + " shadow-lg hover:border-neutral-50/30" }
+				class={ "absolute left-0 z-20 mt-1 max-h-60 w-full overflow-auto rounded-md border border-neutral-50/5 " + dropdownBackgroundClass + " shadow-lg hover:border-neutral-50/30" }
 				x-show="shouldExpandOptions"
 				x-transition
 			>
