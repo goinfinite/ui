@@ -145,8 +145,9 @@ templ FilterBar(componentSettings FilterBarSettings) {
 						OuterBackgroundColor:          "neutral-50/10",
 						OuterRingColor:                "neutral-50/20",
 						OuterTextColor:                "neutral-50",
-						OuterLeftLabel:                filter.Label + ": ",
-						OuterLeftLabelOneWayStatePath: "resolveFilterChipLabel(" + filterKey + ")",
+						OuterLeftLabel:                filter.Label,
+						InnerBackgroundColor:          "neutral-50/20",
+						InnerLabelOneWayStatePath:     "resolveFilterChipLabel(" + filterKey + ")",
 						OnRemoveFunc:                  "resetFilter(" + filterKey + ")" + onChangeSuffix,
 						RemoveButtonLabel:             "Remove " + filter.Label + " filter",
 					})

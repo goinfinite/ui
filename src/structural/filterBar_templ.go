@@ -329,14 +329,15 @@ func FilterBar(componentSettings FilterBarSettings) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			templ_7745c5c3_Err = uiDisplay.Tag(uiDisplay.TagSettings{
-				Size:                          uiDisplay.TagSizeSm,
-				OuterBackgroundColor:          "neutral-50/10",
-				OuterRingColor:                "neutral-50/20",
-				OuterTextColor:                "neutral-50",
-				OuterLeftLabel:                filter.Label + ": ",
-				OuterLeftLabelOneWayStatePath: "resolveFilterChipLabel(" + filterKey + ")",
-				OnRemoveFunc:                  "resetFilter(" + filterKey + ")" + onChangeSuffix,
-				RemoveButtonLabel:             "Remove " + filter.Label + " filter",
+				Size:                      uiDisplay.TagSizeSm,
+				OuterBackgroundColor:      "neutral-50/10",
+				OuterRingColor:            "neutral-50/20",
+				OuterTextColor:            "neutral-50",
+				OuterLeftLabel:            filter.Label,
+				InnerBackgroundColor:      "neutral-50/20",
+				InnerLabelOneWayStatePath: "resolveFilterChipLabel(" + filterKey + ")",
+				OnRemoveFunc:              "resetFilter(" + filterKey + ")" + onChangeSuffix,
+				RemoveButtonLabel:         "Remove " + filter.Label + " filter",
 			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
