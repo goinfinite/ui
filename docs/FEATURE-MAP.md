@@ -20,7 +20,7 @@ Password field with a reveal toggle, an optional random password generator, and 
 
 **Flow:**
 
-1. `src/form/passwordInput.templ` — PasswordInputSettings, the rules resolver (length range, generation length, character classes), the criteria-item resolver, the action buttons (reveal and generate), the meter with its color settings, and the InputField composition
+1. `src/form/passwordInput.templ` — PasswordInputSettings, the rules resolver (length range, generation length, character classes), the criteria-item resolver, the action buttons (reveal and generate) with their boxed or plain style (ActionButtonStyle), the meter with its color settings, and the InputField composition
 2. `src/form/passwordInputState.js` — Alpine data component: reveal flag, strength percentage, per-criterion flags, the generator call, and the clipboard copy with a language-matched toast
 3. `src/import/toolset/randomPassword.js` — `createRandomPassword(options)` with configurable length and character classes; guarantees one character from each selected class
 4. `src/form/passwordInput_test.go` — Table-driven tests for the rules and criteria resolvers plus the rendered actions and meter
@@ -42,33 +42,18 @@ Multi-line text input with five height steps (h-12/24/36/48/60), expand-to-3x to
 
 ## Select Dropdown
 
-Dropdown select component with support for flat string options or label-value pairs, with optional grouping and blank option.
+Dropdown select component with support for flat string options or label-value pairs, a blank option, and a multi-select mode. Single mode renders native radio rows; multi mode renders the shared styled checkbox rows, keeps the dropdown open after each toggle, and joins the selected labels in the trigger.
 
 **Flow:**
 
-1. `src/form/selectInput.templ` — Component definition with SelectInputSettings struct, SelectLabelValueOption data structure, and the dropdown height and MaxVisibleOptions settings
-2. `src/form/selectInputState.js` — Alpine.js data component for the select dropdown: open toggle and close
+1. `src/form/selectInput.templ` — Component definition with SelectInputSettings struct (including IsMultiSelect and InputId), SelectLabelValueOption data structure, the option checkbox renderer, and the dropdown height and MaxVisibleOptions settings
+2. `src/form/selectInputState.js` — Alpine.js data component for the select dropdown: open toggle, close, the multi-select summary formatter, and the open-direction decision
 3. `src/import/toolset/selectDropdown.js` — Shared open-upward decision that stops at the viewport bottom and at every clipping ancestor so the list never opens downward into an overflow-hidden container
 4. `src/form/selectDropdown.go` — Shared dropdown height classes resolver and the MaxVisibleOptions height style, with the row height of each dropdown family
 5. `src/form/inputHint.templ` — Shared hint renderer for the tooltip and description display modes
-6. `src/form/selectInput_templ.go` — Compiled output rendering select with native radio options, an embedded JSON script for label lookup, and Alpine.js state management
+6. `src/form/selectInput_templ.go` — Compiled output rendering select with native radio or checkbox options, an embedded JSON script for label lookup and the multi-select summary, and Alpine.js state management
 
 Supports optional hint text rendered either as a focusable info-icon tooltip inside the dropdown row or as a description line below the fieldset.
-
----
-
-## Multi-Select Dropdown
-
-Dropdown component that lets the user select multiple options from a flat list or label-value pairs, binding an array via Alpine.js two-way state path. Each option renders the same styled checkbox as the Checkbox Input component.
-
-**Flow:**
-
-1. `src/form/multiSelectInput.templ` — Component definition with MultiSelectInputSettings struct, reusing SelectLabelValueOption for label-value options, the dropdown height and MaxVisibleOptions settings, plus the shared option checkbox renderer
-2. `src/form/multiSelectInputState.js` — Alpine.js data component providing the dropdown toggle state
-3. `src/form/inputHint.templ` — Shared hint renderer for the tooltip and description display modes
-4. `src/form/multiSelectInput_templ.go` — Compiled output rendering checkbox-based dropdown with embedded JSON script for label-value options and Alpine.js state management
-
-Form submission uses multiple checkboxes sharing the same `name` so the browser sends an array of values. Supports optional hint text rendered either as a focusable info-icon tooltip inside the dropdown row or as a description line below the fieldset.
 
 ---
 
@@ -320,7 +305,7 @@ Standalone filter bar that renders one editor per declared filter (text contains
 
 1. `src/structural/filterBar.templ` — Component definition with FilterBarSettings and FilterSettings; renders editors and chips bound to a values object
 2. `src/structural/filterBarState.js` — Alpine component with chip visibility, chip label, single-filter reset, clear-all, and any-active helpers
-3. `src/form/multiSelectInput.templ` — Checkbox dropdown editor for the multi-enum kind
+3. `src/form/selectInput.templ` — Multi-select dropdown editor (IsMultiSelect) for the multi-enum kind
 4. `src/display/tag.templ` — Removable Tag variant used for the chips
 5. `src/structural/filterBar_templ.go` — Compiled output
 
@@ -479,7 +464,7 @@ Shared text-case values and a class resolver for components that expose a casing
 **Flow:**
 
 1. `src/toolset/textCase.go` — `TextCaseNone`, `TextCaseLower`, `TextCaseUpper`, `TextCaseCapitalize`, and `TextCaseClassResolver()`
-2. Form labels and placeholders — `InputField`, `CheckboxInput`, `RadioInput`, `InlineRadioGroup`, `SelectInput`, `MultiSelectInput`, `TextArea`, `ToggleSwitch`
+2. Form labels and placeholders — `InputField`, `CheckboxInput`, `RadioInput`, `InlineRadioGroup`, `SelectInput`, `TextArea`, `ToggleSwitch`
 3. `src/control/button.templ` — button label
 4. `src/display/tag.templ` — label segments; `src/display/accordion.templ` — item titles
 5. `src/display/headerBlock.templ` — title and sub-heading, forwarded by `Card`, `PageHeading`, and `ConfirmationDialog`

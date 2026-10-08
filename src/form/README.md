@@ -19,7 +19,7 @@ Checkbox with a label, bound to a boolean or an array state path.
 })
 ```
 
-`Shape` accepts `uiToolset.ShapeSquare`, `uiToolset.ShapeRounded` (the default), and `uiToolset.ShapeCircular`. `Size` accepts the `CheckboxInputSize*` constants. `CheckedColor`, `UncheckedColor`, and `FocusRingColor` set the box colors. `LabelPosition` accepts `CheckboxInputLabelPositionLeft` and `CheckboxInputLabelPositionRight`. `IsChecked`, `IsDisabled`, and `IsRequired` render static states. `IsCheckedOneWayStatePath`, `IsDisabledOneWayStatePath`, and `IndeterminateOneWayStatePath` bind them to Alpine state. `AriaLabel` names the checkbox when no visible label is present.
+`Shape` accepts `uiToolset.ShapeSquare`, `uiToolset.ShapeRounded` (the default), and `uiToolset.ShapeCircular`. `Size` accepts the `CheckboxInputSize*` constants. `CheckedColor`, `UncheckedColor`, and `FocusRingColor` set the box colors; the box border previews `CheckedColor` on hover. `LabelPosition` accepts `CheckboxInputLabelPositionLeft` and `CheckboxInputLabelPositionRight`. `IsChecked`, `IsDisabled`, and `IsRequired` render static states. `IsCheckedOneWayStatePath`, `IsDisabledOneWayStatePath`, and `IndeterminateOneWayStatePath` bind them to Alpine state. `AriaLabel` names the checkbox when no visible label is present.
 
 `IsInvalid` and `IsInvalidOneWayStatePath` flag the error state. The box border turns to `ErrorColor` (default `"red-500"`), and the input carries `aria-invalid`. `ErrorMessage` and `ErrorMessageOneWayStatePath` render the message below the control. With `InputId` set, the input links to it through `aria-describedby`. When an invalid path is set, the message shows only while the path is true.
 
@@ -55,7 +55,7 @@ Password field with a reveal toggle, an optional random password generator, and 
 })
 ```
 
-`Rules` configures the generator and the meter: `MinLength` (default 6), `MaxLength` (default 64), `GenerationLength` (default 16), and one `ShouldInclude*Chars` flag per character class. When no class is selected, every class is required. The generator runs on `UiToolset.CreateRandomPassword(options)` and guarantees at least one character from each selected class. The meter shows a percentage bar and a criteria checklist that updates as the user types; the checklist shows only the enabled criteria. The generate button copies the new password to the clipboard and shows a success toast. The toast text follows the browser language and falls back to English; the page must mount `Toast`. `StrengthMeterColor`, `StrengthCriteriaTextColor`, `StrengthCriteriaFulfilledIconColor`, and `StrengthCriteriaUnfulfilledIconColor` take a color token and repaint the meter bar, the checklist text, and the fulfilled and unfulfilled icons.
+`Rules` configures the generator and the meter: `MinLength` (default 6), `MaxLength` (default 64), `GenerationLength` (default 16), and one `ShouldInclude*Chars` flag per character class. When no class is selected, every class is required. The generator runs on `UiToolset.CreateRandomPassword(options)` and guarantees at least one character from each selected class. The meter shows a percentage bar and a criteria checklist that updates as the user types; the checklist shows only the enabled criteria. The generate button copies the new password to the clipboard and shows a success toast. The toast text follows the browser language and falls back to English; the page must mount `Toast`. `ActionButtonStyle` accepts `PasswordInputActionButtonStyleBoxed` (the default) or `PasswordInputActionButtonStylePlain` for bare icons. `StrengthMeterColor`, `StrengthCriteriaTextColor`, `StrengthCriteriaFulfilledIconColor`, and `StrengthCriteriaUnfulfilledIconColor` take a color token and repaint the meter bar, the checklist text, and the fulfilled and unfulfilled icons.
 
 ## InlineCheckboxGroup
 
@@ -103,22 +103,7 @@ Dropdown select. It is not a native `<select>`: screen-reader-only radio inputs 
 })
 ```
 
-`ShouldIncludeBlankOption` adds a clear entry. `IsDisabledOneWayStatePath` disables the trigger while the path is truthy. `OnChangeFunc` runs after a change. `Size` accepts the `SelectInputSize*` constants and defaults to `md`. `DropdownMinHeightClass` and `DropdownMaxHeightClass` cap the list height (default `max-h-60`). `MaxVisibleOptions` caps it to a row count and wins over both.
-
-## MultiSelectInput
-
-Dropdown that holds a list of selected values on one state path.
-
-```go
-@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
-    InputName:       "countries",
-    Label:           "Countries",
-    FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
-    TwoWayStatePath: "countries",
-})
-```
-
-It shares the `FlatOptions` and `LabelValueOptions` modes with `SelectInput`. `OnChangeFunc` runs after a checkbox toggle or a clear. `DropdownMinHeightClass` and `DropdownMaxHeightClass` cap the list height (default `max-h-60`). `MaxVisibleOptions` caps it to a row count and wins over both. For a filter box or removable tags, use `SearchableSelectInput` with `IsMultiSelect`.
+`IsMultiSelect` renders checkbox rows, keeps the dropdown open after each toggle, and binds an array on `TwoWayStatePath`; the trigger joins the selected labels. `InputId` prefixes the option checkbox ids in multi mode. `ShouldIncludeBlankOption` adds a blank entry in single mode; multi mode shows the clear control whenever the array holds a value. `IsDisabledOneWayStatePath` disables the trigger while the path is truthy. `OnChangeFunc` runs after a change, a toggle, or a clear. `Size` accepts the `SelectInputSize*` constants and defaults to `md`. `DropdownMinHeightClass` and `DropdownMaxHeightClass` cap the list height (default `max-h-60`). `MaxVisibleOptions` caps it to a row count and wins over both.
 
 ## SearchableSelectInput
 
@@ -203,7 +188,7 @@ Shared hint helper for the fields above. It renders no field of its own.
 
 ## Non-obvious behaviors
 
-- `SelectInput` and `MultiSelectInput` render a `templ.JSONScript` block for label-value options. The block feeds the selected label lookup.
+- `SelectInput` renders a `templ.JSONScript` block for label-value options. The block feeds the selected label lookup and the multi-select summary.
 - `SearchableSelectInput` and `RemoteSearchableSelectInput` render one `templ.JSONScript` config block and share one Alpine state, `searchableSelectInput`. The config carries the normalized options, the multi-select and custom-value flags, and the remote settings.
 - The floating legend collapses while the field is empty, so the empty field shows the label as a placeholder.
 - `InputField` hides its empty legend with `display: none`. Chrome reserves scroll space for a zero-sized legend, so the opacity-based collapse the other field components use can phantom-scroll an overflow container.
