@@ -51,7 +51,7 @@ templ CardSurfaceEdgesExample() {
 	ActionsContent:   CardDemoActions(),
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Surface & Edges",
 		"Background, text, radius, shadow, ring, and padding accept Tailwind tokens.",
 		"/structural/card.templ", surfaceUsage,
@@ -92,7 +92,7 @@ templ CardHeaderIconExample() {
 	HeaderIconPaddingSize:     uiDisplay.HeaderIconPaddingSizeMd,
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Header Icon Styles",
 		"HeaderIcon stamps a Phosphor icon in the header. Position, color, background, radius, and padding size style it.",
 		"/structural/card.templ", iconUsage,
@@ -128,7 +128,7 @@ templ CardContentOnlyExample() {
 	MiddleContent: CardDemoContentOnlyBody(),
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Content-Only Card",
 		"With no header settings the card is a bare surface around MiddleContent.",
 		"/structural/card.templ", contentUsage,
@@ -152,7 +152,7 @@ templ CardStateBoundHeaderExample() {
 	HeaderSubHeadingOneWayStatePath:  "cardSubHeading",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"State-Bound Header",
 		"HeaderTitleOneWayStatePath and HeaderSubHeadingOneWayStatePath drive the header text from Alpine state.",
 		"/structural/card.templ", stateUsage,
@@ -194,7 +194,7 @@ templ CardCustomHeaderSlotExample() {
 	HeaderContent: CardDemoCustomHeader(),
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Custom Header Slot",
 		"HeaderContent replaces the standard header block with your own component.",
 		"/structural/card.templ", headerSlotUsage,
@@ -220,7 +220,7 @@ templ CardHeaderStylingExample() {
 	TextCase:              uiToolset.TextCaseUpper,
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Header Styling",
 		"HeaderSize scales the title and sub-heading. HeaderTitleColor and HeaderSubHeadingColor tint them. TextCase transforms both.",
 		"/structural/card.templ", stylingUsage,
@@ -248,7 +248,7 @@ templ CardContentGapExample() {
 	GapSize:     uiStructural.CardGapSizeSm,
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Content Gap",
 		"GapSize sets the space between the header, body, and footer. The default CardGapSizeMd renders gap-3.",
 		"/structural/card.templ", gapUsage,

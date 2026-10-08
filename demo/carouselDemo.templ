@@ -161,7 +161,7 @@ templ CarouselDemoStylingExample() {
 	ItemShadowSize:        uiStructural.CarouselShadowSizeMd,
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Surface, Arrows, Dots, and Item Styling",
 		"The carousel paints its own surface (background, radius, padding, gap, ring, shadow, text color), its arrows (position, shape, size, colors), its dots (position, size, colors), and the item wrapper (background, radius, padding, ring, shadow). The plain item renderer here carries no card of its own, so the item styling comes from the carousel.",
 		"/structural/carousel.templ",
@@ -212,7 +212,7 @@ templ CarouselDemoAutoplayExample() {
 	AutoplayIntervalMs:      3000,
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Autoplay",
 		"IsAutoplay advances the window on a timer. IsAutoplayPausedOnHover stops the timer while the pointer is over the carousel and resumes it when the pointer leaves.",
 		"/structural/carousel.templ",
@@ -282,7 +282,7 @@ templ CarouselDemoTooltipsExample() {
 	}
 }`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Item Tooltips",
 		"CarouselItemTooltip wraps one item and shows its tooltip on hover or on focus inside the item. Position places the tooltip, the colors and ring style its surface, and the width and height classes cap its size. The tooltip renders in a fixed layer on the document body, so the track viewport, a scroll container, and a modal cannot clip it. The card clamps its description to two lines; the tooltip carries the full text. The button opens the same carousel inside a modal.",
 		"/structural/carouselItemTooltip.templ",

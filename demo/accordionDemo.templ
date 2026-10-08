@@ -26,7 +26,7 @@ templ AccordionItemIconsExample() {
 	},
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Item Icons", "Icon renders a Phosphor icon beside the item title.",
 		"/display/accordion.templ", iconsUsage,
 	) {
@@ -70,7 +70,7 @@ templ AccordionSurfacePaddingExample() {
 	ContentPaddingSize:     uiDisplay.AccordionPaddingSizeXl,
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Surface & Padding",
 		"Background, open background, content background, title color, border, and radius style the item surface. PaddingSize and ContentPaddingSize scale the paddings.",
 		"/display/accordion.templ", surfaceUsage,
@@ -113,7 +113,7 @@ templ AccordionSingleOpenExample() {
 	IsSingleOpen: true,
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Single Open",
 		"IsSingleOpen keeps one item open at a time. Opening a section closes the section that was open.",
 		"/display/accordion.templ", singleOpenUsage,
@@ -150,7 +150,7 @@ templ AccordionTextCaseExample() {
 	TextCase: uiToolset.TextCaseUpper,
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Text Case",
 		"TextCase transforms the item titles. It accepts uiToolset.TextCaseNone (the default, as typed), TextCaseLower, TextCaseUpper, or TextCaseCapitalize.",
 		"/display/accordion.templ",

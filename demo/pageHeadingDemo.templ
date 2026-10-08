@@ -29,7 +29,7 @@ templ PageHeadingTitleOnlyExample() {
 	Level:       uiStructural.PageHeadingLevelSection,
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Title Only",
 		"With no icon, sub-heading, or actions the heading is a single line.",
 		"/structural/pageHeading.templ", titleOnlyUsage,
@@ -51,7 +51,7 @@ templ PageHeadingLevelSizesExample() {
 	HeaderSize: uiDisplay.HeaderSizeSm,
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Levels & Sizes",
 		"Level page renders the h1 page header and defaults to xl. Level section renders the h2 section heading and defaults to lg. HeaderSize scales either level: xs, sm, md, lg, or xl.",
 		"/structural/pageHeading.templ", levelsUsage,
@@ -92,7 +92,7 @@ templ PageHeadingIconStylesExample() {
 	HeaderIconPosition:        uiDisplay.HeaderIconPositionLeft,
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Icon Styles",
 		"HeaderIcon stamps a Phosphor icon on the heading. HeaderIconColor and HeaderIconPosition style it. HeaderIconBackgroundColor, HeaderIconBorderRadius, and HeaderIconPaddingSize shape the chip. A section-level icon carries a chip background by default.",
 		"/structural/pageHeading.templ", iconUsage,
@@ -138,7 +138,7 @@ templ PageHeadingStateBoundExample() {
 	HeaderSubHeadingOneWayStatePath: "pageSubHeading",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"State-Bound Title",
 		"HeaderTitleOneWayStatePath and HeaderSubHeadingOneWayStatePath drive the heading text from Alpine state. HeaderSubHeading sets the starting sub-heading text, and HeaderSubHeadingColor tints it.",
 		"/structural/pageHeading.templ", stateUsage,
@@ -175,7 +175,7 @@ templ PageHeadingTextCaseExample() {
 	TextCase:         uiToolset.TextCaseUpper,
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Text Case",
 		"TextCase transforms the title and description. It accepts uiToolset.TextCaseNone (the default, as typed), TextCaseLower, TextCaseUpper, or TextCaseCapitalize. HeaderTitleColor and TextColor set the title and block text colors.",
 		"/structural/pageHeading.templ",
@@ -202,7 +202,7 @@ templ PageHeadingDescriptionActionsExample() {
 	ActionsContent: PageHeadingDemoActions(),
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Description and Actions",
 		"Description fills the sub-heading. It is an alias for HeaderSubHeading and wins when both are set. ActionsContent renders right-aligned controls.",
 		"/structural/pageHeading.templ", descriptionActionsUsage,

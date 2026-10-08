@@ -100,7 +100,7 @@ templ ModalUncloseableExample() {
 	IsVisibleTwoWayStatePath: "isUncloseableModalVisible",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Uncloseable",
 		"IsUncloseable hides the close button and ignores backdrop clicks. Your content closes the modal through its own state path.",
 		"/display/modal.templ", uncloseableUsage,
@@ -134,7 +134,7 @@ templ ModalUnresizableExample() {
 	OnResizeFunc:  "resizeCount = resizeCount + 1",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Unresizable & OnResize",
 		"IsUnresizable hides the resize buttons. OnResizeFunc runs every time the user resizes a closeable modal through those buttons.",
 		"/display/modal.templ", unresizableUsage,
@@ -192,7 +192,7 @@ templ ModalHeaderFooterExample() {
 	IsVisibleTwoWayStatePath: "isSlotsModalVisible",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Header & Footer Slots",
 		"HeaderContent replaces the title bar. FooterContent renders under the body for actions. Set Title or TitleOneWayStatePath as well to keep an accessible name when the header is custom.",
 		"/display/modal.templ", slotsUsage,
@@ -235,7 +235,7 @@ templ ModalCustomSurfaceExample() {
 	IsVisibleTwoWayStatePath: "isBlueBackdropModalVisible",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Custom Surface",
 		"Backdrop, background, ring, radius, shadow, and text colors accept Tailwind tokens.",
 		"/display/modal.templ", surfaceUsage,
@@ -468,7 +468,7 @@ templ ModalNearFullSizeExample() {
 	IsVisibleTwoWayStatePath: "isTerminalModalVisible",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Near-Full Size",
 		"ModalSizeXxl spans about 90% of the viewport in both directions. Tall content like a terminal session is its usual partner.",
 		"/display/modal.templ", nearFullUsage,
@@ -519,7 +519,7 @@ templ ModalCustomDimensionsExample() {
 	IsVisibleTwoWayStatePath: "isContentHeightModalVisible",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Custom Dimensions",
 		"WidthPercent and HeightPercent replace the width and height of InitialSize; InitialSize keeps its padding and header scale. The Min and Max fields clamp each axis. Pinning both axes retires the resize controls. IsMiddleContentScrollDisabled pins the body for embedded apps like a terminal. ShouldHeightMatchContent sizes the height to the content.",
 		"/display/modal.templ", dimensionsUsage,
@@ -580,7 +580,7 @@ templ ModalSizeSliceExample() {
 	IsVisibleTwoWayStatePath: "isSizeSliceModalVisible",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Size Slice",
 		"PossibleSizes is the ordered set of sizes and InitialSize is its first entry; entries below it are dropped. Enlarge steps up the set, reduce steps back down, and each control hides when it would do nothing.",
 		"/display/modal.templ", sliceUsage,

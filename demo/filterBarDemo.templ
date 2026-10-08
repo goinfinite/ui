@@ -20,7 +20,7 @@ templ FilterBarQueryParamExample() {
 	ValuesTwoWayStatePath: "filterValues",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Query Param Names",
 		"QueryParamName renames the filter in the DataTable URL template. Without it the filter Key is the parameter name.",
 		"/structural/filterBar.templ", queryParamUsage,
@@ -54,7 +54,7 @@ templ FilterBarEnumPrefixExample() {
 	EnumSelectRadioGroupNamePrefix: "myForm",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Enum Radio Group Prefix",
 		"EnumSelectRadioGroupNamePrefix namespaces the generated radio inputs of enum selects, so two filter bars on one page do not collide.",
 		"/structural/filterBar.templ", prefixUsage,
@@ -88,7 +88,7 @@ templ FilterBarDropdownBackgroundExample() {
 	DropdownBackgroundColor: "primary-500/95",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Dropdown Background",
 		"DropdownBackgroundColor paints the enum select dropdown with a Tailwind background token. DataTable forwards it as FilterDropdownBackgroundColor.",
 		"/structural/filterBar.templ", dropdownBackgroundUsage,
@@ -119,7 +119,7 @@ templ FilterBarMultiValueExample() {
 	ValuesTwoWayStatePath: "filterValues",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Multi-Value Filter",
 		"FilterKindMultiEnumSelect holds an array of selected values under one key. The chip lists every value, and the DataTable URL repeats the parameter once per value.",
 		"/structural/filterBar.templ", multiValueUsage,
@@ -158,7 +158,7 @@ templ FilterBarDateRangeExample() {
 	ValuesTwoWayStatePath: "filterValues",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Date Range Filter",
 		"FilterKindDateRange renders a min and a max date input. The active chip shows the selected span, and clearing the chip resets both dates.",
 		"/structural/filterBar.templ", dateRangeUsage,
@@ -194,7 +194,7 @@ templ FilterBarChangeCallbackExample() {
 	OnChangeFunc: "changeCount = changeCount + 1",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Change Callback",
 		"OnChangeFunc runs on every filter edit and on chip removal. It can drive a fetch or update local state.",
 		"/structural/filterBar.templ", changeCallbackUsage,

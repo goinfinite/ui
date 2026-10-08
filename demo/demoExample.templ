@@ -37,10 +37,20 @@ templ DemoExampleHeader(title, description, componentPath, usageCode string) {
 	</div>
 }
 
-templ DemoExampleCard(title, description, componentPath, usageCode string) {
+templ DemoExampleCardStacked(title, description, componentPath, usageCode string) {
 	<div class="flex flex-col gap-4">
 		@DemoExampleHeader(title, description, componentPath, usageCode)
 		{ children... }
+	</div>
+}
+
+templ DemoExampleCard(title, description, componentPath, usageCode string) {
+	<div class="grid gap-x-10 gap-y-6 lg:grid-cols-2">
+		@DemoExampleHeader(title, description, componentPath, usageCode)
+		<div class="flex flex-col gap-3">
+			<p class="text-lg font-bold">Live Example</p>
+			{ children... }
+		</div>
 	</div>
 }
 
