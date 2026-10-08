@@ -55,7 +55,7 @@ Password field with a reveal toggle, an optional random password generator, and 
 })
 ```
 
-`Rules` configures the generator and the meter: `MinLength` (default 6), `MaxLength` (default 64), `GenerationLength` (default 16), and one `ShouldInclude*Chars` flag per character class. When no class is selected, every class is required. The generator runs on `UiToolset.CreateRandomPassword(options)` and guarantees at least one character from each selected class. The meter shows a percentage bar and a criteria checklist that updates as the user types; the checklist shows only the enabled criteria.
+`Rules` configures the generator and the meter: `MinLength` (default 6), `MaxLength` (default 64), `GenerationLength` (default 16), and one `ShouldInclude*Chars` flag per character class. When no class is selected, every class is required. The generator runs on `UiToolset.CreateRandomPassword(options)` and guarantees at least one character from each selected class. The meter shows a percentage bar and a criteria checklist that updates as the user types; the checklist shows only the enabled criteria. The generate button copies the new password to the clipboard and shows a success toast. The toast text follows the browser language and falls back to English; the page must mount `Toast`. `StrengthMeterColor`, `StrengthCriteriaTextColor`, `StrengthCriteriaFulfilledIconColor`, and `StrengthCriteriaUnfulfilledIconColor` take a color token and repaint the meter bar, the checklist text, and the fulfilled and unfulfilled icons.
 
 ## InlineCheckboxGroup
 
@@ -103,7 +103,7 @@ Dropdown select. It is not a native `<select>`: screen-reader-only radio inputs 
 })
 ```
 
-`ShouldIncludeBlankOption` adds a clear entry. `IsDisabledOneWayStatePath` disables the trigger while the path is truthy. `OnChangeFunc` runs after a change. `Size` accepts the `SelectInputSize*` constants and defaults to `md`.
+`ShouldIncludeBlankOption` adds a clear entry. `IsDisabledOneWayStatePath` disables the trigger while the path is truthy. `OnChangeFunc` runs after a change. `Size` accepts the `SelectInputSize*` constants and defaults to `md`. `DropdownMinHeightClass` and `DropdownMaxHeightClass` cap the list height (default `max-h-60`). `MaxVisibleOptions` caps it to a row count and wins over both.
 
 ## MultiSelectInput
 
@@ -118,7 +118,7 @@ Dropdown that holds a list of selected values on one state path.
 })
 ```
 
-It shares the `FlatOptions` and `LabelValueOptions` modes with `SelectInput`. `OnChangeFunc` runs after a checkbox toggle or a clear. For a filter box or removable tags, use `SearchableSelectInput` with `IsMultiSelect`.
+It shares the `FlatOptions` and `LabelValueOptions` modes with `SelectInput`. `OnChangeFunc` runs after a checkbox toggle or a clear. `DropdownMinHeightClass` and `DropdownMaxHeightClass` cap the list height (default `max-h-60`). `MaxVisibleOptions` caps it to a row count and wins over both. For a filter box or removable tags, use `SearchableSelectInput` with `IsMultiSelect`.
 
 ## SearchableSelectInput
 
@@ -133,7 +133,7 @@ Dropdown with a filter box. Typing narrows the local options in place. The list 
 })
 ```
 
-It shares the `FlatOptions` and `LabelValueOptions` modes with `SelectInput`. The filter matches the label, case-insensitively. `IsMultiSelect` binds an array and keeps the dropdown open after each toggle. `SelectionDisplay` accepts `SearchableSelectInputSelectionDisplayText` (the default) or `SearchableSelectInputSelectionDisplayTags` for removable tags inside the field. The text display joins the selected labels. With tags, `ShouldAllowCustomValues` turns a typed value into a tag on Enter, and Backspace on an empty input removes the last tag. Each tag shows the option label while the bound array holds the stored value. Tags apply to multi mode only. `DropdownMaxHeightClass` caps the list (default `max-h-60`). `OnChangeFunc` runs on selection, on a multi-select toggle, on a tag change, and on clear. Single mode writes one hidden input. Multi mode writes one hidden input per selected value, so a form submission carries every value under `InputName`.
+It shares the `FlatOptions` and `LabelValueOptions` modes with `SelectInput`. The filter matches the label, case-insensitively. `IsMultiSelect` binds an array and keeps the dropdown open after each toggle. `SelectionDisplay` accepts `SearchableSelectInputSelectionDisplayText` (the default) or `SearchableSelectInputSelectionDisplayTags` for removable tags inside the field. The text display joins the selected labels. With tags, `ShouldAllowCustomValues` turns a typed value into a tag on Enter, and Backspace on an empty input removes the last tag. Each tag shows the option label while the bound array holds the stored value. Tags apply to multi mode only. `TagOuterBackgroundColor` (default `secondary-500`) paints the tag and its border, `TagOuterTextColor` (default `neutral-50`) paints its text, and `TagInnerBackgroundColor` (default `neutral-50/10`) paints the label bubble. `DropdownMinHeightClass` and `DropdownMaxHeightClass` cap the list (default `max-h-60`). `MaxVisibleOptions` caps it to a row count and wins over both. `OnChangeFunc` runs on selection, on a multi-select toggle, on a tag change, and on clear. Single mode writes one hidden input. Multi mode writes one hidden input per selected value, so a form submission carries every value under `InputName`.
 
 ## RemoteSearchableSelectInput
 
@@ -148,7 +148,7 @@ Searchable select whose options come from a URL as the user types. It debounces 
 })
 ```
 
-`OptionsQueryParam` names the query parameter (default `q`). `MinQueryLength` gates the first request (default 3). `DebounceMs` waits before each request (default 300). The endpoint receives `GET OptionsUrl?<query param>=<typed text>`. It returns `{ "body": [{ "label": "...", "value": "..." }] }`. A bare JSON array of strings or `{label, value}` objects also works. `IsMultiSelect` binds an array and caches the selected labels while the query changes. `OnChangeFunc` runs on selection, on a multi-select toggle, and on clear.
+`OptionsQueryParam` names the query parameter (default `q`). `MinQueryLength` gates the first request (default 3). `DebounceMs` waits before each request (default 300). Below the minimum query length, including an empty query, the dropdown shows the minimum-length prompt. `DropdownMinHeightClass`, `DropdownMaxHeightClass`, and `MaxVisibleOptions` size the list like the local variant. The endpoint receives `GET OptionsUrl?<query param>=<typed text>`. It returns `{ "body": [{ "label": "...", "value": "..." }] }`. A bare JSON array of strings or `{label, value}` objects also works. `IsMultiSelect` binds an array and caches the selected labels while the query changes. `OnChangeFunc` runs on selection, on a multi-select toggle, and on clear.
 
 ## RadioInput
 

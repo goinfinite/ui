@@ -9,7 +9,8 @@ Shared token-to-class resolvers. Components accept a token and apply the matchin
 - `BackgroundColorClassResolver(backgroundColor, fallbackClass)`: returns `bg-` plus the token, or the fallback.
 - `TextColorClassResolver(textColor, fallbackClass)`: returns `text-` plus the token, or the fallback.
 - `BorderColorClassResolver(borderColor, fallbackClass)`: returns `border-` plus the token, or the fallback.
-- `BorderRadiusClassResolver(borderRadius, fallbackClass)`: maps `none` through `xl` plus `full` to the class that matches the token name, so `md` returns `rounded-md`, or the fallback.
+- `BorderRadiusTokenResolver(borderRadius, fallbackToken)`: returns the token when it is one of the shared `BorderRadius*` values, or the fallback token.
+- `BorderRadiusClassResolver(borderRadius, fallbackClass)`: maps the shared `BorderRadius*` tokens to the class that matches the token name, so `md` returns `rounded-md`, or the fallback.
 - `ShapeClassResolver(shape, fallbackClass)`: maps the shared shape tokens `circular`, `rounded`, and `square` to `rounded-full`, `rounded`, and `rounded-none`, or the fallback.
 - `ShadowClassResolver(shadowSize, fallbackClass)`: maps `none` through `xl` to the `shadow-*` class, or the fallback.
 - `RingThicknessClassResolver(ringThickness, fallbackClass)`: maps `xs` through `xl` to the `ring-*` thickness classes, or the fallback.

@@ -29,6 +29,15 @@ fix: truncate the demo sidebar labels
 fix: show a valid tags icon in the demo
 fix: read the remote demo query parameter by name
 docs: document the inline group cap and the searchable fixes in the form readme and context
+feat: add dropdown height and max visible option controls to the select inputs and repair the searchable option and focus states
+feat: add clipboard copy, square actions, and strength color settings to the password input
+fix: stack the demo card header and let the usage code wrap
+fix: wrap the inline group examples in the standard demo card
+fix: render the filter chip as a label with a value bubble
+fix: lower the data table sticky header opacity
+BREAKING: unify the border radius tokens and the token resolver in the toolset
+docs: update the readmes, the contexts, the feature map, and the changelog
+chore(docs): regenerate the demo page
 
 0.2.5 - 2026/10/07
 BREAKING: move the refresh URL builder, the fragment fetcher, and the refresh lifecycle helpers under UiToolset.ServerFragmentRefreshComponent

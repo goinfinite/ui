@@ -119,13 +119,13 @@ Icon with an optional background chip.
     // OptionalFields
     Color:           "red-950",
     BackgroundColor: "neutral-300",
-    BorderRadius:    uiDisplay.HeaderIconBorderRadiusXl,
+    BorderRadius:    uiToolset.BorderRadiusXl,
     PaddingSize:     uiDisplay.HeaderIconPaddingSizeLg,
 })
 ```
 
 - `Color` sets the icon text color. `BackgroundColor` sets the chip behind it. Icon placement (left of the title or above it) belongs to `HeaderBlock`'s `HeaderIconPosition`.
-- `BorderRadius` accepts `HeaderIconBorderRadiusNone` through `HeaderIconBorderRadiusXl`. `PaddingSize` accepts `HeaderIconPaddingSizeNone` through `HeaderIconPaddingSizeXl`.
+- `BorderRadius` accepts `uiToolset.BorderRadiusNone` through `uiToolset.BorderRadiusFull`. `PaddingSize` accepts `HeaderIconPaddingSizeNone` through `HeaderIconPaddingSizeXl`.
 
 ## LoadingOverlay
 
