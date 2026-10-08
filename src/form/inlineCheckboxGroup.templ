@@ -1,0 +1,44 @@
+package uiForm
+
+import uiToolset "github.com/goinfinite/ui/src/toolset"
+
+const (
+	InlineCheckboxGroupOrientationHorizontal string = "horizontal"
+	InlineCheckboxGroupOrientationVertical   string = "vertical"
+)
+
+type InlineCheckboxGroupSettings struct {
+	Label         string
+	InputSettings []CheckboxInputSettings
+
+	// OptionalFields
+	Orientation string
+	TextCase    string
+}
+
+func inlineCheckboxGroupContentClassesResolver(orientation string) string {
+	if orientation == InlineCheckboxGroupOrientationVertical {
+		return "flex min-h-8 flex-col items-start gap-2 p-1.5"
+	}
+	return "flex min-h-8 flex-row items-center gap-2 p-1.5"
+}
+
+templ InlineCheckboxGroup(componentSettings InlineCheckboxGroupSettings) {
+	<!-- InlineCheckboxGroup -->
+	{{ legendClasses := "ml-1 select-none px-1 text-xs font-bold leading-none text-neutral-50/80 " + uiToolset.TextCaseClassResolver(componentSettings.TextCase) }}
+	{{ contentClasses := inlineCheckboxGroupContentClassesResolver(componentSettings.Orientation) }}
+	<div class="flex w-full flex-col">
+		<fieldset class="bg-neutral-50/7.5 relative -mt-1.5 w-full rounded border border-neutral-50/5 transition-colors focus-within:border-neutral-50/30 hover:border-neutral-50/30">
+			<legend class={ legendClasses }>
+				{ componentSettings.Label }
+			</legend>
+			<div class={ contentClasses }>
+				for _, inputSettings := range componentSettings.InputSettings {
+					<div class="w-fit">
+						@CheckboxInput(inputSettings)
+					</div>
+				}
+			</div>
+		</fieldset>
+	</div>
+}

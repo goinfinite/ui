@@ -1,0 +1,236 @@
+package main
+
+import (
+	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiForm "github.com/goinfinite/ui/src/form"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+templ InlineCheckboxGroupVerticalExample() {
+	{{
+		verticalUsage := `@uiForm.InlineCheckboxGroup(uiForm.InlineCheckboxGroupSettings{
+	Label:       "Fruits",
+	Orientation: uiForm.InlineCheckboxGroupOrientationVertical,
+	InputSettings: []uiForm.CheckboxInputSettings{
+		{Label: "Apple", Value: "apple", TwoWayStatePath: "selectedFruits", InputName: "selectedFruits"},
+		{Label: "Banana", Value: "banana", TwoWayStatePath: "selectedFruits", InputName: "selectedFruits"},
+		{Label: "Orange", Value: "orange", TwoWayStatePath: "selectedFruits", InputName: "selectedFruits"},
+	},
+
+	// OptionalFields
+	TextCase: uiToolset.TextCaseUpper,
+})`
+	}}
+	@DemoExampleCard(
+		"Vertical Orientation",
+		"Orientation stacks the checkboxes in one column. TextCase transforms the group legend.",
+		"/form/inlineCheckboxGroup.templ", verticalUsage,
+	) {
+		<div x-data="{selectedFruits: ['banana']}" class="flex w-full max-w-50 flex-col gap-3">
+			@uiForm.InlineCheckboxGroup(uiForm.InlineCheckboxGroupSettings{
+				Label:       "Fruits",
+				Orientation: uiForm.InlineCheckboxGroupOrientationVertical,
+				InputSettings: []uiForm.CheckboxInputSettings{
+					{
+						Label:           "Apple",
+						Value:           "apple",
+						TwoWayStatePath: "selectedFruits",
+						InputName:       "selectedFruits",
+					},
+					{
+						Label:           "Banana",
+						Value:           "banana",
+						TwoWayStatePath: "selectedFruits",
+						InputName:       "selectedFruits",
+					},
+					{
+						Label:           "Orange",
+						Value:           "orange",
+						TwoWayStatePath: "selectedFruits",
+						InputName:       "selectedFruits",
+					},
+				},
+				TextCase: uiToolset.TextCaseUpper,
+			})
+			<p class={ DemoLiveStateClasses }>
+				Values: <span x-text="JSON.stringify(selectedFruits)"></span>
+			</p>
+		</div>
+	}
+}
+
+templ InlineCheckboxGroupSizesExample() {
+	{{
+		sizesUsage := `@uiForm.InlineCheckboxGroup(uiForm.InlineCheckboxGroupSettings{
+	Label: "Sizes",
+	InputSettings: []uiForm.CheckboxInputSettings{
+		{Label: "Small", Value: "sm", TwoWayStatePath: "selectedSizes", Size: uiForm.CheckboxInputSizeSm},
+		{Label: "Medium", Value: "md", TwoWayStatePath: "selectedSizes", Size: uiForm.CheckboxInputSizeMd},
+		{Label: "Large", Value: "lg", TwoWayStatePath: "selectedSizes", Size: uiForm.CheckboxInputSizeLg},
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Sizes and Shapes",
+		"Every CheckboxInput setting travels through the group, so each box can carry its own size or shape.",
+		"/form/inlineCheckboxGroup.templ", sizesUsage,
+	) {
+		<div x-data="{selectedSizes: [], selectedShapes: []}" class="flex flex-col gap-3">
+			@uiForm.InlineCheckboxGroup(uiForm.InlineCheckboxGroupSettings{
+				Label: "Sizes",
+				InputSettings: []uiForm.CheckboxInputSettings{
+					{
+						Label:           "Small",
+						Value:           "sm",
+						TwoWayStatePath: "selectedSizes",
+						Size:            uiForm.CheckboxInputSizeSm,
+					},
+					{
+						Label:           "Medium",
+						Value:           "md",
+						TwoWayStatePath: "selectedSizes",
+						Size:            uiForm.CheckboxInputSizeMd,
+					},
+					{
+						Label:           "Large",
+						Value:           "lg",
+						TwoWayStatePath: "selectedSizes",
+						Size:            uiForm.CheckboxInputSizeLg,
+					},
+				},
+			})
+			@uiForm.InlineCheckboxGroup(uiForm.InlineCheckboxGroupSettings{
+				Label: "Shapes",
+				InputSettings: []uiForm.CheckboxInputSettings{
+					{
+						Label:           "Square",
+						Value:           "square",
+						TwoWayStatePath: "selectedShapes",
+						Shape:           uiForm.CheckboxInputShapeSquare,
+					},
+					{
+						Label:           "Rounded",
+						Value:           "rounded",
+						TwoWayStatePath: "selectedShapes",
+						Shape:           uiForm.CheckboxInputShapeRounded,
+					},
+					{
+						Label:           "Circular",
+						Value:           "circular",
+						TwoWayStatePath: "selectedShapes",
+						Shape:           uiForm.CheckboxInputShapeCircular,
+					},
+				},
+			})
+		</div>
+	}
+}
+
+templ InlineCheckboxGroupColorsExample() {
+	{{
+		colorsUsage := `@uiForm.InlineCheckboxGroup(uiForm.InlineCheckboxGroupSettings{
+	Label: "Colors",
+	InputSettings: []uiForm.CheckboxInputSettings{
+		{
+			Label:           "Emerald",
+			Value:           "emerald",
+			TwoWayStatePath: "selectedColors",
+			CheckedColor:    "emerald-500",
+			FocusRingColor:  "emerald-400",
+		},
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Colors",
+		"CheckedColor, UncheckedColor, FocusRingColor, and TextColor apply per checkbox.",
+		"/form/inlineCheckboxGroup.templ", colorsUsage,
+	) {
+		<div x-data="{selectedColors: ['emerald']}" class="flex flex-col gap-3">
+			@uiForm.InlineCheckboxGroup(uiForm.InlineCheckboxGroupSettings{
+				Label: "Colors",
+				InputSettings: []uiForm.CheckboxInputSettings{
+					{
+						Label:           "Emerald",
+						Value:           "emerald",
+						TwoWayStatePath: "selectedColors",
+						CheckedColor:    "emerald-500",
+						FocusRingColor:  "emerald-400",
+					},
+					{
+						Label:           "Primary",
+						Value:           "primary",
+						TwoWayStatePath: "selectedColors",
+						CheckedColor:    "primary-500",
+						FocusRingColor:  "primary-400",
+					},
+					{
+						Label:           "Rose",
+						Value:           "rose",
+						TwoWayStatePath: "selectedColors",
+						CheckedColor:    "rose-500",
+						FocusRingColor:  "rose-400",
+						TextColor:       "rose-300",
+					},
+				},
+			})
+		</div>
+	}
+}
+
+templ InlineCheckboxGroupDemo() {
+	{{
+		demoUsage := `@uiForm.InlineCheckboxGroup(uiForm.InlineCheckboxGroupSettings{
+	Label: "Fruits",
+	InputSettings: []uiForm.CheckboxInputSettings{
+		{Label: "Apple", Value: "apple", TwoWayStatePath: "selectedFruits", InputName: "selectedFruits"},
+		{Label: "Banana", Value: "banana", TwoWayStatePath: "selectedFruits", InputName: "selectedFruits"},
+		{Label: "Orange", Value: "orange", TwoWayStatePath: "selectedFruits", InputName: "selectedFruits"},
+	},
+})`
+	}}
+	<div class="flex flex-col gap-4" id="inline-checkbox-group-demo">
+		@DemoComponentSection(DemoComponentSectionSettings{
+			ComponentPath:          "/form/inlineCheckboxGroup.templ",
+			Description:            "An inline checkbox group presents several checkboxes under one notched legend, in a row or a column, bound to one array state path.",
+			LiveExampleDescription: "A horizontal group bound to one Alpine array. InputName makes every checked value part of the form submission.",
+			Title:                  ".InlineCheckboxGroup",
+			UsageCode:              demoUsage,
+			AlpineStateCode:        `<div x-data="{selectedFruits: ['banana']}"></div>`,
+		}) {
+			<div x-data="{selectedFruits: ['banana']}" class="flex flex-col gap-3">
+				@uiForm.InlineCheckboxGroup(uiForm.InlineCheckboxGroupSettings{
+					Label: "Fruits",
+					InputSettings: []uiForm.CheckboxInputSettings{
+						{
+							Label:           "Apple",
+							Value:           "apple",
+							TwoWayStatePath: "selectedFruits",
+							InputName:       "selectedFruits",
+						},
+						{
+							Label:           "Banana",
+							Value:           "banana",
+							TwoWayStatePath: "selectedFruits",
+							InputName:       "selectedFruits",
+						},
+						{
+							Label:           "Orange",
+							Value:           "orange",
+							TwoWayStatePath: "selectedFruits",
+							InputName:       "selectedFruits",
+						},
+					},
+				})
+				<p class={ DemoLiveStateClasses }>
+					Values: <span x-text="JSON.stringify(selectedFruits)"></span>
+				</p>
+			</div>
+		}
+		@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
+			{Title: "Vertical Orientation", Icon: "ph-rows", Content: InlineCheckboxGroupVerticalExample()},
+			{Title: "Sizes and Shapes", Icon: "ph-ruler", Content: InlineCheckboxGroupSizesExample()},
+			{Title: "Colors", Icon: "ph-palette", Content: InlineCheckboxGroupColorsExample()},
+		})
+	</div>
+}
