@@ -18,19 +18,6 @@ const (
 	AlertSizeMd string = "md"
 	AlertSizeLg string = "lg"
 	AlertSizeXl string = "xl"
-
-	AlertRingThicknessXs string = "xs"
-	AlertRingThicknessSm string = "sm"
-	AlertRingThicknessMd string = "md"
-	AlertRingThicknessLg string = "lg"
-	AlertRingThicknessXl string = "xl"
-
-	AlertShadowSizeNone string = "none"
-	AlertShadowSizeXs   string = "xs"
-	AlertShadowSizeSm   string = "sm"
-	AlertShadowSizeMd   string = "md"
-	AlertShadowSizeLg   string = "lg"
-	AlertShadowSizeXl   string = "xl"
 )
 
 type AlertSettings struct {
@@ -260,7 +247,7 @@ templ Alert(componentSettings AlertSettings) {
 					IconLeft:    "ph-x",
 					OnClickFunc: "alertVisible = false; " + componentSettings.OnCloseFunc,
 					Size:        closeIconSize,
-					Shape:       uiControl.ButtonShapeCircular,
+					Shape:       uiToolset.ShapeCircular,
 				}
 				if componentSettings.CloseIconBackgroundColor != "" {
 					closeButtonSettings.BackgroundColor = componentSettings.CloseIconBackgroundColor

@@ -42,11 +42,11 @@ templ CardSurfaceEdgesExample() {
 	// OptionalFields
 	BackgroundColor:  "primary-900/60",
 	TextColor:        "neutral-50",
-	PaddingSize:      uiStructural.CardPaddingSizeLg,
+	PaddingSize:      uiToolset.PaddingSizeLg,
 	BorderRadius:     uiToolset.BorderRadiusNone,
-	ShadowSize:       uiStructural.CardShadowSizeLg,
+	ShadowSize:       uiToolset.ShadowSizeLg,
 	RingColor:        "primary-500",
-	RingThickness:    uiStructural.CardRingThicknessMd,
+	RingThickness:    uiToolset.RingThicknessMd,
 	HeaderSubHeading: "Custom background, text, and ring",
 	ActionsContent:   CardDemoActions(),
 })`
@@ -63,16 +63,16 @@ templ CardSurfaceEdgesExample() {
 			HeaderIcon:       "ph-palette",
 			BackgroundColor:  "primary-900/60",
 			TextColor:        "neutral-50",
-			PaddingSize:      uiStructural.CardPaddingSizeLg,
+			PaddingSize:      uiToolset.PaddingSizeLg,
 			RingColor:        "primary-500",
-			RingThickness:    uiStructural.CardRingThicknessMd,
+			RingThickness:    uiToolset.RingThicknessMd,
 		})
 		@uiStructural.Card(uiStructural.CardSettings{
 			MiddleContent:  CardDemoBody(),
 			HeaderTitle:    "Square Card",
 			HeaderIcon:     "ph-square",
 			BorderRadius:   uiToolset.BorderRadiusNone,
-			ShadowSize:     uiStructural.CardShadowSizeLg,
+			ShadowSize:     uiToolset.ShadowSizeLg,
 			ActionsContent: CardDemoActions(),
 		})
 	}
@@ -89,7 +89,7 @@ templ CardHeaderIconExample() {
 	HeaderIconColor:           "primary-100",
 	HeaderIconBackgroundColor: "primary-500/30",
 	HeaderIconBorderRadius:    uiToolset.BorderRadiusLg,
-	HeaderIconPaddingSize:     uiDisplay.HeaderIconPaddingSizeMd,
+	HeaderIconPaddingSize:     uiToolset.PaddingSizeMd,
 })`
 	}}
 	@DemoExampleCardStacked(
@@ -106,7 +106,7 @@ templ CardHeaderIconExample() {
 				HeaderIconColor:           "secondary-100",
 				HeaderIconBackgroundColor: "secondary-500/30",
 				HeaderIconBorderRadius:    uiToolset.BorderRadiusLg,
-				HeaderIconPaddingSize:     uiDisplay.HeaderIconPaddingSizeMd,
+				HeaderIconPaddingSize:     uiToolset.PaddingSizeMd,
 			})
 			@uiStructural.Card(uiStructural.CardSettings{
 				MiddleContent:             CardDemoBody(),
@@ -116,7 +116,7 @@ templ CardHeaderIconExample() {
 				HeaderIconColor:           "amber-300",
 				HeaderIconBackgroundColor: "amber-500/20",
 				HeaderIconBorderRadius:    uiToolset.BorderRadiusXl,
-				HeaderIconPaddingSize:     uiDisplay.HeaderIconPaddingSizeSm,
+				HeaderIconPaddingSize:     uiToolset.PaddingSizeSm,
 			})
 		</div>
 	}
@@ -136,7 +136,7 @@ templ CardContentOnlyExample() {
 		@uiStructural.Card(uiStructural.CardSettings{
 			MiddleContent: CardDemoContentOnlyBody(),
 			BorderRadius:  uiToolset.BorderRadiusLg,
-			ShadowSize:    uiStructural.CardShadowSizeSm,
+			ShadowSize:    uiToolset.ShadowSizeSm,
 		})
 	}
 }
@@ -245,12 +245,12 @@ templ CardContentGapExample() {
 
 	// OptionalFields
 	HeaderTitle: "Tight Gap",
-	GapSize:     uiStructural.CardGapSizeSm,
+	GapSize:     uiToolset.GapSizeSm,
 })`
 	}}
 	@DemoExampleCardStacked(
 		"Content Gap",
-		"GapSize sets the space between the header, body, and footer. The default CardGapSizeMd renders gap-3.",
+		"GapSize sets the space between the header, body, and footer. The default uiToolset.GapSizeMd renders gap-3.",
 		"/structural/card.templ", gapUsage,
 	) {
 		<div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -258,13 +258,13 @@ templ CardContentGapExample() {
 				MiddleContent: CardDemoBody(),
 				FooterContent: CardDemoFooter(),
 				HeaderTitle:   "Tight Gap",
-				GapSize:       uiStructural.CardGapSizeSm,
+				GapSize:       uiToolset.GapSizeSm,
 			})
 			@uiStructural.Card(uiStructural.CardSettings{
 				MiddleContent: CardDemoBody(),
 				FooterContent: CardDemoFooter(),
 				HeaderTitle:   "Loose Gap",
-				GapSize:       uiStructural.CardGapSizeXl,
+				GapSize:       uiToolset.GapSizeXl,
 			})
 		</div>
 	}

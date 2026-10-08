@@ -3,6 +3,7 @@ package main
 import (
 	uiControl "github.com/goinfinite/ui/src/control"
 	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
 templ ModalDemoHeader() {
@@ -228,7 +229,7 @@ templ ModalCustomSurfaceExample() {
 	BackdropColor:            "blue-900/60",
 	BackgroundColor:          "primary-900",
 	TextColor:                "neutral-100",
-	ShadowSize:               uiDisplay.ModalShadowSizeXl,
+	ShadowSize:               uiToolset.ShadowSizeXl,
 	RingColor:                "primary-500",
 	RingThickness:            "md",
 	BorderRadius:             "lg",
@@ -369,7 +370,7 @@ templ ModalCustomSurfaceExample() {
 				InitialSize:              uiDisplay.ModalSizeMd,
 				BackgroundColor:          "primary-900",
 				TextColor:                "neutral-100",
-				ShadowSize:               uiDisplay.ModalShadowSizeXl,
+				ShadowSize:               uiToolset.ShadowSizeXl,
 				IsVisibleTwoWayStatePath: "isPrimaryModalVisible",
 			})
 			@uiDisplay.Modal(uiDisplay.ModalSettings{

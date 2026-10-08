@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/a-h/templ"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
 func TestCarouselItemTooltip(t *testing.T) {
@@ -83,7 +84,7 @@ func TestCarouselItemTooltip(t *testing.T) {
 			BackgroundColor: "primary-900/95",
 			TextColor:       "amber-50",
 			RingColor:       "primary-500/40",
-			RingThickness:   CarouselRingThicknessXs,
+			RingThickness:   uiToolset.RingThicknessXs,
 		})
 		for _, expectedFragment := range []string{
 			"bg-primary-900/95", "text-amber-50", "ring-0.5 ring-primary-500/40",

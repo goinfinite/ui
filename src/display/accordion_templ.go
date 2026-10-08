@@ -12,15 +12,6 @@ import (
 	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
-const (
-	AccordionPaddingSizeNone string = "none"
-	AccordionPaddingSizeXs   string = "xs"
-	AccordionPaddingSizeSm   string = "sm"
-	AccordionPaddingSizeMd   string = "md"
-	AccordionPaddingSizeLg   string = "lg"
-	AccordionPaddingSizeXl   string = "xl"
-)
-
 type AccordionItemSettings struct {
 	Title   string
 	Content templ.Component
@@ -134,7 +125,7 @@ func Accordion(componentSettings AccordionSettings) templ.Component {
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue(groupName)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/accordion.templ`, Line: 77, Col: 21}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/accordion.templ`, Line: 68, Col: 21}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
 				if templ_7745c5c3_Err != nil {
@@ -220,7 +211,7 @@ func Accordion(componentSettings AccordionSettings) templ.Component {
 			var templ_7745c5c3_Var11 string
 			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(item.Title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/accordion.templ`, Line: 84, Col: 62}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/accordion.templ`, Line: 75, Col: 62}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {

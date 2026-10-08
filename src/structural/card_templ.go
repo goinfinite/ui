@@ -13,35 +13,6 @@ import (
 	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
-const (
-	CardShadowSizeNone string = "none"
-	CardShadowSizeXs   string = "xs"
-	CardShadowSizeSm   string = "sm"
-	CardShadowSizeMd   string = "md"
-	CardShadowSizeLg   string = "lg"
-	CardShadowSizeXl   string = "xl"
-
-	CardRingThicknessXs string = "xs"
-	CardRingThicknessSm string = "sm"
-	CardRingThicknessMd string = "md"
-	CardRingThicknessLg string = "lg"
-	CardRingThicknessXl string = "xl"
-
-	CardPaddingSizeNone string = "none"
-	CardPaddingSizeXs   string = "xs"
-	CardPaddingSizeSm   string = "sm"
-	CardPaddingSizeMd   string = "md"
-	CardPaddingSizeLg   string = "lg"
-	CardPaddingSizeXl   string = "xl"
-
-	CardGapSizeNone string = "none"
-	CardGapSizeXs   string = "xs"
-	CardGapSizeSm   string = "sm"
-	CardGapSizeMd   string = "md"
-	CardGapSizeLg   string = "lg"
-	CardGapSizeXl   string = "xl"
-)
-
 type CardSettings struct {
 	MiddleContent templ.Component
 

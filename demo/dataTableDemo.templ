@@ -28,7 +28,7 @@ templ DemoTooltipActionCell(record DemoServerRecord) {
 	<div class="flex justify-end">
 		@uiControl.Button(uiControl.ButtonSettings{
 			IconLeft:       "ph-info",
-			Shape:          uiControl.ButtonShapeCircular,
+			Shape:          uiToolset.ShapeCircular,
 			Size:           uiControl.ButtonSizeSm,
 			AriaLabel:      "Show details for " + record.Name,
 			TooltipContent: "Details for " + record.Name,
@@ -84,7 +84,7 @@ templ DataTableRowsConfigExample() {
 	{{
 		rowsSettings.RowIdResolver = func(record DemoServerRecord) string { return record.Id }
 		rowsSettings.RowLabelResolver = func(record DemoServerRecord) string { return record.Name }
-		rowsSettings.CheckboxShape = uiForm.CheckboxInputShapeRounded
+		rowsSettings.CheckboxShape = uiToolset.ShapeRounded
 		rowsSettings.CheckboxSize = uiForm.CheckboxInputSizeSm
 		rowsSettings.CheckboxCheckedColor = "emerald-500"
 		rowsSettings.CheckboxUncheckedColor = "sky-500"
@@ -95,7 +95,7 @@ templ DataTableRowsConfigExample() {
 	Rows:                 records,
 	RowIdResolver:        func(record Record) string { return record.Id },
 	RowLabelResolver:     func(record Record) string { return record.Name },
-	CheckboxShape:        uiForm.CheckboxInputShapeRounded,
+	CheckboxShape:        uiToolset.ShapeRounded,
 	CheckboxSize:         uiForm.CheckboxInputSizeSm,
 	CheckboxCheckedColor: "emerald-500",
 	CheckboxUncheckedColor: "sky-500",

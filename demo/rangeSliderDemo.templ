@@ -3,6 +3,7 @@ package main
 import (
 	uiControl "github.com/goinfinite/ui/src/control"
 	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
 templ RangeSliderSizesExample() {
@@ -49,7 +50,7 @@ templ RangeSliderThumbShapesExample() {
 	ThumbValueTwoWayStatePath: "sliderValue",
 
 	// OptionalFields
-	ThumbShape: uiControl.RangeSliderThumbShapeCircular,
+	ThumbShape: uiToolset.ShapeCircular,
 })`
 	}}
 	@DemoExampleCard(
@@ -60,15 +61,15 @@ templ RangeSliderThumbShapesExample() {
 		<div class="flex flex-col gap-3" x-data="{sliderValue: 50}">
 			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
 				ThumbValueTwoWayStatePath: "sliderValue",
-				ThumbShape:                uiControl.RangeSliderThumbShapeCircular,
+				ThumbShape:                uiToolset.ShapeCircular,
 			})
 			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
 				ThumbValueTwoWayStatePath: "sliderValue",
-				ThumbShape:                uiControl.RangeSliderThumbShapeRounded,
+				ThumbShape:                uiToolset.ShapeRounded,
 			})
 			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
 				ThumbValueTwoWayStatePath: "sliderValue",
-				ThumbShape:                uiControl.RangeSliderThumbShapeSquare,
+				ThumbShape:                uiToolset.ShapeSquare,
 			})
 			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
 				ThumbValueTwoWayStatePath: "sliderValue",
@@ -140,9 +141,9 @@ templ RangeSliderValueBubbleExample() {
 	ThumbValueBubbleBackgroundColor: "red-500",
 	ThumbValueBubbleTextColor:       "neutral-50",
 	ThumbValueBubbleSize:            uiControl.RangeSliderThumbValueBubbleSizeLg,
-	ThumbValueBubbleShape:           uiControl.RangeSliderThumbValueBubbleShapeRounded,
+	ThumbValueBubbleShape:           uiToolset.ShapeRounded,
 	ThumbValueBubbleRingColor:       "violet-500",
-	ThumbValueBubbleRingThickness:   uiControl.RangeSliderThumbValueBubbleRingThicknessXl,
+	ThumbValueBubbleRingThickness:   uiToolset.RingThicknessXl,
 })`
 	}}
 	@DemoExampleCard(
@@ -172,9 +173,9 @@ templ RangeSliderValueBubbleExample() {
 				ThumbValueBubbleBackgroundColor: "transparent",
 				ThumbValueBubbleTextColor:       "neutral-50",
 				ThumbValueBubbleSize:            uiControl.RangeSliderThumbValueBubbleSizeLg,
-				ThumbValueBubbleShape:           uiControl.RangeSliderThumbValueBubbleShapeRounded,
+				ThumbValueBubbleShape:           uiToolset.ShapeRounded,
 				ThumbValueBubbleRingColor:       "violet-500",
-				ThumbValueBubbleRingThickness:   uiControl.RangeSliderThumbValueBubbleRingThicknessXl,
+				ThumbValueBubbleRingThickness:   uiToolset.RingThicknessXl,
 			})
 			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
 				ThumbValueTwoWayStatePath:   "sliderValue",
@@ -361,7 +362,7 @@ templ RangeSliderTrackTooltipExample() {
 	TrackTooltipBackgroundColor: "primary-500",
 	TrackTooltipTextColor:       "neutral-50",
 	TrackTooltipRingColor:       "primary-200",
-	TrackTooltipRingThickness:   uiControl.RangeSliderTrackTooltipRingThicknessMd,
+	TrackTooltipRingThickness:   uiToolset.RingThicknessMd,
 })`
 	}}
 	@DemoExampleCard(
@@ -392,7 +393,7 @@ templ RangeSliderTrackTooltipExample() {
 				TrackTooltipBackgroundColor: "emerald-500",
 				TrackTooltipTextColor:       "neutral-50",
 				TrackTooltipRingColor:       "emerald-200",
-				TrackTooltipRingThickness:   uiControl.RangeSliderTrackTooltipRingThicknessMd,
+				TrackTooltipRingThickness:   uiToolset.RingThicknessMd,
 			})
 			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
 				ThumbValueTwoWayStatePath:   "tinyValue",
@@ -446,11 +447,11 @@ templ RangeSliderDualModeExample() {
 	ThumbValueBubbleEnabled:              true,
 	ThumbUpperValueBubbleEnabled:         true,
 	ThumbValueBubbleRingColor:            "emerald-200",
-	ThumbValueBubbleRingThickness:        uiControl.RangeSliderThumbValueBubbleRingThicknessSm,
+	ThumbValueBubbleRingThickness:        uiToolset.RingThicknessSm,
 	ThumbUpperValueBubbleDisplayMode:     uiControl.RangeSliderThumbValueBubbleDisplayModeHover,
 	ThumbUpperValueBubbleTextColor:       "neutral-50",
 	ThumbUpperValueBubbleRingColor:       "red-700",
-	ThumbUpperValueBubbleRingThickness:   uiControl.RangeSliderThumbValueBubbleRingThicknessLg,
+	ThumbUpperValueBubbleRingThickness:   uiToolset.RingThicknessLg,
 	ThumbUpperValueBubbleSize:            uiControl.RangeSliderThumbValueBubbleSizeLg,
 	TrackStartValue:                      "0",
 	TrackEndValue:                        "100",
@@ -473,11 +474,11 @@ templ RangeSliderDualModeExample() {
 				ThumbValueBubbleEnabled:              true,
 				ThumbUpperValueBubbleEnabled:         true,
 				ThumbValueBubbleRingColor:            "emerald-200",
-				ThumbValueBubbleRingThickness:        uiControl.RangeSliderThumbValueBubbleRingThicknessSm,
+				ThumbValueBubbleRingThickness:        uiToolset.RingThicknessSm,
 				ThumbUpperValueBubbleDisplayMode:     uiControl.RangeSliderThumbValueBubbleDisplayModeHover,
 				ThumbUpperValueBubbleTextColor:       "neutral-50",
 				ThumbUpperValueBubbleRingColor:       "red-700",
-				ThumbUpperValueBubbleRingThickness:   uiControl.RangeSliderThumbValueBubbleRingThicknessLg,
+				ThumbUpperValueBubbleRingThickness:   uiToolset.RingThicknessLg,
 				ThumbUpperValueBubbleSize:            uiControl.RangeSliderThumbValueBubbleSizeLg,
 				TrackStartValue:                      "0",
 				TrackEndValue:                        "100",
@@ -493,12 +494,12 @@ templ RangeSliderDualModeExample() {
 				ThumbValueTwoWayStatePath:            "lowerValue",
 				ThumbValueBubbleBackgroundColor:      "emerald-500",
 				ThumbValueBubblePosition:             uiControl.RangeSliderThumbValueBubblePositionBottom,
-				ThumbValueBubbleShape:                uiControl.RangeSliderThumbValueBubbleShapeSquare,
+				ThumbValueBubbleShape:                uiToolset.ShapeSquare,
 				ThumbUpperBackgroundColor:            "red-500",
 				ThumbUpperValueTwoWayStatePath:       "upperValue",
 				ThumbUpperValueBubbleBackgroundColor: "red-500",
 				ThumbUpperValueBubblePosition:        uiControl.RangeSliderThumbValueBubblePositionTop,
-				ThumbUpperValueBubbleShape:           uiControl.RangeSliderThumbValueBubbleShapeCircular,
+				ThumbUpperValueBubbleShape:           uiToolset.ShapeCircular,
 				ThumbValueBubbleEnabled:              true,
 				ThumbUpperValueBubbleEnabled:         true,
 				TrackSteps:                           "1",

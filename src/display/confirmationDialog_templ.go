@@ -540,7 +540,7 @@ func confirmationDialog(settings ConfirmationDialogSettings, tone confirmationTo
 			settings.HeaderIconBorderRadius = uiToolset.BorderRadiusXl
 		}
 		if settings.HeaderIconPaddingSize == "" {
-			settings.HeaderIconPaddingSize = HeaderIconPaddingSizeLg
+			settings.HeaderIconPaddingSize = uiToolset.PaddingSizeLg
 		}
 		if settings.Size == "" {
 			settings.Size = ConfirmationDialogSizeSm

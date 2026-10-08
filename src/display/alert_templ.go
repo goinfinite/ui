@@ -26,19 +26,6 @@ const (
 	AlertSizeMd string = "md"
 	AlertSizeLg string = "lg"
 	AlertSizeXl string = "xl"
-
-	AlertRingThicknessXs string = "xs"
-	AlertRingThicknessSm string = "sm"
-	AlertRingThicknessMd string = "md"
-	AlertRingThicknessLg string = "lg"
-	AlertRingThicknessXl string = "xl"
-
-	AlertShadowSizeNone string = "none"
-	AlertShadowSizeXs   string = "xs"
-	AlertShadowSizeSm   string = "sm"
-	AlertShadowSizeMd   string = "md"
-	AlertShadowSizeLg   string = "lg"
-	AlertShadowSizeXl   string = "xl"
 )
 
 type AlertSettings struct {
@@ -221,7 +208,7 @@ func Alert(componentSettings AlertSettings) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue(alertAlpineState)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/alert.templ`, Line: 174, Col: 28}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/alert.templ`, Line: 161, Col: 28}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
 			if templ_7745c5c3_Err != nil {
@@ -239,7 +226,7 @@ func Alert(componentSettings AlertSettings) templ.Component {
 				var templ_7745c5c3_Var5 string
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.ResolveAttributeValue("setTimeout(() => { alertVisible = false; " + componentSettings.OnTimeoutFunc + " }, " + strconv.Itoa(componentSettings.DisplayTimeoutSeconds*1000) + ")")
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/alert.templ`, Line: 177, Col: 166}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/alert.templ`, Line: 164, Col: 166}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5)
 				if templ_7745c5c3_Err != nil {
@@ -291,7 +278,7 @@ func Alert(componentSettings AlertSettings) templ.Component {
 				var templ_7745c5c3_Var8 string
 				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.TitleLeftIconTwoWayStatePath)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/alert.templ`, Line: 188, Col: 60}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/alert.templ`, Line: 175, Col: 60}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var8)
 				if templ_7745c5c3_Err != nil {
@@ -410,7 +397,7 @@ func Alert(componentSettings AlertSettings) templ.Component {
 					var templ_7745c5c3_Var15 string
 					templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.TitleOneWayStatePath)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/alert.templ`, Line: 210, Col: 54}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/alert.templ`, Line: 197, Col: 54}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var15)
 					if templ_7745c5c3_Err != nil {
@@ -478,7 +465,7 @@ func Alert(componentSettings AlertSettings) templ.Component {
 					var templ_7745c5c3_Var18 string
 					templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.DescriptionOneWayStatePath)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/alert.templ`, Line: 226, Col: 60}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/alert.templ`, Line: 213, Col: 60}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var18)
 					if templ_7745c5c3_Err != nil {
@@ -542,7 +529,7 @@ func Alert(componentSettings AlertSettings) templ.Component {
 				var templ_7745c5c3_Var21 string
 				templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.TitleRightIconTwoWayStatePath)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/alert.templ`, Line: 239, Col: 61}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/alert.templ`, Line: 226, Col: 61}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var21)
 				if templ_7745c5c3_Err != nil {
@@ -580,7 +567,7 @@ func Alert(componentSettings AlertSettings) templ.Component {
 				IconLeft:    "ph-x",
 				OnClickFunc: "alertVisible = false; " + componentSettings.OnCloseFunc,
 				Size:        closeIconSize,
-				Shape:       uiControl.ButtonShapeCircular,
+				Shape:       uiToolset.ShapeCircular,
 			}
 			if componentSettings.CloseIconBackgroundColor != "" {
 				closeButtonSettings.BackgroundColor = componentSettings.CloseIconBackgroundColor

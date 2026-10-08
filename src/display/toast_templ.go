@@ -20,12 +20,6 @@ const (
 	ToastSizeMd string = "md"
 	ToastSizeLg string = "lg"
 
-	ToastRingThicknessXs string = "xs"
-	ToastRingThicknessSm string = "sm"
-	ToastRingThicknessMd string = "md"
-	ToastRingThicknessLg string = "lg"
-	ToastRingThicknessXl string = "xl"
-
 	ToastAutoDismissSecondsDefault int = 10
 )
 
@@ -139,7 +133,7 @@ func Toast(componentSettings ToastSettings) templ.Component {
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue("$store.toast.displayDurationMs = " + autoDismissMilliseconds)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/toast.templ`, Line: 88, Col: 72}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/toast.templ`, Line: 82, Col: 72}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
 		if templ_7745c5c3_Err != nil {

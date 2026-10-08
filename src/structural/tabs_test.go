@@ -271,7 +271,7 @@ func TestTabBadgeClassesResolver(t *testing.T) {
 			name: "custom ring frames the badge",
 			item: TabItemSettings{
 				BadgeRingColor:     "red-500/50",
-				BadgeRingThickness: TabRingThicknessSm,
+				BadgeRingThickness: uiToolset.RingThicknessSm,
 			},
 			want: "px-1.5 py-0.5 text-xs font-bold rounded-md bg-neutral-50/10 text-neutral-50/80 ring-1.5 ring-red-500/50",
 		},

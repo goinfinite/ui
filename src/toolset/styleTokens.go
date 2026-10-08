@@ -10,6 +10,37 @@ const (
 	BorderRadius2xl  string = "2xl"
 	BorderRadius3xl  string = "3xl"
 	BorderRadiusFull string = "full"
+
+	ShapeCircular string = "circular"
+	ShapeRounded  string = "rounded"
+	ShapeSquare   string = "square"
+
+	ShadowSizeNone string = "none"
+	ShadowSizeXs   string = "xs"
+	ShadowSizeSm   string = "sm"
+	ShadowSizeMd   string = "md"
+	ShadowSizeLg   string = "lg"
+	ShadowSizeXl   string = "xl"
+
+	RingThicknessXs string = "xs"
+	RingThicknessSm string = "sm"
+	RingThicknessMd string = "md"
+	RingThicknessLg string = "lg"
+	RingThicknessXl string = "xl"
+
+	PaddingSizeNone string = "none"
+	PaddingSizeXs   string = "xs"
+	PaddingSizeSm   string = "sm"
+	PaddingSizeMd   string = "md"
+	PaddingSizeLg   string = "lg"
+	PaddingSizeXl   string = "xl"
+
+	GapSizeNone string = "none"
+	GapSizeXs   string = "xs"
+	GapSizeSm   string = "sm"
+	GapSizeMd   string = "md"
+	GapSizeLg   string = "lg"
+	GapSizeXl   string = "xl"
 )
 
 func BackgroundColorClassResolver(backgroundColor, fallbackClass string) string {
@@ -53,11 +84,11 @@ func BorderRadiusClassResolver(borderRadius, fallbackClass string) string {
 
 func ShapeClassResolver(shape, fallbackClass string) string {
 	switch shape {
-	case "circular":
+	case ShapeCircular:
 		return "rounded-full"
-	case "rounded":
+	case ShapeRounded:
 		return "rounded"
-	case "square":
+	case ShapeSquare:
 		return "rounded-none"
 	}
 	return fallbackClass
@@ -65,17 +96,17 @@ func ShapeClassResolver(shape, fallbackClass string) string {
 
 func ShadowClassResolver(shadowSize, fallbackClass string) string {
 	switch shadowSize {
-	case "none":
+	case ShadowSizeNone:
 		return "shadow-none"
-	case "xs":
+	case ShadowSizeXs:
 		return "shadow-xs"
-	case "sm":
+	case ShadowSizeSm:
 		return "shadow-sm"
-	case "md":
+	case ShadowSizeMd:
 		return "shadow-md"
-	case "lg":
+	case ShadowSizeLg:
 		return "shadow-lg"
-	case "xl":
+	case ShadowSizeXl:
 		return "shadow-xl"
 	}
 	return fallbackClass
@@ -83,15 +114,15 @@ func ShadowClassResolver(shadowSize, fallbackClass string) string {
 
 func RingThicknessClassResolver(ringThickness, fallbackClass string) string {
 	switch ringThickness {
-	case "xs":
+	case RingThicknessXs:
 		return "ring-1"
-	case "sm":
+	case RingThicknessSm:
 		return "ring-1.5"
-	case "md":
+	case RingThicknessMd:
 		return "ring-2"
-	case "lg":
+	case RingThicknessLg:
 		return "ring-2.5"
-	case "xl":
+	case RingThicknessXl:
 		return "ring-3"
 	}
 	return fallbackClass
@@ -110,15 +141,15 @@ func CompactRingClassResolver(ringColor, ringThickness string) string {
 	}
 	ringThicknessClass := "ring-1"
 	switch ringThickness {
-	case "xs":
+	case RingThicknessXs:
 		ringThicknessClass = "ring-0.5"
-	case "sm":
+	case RingThicknessSm:
 		ringThicknessClass = "ring-1"
-	case "md":
+	case RingThicknessMd:
 		ringThicknessClass = "ring-1.5"
-	case "lg":
+	case RingThicknessLg:
 		ringThicknessClass = "ring-2"
-	case "xl":
+	case RingThicknessXl:
 		ringThicknessClass = "ring-2.5"
 	}
 	return ringThicknessClass + " ring-" + ringColor
@@ -126,17 +157,17 @@ func CompactRingClassResolver(ringColor, ringThickness string) string {
 
 func PaddingClassResolver(paddingSize, fallbackClass string) string {
 	switch paddingSize {
-	case "none":
+	case PaddingSizeNone:
 		return "p-0"
-	case "xs":
+	case PaddingSizeXs:
 		return "p-3"
-	case "sm":
+	case PaddingSizeSm:
 		return "p-4"
-	case "md":
+	case PaddingSizeMd:
 		return "p-5"
-	case "lg":
+	case PaddingSizeLg:
 		return "p-6"
-	case "xl":
+	case PaddingSizeXl:
 		return "p-8"
 	}
 	return fallbackClass
@@ -144,17 +175,17 @@ func PaddingClassResolver(paddingSize, fallbackClass string) string {
 
 func CompactPaddingClassResolver(paddingSize, fallbackClass string) string {
 	switch paddingSize {
-	case "none":
+	case PaddingSizeNone:
 		return "p-0"
-	case "xs":
+	case PaddingSizeXs:
 		return "p-1"
-	case "sm":
+	case PaddingSizeSm:
 		return "p-1.5"
-	case "md":
+	case PaddingSizeMd:
 		return "p-2"
-	case "lg":
+	case PaddingSizeLg:
 		return "p-2.5"
-	case "xl":
+	case PaddingSizeXl:
 		return "p-3"
 	}
 	return fallbackClass
@@ -162,17 +193,17 @@ func CompactPaddingClassResolver(paddingSize, fallbackClass string) string {
 
 func GapClassResolver(gapSize, fallbackClass string) string {
 	switch gapSize {
-	case "none":
+	case GapSizeNone:
 		return "gap-0"
-	case "xs":
+	case GapSizeXs:
 		return "gap-1"
-	case "sm":
+	case GapSizeSm:
 		return "gap-2"
-	case "md":
+	case GapSizeMd:
 		return "gap-3"
-	case "lg":
+	case GapSizeLg:
 		return "gap-6"
-	case "xl":
+	case GapSizeXl:
 		return "gap-8"
 	}
 	return fallbackClass

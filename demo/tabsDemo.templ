@@ -291,11 +291,11 @@ templ TabsSurfaceExample() {
     // OptionalFields
     BackgroundColor: "neutral-50/5",
     BorderRadius:    uiToolset.BorderRadiusNone,
-    GapSize:         uiStructural.TabGapSizeLg,
-    PaddingSize:     uiStructural.TabPaddingSizeXs,
+    GapSize:         uiToolset.GapSizeLg,
+    PaddingSize:     uiToolset.PaddingSizeXs,
     RingColor:       "neutral-50/10",
-    RingThickness:   uiStructural.TabRingThicknessMd,
-    ShadowSize:      uiStructural.TabShadowSizeMd,
+    RingThickness:   uiToolset.RingThicknessMd,
+    ShadowSize:      uiToolset.ShadowSizeMd,
     TextCase:        uiToolset.TextCaseUpper,
     TextColor:       "neutral-50/60",
 })`
@@ -318,11 +318,11 @@ templ TabsSurfaceExample() {
 				SelectedValueTwoWayStatePath: "selectedSurfaceTab",
 				BackgroundColor:                "neutral-50/5",
 				BorderRadius:                   uiToolset.BorderRadiusNone,
-				GapSize:                        uiStructural.TabGapSizeLg,
-				PaddingSize:                    uiStructural.TabPaddingSizeXs,
+				GapSize:                        uiToolset.GapSizeLg,
+				PaddingSize:                    uiToolset.PaddingSizeXs,
 				RingColor:                      "neutral-50/10",
-				RingThickness:                  uiStructural.TabRingThicknessMd,
-				ShadowSize:                     uiStructural.TabShadowSizeMd,
+				RingThickness:                  uiToolset.RingThicknessMd,
+				ShadowSize:                     uiToolset.ShadowSizeMd,
 				TextCase:                       uiToolset.TextCaseUpper,
 				TextColor:                      "neutral-50/60",
 			})
@@ -343,10 +343,10 @@ templ TabsContentSurfaceExample() {
     // OptionalFields
     ContentBackgroundColor: "neutral-50/5",
     ContentBorderRadius:    uiToolset.BorderRadiusMd,
-    ContentPaddingSize:     uiStructural.TabPaddingSizeMd,
+    ContentPaddingSize:     uiToolset.PaddingSizeMd,
     ContentRingColor:       "neutral-50/10",
-    ContentRingThickness:   uiStructural.TabRingThicknessMd,
-    ContentShadowSize:      uiStructural.TabShadowSizeMd,
+    ContentRingThickness:   uiToolset.RingThicknessMd,
+    ContentShadowSize:      uiToolset.ShadowSizeMd,
     ContentTextColor:       "neutral-50/70",
 })`
 	}}
@@ -368,10 +368,10 @@ templ TabsContentSurfaceExample() {
 				SelectedValueTwoWayStatePath: "selectedContentTab",
 				ContentBackgroundColor:           "neutral-50/5",
 				ContentBorderRadius:              uiToolset.BorderRadiusMd,
-				ContentPaddingSize:               uiStructural.TabPaddingSizeMd,
+				ContentPaddingSize:               uiToolset.PaddingSizeMd,
 				ContentRingColor:                 "neutral-50/10",
-				ContentRingThickness:             uiStructural.TabRingThicknessMd,
-				ContentShadowSize:                uiStructural.TabShadowSizeMd,
+				ContentRingThickness:             uiToolset.RingThicknessMd,
+				ContentShadowSize:                uiToolset.ShadowSizeMd,
 				ContentTextColor:                 "neutral-50/70",
 			})
 		</div>
@@ -384,7 +384,7 @@ templ TabsBadgeExample() {
     Items: []uiStructural.TabItemSettings{
         {Label: "General", Value: "general", Content: TabsDemoGeneralPanel()},
         {Label: "Security", Value: "security", BadgeCount: 3, Content: TabsDemoSecurityPanel()},
-        {Label: "Notifications", Value: "notifications", BadgeCountOneWayStatePath: "alertCount", BadgeBackgroundColor: "red-500/20", BadgeBorderRadius: uiToolset.BorderRadiusLg, BadgeRingColor: "red-500/50", BadgeRingThickness: uiStructural.TabRingThicknessSm, BadgeTextColor: "red-50", Content: TabsDemoNotificationsPanel()},
+        {Label: "Notifications", Value: "notifications", BadgeCountOneWayStatePath: "alertCount", BadgeBackgroundColor: "red-500/20", BadgeBorderRadius: uiToolset.BorderRadiusLg, BadgeRingColor: "red-500/50", BadgeRingThickness: uiToolset.RingThicknessSm, BadgeTextColor: "red-50", Content: TabsDemoNotificationsPanel()},
     },
     SelectedValueTwoWayStatePath: "selectedBadgeTab",
 })`
@@ -402,7 +402,7 @@ templ TabsBadgeExample() {
 				Items: []uiStructural.TabItemSettings{
 					{Label: "General", Value: "general", Content: TabsDemoGeneralPanel()},
 					{Label: "Security", Value: "security", BadgeCount: 3, Content: TabsDemoSecurityPanel()},
-					{Label: "Notifications", Value: "notifications", BadgeCountOneWayStatePath: "alertCount", BadgeBackgroundColor: "red-500/20", BadgeBorderRadius: uiToolset.BorderRadiusLg, BadgeRingColor: "red-500/50", BadgeRingThickness: uiStructural.TabRingThicknessSm, BadgeTextColor: "red-50", Content: TabsDemoNotificationsPanel()},
+					{Label: "Notifications", Value: "notifications", BadgeCountOneWayStatePath: "alertCount", BadgeBackgroundColor: "red-500/20", BadgeBorderRadius: uiToolset.BorderRadiusLg, BadgeRingColor: "red-500/50", BadgeRingThickness: uiToolset.RingThicknessSm, BadgeTextColor: "red-50", Content: TabsDemoNotificationsPanel()},
 				},
 				SelectedValueTwoWayStatePath: "selectedBadgeTab",
 			})

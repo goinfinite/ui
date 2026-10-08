@@ -33,35 +33,8 @@ const (
 	TabAlignmentCenter string = "center"
 	TabAlignmentBottom string = "bottom"
 
-	TabGapSizeNone string = "none"
-	TabGapSizeXs   string = "xs"
-	TabGapSizeSm   string = "sm"
-	TabGapSizeMd   string = "md"
-	TabGapSizeLg   string = "lg"
-	TabGapSizeXl   string = "xl"
-
 	TabIconPositionLeft string = "left"
 	TabIconPositionTop  string = "top"
-
-	TabPaddingSizeNone string = "none"
-	TabPaddingSizeXs   string = "xs"
-	TabPaddingSizeSm   string = "sm"
-	TabPaddingSizeMd   string = "md"
-	TabPaddingSizeLg   string = "lg"
-	TabPaddingSizeXl   string = "xl"
-
-	TabRingThicknessXs string = "xs"
-	TabRingThicknessSm string = "sm"
-	TabRingThicknessMd string = "md"
-	TabRingThicknessLg string = "lg"
-	TabRingThicknessXl string = "xl"
-
-	TabShadowSizeNone string = "none"
-	TabShadowSizeXs   string = "xs"
-	TabShadowSizeSm   string = "sm"
-	TabShadowSizeMd   string = "md"
-	TabShadowSizeLg   string = "lg"
-	TabShadowSizeXl   string = "xl"
 )
 
 type TabItemSettings struct {
@@ -269,7 +242,7 @@ func Tabs(componentSettings TabSettings) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue(tabUrlHashSyncExpressionBuilder(selectedValuePath, componentSettings.Items))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 203, Col: 87}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 176, Col: 87}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
 			if templ_7745c5c3_Err != nil {
@@ -282,7 +255,7 @@ func Tabs(componentSettings TabSettings) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.ResolveAttributeValue(tabUrlHashSyncExpressionBuilder(selectedValuePath, componentSettings.Items))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 204, Col: 99}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 177, Col: 99}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5)
 			if templ_7745c5c3_Err != nil {
@@ -309,7 +282,7 @@ func Tabs(componentSettings TabSettings) templ.Component {
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.ResolveAttributeValue(ariaLabel)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 210, Col: 25}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 183, Col: 25}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
 		if templ_7745c5c3_Err != nil {
@@ -346,7 +319,7 @@ func Tabs(componentSettings TabSettings) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.ResolveAttributeValue(templ.JSFuncCall("tabs", templ.JSExpression(visibleTabsArgument)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 217, Col: 78}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 190, Col: 78}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var9)
 			if templ_7745c5c3_Err != nil {
@@ -393,7 +366,7 @@ func Tabs(componentSettings TabSettings) templ.Component {
 			var templ_7745c5c3_Var11 string
 			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.ResolveAttributeValue(tabId)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 236, Col: 15}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 209, Col: 15}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var11)
 			if templ_7745c5c3_Err != nil {
@@ -406,7 +379,7 @@ func Tabs(componentSettings TabSettings) templ.Component {
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.ResolveAttributeValue(selectedExpression + " && '" + tabActiveClasses + "'")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 237, Col: 67}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 210, Col: 67}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var12)
 			if templ_7745c5c3_Err != nil {
@@ -419,7 +392,7 @@ func Tabs(componentSettings TabSettings) templ.Component {
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.ResolveAttributeValue(selectedExpression + " ? 'true' : 'false'")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 238, Col: 64}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 211, Col: 64}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var13)
 			if templ_7745c5c3_Err != nil {
@@ -432,7 +405,7 @@ func Tabs(componentSettings TabSettings) templ.Component {
 			var templ_7745c5c3_Var14 string
 			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.ResolveAttributeValue(tabTabindexExpressionBuilder(selectedExpression, anySelectedExpression, index == 0))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 239, Col: 100}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 212, Col: 100}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var14)
 			if templ_7745c5c3_Err != nil {
@@ -445,7 +418,7 @@ func Tabs(componentSettings TabSettings) templ.Component {
 			var templ_7745c5c3_Var15 string
 			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.ResolveAttributeValue(tabClickExpressionBuilder(selectedValuePath, item.Value, componentSettings.IsUrlHashSynced))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 240, Col: 105}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 213, Col: 105}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var15)
 			if templ_7745c5c3_Err != nil {
@@ -463,7 +436,7 @@ func Tabs(componentSettings TabSettings) templ.Component {
 				var templ_7745c5c3_Var16 string
 				templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.ResolveAttributeValue(panelId)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 242, Col: 29}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 215, Col: 29}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var16)
 				if templ_7745c5c3_Err != nil {
@@ -481,7 +454,7 @@ func Tabs(componentSettings TabSettings) templ.Component {
 			var templ_7745c5c3_Var17 string
 			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.ResolveAttributeValue(item.Value)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 244, Col: 32}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 217, Col: 32}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var17)
 			if templ_7745c5c3_Err != nil {
@@ -512,7 +485,7 @@ func Tabs(componentSettings TabSettings) templ.Component {
 				var templ_7745c5c3_Var19 string
 				templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.ResolveAttributeValue(previousKeyExpression)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 247, Col: 55}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 220, Col: 55}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var19)
 				if templ_7745c5c3_Err != nil {
@@ -525,7 +498,7 @@ func Tabs(componentSettings TabSettings) templ.Component {
 				var templ_7745c5c3_Var20 string
 				templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.ResolveAttributeValue(nextKeyExpression)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 248, Col: 53}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 221, Col: 53}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var20)
 				if templ_7745c5c3_Err != nil {
@@ -544,7 +517,7 @@ func Tabs(componentSettings TabSettings) templ.Component {
 				var templ_7745c5c3_Var21 string
 				templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.ResolveAttributeValue(previousKeyExpression)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 251, Col: 57}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 224, Col: 57}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var21)
 				if templ_7745c5c3_Err != nil {
@@ -557,7 +530,7 @@ func Tabs(componentSettings TabSettings) templ.Component {
 				var templ_7745c5c3_Var22 string
 				templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.ResolveAttributeValue(nextKeyExpression)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 252, Col: 54}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 225, Col: 54}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var22)
 				if templ_7745c5c3_Err != nil {
@@ -575,7 +548,7 @@ func Tabs(componentSettings TabSettings) templ.Component {
 			var templ_7745c5c3_Var23 string
 			templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.ResolveAttributeValue(homeKeyExpression)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 254, Col: 46}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 227, Col: 46}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var23)
 			if templ_7745c5c3_Err != nil {
@@ -588,7 +561,7 @@ func Tabs(componentSettings TabSettings) templ.Component {
 			var templ_7745c5c3_Var24 string
 			templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.ResolveAttributeValue(endKeyExpression)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 255, Col: 44}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 228, Col: 44}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var24)
 			if templ_7745c5c3_Err != nil {
@@ -647,7 +620,7 @@ func Tabs(componentSettings TabSettings) templ.Component {
 			var templ_7745c5c3_Var29 string
 			templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(item.Label)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 260, Col: 47}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 233, Col: 47}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 			if templ_7745c5c3_Err != nil {
@@ -683,7 +656,7 @@ func Tabs(componentSettings TabSettings) templ.Component {
 				var templ_7745c5c3_Var32 string
 				templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.ResolveAttributeValue(item.BadgeCountOneWayStatePath + " > 0")
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 264, Col: 55}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 237, Col: 55}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var32)
 				if templ_7745c5c3_Err != nil {
@@ -696,7 +669,7 @@ func Tabs(componentSettings TabSettings) templ.Component {
 				var templ_7745c5c3_Var33 string
 				templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.ResolveAttributeValue(item.BadgeCountOneWayStatePath)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 265, Col: 46}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 238, Col: 46}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var33)
 				if templ_7745c5c3_Err != nil {
@@ -733,7 +706,7 @@ func Tabs(componentSettings TabSettings) templ.Component {
 				var templ_7745c5c3_Var36 string
 				templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.JoinStringErrs(item.BadgeCount)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 269, Col: 52}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 242, Col: 52}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var36))
 				if templ_7745c5c3_Err != nil {
@@ -787,7 +760,7 @@ func Tabs(componentSettings TabSettings) templ.Component {
 				var templ_7745c5c3_Var39 string
 				templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.ResolveAttributeValue(panelId)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 283, Col: 18}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 256, Col: 18}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var39)
 				if templ_7745c5c3_Err != nil {
@@ -800,7 +773,7 @@ func Tabs(componentSettings TabSettings) templ.Component {
 				var templ_7745c5c3_Var40 string
 				templ_7745c5c3_Var40, templ_7745c5c3_Err = templ.ResolveAttributeValue(tabId)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 284, Col: 29}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 257, Col: 29}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var40)
 				if templ_7745c5c3_Err != nil {
@@ -813,7 +786,7 @@ func Tabs(componentSettings TabSettings) templ.Component {
 				var templ_7745c5c3_Var41 string
 				templ_7745c5c3_Var41, templ_7745c5c3_Err = templ.ResolveAttributeValue(selectedExpression)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 286, Col: 33}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/tabs.templ`, Line: 259, Col: 33}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var41)
 				if templ_7745c5c3_Err != nil {

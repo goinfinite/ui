@@ -21,40 +21,9 @@ const (
 	CarouselSearchBoxPositionTop    string = "top"
 	CarouselSearchBoxPositionBottom string = "bottom"
 
-	CarouselShadowSizeNone string = "none"
-	CarouselShadowSizeXs   string = "xs"
-	CarouselShadowSizeSm   string = "sm"
-	CarouselShadowSizeMd   string = "md"
-	CarouselShadowSizeLg   string = "lg"
-	CarouselShadowSizeXl   string = "xl"
-
-	CarouselRingThicknessXs string = "xs"
-	CarouselRingThicknessSm string = "sm"
-	CarouselRingThicknessMd string = "md"
-	CarouselRingThicknessLg string = "lg"
-	CarouselRingThicknessXl string = "xl"
-
-	CarouselPaddingSizeNone string = "none"
-	CarouselPaddingSizeXs   string = "xs"
-	CarouselPaddingSizeSm   string = "sm"
-	CarouselPaddingSizeMd   string = "md"
-	CarouselPaddingSizeLg   string = "lg"
-	CarouselPaddingSizeXl   string = "xl"
-
-	CarouselGapSizeNone string = "none"
-	CarouselGapSizeXs   string = "xs"
-	CarouselGapSizeSm   string = "sm"
-	CarouselGapSizeMd   string = "md"
-	CarouselGapSizeLg   string = "lg"
-	CarouselGapSizeXl   string = "xl"
-
 	CarouselArrowsSizeSm string = "sm"
 	CarouselArrowsSizeMd string = "md"
 	CarouselArrowsSizeLg string = "lg"
-
-	CarouselArrowsShapeCircular string = "circular"
-	CarouselArrowsShapeRounded  string = "rounded"
-	CarouselArrowsShapeSquare   string = "square"
 
 	CarouselDotsSizeSm string = "sm"
 	CarouselDotsSizeMd string = "md"

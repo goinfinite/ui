@@ -182,7 +182,7 @@ func (settings DataTableSettings[Row]) checkboxShapeResolver() string {
 	if settings.CheckboxShape != "" {
 		return settings.CheckboxShape
 	}
-	return uiForm.CheckboxInputShapeSquare
+	return uiToolset.ShapeSquare
 }
 
 func (settings DataTableSettings[Row]) checkboxSizeResolver() string {

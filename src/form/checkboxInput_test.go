@@ -7,6 +7,8 @@ import (
 	"slices"
 	"strings"
 	"testing"
+
+	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
 func TestCheckboxInputSizeClassesResolver(t *testing.T) {
@@ -54,9 +56,9 @@ func TestCheckboxInputRendersTheShapeClass(t *testing.T) {
 		shape             string
 		expectedClassName string
 	}{
-		{name: "square", shape: CheckboxInputShapeSquare, expectedClassName: "rounded-none"},
-		{name: "rounded", shape: CheckboxInputShapeRounded, expectedClassName: "rounded"},
-		{name: "circular", shape: CheckboxInputShapeCircular, expectedClassName: "rounded-full"},
+		{name: "square", shape: uiToolset.ShapeSquare, expectedClassName: "rounded-none"},
+		{name: "rounded", shape: uiToolset.ShapeRounded, expectedClassName: "rounded"},
+		{name: "circular", shape: uiToolset.ShapeCircular, expectedClassName: "rounded-full"},
 		{name: "default", shape: "", expectedClassName: "rounded"},
 	}
 

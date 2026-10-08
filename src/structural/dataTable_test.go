@@ -108,8 +108,8 @@ func TestDataTableCheckboxShapeResolver(t *testing.T) {
 		providedShape string
 		expectedShape string
 	}{
-		{name: "default", providedShape: "", expectedShape: uiForm.CheckboxInputShapeSquare},
-		{name: "provided shape wins", providedShape: uiForm.CheckboxInputShapeCircular, expectedShape: uiForm.CheckboxInputShapeCircular},
+		{name: "default", providedShape: "", expectedShape: uiToolset.ShapeSquare},
+		{name: "provided shape wins", providedShape: uiToolset.ShapeCircular, expectedShape: uiToolset.ShapeCircular},
 	}
 
 	for _, testCase := range testCases {

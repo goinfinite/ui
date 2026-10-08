@@ -94,7 +94,7 @@ func PageHeading(componentSettings PageHeadingSettings) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if componentSettings.HeaderIconPaddingSize == "" {
-				componentSettings.HeaderIconPaddingSize = uiDisplay.HeaderIconPaddingSizeSm
+				componentSettings.HeaderIconPaddingSize = uiToolset.PaddingSizeSm
 			}
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " ")
 			if templ_7745c5c3_Err != nil {
