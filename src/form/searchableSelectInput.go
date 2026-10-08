@@ -117,13 +117,12 @@ func searchableSelectInputDropdownClassesResolver(
 	if settings.DropdownBackgroundColor != "" {
 		dropdownBackgroundClass = "bg-" + settings.DropdownBackgroundColor
 	}
-	dropdownMaxHeightClass := "max-h-60"
-	if settings.DropdownMaxHeightClass != "" {
-		dropdownMaxHeightClass = settings.DropdownMaxHeightClass
-	}
+	dropdownHeightClasses := selectDropdownHeightClassesResolver(
+		settings.DropdownMinHeightClass, settings.DropdownMaxHeightClass,
+	)
 	return "absolute left-0 z-20 w-full overflow-auto rounded-md " +
 		"border border-neutral-50/5 shadow-lg hover:border-neutral-50/30 " +
-		dropdownMaxHeightClass + " " + dropdownBackgroundClass
+		dropdownHeightClasses + " " + dropdownBackgroundClass
 }
 
 func searchableSelectInputHasSelectionExpressionBuilder(statePath string) string {

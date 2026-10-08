@@ -307,6 +307,44 @@ templ MultiSelectInputDropdownBackgroundExample() {
 	}
 }
 
+templ MultiSelectInputDropdownHeightExample() {
+	{{
+		dropdownHeightUsage := `@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
+	InputName: "countriesDropdownHeight",
+	Label:     "Countries",
+
+	// OptionalFields
+	FlatOptions:            []string{"Argentina", "Australia", "Brazil", "Canada", "Chile", "China", "France", "Germany", "India", "Japan", "Mexico", "Portugal"},
+	TwoWayStatePath:        "countries",
+	DropdownMinHeightClass: "min-h-24",
+	DropdownMaxHeightClass: "max-h-40",
+	MaxVisibleOptions:      3,
+})`
+	}}
+	@DemoExampleCard(
+		"Dropdown Height",
+		"DropdownMinHeightClass and DropdownMaxHeightClass cap the option list. MaxVisibleOptions caps it to a row count and wins over both.",
+		"/form/multiSelectInput.templ", dropdownHeightUsage,
+	) {
+		<div class="flex flex-col gap-3" x-data="{countries: ['BR']}">
+			<p class="text-sm text-neutral-400">Open the dropdown to see the capped list scroll.</p>
+			@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
+				InputName: "countriesDropdownHeight",
+				Label:     "Countries",
+				FlatOptions: []string{
+					"Argentina", "Australia", "Brazil", "Canada",
+					"Chile", "China", "France", "Germany", "India",
+					"Japan", "Mexico", "Portugal",
+				},
+				TwoWayStatePath:        "countries",
+				DropdownMinHeightClass: "min-h-24",
+				DropdownMaxHeightClass: "max-h-40",
+				MaxVisibleOptions:      3,
+			})
+		</div>
+	}
+}
+
 templ MultiSelectInputTextCaseExample() {
 	{{
 		textCaseUsage := `@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
@@ -386,6 +424,7 @@ templ MultiSelectInputDemo() {
 			{Title: "Required", Icon: "ph-asterisk", Content: MultiSelectInputRequiredExample()},
 			{Title: "OnChangeFunc", Icon: "ph-arrows-clockwise", Content: MultiSelectInputOnChangeExample()},
 			{Title: "Dropdown Background", Icon: "ph-paint-brush", Content: MultiSelectInputDropdownBackgroundExample()},
+			{Title: "Dropdown Height", Icon: "ph-arrows-out-line-vertical", Content: MultiSelectInputDropdownHeightExample()},
 			{Title: "Text Case", Icon: "ph-text-t", Content: MultiSelectInputTextCaseExample()},
 		})
 	</div>

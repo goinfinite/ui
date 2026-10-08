@@ -378,6 +378,44 @@ templ SelectInputDropdownBackgroundExample() {
 	}
 }
 
+templ SelectInputDropdownHeightExample() {
+	{{
+		dropdownHeightUsage := `@uiForm.SelectInput(uiForm.SelectInputSettings{
+	InputName: "countryDropdownHeight",
+	Label:     "Country",
+
+	// OptionalFields
+	FlatOptions:            []string{"Argentina", "Australia", "Brazil", "Canada", "Chile", "China", "France", "Germany", "India", "Japan", "Mexico", "Portugal"},
+	TwoWayStatePath:        "countryDropdownHeight",
+	DropdownMinHeightClass: "min-h-24",
+	DropdownMaxHeightClass: "max-h-40",
+	MaxVisibleOptions:      3,
+})`
+	}}
+	@DemoExampleCard(
+		"Dropdown Height",
+		"DropdownMinHeightClass and DropdownMaxHeightClass cap the option list. MaxVisibleOptions caps it to a row count and wins over both.",
+		"/form/selectInput.templ", dropdownHeightUsage,
+	) {
+		<div class="flex flex-col gap-3 lg:*:max-w-50" x-data="{countryDropdownHeight: 'Brazil'}">
+			<p class="text-sm text-neutral-400">Open the dropdown to see the capped list scroll.</p>
+			@uiForm.SelectInput(uiForm.SelectInputSettings{
+				InputName: "countryDropdownHeight",
+				Label:     "Country",
+				FlatOptions: []string{
+					"Argentina", "Australia", "Brazil", "Canada",
+					"Chile", "China", "France", "Germany", "India",
+					"Japan", "Mexico", "Portugal",
+				},
+				TwoWayStatePath:        "countryDropdownHeight",
+				DropdownMinHeightClass: "min-h-24",
+				DropdownMaxHeightClass: "max-h-40",
+				MaxVisibleOptions:      3,
+			})
+		</div>
+	}
+}
+
 templ SelectInputRequiredExample() {
 	{{
 		requiredUsage := `@uiForm.SelectInput(uiForm.SelectInputSettings{
@@ -490,6 +528,7 @@ templ SelectInputDemo() {
 			{Title: "Sizes", Icon: "ph-ruler", Content: SelectInputSizesExample()},
 			{Title: "Text Case", Icon: "ph-text-t", Content: SelectInputTextCaseExample()},
 			{Title: "Dropdown Background", Icon: "ph-paint-brush", Content: SelectInputDropdownBackgroundExample()},
+			{Title: "Dropdown Height", Icon: "ph-arrows-out-line-vertical", Content: SelectInputDropdownHeightExample()},
 			{Title: "Required", Icon: "ph-asterisk", Content: SelectInputRequiredExample()},
 			{Title: "Disabled Binding", Icon: "ph-prohibit", Content: SelectInputDisabledBindingExample()},
 		})

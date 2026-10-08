@@ -99,7 +99,6 @@ UiToolset.RegisterAlpineState(() => {
     get shouldPromptMinQueryLength() {
       return (
         this.isRemote &&
-        this.userInput.length > 0 &&
         this.userInput.length < this.config.remote.minQueryLength
       );
     },

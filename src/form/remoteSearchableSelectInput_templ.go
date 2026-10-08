@@ -24,7 +24,9 @@ type RemoteSearchableSelectInputSettings struct {
 	Size                              string
 	TextCase                          string
 	DropdownBackgroundColor           string
+	DropdownMinHeightClass            string
 	DropdownMaxHeightClass            string
+	MaxVisibleOptions                 uint
 	IsDisabledOneWayStatePath         string
 	HintValue                         string
 	HintStatePath                     string
@@ -101,7 +103,9 @@ func RemoteSearchableSelectInput(componentSettings RemoteSearchableSelectInputSe
 			Size:                              componentSettings.Size,
 			TextCase:                          componentSettings.TextCase,
 			DropdownBackgroundColor:           componentSettings.DropdownBackgroundColor,
+			DropdownMinHeightClass:            componentSettings.DropdownMinHeightClass,
 			DropdownMaxHeightClass:            componentSettings.DropdownMaxHeightClass,
+			MaxVisibleOptions:                 componentSettings.MaxVisibleOptions,
 			OnChangeSuffix:                    onChangeSuffix,
 			InitExpression:                    initExpression,
 			IsDisabledOneWayStatePath:         componentSettings.IsDisabledOneWayStatePath,

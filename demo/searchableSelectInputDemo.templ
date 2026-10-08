@@ -138,6 +138,48 @@ templ SearchableSelectInputTagsOptionsOnlyExample() {
 	}
 }
 
+templ SearchableSelectInputTagColorsExample() {
+	{{
+		tagColorsUsage := `@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
+	InputName: "countries",
+	Label:     "Countries",
+
+	// OptionalFields
+	FlatOptions:             []string{"Argentina", "Brazil", "Chile"},
+	TwoWayStatePath:         "coloredTagCountries",
+	IsMultiSelect:           true,
+	SelectionDisplay:        uiForm.SearchableSelectInputSelectionDisplayTags,
+	TagOuterBackgroundColor: "primary-500",
+	TagOuterTextColor:       "neutral-950",
+	TagInnerBackgroundColor: "neutral-50/20",
+})`
+	}}
+	@DemoExampleCard(
+		"Tag Colors",
+		"TagOuterBackgroundColor paints the chip and its border. TagOuterTextColor paints its text, and TagInnerBackgroundColor paints the label bubble.",
+		"/form/searchableSelectInput.templ", tagColorsUsage,
+	) {
+		<div x-data="{coloredTagCountries: ['Brazil']}" class="flex flex-col gap-3">
+			@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
+				InputName: "coloredTagCountries",
+				Label:     "Countries",
+				FlatOptions: []string{
+					"Argentina", "Brazil", "Chile",
+				},
+				TwoWayStatePath:         "coloredTagCountries",
+				IsMultiSelect:           true,
+				SelectionDisplay:        uiForm.SearchableSelectInputSelectionDisplayTags,
+				TagOuterBackgroundColor: "primary-500",
+				TagOuterTextColor:       "neutral-950",
+				TagInnerBackgroundColor: "neutral-50/20",
+			})
+			<p class={ DemoLiveStateClasses }>
+				Values: <span x-text="JSON.stringify(coloredTagCountries)"></span>
+			</p>
+		</div>
+	}
+}
+
 templ SearchableSelectInputTagsLabelValueExample() {
 	{{
 		tagsLabelValueUsage := `@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
@@ -331,15 +373,18 @@ templ SearchableSelectInputDropdownHeightExample() {
 	// OptionalFields
 	FlatOptions:            []string{` + searchableSelectInputDemoCountryOptions + `},
 	TwoWayStatePath:        "country",
-	DropdownMaxHeightClass: "max-h-32",
+	DropdownMinHeightClass: "min-h-24",
+	DropdownMaxHeightClass: "max-h-40",
+	MaxVisibleOptions:      3,
 })`
 	}}
 	@DemoExampleCard(
-		"Dropdown Max Height",
-		"DropdownMaxHeightClass caps the option list and scrolls the overflow. The default is max-h-60.",
+		"Dropdown Height",
+		"DropdownMinHeightClass and DropdownMaxHeightClass cap the option list. MaxVisibleOptions caps it to a row count and wins over both.",
 		"/form/searchableSelectInput.templ", dropdownHeightUsage,
 	) {
 		<div x-data="{country: ''}" class="flex flex-col gap-3">
+			<p class="text-sm text-neutral-400">Open the dropdown to see the capped list scroll.</p>
 			@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
 				InputName: "countryDropdownHeight",
 				Label:     "Country",
@@ -349,7 +394,9 @@ templ SearchableSelectInputDropdownHeightExample() {
 					"Japan", "Mexico", "Portugal",
 				},
 				TwoWayStatePath:        "country",
-				DropdownMaxHeightClass: "max-h-32",
+				DropdownMinHeightClass: "min-h-24",
+				DropdownMaxHeightClass: "max-h-40",
+				MaxVisibleOptions:      3,
 			})
 		</div>
 	}
@@ -387,6 +434,37 @@ templ SearchableSelectInputHintsExample() {
 				TwoWayStatePath: "country",
 				HintValue:       "This is a helpful hint displayed as a tooltip.",
 				HintDisplay:     uiForm.InputHintDisplayTooltip,
+			})
+		</div>
+	}
+}
+
+templ SearchableSelectInputHintIconStyleExample() {
+	{{
+		hintIconUsage := `@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
+	InputName:       "country",
+	Label:           "Country",
+	FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+	TwoWayStatePath: "country",
+	HintValue:       "This is a helpful hint.",
+	HintDisplay:     uiForm.InputHintDisplayTooltip,
+	HintIconStyle:   uiForm.InputHintIconStyleBoxed,
+})`
+	}}
+	@DemoExampleCard(
+		"Hint Icon Styles",
+		"HintIconStyle renders the hint trigger as an icon or as a boxed tooltip.",
+		"/form/searchableSelectInput.templ", hintIconUsage,
+	) {
+		<div x-data="{country: 'Brazil'}" class="flex flex-col gap-6">
+			@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
+				InputName:       "countryHintBoxed",
+				Label:           "Country",
+				FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+				TwoWayStatePath: "country",
+				HintValue:       "This is a helpful hint displayed as a boxed tooltip.",
+				HintDisplay:     uiForm.InputHintDisplayTooltip,
+				HintIconStyle:   uiForm.InputHintIconStyleBoxed,
 			})
 		</div>
 	}
@@ -492,13 +570,15 @@ templ SearchableSelectInputDemo() {
 		@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
 			{Title: "Multi-Select", Icon: "ph-list-checks", Content: SearchableSelectInputMultiSelectExample()},
 			{Title: "Selected as Tags", Icon: "ph-tag", Content: SearchableSelectInputTagsExample()},
+			{Title: "Tag Colors", Icon: "ph-palette", Content: SearchableSelectInputTagColorsExample()},
 			{Title: "Tags Options Only", Icon: "ph-tag-simple", Content: SearchableSelectInputTagsOptionsOnlyExample()},
 			{Title: "Tags with LabelValueOptions", Icon: "ph-tag-chevron", Content: SearchableSelectInputTagsLabelValueExample()},
 			{Title: "LabelValueOptions", Icon: "ph-tag", Content: SearchableSelectInputLabelValueExample()},
 			{Title: "No Matches", Icon: "ph-magnifying-glass", Content: SearchableSelectInputNoMatchesExample()},
-			{Title: "Dropdown Max Height", Icon: "ph-arrows-out-line-vertical", Content: SearchableSelectInputDropdownHeightExample()},
+			{Title: "Dropdown Height", Icon: "ph-arrows-out-line-vertical", Content: SearchableSelectInputDropdownHeightExample()},
 			{Title: "Sizes", Icon: "ph-ruler", Content: SearchableSelectInputSizesExample()},
 			{Title: "Hints", Icon: "ph-info", Content: SearchableSelectInputHintsExample()},
+			{Title: "Hint Icon Styles", Icon: "ph-question", Content: SearchableSelectInputHintIconStyleExample()},
 			{Title: "OnChangeFunc", Icon: "ph-arrows-clockwise", Content: SearchableSelectInputOnChangeExample()},
 			{Title: "Disabled Binding", Icon: "ph-prohibit", Content: SearchableSelectInputDisabledBindingExample()},
 		})

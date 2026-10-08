@@ -137,6 +137,72 @@ templ RemoteSearchableSelectInputHintsExample() {
 	}
 }
 
+templ RemoteSearchableSelectInputHintIconStyleExample() {
+	{{
+		hintIconUsage := `@uiForm.RemoteSearchableSelectInput(uiForm.RemoteSearchableSelectInputSettings{
+	InputName:       "country",
+	Label:           "Country",
+	OptionsUrl:      "/api/countries/search",
+	TwoWayStatePath: "country",
+	HintValue:       "Type at least three characters.",
+	HintDisplay:     uiForm.InputHintDisplayTooltip,
+	HintIconStyle:   uiForm.InputHintIconStyleBoxed,
+})`
+	}}
+	@DemoExampleCard(
+		"Hint Icon Styles",
+		"HintIconStyle renders the hint trigger as an icon or as a boxed tooltip.",
+		"/form/remoteSearchableSelectInput.templ", hintIconUsage,
+	) {
+		<div x-data="{country: ''}" class="flex flex-col gap-6">
+			@uiForm.RemoteSearchableSelectInput(uiForm.RemoteSearchableSelectInputSettings{
+				InputName:       "countryHintBoxed",
+				Label:           "Country",
+				OptionsUrl:      "remote-searchable-select-demo",
+				TwoWayStatePath: "country",
+				HintValue:       "This is a helpful hint displayed as a boxed tooltip.",
+				HintDisplay:     uiForm.InputHintDisplayTooltip,
+				HintIconStyle:   uiForm.InputHintIconStyleBoxed,
+			})
+		</div>
+	}
+}
+
+templ RemoteSearchableSelectInputDropdownHeightExample() {
+	{{
+		dropdownHeightUsage := `@uiForm.RemoteSearchableSelectInput(uiForm.RemoteSearchableSelectInputSettings{
+	InputName:       "country",
+	Label:           "Country",
+	OptionsUrl:      "/api/countries/search",
+	TwoWayStatePath: "country",
+
+	// OptionalFields
+	MinQueryLength:        1,
+	DropdownMinHeightClass: "min-h-24",
+	DropdownMaxHeightClass: "max-h-40",
+	MaxVisibleOptions:      3,
+})`
+	}}
+	@DemoExampleCard(
+		"Dropdown Height",
+		"DropdownMinHeightClass and DropdownMaxHeightClass cap the option list. MaxVisibleOptions caps it to a row count and wins over both. Type one letter to load enough options to see the cap.",
+		"/form/remoteSearchableSelectInput.templ", dropdownHeightUsage,
+	) {
+		<div x-data="{country: ''}" class="flex flex-col gap-3">
+			@uiForm.RemoteSearchableSelectInput(uiForm.RemoteSearchableSelectInputSettings{
+				InputName:              "countryDropdownHeight",
+				Label:                  "Country",
+				OptionsUrl:             "remote-searchable-select-demo",
+				TwoWayStatePath:        "country",
+				MinQueryLength:         1,
+				DropdownMinHeightClass: "min-h-24",
+				DropdownMaxHeightClass: "max-h-40",
+				MaxVisibleOptions:      3,
+			})
+		</div>
+	}
+}
+
 templ RemoteSearchableSelectInputDemo() {
 	{{
 		demoUsage := `@uiForm.RemoteSearchableSelectInput(uiForm.RemoteSearchableSelectInputSettings{
@@ -174,6 +240,8 @@ templ RemoteSearchableSelectInputDemo() {
 			{Title: "Query Settings", Icon: "ph-sliders", Content: RemoteSearchableSelectInputQuerySettingsExample()},
 			{Title: "Error State", Icon: "ph-warning-circle", Content: RemoteSearchableSelectInputErrorExample()},
 			{Title: "Hints", Icon: "ph-info", Content: RemoteSearchableSelectInputHintsExample()},
+			{Title: "Hint Icon Styles", Icon: "ph-question", Content: RemoteSearchableSelectInputHintIconStyleExample()},
+			{Title: "Dropdown Height", Icon: "ph-arrows-out-line-vertical", Content: RemoteSearchableSelectInputDropdownHeightExample()},
 		})
 	</div>
 }

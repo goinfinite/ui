@@ -18,11 +18,16 @@ type SearchableSelectInputSettings struct {
 	IsMultiSelect                     bool
 	SelectionDisplay                  string
 	ShouldAllowCustomValues           bool
+	TagOuterBackgroundColor           string
+	TagOuterTextColor                 string
+	TagInnerBackgroundColor           string
 	OnChangeFunc                      string
 	Size                              string
 	TextCase                          string
 	DropdownBackgroundColor           string
+	DropdownMinHeightClass            string
 	DropdownMaxHeightClass            string
+	MaxVisibleOptions                 uint
 	IsDisabledOneWayStatePath         string
 	HintValue                         string
 	HintStatePath                     string
@@ -43,7 +48,12 @@ type searchableSelectInputShellSettings struct {
 	Size                              string
 	TextCase                          string
 	DropdownBackgroundColor           string
+	DropdownMinHeightClass            string
 	DropdownMaxHeightClass            string
+	MaxVisibleOptions                 uint
+	TagOuterBackgroundColor           string
+	TagOuterTextColor                 string
+	TagInnerBackgroundColor           string
 	OnChangeSuffix                    string
 	InitExpression                    string
 	IsDisabledOneWayStatePath         string
@@ -140,7 +150,7 @@ templ searchableSelectInputFilterInput(
 		aria-autocomplete="list"
 		:aria-expanded="isOpen"
 		autocomplete="off"
-		class="w-full min-w-0 flex-1 bg-transparent text-neutral-100 placeholder-text-neutral-50/60 outline-none"
+		class="w-full min-w-0 flex-1 bg-transparent text-neutral-100 placeholder-text-neutral-50/60 outline-none focus:outline-none"
 	/>
 }
 
@@ -196,11 +206,11 @@ templ searchableSelectInputOptionRow(
 			role="option"
 			:aria-selected={ selectedExpression }
 			@click={ clickExpression }
-			class="flex w-full cursor-pointer items-center gap-2 bg-transparent px-3 py-2 text-left outline-none transition-colors hover:bg-neutral-50/5 focus-visible:bg-neutral-50/10"
+			class="flex w-full cursor-pointer items-center gap-2 bg-transparent px-3 py-2 text-left outline-none transition-colors hover:bg-neutral-50/5 focus-visible:bg-neutral-50/10 focus-visible:outline-none"
 		>
 			<span
-				class="flex h-4 w-4 shrink-0 items-center justify-center rounded border-2 border-neutral-50/20 text-transparent transition-colors"
-				:class={ selectedExpression + " ? 'border-secondary-500 text-secondary-500' : ''" }
+				class="flex h-4 w-4 shrink-0 items-center justify-center rounded border-2 transition-colors"
+				:class={ selectedExpression + " ? 'border-secondary-500 text-secondary-500' : 'border-neutral-50/20 text-transparent'" }
 			>
 				<i class="ph-bold ph-check text-[0.625rem]"></i>
 			</span>
@@ -224,9 +234,21 @@ templ searchableSelectInputSelectedLabels(settings searchableSelectInputShellSet
 }
 
 templ searchableSelectInputSelectedTags(settings searchableSelectInputShellSettings) {
+	{{ tagOuterBackgroundColor := "secondary-500" }}
+	if settings.TagOuterBackgroundColor != "" {
+		{{ tagOuterBackgroundColor = settings.TagOuterBackgroundColor }}
+	}
+	{{ tagOuterTextColor := "neutral-50" }}
+	if settings.TagOuterTextColor != "" {
+		{{ tagOuterTextColor = settings.TagOuterTextColor }}
+	}
+	{{ tagInnerBackgroundColor := "neutral-50/10" }}
+	if settings.TagInnerBackgroundColor != "" {
+		{{ tagInnerBackgroundColor = settings.TagInnerBackgroundColor }}
+	}
 	<template x-for={ "selectedValue in " + settings.TwoWayStatePath } :key="selectedValue">
-		<span class="inline-flex w-fit max-w-full items-center rounded border border-secondary-500 bg-secondary-500 text-neutral-50">
-			<span class="max-w-full truncate rounded bg-neutral-50/10 px-1.5 py-0.5 text-xs" x-text="optionLabelResolver(selectedValue)"></span>
+		<span class={ "inline-flex w-fit max-w-full items-center rounded border bg-" + tagOuterBackgroundColor + " border-" + tagOuterBackgroundColor + " text-" + tagOuterTextColor }>
+			<span class={ "max-w-full truncate rounded px-1.5 py-0.5 text-xs bg-" + tagInnerBackgroundColor } x-text="optionLabelResolver(selectedValue)"></span>
 			<button
 				type="button"
 				class="flex cursor-pointer items-center rounded bg-transparent p-0.5 transition-opacity hover:opacity-80"
@@ -254,9 +276,13 @@ templ searchableSelectInputHiddenInputs(
 }
 
 templ searchableSelectInputDropdown(settings searchableSelectInputShellSettings) {
+	{{ dropdownMaxVisibleOptionsStyle := selectDropdownMaxVisibleOptionsStyle(settings.MaxVisibleOptions, searchableSelectInputOptionRowHeightRem) }}
 	<ul
 		x-ref="searchableSelectDropdown"
 		class={ searchableSelectInputDropdownClassesResolver(settings) }
+		if dropdownMaxVisibleOptionsStyle != "" {
+			style={ dropdownMaxVisibleOptionsStyle }
+		}
 		:class="openUpward ? 'bottom-full mb-1' : 'mt-1'"
 		x-show="isOpen"
 		role="listbox"
@@ -295,7 +321,12 @@ templ SearchableSelectInput(componentSettings SearchableSelectInputSettings) {
 		Size:                              componentSettings.Size,
 		TextCase:                          componentSettings.TextCase,
 		DropdownBackgroundColor:           componentSettings.DropdownBackgroundColor,
+		DropdownMinHeightClass:            componentSettings.DropdownMinHeightClass,
 		DropdownMaxHeightClass:            componentSettings.DropdownMaxHeightClass,
+		MaxVisibleOptions:                 componentSettings.MaxVisibleOptions,
+		TagOuterBackgroundColor:           componentSettings.TagOuterBackgroundColor,
+		TagOuterTextColor:                 componentSettings.TagOuterTextColor,
+		TagInnerBackgroundColor:           componentSettings.TagInnerBackgroundColor,
 		OnChangeSuffix:                    onChangeSuffix,
 		InitExpression:                    initExpression,
 		IsDisabledOneWayStatePath:         componentSettings.IsDisabledOneWayStatePath,

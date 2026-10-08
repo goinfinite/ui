@@ -47,6 +47,9 @@ type SelectInputSettings struct {
 	Size                              string
 	TextCase                          string
 	DropdownBackgroundColor           string
+	DropdownMinHeightClass            string
+	DropdownMaxHeightClass            string
+	MaxVisibleOptions                 uint
 	IsDisabledOneWayStatePath         string
 	IsRequired                        bool
 	ShouldIncludeBlankOption          bool
@@ -182,9 +185,14 @@ templ SelectInput(componentSettings SelectInputSettings) {
 				if componentSettings.DropdownBackgroundColor != "" {
 					{{ dropdownBackgroundClass = "bg-" + componentSettings.DropdownBackgroundColor }}
 				}
+				{{ dropdownHeightClasses := selectDropdownHeightClassesResolver(componentSettings.DropdownMinHeightClass, componentSettings.DropdownMaxHeightClass) }}
+				{{ dropdownMaxVisibleOptionsStyle := selectDropdownMaxVisibleOptionsStyle(componentSettings.MaxVisibleOptions, selectInputOptionRowHeightRem) }}
 				<ul
 					x-ref="selectDropdown"
-					class={ "absolute left-0 z-20 max-h-60 w-full overflow-auto rounded-md border border-neutral-50/5 " + dropdownBackgroundClass + " shadow-lg hover:border-neutral-50/30" }
+					class={ "absolute left-0 z-20 w-full overflow-auto rounded-md border border-neutral-50/5 " + dropdownHeightClasses + " " + dropdownBackgroundClass + " shadow-lg hover:border-neutral-50/30" }
+					if dropdownMaxVisibleOptionsStyle != "" {
+						style={ dropdownMaxVisibleOptionsStyle }
+					}
 					:class={ "openUpward ? 'bottom-full mb-1' : 'mt-1'" }
 					x-show="isOpen"
 					@click.away="closeDropdown()"
