@@ -136,6 +136,7 @@ type PasswordInputSettings struct {
 	Value                                string
 	Size                                 string
 	TextCase                             string
+	ActionButtonStyle                    string
 	IsRequired                           bool
 	IsReadOnly                           bool
 	ShouldShowGenerateButton             bool
@@ -160,6 +161,18 @@ type passwordInputActionTokens struct {
 	IconSizeClass   string
 }
 
+const (
+	PasswordInputActionButtonStyleBoxed string = "boxed"
+	PasswordInputActionButtonStylePlain string = "plain"
+)
+
+func passwordInputActionButtonStyleClassesResolver(actionButtonStyle string) string {
+	if actionButtonStyle == PasswordInputActionButtonStylePlain {
+		return "bg-transparent hover:bg-neutral-50/5 hover:text-neutral-100"
+	}
+	return "border-1 border-neutral-50/5 bg-neutral-50/5 text-neutral-100 hover:border-neutral-50/30 hover:bg-neutral-50/20"
+}
+
 func passwordInputActionTokensResolver(size string) passwordInputActionTokens {
 	switch size {
 	case InputFieldSizeXs:
@@ -174,7 +187,7 @@ func passwordInputActionTokensResolver(size string) passwordInputActionTokens {
 	return passwordInputActionTokens{ButtonSizeClass: "h-7 w-7", IconSizeClass: "text-base"}
 }
 
-func passwordInputActions(shouldShowGenerateButton bool, passwordStatePath, size string) templ.Component {
+func passwordInputActions(shouldShowGenerateButton bool, passwordStatePath, size, actionButtonStyle string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -196,7 +209,7 @@ func passwordInputActions(shouldShowGenerateButton bool, passwordStatePath, size
 		}
 		ctx = templ.ClearChildren(ctx)
 		actionTokens := passwordInputActionTokensResolver(size)
-		actionButtonClasses := "flex shrink-0 cursor-pointer items-center justify-center rounded bg-transparent transition-colors hover:bg-neutral-50/5 hover:text-neutral-100 " + actionTokens.ButtonSizeClass
+		actionButtonClasses := "flex shrink-0 cursor-pointer items-center justify-center rounded transition-colors " + passwordInputActionButtonStyleClassesResolver(actionButtonStyle) + " " + actionTokens.ButtonSizeClass
 		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex shrink-0 items-center gap-1 pr-1 text-neutral-400\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -293,7 +306,7 @@ func passwordInputActions(shouldShowGenerateButton bool, passwordStatePath, size
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.ResolveAttributeValue(passwordStatePath + " = generateRandomPassword(); copyPasswordToClipboard(" + passwordStatePath + ")")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/passwordInput.templ`, Line: 187, Col: 114}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/passwordInput.templ`, Line: 200, Col: 114}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var10)
 			if templ_7745c5c3_Err != nil {
@@ -378,7 +391,7 @@ func PasswordInput(componentSettings PasswordInputSettings) templ.Component {
 		var templ_7745c5c3_Var14 string
 		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.ResolveAttributeValue(templ.JSFuncCall("passwordInput", rulesScriptId))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/passwordInput.templ`, Line: 205, Col: 59}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/passwordInput.templ`, Line: 218, Col: 59}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var14)
 		if templ_7745c5c3_Err != nil {
@@ -391,7 +404,7 @@ func PasswordInput(componentSettings PasswordInputSettings) templ.Component {
 		var templ_7745c5c3_Var15 string
 		templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.ResolveAttributeValue("updatePasswordStrength(" + componentSettings.TwoWayStatePath + ")")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/passwordInput.templ`, Line: 206, Col: 80}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/passwordInput.templ`, Line: 219, Col: 80}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var15)
 		if templ_7745c5c3_Err != nil {
@@ -416,6 +429,7 @@ func PasswordInput(componentSettings PasswordInputSettings) templ.Component {
 				componentSettings.ShouldShowGenerateButton,
 				componentSettings.TwoWayStatePath,
 				componentSettings.Size,
+				componentSettings.ActionButtonStyle,
 			),
 			HintValue:                         componentSettings.HintValue,
 			HintStatePath:                     componentSettings.HintStatePath,
@@ -488,7 +502,7 @@ func PasswordInput(componentSettings PasswordInputSettings) templ.Component {
 			var templ_7745c5c3_Var18 string
 			templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.ResolveAttributeValue("'width: ' + passwordStrengthPercentage + '%'")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/passwordInput.templ`, Line: 256, Col: 61}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/passwordInput.templ`, Line: 270, Col: 61}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var18)
 			if templ_7745c5c3_Err != nil {
@@ -523,7 +537,7 @@ func PasswordInput(componentSettings PasswordInputSettings) templ.Component {
 			var templ_7745c5c3_Var21 string
 			templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.ResolveAttributeValue(shouldShowStrengthCriteria)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/passwordInput.templ`, Line: 259, Col: 147}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/passwordInput.templ`, Line: 273, Col: 147}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var21)
 			if templ_7745c5c3_Err != nil {
@@ -563,7 +577,7 @@ func PasswordInput(componentSettings PasswordInputSettings) templ.Component {
 				var templ_7745c5c3_Var24 string
 				templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.ResolveAttributeValue("passwordStrengthCriteria." + criteriaItem.StateKey)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/passwordInput.templ`, Line: 264, Col: 68}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/passwordInput.templ`, Line: 278, Col: 68}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var24)
 				if templ_7745c5c3_Err != nil {
@@ -598,7 +612,7 @@ func PasswordInput(componentSettings PasswordInputSettings) templ.Component {
 				var templ_7745c5c3_Var27 string
 				templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.ResolveAttributeValue("!passwordStrengthCriteria." + criteriaItem.StateKey)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/passwordInput.templ`, Line: 268, Col: 69}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/passwordInput.templ`, Line: 282, Col: 69}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var27)
 				if templ_7745c5c3_Err != nil {
@@ -611,7 +625,7 @@ func PasswordInput(componentSettings PasswordInputSettings) templ.Component {
 				var templ_7745c5c3_Var28 string
 				templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(criteriaItem.Label)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/passwordInput.templ`, Line: 270, Col: 27}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/passwordInput.templ`, Line: 284, Col: 27}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 				if templ_7745c5c3_Err != nil {
