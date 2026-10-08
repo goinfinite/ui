@@ -3,7 +3,7 @@ module github.com/goinfinite/ui/demo
 go 1.27.1
 
 require (
-	github.com/a-h/templ v0.3.1020
+	github.com/a-h/templ v0.3.1070
 	github.com/goinfinite/ui v0.1.8
 )
 
