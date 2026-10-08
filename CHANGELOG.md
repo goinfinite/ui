@@ -38,6 +38,9 @@ fix: lower the data table sticky header opacity
 BREAKING: unify the border radius tokens and the token resolver in the toolset
 docs: update the readmes, the contexts, the feature map, and the changelog
 chore(docs): regenerate the demo page
+BREAKING: move the fixed-value style tokens into the toolset
+docs: update the readmes, the feature map, and the changelog
+chore(docs): regenerate the demo page
 
 0.2.5 - 2026/10/07
 BREAKING: move the refresh URL builder, the fragment fetcher, and the refresh lifecycle helpers under UiToolset.ServerFragmentRefreshComponent

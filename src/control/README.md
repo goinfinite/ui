@@ -15,7 +15,7 @@ Button with optional label, icons, tooltip, ring, and shape variants.
 ```
 
 - `Size` accepts the `uiControl.ButtonSize*` constants.
-- `Shape` accepts `ButtonShapeCircular`, `ButtonShapeRounded`, or `ButtonShapeSquare`.
+- `Shape` accepts `uiToolset.ShapeCircular`, `uiToolset.ShapeRounded`, or `uiToolset.ShapeSquare`.
 - Icons use the `ph-bold` weight. Pass the icon name alone, for example `"ph-floppy-disk"`.
 - `IsDisabled` sets a static disabled state. `IsDisabledOneWayStatePath` disables the button while the path is truthy and dims it.
 - `IsVisibleOneWayStatePath` hides the button while the path is falsy.
