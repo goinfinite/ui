@@ -1,6 +1,25 @@
 # Changelog
 
 ```log
+0.2.6 - 2026/10/08
+feat: add the vertical orientation to the InlineRadioGroup
+feat: add the InlineCheckboxGroup with horizontal and vertical orientations
+feat: add the SearchableSelectInput with a local filter box, multi-select mode, clear button, No matches row, max-height list, and an optional tag display with typed custom values
+feat: add the RemoteSearchableSelectInput with debounce, minimum query length, stale-response discard, and loading, empty, and error states
+feat: add the PasswordInput with a reveal toggle, a configurable random password generator, and a strength meter
+feat: accept length and character-class options in the random password toolset
+feat: add an AffixRightComponent slot and an InputTypeExpression to the InputField
+refactor: share the select dropdown open-upward decision in the toolset
+feat: render the demo examples side by side with their usage, and keep an explicit stacked variant for wide examples
+fix: paint every form dropdown above the data table sticky header
+fix: keep the data table root from clipping a child dropdown, and round the scroll container top when the table body sits first
+fix: emit the dropdown background default as a literal class so a static stylesheet build keeps it
+feat: add StickyHeaderBackgroundColor and ItemsPerPageDropdownBackgroundColor to the DataTable and DropdownBackgroundColor to the Pagination
+feat: default the data table sticky header to a blurred translucent surface
+test: cover the new form components with unit and browser specs, and add a searchable filter performance budget
+docs: document the new form components in the form readme and the feature map
+chore(docs): regenerate the demo page
+
 0.2.5 - 2026/10/07
 BREAKING: move the refresh URL builder, the fragment fetcher, and the refresh lifecycle helpers under UiToolset.ServerFragmentRefreshComponent
 refactor: share the refresh settings, event wiring, error handling, and cleanup between the carousel and the data table
