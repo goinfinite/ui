@@ -62,20 +62,16 @@ function createRandomPassword(options = {}) {
     passwordChars.push(allChars[randomNumberGenerator(allChars.length)]);
   }
 
-  const requiredPositions = [];
+  const availablePositions = [];
   for (let position = 0; position < passwordLength; position++) {
-    requiredPositions.push(position);
-  }
-  for (let index = requiredPositions.length - 1; index > 0; index--) {
-    const swapIndex = randomNumberGenerator(index + 1);
-    [requiredPositions[index], requiredPositions[swapIndex]] = [
-      requiredPositions[swapIndex],
-      requiredPositions[index],
-    ];
+    availablePositions.push(position);
   }
 
-  charsets.forEach((charset, charsetIndex) => {
-    passwordChars[requiredPositions[charsetIndex]] =
+  charsets.forEach((charset) => {
+    const availableIndex = randomNumberGenerator(availablePositions.length);
+    const targetPosition = availablePositions[availableIndex];
+    availablePositions.splice(availableIndex, 1);
+    passwordChars[targetPosition] =
       charset[randomNumberGenerator(charset.length)];
   });
 
