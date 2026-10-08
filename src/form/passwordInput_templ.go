@@ -172,12 +172,12 @@ func passwordInputActions(shouldShowGenerateButton bool, passwordStatePath strin
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex shrink-0 items-center gap-1 pr-1 text-neutral-400\"><button type=\"button\" class=\"rounded p-1 text-lg transition-colors hover:bg-neutral-50/5 hover:text-neutral-100\" :aria-label=\"isPasswordVisible ? 'Hide password' : 'Show password'\" @click=\"isPasswordVisible = !isPasswordVisible\"><i class=\"ph-bold ph-eye\" x-show=\"!isPasswordVisible\"></i> <i class=\"ph-bold ph-eye-slash\" x-show=\"isPasswordVisible\"></i></button> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex shrink-0 items-center gap-1 pr-1 text-neutral-400\"><button type=\"button\" class=\"cursor-pointer rounded bg-transparent p-1 text-lg transition-colors hover:bg-neutral-50/5 hover:text-neutral-100\" :aria-label=\"isPasswordVisible ? 'Hide password' : 'Show password'\" @click=\"isPasswordVisible = !isPasswordVisible\"><i class=\"ph-bold ph-eye\" x-show=\"!isPasswordVisible\"></i> <i class=\"ph-bold ph-eye-slash\" x-show=\"isPasswordVisible\"></i></button> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if shouldShowGenerateButton {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<button type=\"button\" class=\"rounded p-1 text-lg transition-colors hover:bg-neutral-50/5 hover:text-neutral-100\" aria-label=\"Generate random password\" @click=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<button type=\"button\" class=\"cursor-pointer rounded bg-transparent p-1 text-lg transition-colors hover:bg-neutral-50/5 hover:text-neutral-100\" aria-label=\"Generate random password\" @click=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -312,14 +312,14 @@ func PasswordInput(componentSettings PasswordInputSettings) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\"></div></div><ul class=\"flex flex-col gap-0.5 text-xs text-neutral-400\" x-show=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\"></div></div><ul class=\"grid grid-cols-1 gap-x-4 gap-y-0.5 text-xs text-neutral-400 sm:grid-cols-2\" x-show=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.ResolveAttributeValue(shouldShowStrengthCriteria)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/passwordInput.templ`, Line: 217, Col: 98}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/passwordInput.templ`, Line: 217, Col: 126}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
 			if templ_7745c5c3_Err != nil {
