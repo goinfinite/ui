@@ -19,9 +19,9 @@ Checkbox with a label, bound to a boolean or an array state path.
 })
 ```
 
-`Shape` accepts `CheckboxInputShapeSquare`, `CheckboxInputShapeRounded` (the default), and `CheckboxInputShapeCircular`. `Size` accepts the `CheckboxInputSize*` constants. `CheckedColor`, `UncheckedColor`, and `FocusRingColor` set the box colors. `LabelPosition` accepts `CheckboxInputLabelPositionLeft` and `CheckboxInputLabelPositionRight`. `IsChecked`, `IsDisabled`, and `IsRequired` render static states; `IsCheckedOneWayStatePath`, `IsDisabledOneWayStatePath`, and `IndeterminateOneWayStatePath` bind them to Alpine state. `AriaLabel` names the checkbox when no visible label is present.
+`Shape` accepts `CheckboxInputShapeSquare`, `CheckboxInputShapeRounded` (the default), and `CheckboxInputShapeCircular`. `Size` accepts the `CheckboxInputSize*` constants. `CheckedColor`, `UncheckedColor`, and `FocusRingColor` set the box colors. `LabelPosition` accepts `CheckboxInputLabelPositionLeft` and `CheckboxInputLabelPositionRight`. `IsChecked`, `IsDisabled`, and `IsRequired` render static states. `IsCheckedOneWayStatePath`, `IsDisabledOneWayStatePath`, and `IndeterminateOneWayStatePath` bind them to Alpine state. `AriaLabel` names the checkbox when no visible label is present.
 
-`IsInvalid` and `IsInvalidOneWayStatePath` flag the error state: the box border turns to `ErrorColor` (default `"red-500"`), and the input carries `aria-invalid`. `ErrorMessage` and `ErrorMessageOneWayStatePath` render the message below the control; with `InputId` set, the input links to it through `aria-describedby`. When an invalid path is set, the message shows only while the path is true.
+`IsInvalid` and `IsInvalidOneWayStatePath` flag the error state. The box border turns to `ErrorColor` (default `"red-500"`), and the input carries `aria-invalid`. `ErrorMessage` and `ErrorMessageOneWayStatePath` render the message below the control. With `InputId` set, the input links to it through `aria-describedby`. When an invalid path is set, the message shows only while the path is true.
 
 ## InputField
 
@@ -37,7 +37,7 @@ Single-line input with a floating label, optional affixes, and an optional hint.
 })
 ```
 
-`InputType` accepts the `uiForm.InputType*` constants. `IconLeft` takes a Phosphor icon class and renders it inside the field before the input, for example `"ph-magnifying-glass"`. An affix renders a static value (`AffixLeftValue`, `AffixRightValue`) or binds a state path (`AffixLeftStatePath`, `AffixRightStatePath`). Set `AffixLeftWidthPercent` or `AffixRightWidthPercent` to fix an affix to a percentage of the field width, for example `25` or `50`. `AffixRightComponent` renders any templ component at the right edge, after the right affix; `PasswordInput` uses it for its action buttons. `InputTypeExpression` supplies the type from an Alpine expression and overrides `InputType` at runtime, for example `"isPasswordVisible ? 'text' : 'password'"`. Number inputs accept `InputNumberMin`, `InputNumberMax`, and `InputNumberStep`. `Size` accepts the `InputFieldSize*` constants and defaults to `md`; it scales the input, the affixes, and the floating label together. `TextCase` accepts a `uiToolset.TextCase*` value; it transforms the floating label and the placeholder. The default, `TextCaseNone`, leaves the text as typed.
+`InputType` accepts the `uiForm.InputType*` constants. `IconLeft` takes a Phosphor icon class and renders it inside the field before the input, for example `"ph-magnifying-glass"`. An affix renders a static value (`AffixLeftValue`, `AffixRightValue`) or binds a state path (`AffixLeftStatePath`, `AffixRightStatePath`). Set `AffixLeftWidthPercent` or `AffixRightWidthPercent` to fix an affix to a percentage of the field width, for example `25` or `50`. `AffixRightComponent` renders any templ component at the right edge, after the right affix. `PasswordInput` uses it for its action buttons. `InputTypeExpression` supplies the type from an Alpine expression and overrides `InputType` at runtime, for example `"isPasswordVisible ? 'text' : 'password'"`. Number inputs accept `InputNumberMin`, `InputNumberMax`, and `InputNumberStep`. `Size` accepts the `InputFieldSize*` constants and defaults to `md`. It scales the input, the affixes, and the floating label together. `TextCase` accepts a `uiToolset.TextCase*` value. It transforms the floating label and the placeholder. The default, `TextCaseNone`, leaves the text as typed.
 
 ## PasswordInput
 
@@ -71,7 +71,7 @@ A row or column of checkboxes under one shared label. The label notches into the
 })
 ```
 
-Each `CheckboxInputSettings` carries its own size, shape, colors, and errors. When the shared state path holds an array, Alpine adds and removes the checked values. `Orientation` accepts `InlineCheckboxGroupOrientationHorizontal` (the default) and `InlineCheckboxGroupOrientationVertical`. `TextCase` transforms only the shared label.
+Each `CheckboxInputSettings` carries its own size, shape, colors, and errors. When the shared state path holds an array, Alpine adds and removes the checked values. `Orientation` accepts `InlineCheckboxGroupOrientationHorizontal` (the default) and `InlineCheckboxGroupOrientationVertical`. `MaxVisibleOptions` caps the visible option rows and scrolls the rest. `TextCase` transforms only the shared label.
 
 ## TextArea
 
@@ -122,7 +122,7 @@ It shares the `FlatOptions` and `LabelValueOptions` modes with `SelectInput`. `O
 
 ## SearchableSelectInput
 
-Dropdown with a filter box. Typing narrows the local options in place, the list caps its height and scrolls, and a clear button empties the selection. Use it past roughly ten options, where a native select becomes hard to scan.
+Dropdown with a filter box. Typing narrows the local options in place. The list caps its height and scrolls. A clear button empties the selection. Use it past roughly ten options, where a native select becomes hard to scan.
 
 ```go
 @uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
@@ -133,11 +133,11 @@ Dropdown with a filter box. Typing narrows the local options in place, the list 
 })
 ```
 
-It shares the `FlatOptions` and `LabelValueOptions` modes with `SelectInput`; the filter matches the label, case-insensitively. `IsMultiSelect` binds an array and keeps the dropdown open after each toggle. `SelectionDisplay` accepts `SearchableSelectInputSelectionDisplayText` (the default, joined labels) or `SearchableSelectInputSelectionDisplayTags` for removable tags inside the field. With tags, `ShouldAllowCustomValues` turns a typed value into a tag on Enter and Backspace on an empty input removes the last tag; each tag shows the option label while the bound array holds the stored value. Tags apply to multi mode only. `DropdownMaxHeightClass` caps the list (default `max-h-60`). `OnChangeFunc` runs on selection, on a multi-select toggle, on a tag change, and on clear. Single mode writes one hidden input; multi mode writes one hidden input per selected value, so a form submission carries every value under `InputName`.
+It shares the `FlatOptions` and `LabelValueOptions` modes with `SelectInput`. The filter matches the label, case-insensitively. `IsMultiSelect` binds an array and keeps the dropdown open after each toggle. `SelectionDisplay` accepts `SearchableSelectInputSelectionDisplayText` (the default) or `SearchableSelectInputSelectionDisplayTags` for removable tags inside the field. The text display joins the selected labels. With tags, `ShouldAllowCustomValues` turns a typed value into a tag on Enter, and Backspace on an empty input removes the last tag. Each tag shows the option label while the bound array holds the stored value. Tags apply to multi mode only. `DropdownMaxHeightClass` caps the list (default `max-h-60`). `OnChangeFunc` runs on selection, on a multi-select toggle, on a tag change, and on clear. Single mode writes one hidden input. Multi mode writes one hidden input per selected value, so a form submission carries every value under `InputName`.
 
 ## RemoteSearchableSelectInput
 
-Searchable select whose options come from a URL as the user types. It debounces the requests, waits for the minimum query length, discards stale responses, and shows loading, empty, and error states.
+Searchable select whose options come from a URL as the user types. It debounces the requests and waits for the minimum query length. It discards stale responses and shows loading, empty, and error states.
 
 ```go
 @uiForm.RemoteSearchableSelectInput(uiForm.RemoteSearchableSelectInputSettings{
@@ -148,7 +148,7 @@ Searchable select whose options come from a URL as the user types. It debounces 
 })
 ```
 
-`OptionsQueryParam` names the query parameter (default `q`), `MinQueryLength` gates the first request (default 3), and `DebounceMs` waits before each request (default 300). The endpoint receives `GET OptionsUrl?<query param>=<typed text>` and returns `{ "body": [{ "label": "...", "value": "..." }] }`; a bare JSON array of strings or `{label, value}` objects also works. `IsMultiSelect` binds an array and caches the selected labels while the query changes. `OnChangeFunc` runs on selection, on a multi-select toggle, and on clear.
+`OptionsQueryParam` names the query parameter (default `q`). `MinQueryLength` gates the first request (default 3). `DebounceMs` waits before each request (default 300). The endpoint receives `GET OptionsUrl?<query param>=<typed text>`. It returns `{ "body": [{ "label": "...", "value": "..." }] }`. A bare JSON array of strings or `{label, value}` objects also works. `IsMultiSelect` binds an array and caches the selected labels while the query changes. `OnChangeFunc` runs on selection, on a multi-select toggle, and on clear.
 
 ## RadioInput
 
@@ -176,7 +176,7 @@ A row of radios with one shared label. The label notches into the top border of 
 })
 ```
 
-`Orientation` accepts `InlineRadioGroupOrientationHorizontal` (the default) and `InlineRadioGroupOrientationVertical`. `InlineRadioGroup`'s `TextCase` transforms only the shared label. Each option label takes its own `RadioInputSettings.TextCase`.
+`Orientation` accepts `InlineRadioGroupOrientationHorizontal` (the default) and `InlineRadioGroupOrientationVertical`. `MaxVisibleOptions` caps the visible option rows and scrolls the rest. `InlineRadioGroup`'s `TextCase` transforms only the shared label. Each option label takes its own `RadioInputSettings.TextCase`.
 
 ## ToggleSwitch
 

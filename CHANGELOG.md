@@ -19,6 +19,16 @@ feat: default the data table sticky header to a blurred translucent surface
 test: cover the new form components with unit and browser specs, and add a searchable filter performance budget
 docs: document the new form components in the form readme and the feature map
 chore(docs): regenerate the demo page
+fix: pick each random password character from an unused position
+feat: add a MaxVisibleOptions cap to the inline checkbox and radio groups
+fix: give the password input actions a transparent surface and split the strength criteria into columns
+fix: make the searchable select option row readable and match its tag chips to the Tag component
+fix: repair the searchable select label cache, clear control, and remote request state
+refactor: share the searchable select option row and dropdown between the local and remote variants
+fix: truncate the demo sidebar labels
+fix: show a valid tags icon in the demo
+fix: read the remote demo query parameter by name
+docs: document the inline group cap and the searchable fixes in the form readme and context
 
 0.2.5 - 2026/10/07
 BREAKING: move the refresh URL builder, the fragment fetcher, and the refresh lifecycle helpers under UiToolset.ServerFragmentRefreshComponent
