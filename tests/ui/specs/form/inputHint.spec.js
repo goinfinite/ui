@@ -3,7 +3,6 @@ import { openExamplePanel } from "../../examplePanel.js";
 
 const inputFieldSection = "#input-field-demo";
 const selectSection = "#select-input-demo";
-const multiSelectSection = "#multi-select-input-demo";
 const textAreaSection = "#text-area-demo";
 
 async function tooltipFor(trigger) {
@@ -72,9 +71,9 @@ test.describe("InputHint", () => {
     await expect(dropdown).toBeHidden();
   });
 
-  test("@smoke multi-select tooltip reveals on focus", async ({ page }) => {
-    await openExamplePanel(page, multiSelectSection, "Hints");
-    const trigger = page.locator(`${multiSelectSection} [role=note]`).first();
+  test("@smoke select tooltip reveals on focus", async ({ page }) => {
+    await openExamplePanel(page, selectSection, "Hints");
+    const trigger = page.locator(`${selectSection} [role=note]`).first();
     const tooltip = await tooltipFor(trigger);
 
     await trigger.focus();
@@ -85,12 +84,12 @@ test.describe("InputHint", () => {
     );
   });
 
-  test("@smoke multi-select tooltip trigger does not toggle the dropdown from the keyboard", async ({
+  test("@smoke select tooltip trigger does not toggle the dropdown from the keyboard", async ({
     page,
   }) => {
-    await openExamplePanel(page, multiSelectSection, "Hints");
-    const trigger = page.locator(`${multiSelectSection} [role=note]`).first();
-    const dropdown = page.locator(`${multiSelectSection} ul`).first();
+    await openExamplePanel(page, selectSection, "Hints");
+    const trigger = page.locator(`${selectSection} [role=note]`).first();
+    const dropdown = page.locator(`${selectSection} ul`).first();
 
     await trigger.focus();
     await page.keyboard.press("Enter");

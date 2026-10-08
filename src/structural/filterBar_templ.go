@@ -169,10 +169,11 @@ func FilterBar(componentSettings FilterBarSettings) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
+				templ_7745c5c3_Err = uiForm.SelectInput(uiForm.SelectInputSettings{
 					InputName:               componentSettings.EnumSelectRadioGroupNamePrefix + filter.Key,
 					Label:                   filter.Label,
 					LabelValueOptions:       filter.Options,
+					IsMultiSelect:           true,
 					OnChangeFunc:            componentSettings.OnChangeFunc,
 					TwoWayStatePath:         valuesPath + "." + filter.Key,
 					DropdownBackgroundColor: componentSettings.DropdownBackgroundColor,
@@ -203,7 +204,7 @@ func FilterBar(componentSettings FilterBarSettings) templ.Component {
 					var templ_7745c5c3_Var4 string
 					templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.OnChangeFunc)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/filterBar.templ`, Line: 106, Col: 47}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/filterBar.templ`, Line: 107, Col: 47}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
 					if templ_7745c5c3_Err != nil {
@@ -318,7 +319,7 @@ func FilterBar(componentSettings FilterBarSettings) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.ResolveAttributeValue("isFilterActive(" + filterKey + ")")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/filterBar.templ`, Line: 142, Col: 54}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/filterBar.templ`, Line: 143, Col: 54}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var9)
 			if templ_7745c5c3_Err != nil {
@@ -329,13 +330,15 @@ func FilterBar(componentSettings FilterBarSettings) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			templ_7745c5c3_Err = uiDisplay.Tag(uiDisplay.TagSettings{
-				Size:                      uiDisplay.TagSizeSm,
+				Size:                      uiDisplay.TagSizeXs,
 				OuterBackgroundColor:      "neutral-50/10",
 				OuterRingColor:            "neutral-50/20",
 				OuterTextColor:            "neutral-50",
 				OuterLeftLabel:            filter.Label,
+				OuterRadius:               uiToolset.BorderRadius3xl,
 				InnerBackgroundColor:      "neutral-50/20",
 				InnerLabelOneWayStatePath: "resolveFilterChipLabel(" + filterKey + ")",
+				InnerRadius:               uiToolset.BorderRadius3xl,
 				OnRemoveFunc:              "resetFilter(" + filterKey + ")" + onChangeSuffix,
 				RemoveButtonLabel:         "Remove " + filter.Label + " filter",
 			}).Render(ctx, templ_7745c5c3_Buffer)

@@ -84,10 +84,11 @@ templ FilterBar(componentSettings FilterBarSettings) {
 						</div>
 					case FilterKindMultiEnumSelect:
 						<div class="w-44">
-							@uiForm.MultiSelectInput(uiForm.MultiSelectInputSettings{
+							@uiForm.SelectInput(uiForm.SelectInputSettings{
 								InputName:               componentSettings.EnumSelectRadioGroupNamePrefix + filter.Key,
 								Label:                   filter.Label,
 								LabelValueOptions:       filter.Options,
+								IsMultiSelect:           true,
 								OnChangeFunc:            componentSettings.OnChangeFunc,
 								TwoWayStatePath:         valuesPath + "." + filter.Key,
 								DropdownBackgroundColor: componentSettings.DropdownBackgroundColor,
@@ -141,13 +142,15 @@ templ FilterBar(componentSettings FilterBarSettings) {
 				{{ filterKey := strconv.Quote(filter.Key) }}
 				<span x-show={ "isFilterActive(" + filterKey + ")" }>
 					@uiDisplay.Tag(uiDisplay.TagSettings{
-						Size:                          uiDisplay.TagSizeSm,
+						Size:                          uiDisplay.TagSizeXs,
 						OuterBackgroundColor:          "neutral-50/10",
 						OuterRingColor:                "neutral-50/20",
 						OuterTextColor:                "neutral-50",
 						OuterLeftLabel:                filter.Label,
+						OuterRadius:                   uiToolset.BorderRadius3xl,
 						InnerBackgroundColor:          "neutral-50/20",
 						InnerLabelOneWayStatePath:     "resolveFilterChipLabel(" + filterKey + ")",
+						InnerRadius:                   uiToolset.BorderRadius3xl,
 						OnRemoveFunc:                  "resetFilter(" + filterKey + ")" + onChangeSuffix,
 						RemoveButtonLabel:             "Remove " + filter.Label + " filter",
 					})

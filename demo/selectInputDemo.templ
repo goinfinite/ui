@@ -485,6 +485,86 @@ templ SelectInputDisabledBindingExample() {
 	}
 }
 
+templ SelectInputMultiSelectExample() {
+	{{
+		multiSelectUsage := `@uiForm.SelectInput(uiForm.SelectInputSettings{
+	InputName: "countries",
+	Label:     "Countries",
+
+	// OptionalFields
+	FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+	IsMultiSelect:   true,
+	TwoWayStatePath: "countries",
+})`
+	}}
+	@DemoExampleCard(
+		"Multi-Select",
+		"IsMultiSelect renders checkbox rows, keeps the dropdown open while you pick, and joins the selected labels in the trigger.",
+		"/form/selectInput.templ", multiSelectUsage,
+	) {
+		@DemoAlpineStateBlock(`<div x-data="{countries: ['Brazil']}"></div>`)
+		<div x-data="{countries: ['Brazil']}">
+			@uiForm.SelectInput(uiForm.SelectInputSettings{
+				InputName:       "countries",
+				Label:           "Countries",
+				FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+				IsMultiSelect:   true,
+				TwoWayStatePath: "countries",
+			})
+			<p class={ DemoLiveStateClasses }>
+				Values: <span x-text="JSON.stringify(countries)"></span>
+			</p>
+		</div>
+	}
+}
+
+templ SelectInputMultiSelectLabelValueExample() {
+	{{
+		multiLabelValueUsage := `@uiForm.SelectInput(uiForm.SelectInputSettings{
+	InputName: "countriesLabelValue",
+	Label:     "Countries",
+
+	// OptionalFields
+	LabelValueOptions: []uiForm.SelectLabelValueOption{
+		{Label: "Argentina", Value: "AR"},
+		{Label: "Brazil", Value: "BR"},
+		{Label: "Chile", Value: "CL"},
+	},
+	IsMultiSelect:   true,
+	TwoWayStatePath: "countries",
+})`
+	}}
+	@DemoExampleCard(
+		"Multi-Select LabelValueOptions",
+		"With IsMultiSelect the bound state holds the selected Values while the trigger joins their Labels.",
+		"/form/selectInput.templ", multiLabelValueUsage,
+	) {
+		@DemoAlpineStateBlock(`<div x-data="{countries: ['BR']}"></div>`)
+		<div x-data="{countries: ['BR']}">
+			@uiForm.SelectInput(uiForm.SelectInputSettings{
+				InputName: "countriesLabelValue",
+				Label:     "Countries",
+				LabelValueOptions: []uiForm.SelectLabelValueOption{
+					{
+						Label: "Argentina",
+						Value: "AR",
+					},
+					{
+						Label: "Brazil",
+						Value: "BR",
+					},
+					{
+						Label: "Chile",
+						Value: "CL",
+					},
+				},
+				IsMultiSelect:   true,
+				TwoWayStatePath: "countries",
+			})
+		</div>
+	}
+}
+
 templ SelectInputDemo() {
 	{{
 		demoUsage := `@uiForm.SelectInput(uiForm.SelectInputSettings{
@@ -500,7 +580,7 @@ templ SelectInputDemo() {
 	<div class="flex flex-col gap-4" id="select-input-demo">
 		@DemoComponentSection(DemoComponentSectionSettings{
 			ComponentPath:          "/form/selectInput.templ",
-			Description:            "A select input allows users to select one option from a dropdown list.",
+			Description:            "A select input allows users to select one or more options from a dropdown list.",
 			LiveExampleDescription: "A select bound to Alpine state, with a blank option and flat option labels.",
 			Title:                  ".SelectInput",
 			UsageCode:              demoUsage,
@@ -521,6 +601,8 @@ templ SelectInputDemo() {
 		}
 		@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
 			{Title: "LabelValueOptions", Icon: "ph-tag", Content: SelectInputLabelValueExample()},
+			{Title: "Multi-Select", Icon: "ph-list-checks", Content: SelectInputMultiSelectExample()},
+			{Title: "Multi-Select LabelValueOptions", Icon: "ph-list-plus", Content: SelectInputMultiSelectLabelValueExample()},
 			{Title: "HTML Option Labels", Icon: "ph-code", Content: SelectInputHtmlOptionsExample()},
 			{Title: "Hints", Icon: "ph-info", Content: SelectInputHintsExample()},
 			{Title: "Hint Icon Styles", Icon: "ph-question", Content: SelectInputHintIconStyleExample()},
