@@ -9,6 +9,13 @@ UiToolset.RegisterAlpineState(() => {
     includeSpecialChars: true,
   };
 
+  const passwordCopiedToastMessages = {
+    en: "Password copied to the clipboard",
+    pt: "Senha copiada para a área de transferência",
+    es: "Contraseña copiada al portapapeles",
+    zh: "密码已复制到剪贴板",
+  };
+
   Alpine.data("passwordInput", (rulesScriptId) => ({
     rules: { ...passwordInputDefaultRules },
     isPasswordVisible: false,
@@ -80,6 +87,34 @@ UiToolset.RegisterAlpineState(() => {
 
     generateRandomPassword() {
       return UiToolset.CreateRandomPassword(this.rules);
+    },
+
+    get passwordCopiedToastMessage() {
+      const browserLanguageCode = (navigator.language || "en")
+        .toLowerCase()
+        .split("-")[0];
+      return (
+        passwordCopiedToastMessages[browserLanguageCode] ??
+        passwordCopiedToastMessages.en
+      );
+    },
+
+    async copyPasswordToClipboard(passwordValue) {
+      const passwordText = String(passwordValue ?? "");
+      if (passwordText === "") {
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(passwordText);
+      } catch (copyError) {
+        console.error(`PasswordCopyToClipboardFailed: ${copyError.message}`);
+        return;
+      }
+      const toastStore = Alpine.store("toast");
+      if (toastStore === undefined) {
+        return;
+      }
+      toastStore.displayToast(this.passwordCopiedToastMessage, "success");
     },
   }));
 });
