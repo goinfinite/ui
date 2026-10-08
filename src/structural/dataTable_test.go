@@ -197,7 +197,7 @@ func TestDataTableRootClassesResolver(t *testing.T) {
 func TestDataTableStickyHeaderClassesResolver(t *testing.T) {
 	defaultSettings := DataTableSettings[dataTableTestRecord]{}
 	defaultClasses := defaultSettings.stickyHeaderClassesResolver()
-	for _, expectedClass := range []string{"sticky", "top-0", "z-10", "backdrop-blur-md", "bg-neutral-950/70"} {
+	for _, expectedClass := range []string{"sticky", "top-0", "z-10", "backdrop-blur-md", "bg-neutral-950/20"} {
 		if !strings.Contains(defaultClasses, expectedClass) {
 			t.Errorf("StickyHeaderClassesMissing(%q): %q", expectedClass, defaultClasses)
 		}
@@ -210,7 +210,7 @@ func TestDataTableStickyHeaderClassesResolver(t *testing.T) {
 	if !strings.Contains(coloredClasses, "bg-neutral-50/5") {
 		t.Errorf("StickyHeaderClassesMissingCustomBackground: %q", coloredClasses)
 	}
-	if strings.Contains(coloredClasses, "bg-neutral-950/70") {
+	if strings.Contains(coloredClasses, "bg-neutral-950/20") {
 		t.Errorf("StickyHeaderClassesKeepDefaultBackground: %q", coloredClasses)
 	}
 
@@ -274,7 +274,7 @@ func TestDataTableRendersItemsPerPageDropdownBackground(t *testing.T) {
 	if !strings.Contains(coloredHtml, "bg-emerald-900") {
 		t.Errorf("RenderedHtmlMissingCustomItemsPerPageDropdownBackground")
 	}
-	if !strings.Contains(coloredHtml, "bg-neutral-950/70") {
+	if !strings.Contains(coloredHtml, "bg-neutral-950/20") {
 		t.Errorf("RenderedHtmlMissingStickyHeaderBackground")
 	}
 }

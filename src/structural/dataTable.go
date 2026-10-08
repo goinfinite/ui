@@ -214,7 +214,7 @@ func (settings DataTableSettings[Row]) stickyHeaderBackgroundClassResolver() str
 	if settings.StickyHeaderBackgroundColor != "" {
 		return "bg-" + settings.StickyHeaderBackgroundColor
 	}
-	return "bg-neutral-950/70"
+	return "bg-neutral-950/20"
 }
 
 func (settings DataTableSettings[Row]) stickyHeaderClassesResolver() string {
