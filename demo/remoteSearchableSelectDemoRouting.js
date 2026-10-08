@@ -72,7 +72,11 @@ UiToolset.RegisterAlpineState(() => {
     }
 
     const request = new URL(requestUrl, window.location.href);
-    const query = (request.searchParams.get("q") ?? "").toLowerCase();
+    const query = (
+      request.searchParams.get("countryName") ??
+      request.searchParams.get("q") ??
+      ""
+    ).toLowerCase();
     const matchingNames = demoCountryNames.filter((countryName) =>
       countryName.toLowerCase().includes(query),
     );
