@@ -1,6 +1,75 @@
 # Changelog
 
 ```log
+0.2.5 - 2026/10/07
+BREAKING: move the refresh URL builder, the fragment fetcher, and the refresh lifecycle helpers under UiToolset.ServerFragmentRefreshComponent
+refactor: share the refresh settings, event wiring, error handling, and cleanup between the carousel and the data table
+refactor: rename the shared refresh files and helpers so each name states its subject
+test: share the filter settings assertion between the carousel and the data table tests
+test: gather the ring and the padding resolver cases in one table each
+fix: use the safer bash conditional syntax in the test runners
+fix: mark the demo file serve promise as ignored
+fix: render the derived carousel and data table id on the component root
+fix: resolve the value bubble ring classes from the resolved ring color so an upper-only color renders
+fix: fail the carousel htmx refresh when the response does not replace the pagination region
+fix: separate the component id hash parts so two different part boundaries cannot collide
+fix: reposition the tooltip on a viewport change without revealing it
+BREAKING: replace the IsHeaderSticky setting with IsHeaderStatic and pin the data table header by default
+BREAKING: replace the IsSearchBoxFullWidth setting with IsSearchBoxCompact and render the search box full width by default
+feat: add min and max width and height classes and a max visible rows setting to the data table viewport
+feat: add a max visible tabs setting to the tabs component
+fix: bind the alert title icon state path classes
+fix: keep a date filter input inside its range editor column
+feat: forward the tooltip width and height caps through every hint-bearing field
+feat: add an icon-left example to the input field demo
+feat: add min and max width and height caps to the shared tooltip through TooltipSurfaceSettings
+feat: add a magnifier icon to the default carousel and data table search boxes
+feat: add an optional leading icon to InputField
+fix: clip the carousel item wrapper so a narrow item cannot paint into the track gap
+fix: keep the arrow hover feedback when a custom arrows background color is set
+fix: size the carousel arrows as fixed squares so they render circular instead of tall
+BREAKING: rename ButtonTooltipPosition* and CarouselItemTooltipPosition* to the shared uiToolset.TooltipPosition* constants
+feat: render the InputHint tooltip through the shared toolset tooltip so a scroll container or a modal cannot clip it
+feat: add the CarouselItemTooltip component with text or component content, placement, and compact-ring settings
+feat: add the carousel component with responsive items per view, prev/next arrows, dot indicators, swipe, and optional autoplay with pause-on-hover
+feat: add the server pagination and the filter bar to the carousel
+feat: add the surface, arrow, dot, and item styling to the carousel
+feat: add a top or bottom position to the carousel search box
+feat: share the refresh request builder and the filter-value, page-size, query-param, and debounce resolvers across the structural components
+refactor: rename the shared refreshQuery files and helper to refreshRequest so the name states the request they build
+refactor: rename the DataTableAlignment type to TextAlignment and add HorizontalAlignment so the search box no longer borrows a text type
+refactor: replace the CarouselPageSize and DataTablePageSize types with one shared ItemsPerPage type
+refactor: name the shared pagination resolvers itemsPerPage and call them directly so the settings structs drop their identical delegating methods
+refactor: move the border radius, shadow, ring, padding, gap, and background, text, and border color token resolvers into the toolset and call them from the structural and display components
+refactor: name the carousel prev/next buttons arrows and group the items-per-view breakpoints in one settings struct
+refactor: derive the carousel and data table id from a stable hash of their identity inputs so the id holds across refreshes, and keep the render counter for the tabs and the accordion
+refactor: name the shared component id helpers by the id they build so their files state their purpose
+refactor: keep the alignment types in one structural file and share the refresh fragment fetch between the carousel and the data table
+refactor: gather the demo output generation as methods on one type and name the conditional write by the action it performs
+refactor: add the shape, ring thickness, and compact ring token resolvers and align the border radius token with the class it names
+refactor: move the shared hover tooltip into the toolset so the Button, the CarouselItemTooltip, and the InputHint render one mechanism
+refactor: turn the select dropdown into an Alpine data component so the open-direction decision stops being a global UiToolset helper
+refactor: attach the tooltip scroll and resize listeners only while the tooltip is visible
+refactor: delay the tooltip reveal so a passing pointer does not flash it
+refactor: render the tooltip through TooltipSurfaceSettings so the size caps travel with the surface
+feat: refresh the carousel through htmx when it is present, with the pagination swapped out of band
+chore: write the demo page and the refresh assets only when their content changed
+fix: read the carousel swipe from the pointer events alone so touch input works
+fix: pause the carousel autoplay on hover only when the setting is set
+fix: swap the carousel track and pagination together so the totals stay current
+fix: discard a stale carousel refresh and keep the filter bar outside the swapped region
+fix: apply the lg border-radius token on the carousel surface and item wrapper
+fix: keep the default outside carousel arrows on the light background
+fix: position the inside carousel arrows with left and right classes instead of an inline style
+fix: default the carousel border radius to the class its md token produces
+fix: fail the carousel refresh when the response carries no pagination region
+fix: read the settings script from the component root so two components with the same query template keep their own settings
+fix: swap the carousel pagination only into the component that refreshed
+fix: seed no filter in the demo carousel and describe the server example as paging only
+test: cover the carousel resolvers, the shared style token and id prefix helpers, the rendered track, the touch swipe, the settings script placement, the pagination swap target, and the accessibility
+docs: document the carousel in the structural readme and the feature map
+chore(docs): regenerate the demo page
+
 0.2.4 - 2026/10/01
 feat: add the tabs component with horizontal and vertical tab headers
 feat: add the badge count and the URL-hash syncing to the tabs

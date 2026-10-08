@@ -21,8 +21,7 @@ templ TagSizesExample() {
 	@DemoExampleCard(
 		"Sizes",
 		"Size scales the outer and inner segments: tiny, xs, sm, md, lg, or xl.",
-		"/display/tag.templ",
-		sizesUsage,
+		"/display/tag.templ", sizesUsage,
 	) {
 		<div class="flex flex-col gap-2">
 			for _, tagSize := range []string{"tiny", "xs", "sm", "md", "lg", "xl"} {
@@ -54,8 +53,7 @@ templ TagRadiiExample() {
 	@DemoExampleCard(
 		"Radii",
 		"OuterRadius rounds the outer segment and InnerRadius rounds the inner one: none, xs, sm, md, lg, xl, or full.",
-		"/display/tag.templ",
-		radiiUsage,
+		"/display/tag.templ", radiiUsage,
 	) {
 		<div class="flex flex-col gap-2">
 			for _, tagRadius := range []string{"none", "xs", "sm", "md", "lg", "xl", "full"} {
@@ -80,15 +78,15 @@ templ TagOuterRingColorsExample() {
 
 	// OptionalFields
 	OuterRingColor:       "emerald-500",
+	OuterRingThickness:   uiDisplay.TagRingThicknessLg,
 	OuterBackgroundColor: "transparent",
 	OuterTextColor:       "neutral-50",
 })`
 	}}
 	@DemoExampleCard(
 		"Outer Ring Colors",
-		"OuterRingColor outlines the outer segment. Pair it with a transparent OuterBackgroundColor for an outlined tag.",
-		"/display/tag.templ",
-		ringUsage,
+		"OuterRingColor outlines the outer segment. OuterRingThickness sets the outline width. Pair it with a transparent OuterBackgroundColor for an outlined tag.",
+		"/display/tag.templ", ringUsage,
 	) {
 		<div class="flex flex-row flex-wrap items-center gap-2">
 			for _, tagRingColor := range []string{"red-500", "amber-500", "emerald-500", "cyan-500", "violet-500", "gray-500"} {
@@ -96,6 +94,7 @@ templ TagOuterRingColorsExample() {
 					OuterLeftIcon:        "ph-info",
 					OuterLeftLabel:       "Info",
 					OuterRingColor:       tagRingColor,
+					OuterRingThickness:   uiDisplay.TagRingThicknessLg,
 					OuterBackgroundColor: "transparent",
 					OuterTextColor:       "neutral-50",
 					InnerIcon:            "ph-warning",
@@ -120,8 +119,7 @@ templ TagOuterBackgroundColorsExample() {
 	@DemoExampleCard(
 		"Outer Background Colors",
 		"OuterBackgroundColor fills the outer segment. OuterTextColor paints its label and icon.",
-		"/display/tag.templ",
-		backgroundUsage,
+		"/display/tag.templ", backgroundUsage,
 	) {
 		<div class="flex flex-row flex-wrap items-center gap-2">
 			for _, tagBackgroundColor := range []string{"red-500", "amber-500", "emerald-500", "cyan-500", "violet-500", "gray-500"} {
@@ -154,8 +152,7 @@ templ TagInnerColorsExample() {
 	@DemoExampleCard(
 		"Inner Colors",
 		"InnerBackgroundColor and InnerTextColor style the inner segment only.",
-		"/display/tag.templ",
-		innerUsage,
+		"/display/tag.templ", innerUsage,
 	) {
 		<div class="flex flex-row flex-wrap items-center gap-2">
 			for _, innerColor := range []string{"red-500", "amber-500", "emerald-500", "cyan-500", "violet-500", "gray-500"} {
@@ -165,6 +162,7 @@ templ TagInnerColorsExample() {
 					InnerIcon:            "ph-warning",
 					InnerLabel:           "Warning",
 					InnerBackgroundColor: innerColor,
+					InnerTextColor:       "neutral-50",
 				})
 			}
 		</div>
@@ -182,15 +180,21 @@ templ TagSideElementActionsExample() {
 	OuterRightOnClickFunc:     "if(clickCount > 0) clickCount--",
 	InnerIcon:                 "ph-hash",
 	InnerLabelOneWayStatePath: "clickCount",
+})
+
+@uiDisplay.Tag(uiDisplay.TagSettings{
+	OuterLeftIcon:                  "ph-pencil",
+	OuterLeftLabelOneWayStatePath:  "leftActionLabel",
+	OuterRightIcon:                 "ph-pencil",
+	OuterRightLabelOneWayStatePath: "rightActionLabel",
 })`
 	}}
 	@DemoExampleCard(
 		"Side Element Actions",
-		"OuterLeftOnClickFunc and OuterRightOnClickFunc run on the outer side labels. InnerLabelOneWayStatePath and InnerValueOneWayStatePath mirror Alpine state into the inner segment.",
-		"/display/tag.templ",
-		actionsUsage,
+		"OuterLeftOnClickFunc and OuterRightOnClickFunc run on the outer side labels. OuterLeftLabelOneWayStatePath and OuterRightLabelOneWayStatePath bind the side labels to Alpine state. InnerLabelOneWayStatePath and InnerValueOneWayStatePath mirror Alpine state into the inner segment.",
+		"/display/tag.templ", actionsUsage,
 	) {
-		<div x-data="{clickCount: 0}" class="flex flex-col gap-2">
+		<div x-data="{clickCount: 0, leftActionLabel: 'Add', rightActionLabel: 'Remove'}" class="flex flex-col gap-2">
 			<div class="flex flex-row flex-wrap items-center gap-2">
 				@uiDisplay.Tag(uiDisplay.TagSettings{
 					OuterLeftIcon:             "ph-plus",
@@ -205,6 +209,20 @@ templ TagSideElementActionsExample() {
 				@uiDisplay.Tag(uiDisplay.TagSettings{
 					OuterLeftLabel:            "count",
 					InnerValueOneWayStatePath: "clickCount",
+				})
+				@uiDisplay.Tag(uiDisplay.TagSettings{
+					OuterLeftIcon:                  "ph-pencil",
+					OuterLeftLabelOneWayStatePath:  "leftActionLabel",
+					OuterRightIcon:                 "ph-pencil",
+					OuterRightLabelOneWayStatePath: "rightActionLabel",
+				})
+			</div>
+			<div class="flex flex-wrap gap-2">
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:       "Rename Actions",
+					IconLeft:    "ph-pencil",
+					OnClickFunc: "leftActionLabel = leftActionLabel === 'Add' ? 'Increase' : 'Add'; rightActionLabel = rightActionLabel === 'Remove' ? 'Decrease' : 'Remove'",
+					Size:        uiControl.ButtonSizeSm,
 				})
 			</div>
 			<p class={ DemoLiveStateClasses }>
@@ -227,8 +245,7 @@ templ TagRemovableExample() {
 	@DemoExampleCard(
 		"Removable Tags",
 		"OnRemoveFunc renders a remove button on the tag. RemoveButtonLabel names it for screen readers.",
-		"/display/tag.templ",
-		removableUsage,
+		"/display/tag.templ", removableUsage,
 	) {
 		<div x-data="{showRemovableTag: true}" class="flex flex-col gap-2">
 			<div class="flex flex-row flex-wrap items-center gap-2">

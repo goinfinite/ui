@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	UiVersion string = "0.2.4"
+	UiVersion string = "0.2.5"
 )
 
 templ DemoNavSection(label string) {
@@ -92,6 +92,7 @@ templ DemoNavigationContent() {
 		@DemoNavItem("RangeSlider", "range-slider-demo", "ph-sliders")
 		@DemoNavSection("@uiStructural")
 		@DemoNavItem("Card", "card-demo", "ph-cube")
+		@DemoNavItem("Carousel", "carousel-demo", "ph-images")
 		@DemoNavItem("DataTable", "data-table-demo", "ph-table")
 		@DemoNavItem("FilterBar", "filter-bar-demo", "ph-funnel")
 		@DemoNavItem("PageHeading", "page-heading-demo", "ph-text-h")
@@ -226,6 +227,7 @@ templ DemoIndex() {
 						</div>
 						<div class="*:border-t *:border-neutral-800 *:py-20 flex flex-col">
 							@CardDemo()
+							@CarouselDemo()
 							@DataTableDemo()
 							@FilterBarDemo()
 							@PaginationDemo()

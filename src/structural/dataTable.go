@@ -2,8 +2,6 @@ package uiStructural
 
 import (
 	"fmt"
-	"hash/fnv"
-	"maps"
 
 	"github.com/a-h/templ"
 	uiForm "github.com/goinfinite/ui/src/form"
@@ -17,42 +15,12 @@ const (
 	DataTableDensityDense       DataTableDensity = "dense"
 )
 
-type DataTableAlignment string
-
-const (
-	DataTableAlignmentLeft   DataTableAlignment = "left"
-	DataTableAlignmentCenter DataTableAlignment = "center"
-	DataTableAlignmentRight  DataTableAlignment = "right"
-)
-
-func (alignment DataTableAlignment) alignmentClassResolver() string {
-	switch alignment {
-	case DataTableAlignmentCenter:
-		return "text-center"
-	case DataTableAlignmentRight:
-		return "text-right"
-	}
-	return "text-left"
-}
-
-func (alignment DataTableAlignment) justifyClassResolver() string {
-	switch alignment {
-	case DataTableAlignmentCenter:
-		return "justify-center"
-	case DataTableAlignmentRight:
-		return "justify-end"
-	}
-	return "justify-start"
-}
-
 type DataTableSortDirection string
 
 const (
 	DataTableSortDirectionAsc  DataTableSortDirection = "asc"
 	DataTableSortDirectionDesc DataTableSortDirection = "desc"
 )
-
-type DataTablePageSize uint
 
 const (
 	DataTableUrlPlaceholderPageNumber    string = "{pageNumber}"
@@ -62,7 +30,6 @@ const (
 	DataTableUrlPlaceholderSearch        string = "{search}"
 
 	dataTableDefaultPaginationAriaLabel string = "Table pagination"
-	dataTableDefaultRefreshDebounceMs   uint   = 300
 )
 
 type DataTableColumnSettings[Row any] struct {
@@ -70,7 +37,7 @@ type DataTableColumnSettings[Row any] struct {
 	CellRenderer func(row Row) templ.Component
 
 	// OptionalFields
-	Alignment     DataTableAlignment
+	Alignment     TextAlignment
 	CellClass     string
 	MaxWidthClass string
 	MinWidthClass string
@@ -99,12 +66,18 @@ type DataTableSettings[Row any] struct {
 	InitialSearchQuery               string
 	InitialSortDirection             DataTableSortDirection
 	InitialSortKey                   string
-	IsHeaderSticky                   bool
+	IsHeaderStatic                   bool
 	IsPaginationHiddenWhenSinglePage bool
+	IsSearchBoxCompact               bool
 	IsStriped                        bool
-	ItemsPerPage                     DataTablePageSize
-	ItemsPerPageSizeChoices          []DataTablePageSize
+	ItemsPerPage                     ItemsPerPage
+	ItemsPerPageSizeChoices          []ItemsPerPage
 	ItemsTotal                       uint
+	MaxHeightClass                   string
+	MaxVisibleRows                   uint
+	MaxWidthClass                    string
+	MinHeightClass                   string
+	MinWidthClass                    string
 	PageNumber                       uint
 	PaginationAriaLabel              string
 	PagesTotal                       uint
@@ -115,7 +88,7 @@ type DataTableSettings[Row any] struct {
 	RowIdResolver                    func(row Row) string
 	RowLabelResolver                 func(row Row) string
 	SearchBox                        templ.Component
-	SearchBoxAlignment               DataTableAlignment
+	SearchBoxAlignment               HorizontalAlignment
 	ShouldUseOneBasedPageDisplay     bool
 	TextCase                         string
 }
@@ -132,95 +105,50 @@ type dataTableInitialState struct {
 type dataTableClientSettings struct {
 	FilterQueryParamNames map[string]string     `json:"filterQueryParamNames"`
 	InitialState          dataTableInitialState `json:"initialState"`
+	MaxVisibleRows        uint                  `json:"maxVisibleRows"`
 	RefreshDebounceMs     uint                  `json:"refreshDebounceMs"`
 	RefreshOnEvents       []string              `json:"refreshOnEvents"`
 	QueryUrlTemplate      string                `json:"queryUrlTemplate"`
 }
 
-func (settings DataTableSettings[Row]) initialFilterValuesResolver() map[string]any {
-	initialValues := map[string]any{}
-	for _, filter := range settings.Filters {
-		switch filter.Kind {
-		case FilterKindNumberRange, FilterKindDateRange:
-			initialValues[filter.Key] = map[string]string{"min": "", "max": ""}
-		default:
-			initialValues[filter.Key] = ""
-		}
-	}
-	maps.Copy(initialValues, settings.InitialFilterValues)
-	return initialValues
-}
-
 func (settings DataTableSettings[Row]) clientSettingsResolver(
 	itemsPerPage, pageNumber uint,
 ) dataTableClientSettings {
-	filterQueryParamNames := map[string]string{}
-	for _, filter := range settings.Filters {
-		queryParamName := filter.QueryParamName
-		if queryParamName == "" {
-			queryParamName = filter.Key
-		}
-		filterQueryParamNames[filter.Key] = queryParamName
-	}
-	refreshDebounceMs := settings.RefreshDebounceMs
-	if refreshDebounceMs == 0 {
-		refreshDebounceMs = dataTableDefaultRefreshDebounceMs
-	}
 	return dataTableClientSettings{
-		FilterQueryParamNames: filterQueryParamNames,
+		FilterQueryParamNames: filterQueryParamNamesResolver(settings.Filters),
 		InitialState: dataTableInitialState{
-			FilterValues:  settings.initialFilterValuesResolver(),
+			FilterValues: initialFilterValuesResolver(
+				settings.Filters, settings.InitialFilterValues,
+			),
 			ItemsPerPage:  itemsPerPage,
 			PageNumber:    pageNumber,
 			SearchQuery:   settings.InitialSearchQuery,
 			SortDirection: string(settings.InitialSortDirection),
 			SortKey:       settings.InitialSortKey,
 		},
-		RefreshDebounceMs: refreshDebounceMs,
+		RefreshDebounceMs: refreshDebounceResolver(settings.RefreshDebounceMs),
 		RefreshOnEvents:   settings.RefreshOnEvents,
 		QueryUrlTemplate:  settings.QueryUrlTemplate,
+		MaxVisibleRows:    settings.MaxVisibleRows,
 	}
 }
 
-func (settings DataTableSettings[Row]) tableIdentityHashResolver() uint64 {
-	hasher := fnv.New64a()
-	hasher.Write([]byte(settings.QueryUrlTemplate))
+func (settings DataTableSettings[Row]) tableIdHashResolver() uint64 {
+	idParts := []string{settings.QueryUrlTemplate}
 	for _, column := range settings.Columns {
-		hasher.Write([]byte(column.Label))
-		hasher.Write([]byte(column.SortKey))
+		idParts = append(idParts, column.Label, column.SortKey)
 	}
 	for _, filter := range settings.Filters {
-		hasher.Write([]byte(filter.Key))
-		hasher.Write([]byte(filter.QueryParamName))
+		idParts = append(idParts, filter.Key, filter.QueryParamName)
 	}
-	return hasher.Sum64()
+	return uiToolset.HashComponentIdParts(idParts...)
 }
 
 func (settings DataTableSettings[Row]) idResolver() string {
 	if settings.Id != "" {
 		return settings.Id
 	}
-	return fmt.Sprintf("dataTable-%x", settings.tableIdentityHashResolver())
-}
-
-func (settings DataTableSettings[Row]) itemsPerPageSizeChoicesResolver() []uint {
-	if len(settings.ItemsPerPageSizeChoices) == 0 {
-		return paginationDefaultItemsPerPageSizeChoices
-	}
-	itemsPerPageSizeChoices := make([]uint, len(settings.ItemsPerPageSizeChoices))
-	for index, pageSize := range settings.ItemsPerPageSizeChoices {
-		itemsPerPageSizeChoices[index] = uint(pageSize)
-	}
-	return itemsPerPageSizeChoices
-}
-
-func (settings DataTableSettings[Row]) itemsPerPageResolver(
-	itemsPerPageSizeChoices []uint,
-) uint {
-	if settings.ItemsPerPage > 0 {
-		return uint(settings.ItemsPerPage)
-	}
-	return itemsPerPageSizeChoices[0]
+	return fmt.Sprintf("dataTable-%x", settings.tableIdHashResolver())
 }
 
 func (settings DataTableSettings[Row]) paginationAriaLabelResolver() string {
@@ -267,4 +195,39 @@ func (settings DataTableSettings[Row]) rowStripeClassesResolver() string {
 		return "odd:bg-neutral-50/5 odd:hover:bg-neutral-50/10"
 	}
 	return ""
+}
+
+func (settings DataTableSettings[Row]) rootClassesResolver() string {
+	rootClasses := "flex flex-col overflow-hidden rounded-md border border-neutral-50/10 bg-neutral-50/2.5"
+	if settings.MinWidthClass != "" {
+		rootClasses += " " + settings.MinWidthClass
+	}
+	if settings.MaxWidthClass != "" {
+		rootClasses += " " + settings.MaxWidthClass
+	}
+	return rootClasses
+}
+
+func (settings DataTableSettings[Row]) stickyHeaderClassesResolver() string {
+	if settings.IsHeaderStatic {
+		return ""
+	}
+	return " sticky top-0 z-10 bg-neutral-900"
+}
+
+func (settings DataTableSettings[Row]) scrollContainerClassesResolver() string {
+	containerClasses := "overflow-x-auto"
+	if !settings.IsHeaderStatic {
+		containerClasses = "overflow-auto"
+		if settings.MaxHeightClass == "" {
+			containerClasses += " max-h-128"
+		}
+	}
+	if settings.MinHeightClass != "" {
+		containerClasses += " " + settings.MinHeightClass
+	}
+	if settings.MaxHeightClass != "" {
+		containerClasses += " " + settings.MaxHeightClass
+	}
+	return containerClasses
 }

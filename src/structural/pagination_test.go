@@ -1,6 +1,38 @@
 package uiStructural
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
+
+func TestItemsPerPageSizeChoicesResolver(t *testing.T) {
+	providedChoices := itemsPerPageSizeChoicesResolver([]ItemsPerPage{6, 12})
+	expectedProvidedChoices := []uint{6, 12}
+	if !reflect.DeepEqual(providedChoices, expectedProvidedChoices) {
+		t.Errorf(
+			"ItemsPerPageSizeChoicesMismatch: got %v, want %v",
+			providedChoices, expectedProvidedChoices,
+		)
+	}
+
+	emptyChoices := itemsPerPageSizeChoicesResolver([]ItemsPerPage{})
+	if !reflect.DeepEqual(emptyChoices, paginationDefaultItemsPerPageSizeChoices) {
+		t.Errorf(
+			"ItemsPerPageSizeChoicesMismatch: got %v, want %v",
+			emptyChoices, paginationDefaultItemsPerPageSizeChoices,
+		)
+	}
+}
+
+func TestItemsPerPageResolver(t *testing.T) {
+	choices := []uint{6, 12}
+	if actual := itemsPerPageResolver(ItemsPerPage(12), choices); actual != 12 {
+		t.Errorf("ItemsPerPageMismatch: got %d, want 12", actual)
+	}
+	if actual := itemsPerPageResolver(ItemsPerPage(0), choices); actual != 6 {
+		t.Errorf("ItemsPerPageMismatch: got %d, want 6", actual)
+	}
+}
 
 func TestPaginationPagesTotalExpressionBuilder(t *testing.T) {
 	testCases := []struct {

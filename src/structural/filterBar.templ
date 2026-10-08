@@ -95,8 +95,10 @@ templ FilterBar(componentSettings FilterBarSettings) {
 						</div>
 					case FilterKindNumberRange, FilterKindDateRange:
 						{{ inputType := uiForm.InputTypeNumber }}
+						{{ rangeInputWidthClass := "w-28" }}
 						if filter.Kind == FilterKindDateRange {
 							{{ inputType = uiForm.InputTypeDate }}
+							{{ rangeInputWidthClass = "w-36" }}
 						}
 						<div
 							class="flex items-end gap-1"
@@ -104,7 +106,7 @@ templ FilterBar(componentSettings FilterBarSettings) {
 								@input={ componentSettings.OnChangeFunc }
 							}
 						>
-							<div class="w-28">
+							<div class={ rangeInputWidthClass }>
 								@uiForm.InputField(uiForm.InputFieldSettings{
 									InputType:       inputType,
 									InputName:       filter.Key + "Min",
@@ -112,7 +114,7 @@ templ FilterBar(componentSettings FilterBarSettings) {
 									TwoWayStatePath: valuesPath + "." + filter.Key + ".min",
 								})
 							</div>
-							<div class="w-28">
+							<div class={ rangeInputWidthClass }>
 								@uiForm.InputField(uiForm.InputFieldSettings{
 									InputType:       inputType,
 									InputName:       filter.Key + "Max",

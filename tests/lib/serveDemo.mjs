@@ -222,5 +222,5 @@ createServer((request, response) => {
     });
     return;
   }
-  serveFile(request, response);
+  void serveFile(request, response);
 }).listen(listenPort, "127.0.0.1");

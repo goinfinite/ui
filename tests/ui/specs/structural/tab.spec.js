@@ -294,6 +294,37 @@ test.describe("Tabs @structural", () => {
       tablist.locator("[role=tab][aria-selected=true]"),
     ).toHaveAttribute("data-tab-value", "advanced");
   });
+
+  test("vertical overflow caps the list to MaxVisibleTabs tabs", async ({
+    page,
+  }) => {
+    const panel = await openExamplePanel(
+      page,
+      tabsSection,
+      "Vertical Overflow Scroll",
+    );
+    const tabList = panel.locator(
+      "#tabs-demo-vertical-overflow-visible [data-ui-tabs-list]",
+    );
+    const geometry = () =>
+      tabList.evaluate((element) => {
+        const tab = element.querySelector("[role=tab]");
+        const styles = getComputedStyle(element);
+        const rowGap = Number.parseFloat(styles.rowGap) || 0;
+        const verticalPadding =
+          (Number.parseFloat(styles.paddingTop) || 0) +
+          (Number.parseFloat(styles.paddingBottom) || 0);
+        return {
+          visibleTabs: Math.round(
+            (element.clientHeight - verticalPadding) /
+              (tab.getBoundingClientRect().height + rowGap),
+          ),
+          scrolls: element.scrollHeight > element.clientHeight,
+        };
+      });
+
+    await expect.poll(geometry).toEqual({ visibleTabs: 4, scrolls: true });
+  });
 });
 
 test.describe("Tabs accessibility @structural @a11y", () => {

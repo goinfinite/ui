@@ -9,18 +9,10 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
-	_ "embed"
 	"fmt"
 	"sync/atomic"
 
 	uiToolset "github.com/goinfinite/ui/src/toolset"
-)
-
-//go:embed buttonTooltipState.js
-var buttonTooltipAlpineState string
-
-var buttonTooltipAlpineStateOnce = templ.NewOnceHandle(
-	templ.WithComponent(uiToolset.MinifierTemplateJs(&buttonTooltipAlpineState)),
 )
 
 var buttonTooltipIdCounter atomic.Uint64
@@ -39,11 +31,6 @@ const (
 	ButtonShapeCircular string = "circular"
 	ButtonShapeRounded  string = "rounded"
 	ButtonShapeSquare   string = "square"
-
-	ButtonTooltipPositionTop    string = "top"
-	ButtonTooltipPositionBottom string = "bottom"
-	ButtonTooltipPositionLeft   string = "left"
-	ButtonTooltipPositionRight  string = "right"
 
 	ButtonRingThicknessXs string = "xs"
 	ButtonRingThicknessSm string = "sm"
@@ -83,6 +70,10 @@ type ButtonSettings struct {
 	TooltipRingColor              string
 	TooltipRingThickness          string
 	TooltipTextColor              string
+	TooltipMinWidthClass          string
+	TooltipMaxWidthClass          string
+	TooltipMinHeightClass         string
+	TooltipMaxHeightClass         string
 	RingColor                     string
 	RingColorHover                string
 	RingThickness                 string
@@ -120,7 +111,7 @@ func Button(componentSettings ButtonSettings) templ.Component {
 		hasTooltip := componentSettings.TooltipContent != "" || componentSettings.TooltipContentHtml != nil || componentSettings.TooltipContentOneWayStatePath != ""
 		tooltipId := ""
 		if hasTooltip {
-			templ_7745c5c3_Err = buttonTooltipAlpineStateOnce.Once().Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = uiToolset.TooltipAlpineStateOnce.Once().Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -158,9 +149,9 @@ func Button(componentSettings ButtonSettings) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
-			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue(templ.JSFuncCall("buttonTooltip", componentSettings.TooltipPosition))
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue(templ.JSFuncCall("tooltip", componentSettings.TooltipPosition))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/button.templ`, Line: 98, Col: 80}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/button.templ`, Line: 89, Col: 74}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
 			if templ_7745c5c3_Err != nil {
@@ -223,36 +214,14 @@ func Button(componentSettings ButtonSettings) templ.Component {
 		}
 		textCaseClass := uiToolset.TextCaseClassResolver(componentSettings.TextCase)
 		ringClasses := ""
-		ringThickness := "ring-1.5"
-		if componentSettings.RingThickness != "" {
-			switch componentSettings.RingThickness {
-			case ButtonRingThicknessXs:
-				ringThickness = "ring-1"
-			case ButtonRingThicknessSm:
-				ringThickness = "ring-1.5"
-			case ButtonRingThicknessMd:
-				ringThickness = "ring-2"
-			case ButtonRingThicknessLg:
-				ringThickness = "ring-2.5"
-			case ButtonRingThicknessXl:
-				ringThickness = "ring-3"
-			}
-		}
+		ringThicknessClass := uiToolset.RingThicknessClassResolver(componentSettings.RingThickness, "ring-1.5")
 		if componentSettings.RingColor != "" {
-			ringClasses = ringThickness + " ring-" + componentSettings.RingColor
+			ringClasses = ringThicknessClass + " ring-" + componentSettings.RingColor
 		}
 		if componentSettings.RingColorHover != "" {
 			ringClasses += " hover:ring-" + componentSettings.RingColorHover
 		}
-		radiusRoundness := "rounded"
-		switch componentSettings.Shape {
-		case ButtonShapeCircular:
-			radiusRoundness = "rounded-full"
-		case ButtonShapeRounded:
-			radiusRoundness = "rounded"
-		case ButtonShapeSquare:
-			radiusRoundness = "rounded-none"
-		}
+		radiusRoundness := uiToolset.ShapeClassResolver(componentSettings.Shape, "rounded")
 		iconSize := "text-base"
 		switch componentSettings.Size {
 		case ButtonSizeXs:
@@ -290,7 +259,7 @@ func Button(componentSettings ButtonSettings) templ.Component {
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.ResolveAttributeValue(buttonType)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/button.templ`, Line: 209, Col: 20}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/button.templ`, Line: 178, Col: 20}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
 		if templ_7745c5c3_Err != nil {
@@ -308,7 +277,7 @@ func Button(componentSettings ButtonSettings) templ.Component {
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.ResolveAttributeValue(tooltipId)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/button.templ`, Line: 212, Col: 32}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/button.templ`, Line: 181, Col: 32}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
 			if templ_7745c5c3_Err != nil {
@@ -327,7 +296,7 @@ func Button(componentSettings ButtonSettings) templ.Component {
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.Id)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/button.templ`, Line: 215, Col: 29}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/button.templ`, Line: 184, Col: 29}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var8)
 			if templ_7745c5c3_Err != nil {
@@ -346,7 +315,7 @@ func Button(componentSettings ButtonSettings) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.AriaLabel)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/button.templ`, Line: 218, Col: 44}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/button.templ`, Line: 187, Col: 44}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var9)
 			if templ_7745c5c3_Err != nil {
@@ -366,7 +335,7 @@ func Button(componentSettings ButtonSettings) templ.Component {
 				var templ_7745c5c3_Var10 string
 				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.OnClickFunc)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/button.templ`, Line: 222, Col: 51}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/button.templ`, Line: 191, Col: 51}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var10)
 				if templ_7745c5c3_Err != nil {
@@ -384,7 +353,7 @@ func Button(componentSettings ButtonSettings) templ.Component {
 				var templ_7745c5c3_Var11 string
 				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.OnClickFunc)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/button.templ`, Line: 224, Col: 43}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/button.templ`, Line: 193, Col: 43}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var11)
 				if templ_7745c5c3_Err != nil {
@@ -410,7 +379,7 @@ func Button(componentSettings ButtonSettings) templ.Component {
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.IsDisabledOneWayStatePath)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/button.templ`, Line: 231, Col: 59}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/button.templ`, Line: 200, Col: 59}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var12)
 			if templ_7745c5c3_Err != nil {
@@ -429,7 +398,7 @@ func Button(componentSettings ButtonSettings) templ.Component {
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.IsVisibleOneWayStatePath)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/button.templ`, Line: 234, Col: 55}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/button.templ`, Line: 203, Col: 55}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var13)
 			if templ_7745c5c3_Err != nil {
@@ -465,7 +434,7 @@ func Button(componentSettings ButtonSettings) templ.Component {
 			var templ_7745c5c3_Var15 string
 			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.ResolveAttributeValue("(" + componentSettings.IsDisabledOneWayStatePath + ") && '" + disabledClasses + "'")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/button.templ`, Line: 238, Col: 97}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/button.templ`, Line: 207, Col: 97}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var15)
 			if templ_7745c5c3_Err != nil {
@@ -530,7 +499,7 @@ func Button(componentSettings ButtonSettings) templ.Component {
 			var templ_7745c5c3_Var20 string
 			templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.IconLeftOneWayStatePath)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/button.templ`, Line: 245, Col: 89}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/button.templ`, Line: 214, Col: 89}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var20)
 			if templ_7745c5c3_Err != nil {
@@ -545,7 +514,7 @@ func Button(componentSettings ButtonSettings) templ.Component {
 			var templ_7745c5c3_Var21 string
 			templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.Label)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/button.templ`, Line: 248, Col: 29}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/button.templ`, Line: 217, Col: 29}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 			if templ_7745c5c3_Err != nil {
@@ -606,7 +575,7 @@ func Button(componentSettings ButtonSettings) templ.Component {
 			var templ_7745c5c3_Var26 string
 			templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.IconRightOneWayStatePath)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/button.templ`, Line: 254, Col: 90}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/button.templ`, Line: 223, Col: 90}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var26)
 			if templ_7745c5c3_Err != nil {
@@ -622,73 +591,41 @@ func Button(componentSettings ButtonSettings) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if hasTooltip {
-			tooltipBackgroundColor := "neutral-800/95"
-			if componentSettings.TooltipBackgroundColor != "" {
-				tooltipBackgroundColor = componentSettings.TooltipBackgroundColor
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, " ")
+			tooltipSurfaceClasses := uiToolset.TooltipSurfaceClassesResolver(
+				uiToolset.TooltipSurfaceSettings{
+					BackgroundColor: componentSettings.TooltipBackgroundColor,
+					TextColor:       componentSettings.TooltipTextColor,
+					RingColor:       componentSettings.TooltipRingColor,
+					RingThickness:   componentSettings.TooltipRingThickness,
+					MinWidthClass:   componentSettings.TooltipMinWidthClass,
+					MaxWidthClass:   componentSettings.TooltipMaxWidthClass,
+					MinHeightClass:  componentSettings.TooltipMinHeightClass,
+					MaxHeightClass:  componentSettings.TooltipMaxHeightClass,
+				},
+			)
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "<template x-teleport=\"body\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			tooltipTextColor := "neutral-50"
-			if componentSettings.TooltipTextColor != "" {
-				tooltipTextColor = componentSettings.TooltipTextColor
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, " ")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			tooltipRingClasses := ""
-			if componentSettings.TooltipRingColor != "" {
-				tooltipRingThickness := "ring-1"
-				if componentSettings.TooltipRingThickness != "" {
-					switch componentSettings.TooltipRingThickness {
-					case ButtonRingThicknessXs:
-						tooltipRingThickness = "ring-0.5"
-					case ButtonRingThicknessSm:
-						tooltipRingThickness = "ring-1"
-					case ButtonRingThicknessMd:
-						tooltipRingThickness = "ring-1.5"
-					case ButtonRingThicknessLg:
-						tooltipRingThickness = "ring-2"
-					case ButtonRingThicknessXl:
-						tooltipRingThickness = "ring-2.5"
-					}
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, " ")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				tooltipRingClasses = tooltipRingThickness + " ring-" + componentSettings.TooltipRingColor
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, " ")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			tooltipBaseClass := "fixed z-100 invisible w-fit p-1.5 bg-" + tooltipBackgroundColor + " text-" + tooltipTextColor + " text-xs rounded-md shadow-md transition-opacity duration-150 pointer-events-none " + tooltipRingClasses
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "<template x-teleport=\"body\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var27 = []any{tooltipBaseClass}
+			var templ_7745c5c3_Var27 = []any{tooltipSurfaceClasses}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var27...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "<div x-ref=\"tooltip\" id=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "<div x-ref=\"tooltip\" id=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var28 string
 			templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.ResolveAttributeValue(tooltipId)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/button.templ`, Line: 289, Col: 19}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/button.templ`, Line: 244, Col: 19}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var28)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "\" role=\"tooltip\" :style=\"resolvedTooltipStyle\" class=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "\" role=\"tooltip\" :style=\"resolvedTooltipStyle\" class=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -701,30 +638,30 @@ func Button(componentSettings ButtonSettings) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if componentSettings.TooltipContentOneWayStatePath != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, " x-text=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, " x-text=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var30 string
 				templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.TooltipContentOneWayStatePath)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/button.templ`, Line: 294, Col: 62}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/button.templ`, Line: 249, Col: 62}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var30)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, ">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, ">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -732,13 +669,13 @@ func Button(componentSettings ButtonSettings) templ.Component {
 				var templ_7745c5c3_Var31 string
 				templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.TooltipContent)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/button.templ`, Line: 298, Col: 40}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/button.templ`, Line: 253, Col: 40}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -749,12 +686,12 @@ func Button(componentSettings ButtonSettings) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "</div></template>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "</div></template>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "</div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -1,9 +1,6 @@
 package uiDisplay
 
 import (
-	"fmt"
-	"sync/atomic"
-
 	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
@@ -47,29 +44,7 @@ type AccordionSettings struct {
 	TitleColor             string
 }
 
-var accordionGroupIdCounter atomic.Uint64
-
-func generateAccordionGroupName() string {
-	return fmt.Sprintf("ui-accordion-%d", accordionGroupIdCounter.Add(1))
-}
-
-func accordionPaddingClassResolver(paddingSize string, defaultClass string) string {
-	switch paddingSize {
-	case AccordionPaddingSizeNone:
-		return "p-0"
-	case AccordionPaddingSizeXs:
-		return "p-1"
-	case AccordionPaddingSizeSm:
-		return "p-1.5"
-	case AccordionPaddingSizeMd:
-		return "p-2"
-	case AccordionPaddingSizeLg:
-		return "p-2.5"
-	case AccordionPaddingSizeXl:
-		return "p-3"
-	}
-	return defaultClass
-}
+var accordionIdPrefixGenerator = uiToolset.NewComponentIdPrefixGenerator("ui-accordion")
 
 func accordionEdgeRadiusClassesResolver(borderRadius string) string {
 	switch borderRadius {
@@ -80,7 +55,7 @@ func accordionEdgeRadiusClassesResolver(borderRadius string) string {
 	case AccordionBorderRadiusSm:
 		return "first:rounded-t-sm last:rounded-b-sm"
 	case AccordionBorderRadiusMd:
-		return "first:rounded-t last:rounded-b"
+		return "first:rounded-t-md last:rounded-b-md"
 	case AccordionBorderRadiusLg:
 		return "first:rounded-t-lg last:rounded-b-lg"
 	case AccordionBorderRadiusXl:
@@ -90,32 +65,20 @@ func accordionEdgeRadiusClassesResolver(borderRadius string) string {
 }
 
 templ Accordion(componentSettings AccordionSettings) {
-	{{ itemPaddingClass := accordionPaddingClassResolver(componentSettings.PaddingSize, "p-3") }}
-	{{ contentPaddingClass := accordionPaddingClassResolver(componentSettings.ContentPaddingSize, "p-4") }}
+	{{ itemPaddingClass := uiToolset.CompactPaddingClassResolver(componentSettings.PaddingSize, "p-3") }}
+	{{ contentPaddingClass := uiToolset.CompactPaddingClassResolver(componentSettings.ContentPaddingSize, "p-4") }}
 	{{ itemEdgeRadiusClasses := accordionEdgeRadiusClassesResolver(componentSettings.BorderRadius) }}
-	{{ backgroundColorClass := "bg-neutral-50/5" }}
-	if componentSettings.BackgroundColor != "" {
-		{{ backgroundColorClass = "bg-" + componentSettings.BackgroundColor }}
-	}
+	{{ backgroundColorClass := uiToolset.BackgroundColorClassResolver(componentSettings.BackgroundColor, "bg-neutral-50/5") }}
 	{{ openBackgroundColorClass := "open:bg-neutral-50/7.5 hover:bg-neutral-50/7.5" }}
 	if componentSettings.OpenBackgroundColor != "" {
 		{{ openBackgroundColorClass = "open:bg-" + componentSettings.OpenBackgroundColor + " hover:bg-" + componentSettings.OpenBackgroundColor }}
 	}
-	{{ contentBackgroundColorClass := "bg-neutral-900" }}
-	if componentSettings.ContentBackgroundColor != "" {
-		{{ contentBackgroundColorClass = "bg-" + componentSettings.ContentBackgroundColor }}
-	}
-	{{ titleColorClass := "text-neutral-50/80" }}
-	if componentSettings.TitleColor != "" {
-		{{ titleColorClass = "text-" + componentSettings.TitleColor }}
-	}
-	{{ borderColorClass := "border-neutral-50/5" }}
-	if componentSettings.BorderColor != "" {
-		{{ borderColorClass = "border-" + componentSettings.BorderColor }}
-	}
+	{{ contentBackgroundColorClass := uiToolset.BackgroundColorClassResolver(componentSettings.ContentBackgroundColor, "bg-neutral-900") }}
+	{{ titleColorClass := uiToolset.TextColorClassResolver(componentSettings.TitleColor, "text-neutral-50/80") }}
+	{{ borderColorClass := uiToolset.BorderColorClassResolver(componentSettings.BorderColor, "border-neutral-50/5") }}
 	{{ groupName := "" }}
 	if componentSettings.IsSingleOpen {
-		{{ groupName = generateAccordionGroupName() }}
+		{{ groupName = accordionIdPrefixGenerator.GenerateNext() }}
 	}
 	{{ textCaseClass := uiToolset.TextCaseClassResolver(componentSettings.TextCase) }}
 	<!-- Accordion -->

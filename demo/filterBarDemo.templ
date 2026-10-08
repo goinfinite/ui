@@ -23,8 +23,7 @@ templ FilterBarQueryParamExample() {
 	@DemoExampleCard(
 		"Query Param Names",
 		"QueryParamName renames the filter in the DataTable URL template. Without it the filter Key is the parameter name.",
-		"/structural/filterBar.templ",
-		queryParamUsage,
+		"/structural/filterBar.templ", queryParamUsage,
 	) {
 		<div class="rounded-md border border-neutral-800 p-4" x-data="{queryFilterValues: {environment: 'running'}}">
 			@uiStructural.FilterBar(uiStructural.FilterBarSettings{
@@ -58,8 +57,7 @@ templ FilterBarEnumPrefixExample() {
 	@DemoExampleCard(
 		"Enum Radio Group Prefix",
 		"EnumSelectRadioGroupNamePrefix namespaces the generated radio inputs of enum selects, so two filter bars on one page do not collide.",
-		"/structural/filterBar.templ",
-		prefixUsage,
+		"/structural/filterBar.templ", prefixUsage,
 	) {
 		<div class="rounded-md border border-neutral-800 p-4" x-data="{prefixFilterValues: {region: 'stopped'}}">
 			@uiStructural.FilterBar(uiStructural.FilterBarSettings{
@@ -93,8 +91,7 @@ templ FilterBarDropdownBackgroundExample() {
 	@DemoExampleCard(
 		"Dropdown Background",
 		"DropdownBackgroundColor paints the enum select dropdown with a Tailwind background token. DataTable forwards it as FilterDropdownBackgroundColor.",
-		"/structural/filterBar.templ",
-		dropdownBackgroundUsage,
+		"/structural/filterBar.templ", dropdownBackgroundUsage,
 	) {
 		<div class="rounded-md border border-neutral-800 p-4" x-data="{dropdownFilterValues: {status: 'running'}}">
 			@uiStructural.FilterBar(uiStructural.FilterBarSettings{
@@ -125,8 +122,7 @@ templ FilterBarMultiValueExample() {
 	@DemoExampleCard(
 		"Multi-Value Filter",
 		"FilterKindMultiEnumSelect holds an array of selected values under one key. The chip lists every value, and the DataTable URL repeats the parameter once per value.",
-		"/structural/filterBar.templ",
-		multiValueUsage,
+		"/structural/filterBar.templ", multiValueUsage,
 	) {
 		<div
 			class="flex flex-col gap-3"
@@ -148,6 +144,73 @@ templ FilterBarMultiValueExample() {
 			</div>
 			<p class={ DemoLiveStateClasses } id="filter-bar-demo-multi-state">
 				<span x-text="JSON.stringify(multiFilterValues)"></span>
+			</p>
+		</div>
+	}
+}
+
+templ FilterBarDateRangeExample() {
+	{{
+		dateRangeUsage := `@uiStructural.FilterBar(uiStructural.FilterBarSettings{
+	Filters: []uiStructural.FilterSettings{
+		{Key: "createdAt", Label: "Created", Kind: uiStructural.FilterKindDateRange},
+	},
+	ValuesTwoWayStatePath: "filterValues",
+})`
+	}}
+	@DemoExampleCard(
+		"Date Range Filter",
+		"FilterKindDateRange renders a min and a max date input. The active chip shows the selected span, and clearing the chip resets both dates.",
+		"/structural/filterBar.templ", dateRangeUsage,
+	) {
+		<div
+			class="flex flex-col gap-3"
+			x-data="{dateFilterValues: {createdAt: {min: '2026-01-01', max: '2026-01-31'}}}"
+		>
+			<div class="rounded-md border border-neutral-800 p-4">
+				@uiStructural.FilterBar(uiStructural.FilterBarSettings{
+					Filters: []uiStructural.FilterSettings{
+						{Key: "createdAt", Label: "Created", Kind: uiStructural.FilterKindDateRange},
+					},
+					ValuesTwoWayStatePath: "dateFilterValues",
+				})
+			</div>
+			<p class={ DemoLiveStateClasses }>
+				Values: <span x-text="JSON.stringify(dateFilterValues)"></span>
+			</p>
+		</div>
+	}
+}
+
+templ FilterBarChangeCallbackExample() {
+	{{
+		changeCallbackUsage := `@uiStructural.FilterBar(uiStructural.FilterBarSettings{
+	Filters: []uiStructural.FilterSettings{
+		{Key: "name", Label: "Name", Kind: uiStructural.FilterKindTextContains},
+	},
+	ValuesTwoWayStatePath: "filterValues",
+
+	// OptionalFields
+	OnChangeFunc: "changeCount = changeCount + 1",
+})`
+	}}
+	@DemoExampleCard(
+		"Change Callback",
+		"OnChangeFunc runs on every filter edit and on chip removal. It can drive a fetch or update local state.",
+		"/structural/filterBar.templ", changeCallbackUsage,
+	) {
+		<div class="flex flex-col gap-3" x-data="{changeCallbackFilterValues: {name: ''}, changeCount: 0}">
+			<div class="rounded-md border border-neutral-800 p-4">
+				@uiStructural.FilterBar(uiStructural.FilterBarSettings{
+					Filters: []uiStructural.FilterSettings{
+						{Key: "name", Label: "Name", Kind: uiStructural.FilterKindTextContains},
+					},
+					ValuesTwoWayStatePath: "changeCallbackFilterValues",
+					OnChangeFunc:          "changeCount = changeCount + 1",
+				})
+			</div>
+			<p class={ DemoLiveStateClasses }>
+				OnChangeFunc calls: <span x-text="changeCount"></span>
 			</p>
 		</div>
 	}
@@ -196,6 +259,8 @@ templ FilterBarDemo() {
 			{Title: "Enum Radio Group Prefix", Icon: "ph-tag", Content: FilterBarEnumPrefixExample()},
 			{Title: "Dropdown Background", Icon: "ph-palette", Content: FilterBarDropdownBackgroundExample()},
 			{Title: "Multi-Value Filter", Icon: "ph-list-checks", Content: FilterBarMultiValueExample()},
+			{Title: "Date Range Filter", Icon: "ph-calendar-blank", Content: FilterBarDateRangeExample()},
+			{Title: "Change Callback", Icon: "ph-arrows-clockwise", Content: FilterBarChangeCallbackExample()},
 		})
 	</div>
 }

@@ -56,6 +56,10 @@ type MultiSelectInputSettings struct {
 	HintStatePath                     string
 	HintDisplay                       string
 	HintDisplayTooltipBackgroundColor string
+	HintDisplayTooltipMinWidthClass   string
+	HintDisplayTooltipMaxWidthClass   string
+	HintDisplayTooltipMinHeightClass  string
+	HintDisplayTooltipMaxHeightClass  string
 	HintIconStyle                     string
 }
 
@@ -132,6 +136,10 @@ templ MultiSelectInput(componentSettings MultiSelectInputSettings) {
 							Value:                  componentSettings.HintValue,
 							StatePath:              componentSettings.HintStatePath,
 							TooltipBackgroundColor: componentSettings.HintDisplayTooltipBackgroundColor,
+							TooltipMinWidthClass:   componentSettings.HintDisplayTooltipMinWidthClass,
+							TooltipMaxWidthClass:   componentSettings.HintDisplayTooltipMaxWidthClass,
+							TooltipMinHeightClass:  componentSettings.HintDisplayTooltipMinHeightClass,
+							TooltipMaxHeightClass:  componentSettings.HintDisplayTooltipMaxHeightClass,
 							Size:                   InputHintSizeLg,
 							IconStyle:              componentSettings.HintIconStyle,
 						})
@@ -155,8 +163,7 @@ templ MultiSelectInput(componentSettings MultiSelectInputSettings) {
 							<span class="text-sm text-neutral-50">{ option }</span>
 							@multiSelectInputOptionCheckbox(
 								componentSettings.InputId,
-								componentSettings.InputName,
-								option,
+								componentSettings.InputName, option,
 								selectedItemsStatePath,
 								componentSettings.OnChangeFunc,
 							)
@@ -173,8 +180,7 @@ templ MultiSelectInput(componentSettings MultiSelectInputSettings) {
 							}
 							@multiSelectInputOptionCheckbox(
 								componentSettings.InputId,
-								componentSettings.InputName,
-								option.Value,
+								componentSettings.InputName, option.Value,
 								selectedItemsStatePath,
 								componentSettings.OnChangeFunc,
 							)

@@ -163,9 +163,7 @@ func TestModalSizeClassesResolver(t *testing.T) {
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
 			resolved := modalSizeClassesResolver(
-				testCase.initialSize,
-				testCase.widthPercent,
-				testCase.heightPercent,
+				testCase.initialSize, testCase.widthPercent, testCase.heightPercent,
 				testCase.shouldHeightMatchContent,
 			)
 
@@ -215,10 +213,8 @@ func TestModalSizeConstraintClassesResolver(t *testing.T) {
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
 			resolved := modalSizeConstraintClassesResolver(
-				testCase.minWidthPercent,
-				testCase.maxWidthPercent,
-				testCase.minHeightPercent,
-				testCase.maxHeightPercent,
+				testCase.minWidthPercent, testCase.maxWidthPercent,
+				testCase.minHeightPercent, testCase.maxHeightPercent,
 				testCase.shouldHeightMatchContent,
 			)
 
@@ -262,10 +258,8 @@ func TestModalIsResizableResolver(t *testing.T) {
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
 			resolved := modalIsResizableResolver(
-				testCase.isUnresizable,
-				testCase.widthPercent,
-				testCase.heightPercent,
-				testCase.reachableSizes,
+				testCase.isUnresizable, testCase.widthPercent,
+				testCase.heightPercent, testCase.reachableSizes,
 			)
 
 			if resolved != testCase.expected {
@@ -338,8 +332,7 @@ type modalSizeExpressionCase struct {
 }
 
 func assertModalSizeExpressions(
-	t *testing.T,
-	errorLabel string,
+	t *testing.T, errorLabel string,
 	builder func(sizePath string, reachableSizes []string) string,
 	cases []modalSizeExpressionCase,
 ) {

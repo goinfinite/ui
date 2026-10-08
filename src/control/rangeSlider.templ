@@ -1,6 +1,10 @@
 package uiControl
 
-import "strconv"
+import (
+	"strconv"
+
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
 
 const (
 	RangeSliderSizeXs string = "xs"
@@ -151,30 +155,23 @@ templ Thumb(componentSettings RangeSliderSettings, isUpper bool) {
 			{{ thumbPosition = "-top-2" }}
 	}
 	<!-- Thumb -->
-	{{ thumbShape := "rounded-full" }}
-	switch componentSettings.ThumbShape {
-		case RangeSliderThumbShapeCircular:
-			{{ thumbShape = "rounded-full" }}
-		case RangeSliderThumbShapeRounded:
-			{{ thumbShape = "rounded" }}
-		case RangeSliderThumbShapeSquare:
-			{{ thumbShape = "rounded-none" }}
-		case RangeSliderThumbShapePipe:
-			{{ thumbShape = "rounded-none" }}
-			switch componentSettings.Size {
-				case RangeSliderSizeXs:
-					{{ thumbShape += " !w-1" }}
-				case RangeSliderSizeSm:
-					{{ thumbShape += " !w-1" }}
-				case RangeSliderSizeMd:
-					{{ thumbShape += " !w-1" }}
-				case RangeSliderSizeLg:
-					{{ thumbShape += " !w-1.5" }}
-				case RangeSliderSizeXl:
-					{{ thumbShape += " !w-1.5" }}
-				default:
-					{{ thumbShape += " !w-1" }}
-			}
+	{{ thumbShape := uiToolset.ShapeClassResolver(componentSettings.ThumbShape, "rounded-full") }}
+	if componentSettings.ThumbShape == RangeSliderThumbShapePipe {
+		{{ thumbShape = "rounded-none" }}
+		switch componentSettings.Size {
+			case RangeSliderSizeXs:
+				{{ thumbShape += " !w-1" }}
+			case RangeSliderSizeSm:
+				{{ thumbShape += " !w-1" }}
+			case RangeSliderSizeMd:
+				{{ thumbShape += " !w-1" }}
+			case RangeSliderSizeLg:
+				{{ thumbShape += " !w-1.5" }}
+			case RangeSliderSizeXl:
+				{{ thumbShape += " !w-1.5" }}
+			default:
+				{{ thumbShape += " !w-1" }}
+		}
 	}
 	{{ thumbBackgroundColor := "bg-neutral-50" }}
 	{{ thumbTextColor := "text-neutral-800" }}
@@ -328,19 +325,11 @@ templ Thumb(componentSettings RangeSliderSettings, isUpper bool) {
 				case RangeSliderThumbValueBubbleSizeXl:
 					{{ bubbleSize = "min-w-12 p-2 text-xl" }}
 			}
-			{{ bubbleShape := "rounded-full" }}
 			{{ customBubbleShape := componentSettings.ThumbValueBubbleShape }}
 			if isUpper && componentSettings.ThumbUpperValueBubbleShape != "" {
 				{{ customBubbleShape = componentSettings.ThumbUpperValueBubbleShape }}
 			}
-			switch customBubbleShape {
-				case RangeSliderThumbValueBubbleShapeCircular:
-					{{ bubbleShape = "rounded-full" }}
-				case RangeSliderThumbValueBubbleShapeRounded:
-					{{ bubbleShape = "rounded" }}
-				case RangeSliderThumbValueBubbleShapeSquare:
-					{{ bubbleShape = "rounded-none" }}
-			}
+			{{ bubbleShape := uiToolset.ShapeClassResolver(customBubbleShape, "rounded-full") }}
 			{{ bubbleBackgroundColor := "bg-neutral-800" }}
 			if componentSettings.ThumbValueBubbleBackgroundColor != "" {
 				{{ bubbleBackgroundColor = "bg-" + componentSettings.ThumbValueBubbleBackgroundColor }}
@@ -355,31 +344,15 @@ templ Thumb(componentSettings RangeSliderSettings, isUpper bool) {
 			if isUpper && componentSettings.ThumbUpperValueBubbleTextColor != "" {
 				{{ bubbleTextColor = "text-" + componentSettings.ThumbUpperValueBubbleTextColor }}
 			}
-			{{ bubbleRingClasses := "" }}
-			if componentSettings.ThumbValueBubbleRingColor != "" {
-				{{ bubbleRingClasses = "ring-" + componentSettings.ThumbValueBubbleRingColor }}
-				if isUpper && componentSettings.ThumbUpperValueBubbleRingColor != "" {
-					{{ bubbleRingClasses = "ring-" + componentSettings.ThumbUpperValueBubbleRingColor }}
-				}
-				{{ bubbleRingThickness := "ring-1" }}
-				{{ customBubbleRingThickness := componentSettings.ThumbValueBubbleRingThickness }}
-				if isUpper && componentSettings.ThumbUpperValueBubbleRingThickness != "" {
-					{{ customBubbleRingThickness = componentSettings.ThumbUpperValueBubbleRingThickness }}
-				}
-				switch customBubbleRingThickness {
-					case RangeSliderThumbValueBubbleRingThicknessXs:
-						{{ bubbleRingThickness = "ring-0.5" }}
-					case RangeSliderThumbValueBubbleRingThicknessSm:
-						{{ bubbleRingThickness = "ring-1" }}
-					case RangeSliderThumbValueBubbleRingThicknessMd:
-						{{ bubbleRingThickness = "ring-1.5" }}
-					case RangeSliderThumbValueBubbleRingThicknessLg:
-						{{ bubbleRingThickness = "ring-2" }}
-					case RangeSliderThumbValueBubbleRingThicknessXl:
-						{{ bubbleRingThickness = "ring-2.5" }}
-				}
-				{{ bubbleRingClasses += " " + bubbleRingThickness }}
+			{{ bubbleRingColor := componentSettings.ThumbValueBubbleRingColor }}
+			if isUpper && componentSettings.ThumbUpperValueBubbleRingColor != "" {
+				{{ bubbleRingColor = componentSettings.ThumbUpperValueBubbleRingColor }}
 			}
+			{{ bubbleRingThickness := componentSettings.ThumbValueBubbleRingThickness }}
+			if isUpper && componentSettings.ThumbUpperValueBubbleRingThickness != "" {
+				{{ bubbleRingThickness = componentSettings.ThumbUpperValueBubbleRingThickness }}
+			}
+			{{ bubbleRingClasses := uiToolset.CompactRingClassResolver(bubbleRingColor, bubbleRingThickness) }}
 			{{ bubbleDisplayMode := componentSettings.ThumbValueBubbleDisplayMode }}
 			if isUpper && componentSettings.ThumbUpperValueBubbleDisplayMode != "" {
 				{{ bubbleDisplayMode = componentSettings.ThumbUpperValueBubbleDisplayMode }}
@@ -755,20 +728,7 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 						}
 						{{ trackTooltipRingClasses := "" }}
 						if componentSettings.TrackTooltipRingColor != "" {
-							{{ trackTooltipRingThickness := "ring-1" }}
-							switch componentSettings.TrackTooltipRingThickness {
-								case RangeSliderTrackTooltipRingThicknessXs:
-									{{ trackTooltipRingThickness = "ring-0.5" }}
-								case RangeSliderTrackTooltipRingThicknessSm:
-									{{ trackTooltipRingThickness = "ring-1" }}
-								case RangeSliderTrackTooltipRingThicknessMd:
-									{{ trackTooltipRingThickness = "ring-1.5" }}
-								case RangeSliderTrackTooltipRingThicknessLg:
-									{{ trackTooltipRingThickness = "ring-2" }}
-								case RangeSliderTrackTooltipRingThicknessXl:
-									{{ trackTooltipRingThickness = "ring-2.5" }}
-							}
-							{{ trackTooltipRingClasses = trackTooltipRingThickness + " ring-" + componentSettings.TrackTooltipRingColor }}
+							{{ trackTooltipRingClasses = uiToolset.CompactRingClassResolver(componentSettings.TrackTooltipRingColor, componentSettings.TrackTooltipRingThickness) }}
 						}
 						<div
 							data-ui-range-slider-track-tooltip

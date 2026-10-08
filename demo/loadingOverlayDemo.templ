@@ -20,8 +20,7 @@ templ LoadingOverlayIconAnimationExample() {
 	@DemoExampleCard(
 		"Icon & Animation",
 		"Icon replaces the spinner. IconSize scales it. AnimationName spins or pulses it over AnimationDurationSeconds.",
-		"/display/loadingOverlay.templ",
-		iconUsage,
+		"/display/loadingOverlay.templ", iconUsage,
 	) {
 		<div class="relative h-64 overflow-hidden rounded-md border border-neutral-800 bg-neutral-50/5" x-data="{isIconLoading: false}">
 			<div class="flex h-full flex-col items-center justify-center gap-4 p-8">
@@ -57,10 +56,8 @@ templ LoadingOverlayBackgroundExample() {
 })`
 	}}
 	@DemoExampleCard(
-		"Background Color",
-		"BackgroundColor paints the veil over the content.",
-		"/display/loadingOverlay.templ",
-		backgroundUsage,
+		"Background Color", "BackgroundColor paints the veil over the content.",
+		"/display/loadingOverlay.templ", backgroundUsage,
 	) {
 		<div class="relative h-64 overflow-hidden rounded-md border border-neutral-800 bg-neutral-50/5" x-data="{isBackgroundLoading: false}">
 			<div class="flex h-full flex-col items-center justify-center gap-4 p-8">

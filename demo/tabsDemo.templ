@@ -4,6 +4,7 @@ import (
 	uiControl "github.com/goinfinite/ui/src/control"
 	uiDisplay "github.com/goinfinite/ui/src/display"
 	uiStructural "github.com/goinfinite/ui/src/structural"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
 templ TabsDemoGeneralPanel() {
@@ -113,8 +114,7 @@ templ TabsVerticalExample() {
 	@DemoExampleCard(
 		"Vertical",
 		"Orientation renders the tab list as a column beside the panels, for sidebar-style layouts. Up and Down arrows move between the tabs.",
-		"/structural/tabs.templ",
-		verticalUsage,
+		"/structural/tabs.templ", verticalUsage,
 	) {
 		<div
 			class="h-64 overflow-hidden rounded-md border border-neutral-800"
@@ -151,8 +151,7 @@ templ TabsRightSideExample() {
 	@DemoExampleCard(
 		"Right Side",
 		"Side places the vertical tab list on the right side of the panels, for layouts that read better with the navigation on the right. Up and Down arrows still move between the tabs.",
-		"/structural/tabs.templ",
-		rightSideUsage,
+		"/structural/tabs.templ", rightSideUsage,
 	) {
 		<div
 			class="h-64 overflow-hidden rounded-md border border-neutral-800"
@@ -225,8 +224,7 @@ templ TabsIconPositionExample() {
 	@DemoExampleCard(
 		"Icon Position",
 		"IconPosition places the icon above the label instead of beside it. The default, TabIconPositionLeft, keeps the icon on the left.",
-		"/structural/tabs.templ",
-		iconPositionUsage,
+		"/structural/tabs.templ", iconPositionUsage,
 	) {
 		<div
 			class="overflow-hidden rounded-md border border-neutral-800"
@@ -261,8 +259,7 @@ templ TabsBorderRadiusExample() {
 	@DemoExampleCard(
 		"Border Radius",
 		"BorderRadius rounds the tab edges. It accepts TabBorderRadiusNone through TabBorderRadiusXl, and the default is TabBorderRadiusMd.",
-		"/structural/tabs.templ",
-		borderRadiusUsage,
+		"/structural/tabs.templ", borderRadiusUsage,
 	) {
 		<div
 			class="overflow-hidden rounded-md border border-neutral-800"
@@ -294,17 +291,19 @@ templ TabsSurfaceExample() {
     // OptionalFields
     BackgroundColor: "neutral-50/5",
     BorderRadius:    uiStructural.TabBorderRadiusNone,
+    GapSize:         uiStructural.TabGapSizeLg,
     PaddingSize:     uiStructural.TabPaddingSizeXs,
     RingColor:       "neutral-50/10",
     RingThickness:   uiStructural.TabRingThicknessMd,
+    ShadowSize:      uiStructural.TabShadowSizeMd,
+    TextCase:        uiToolset.TextCaseUpper,
     TextColor:       "neutral-50/60",
 })`
 	}}
 	@DemoExampleCard(
 		"Surface Customization",
-		"BackgroundColor paints the tab list, BorderRadius rounds the tab edges, PaddingSize insets the tabs, RingColor and RingThickness frame the list, and TextColor tints the unselected tab labels.",
-		"/structural/tabs.templ",
-		surfaceUsage,
+		"BackgroundColor paints the tab list. BorderRadius rounds the tab edges. GapSize and PaddingSize space and inset the tabs. RingColor and RingThickness frame the list. ShadowSize adds a shadow. TextCase transforms the labels. TextColor tints the unselected tab labels.",
+		"/structural/tabs.templ", surfaceUsage,
 	) {
 		<div
 			class="overflow-hidden rounded-md border border-neutral-800"
@@ -319,9 +318,12 @@ templ TabsSurfaceExample() {
 				SelectedValueTwoWayStatePath: "selectedSurfaceTab",
 				BackgroundColor:                "neutral-50/5",
 				BorderRadius:                   uiStructural.TabBorderRadiusNone,
+				GapSize:                        uiStructural.TabGapSizeLg,
 				PaddingSize:                    uiStructural.TabPaddingSizeXs,
 				RingColor:                      "neutral-50/10",
 				RingThickness:                  uiStructural.TabRingThicknessMd,
+				ShadowSize:                     uiStructural.TabShadowSizeMd,
+				TextCase:                       uiToolset.TextCaseUpper,
 				TextColor:                      "neutral-50/60",
 			})
 		</div>
@@ -351,8 +353,7 @@ templ TabsContentSurfaceExample() {
 	@DemoExampleCard(
 		"Content Surface",
 		"The Content fields style the panel area: ContentBackgroundColor, ContentPaddingSize, ContentBorderRadius, ContentRingColor, ContentRingThickness, ContentShadowSize, and ContentTextColor. ContentPaddingSize replaces the default inset that separates the content from the tab list.",
-		"/structural/tabs.templ",
-		contentSurfaceUsage,
+		"/structural/tabs.templ", contentSurfaceUsage,
 	) {
 		<div
 			class="h-64 overflow-hidden rounded-md border border-neutral-800"
@@ -383,7 +384,7 @@ templ TabsBadgeExample() {
     Items: []uiStructural.TabItemSettings{
         {Label: "General", Value: "general", Content: TabsDemoGeneralPanel()},
         {Label: "Security", Value: "security", BadgeCount: 3, Content: TabsDemoSecurityPanel()},
-        {Label: "Notifications", Value: "notifications", BadgeCountOneWayStatePath: "alertCount", BadgeBackgroundColor: "red-500/20", BadgeRingColor: "red-500/50", BadgeRingThickness: uiStructural.TabRingThicknessSm, BadgeTextColor: "red-50", Content: TabsDemoNotificationsPanel()},
+        {Label: "Notifications", Value: "notifications", BadgeCountOneWayStatePath: "alertCount", BadgeBackgroundColor: "red-500/20", BadgeBorderRadius: uiStructural.TabBorderRadiusLg, BadgeRingColor: "red-500/50", BadgeRingThickness: uiStructural.TabRingThicknessSm, BadgeTextColor: "red-50", Content: TabsDemoNotificationsPanel()},
     },
     SelectedValueTwoWayStatePath: "selectedBadgeTab",
 })`
@@ -391,8 +392,7 @@ templ TabsBadgeExample() {
 	@DemoExampleCard(
 		"Badge Counts",
 		"BadgeCount renders a static count, and BadgeCountOneWayStatePath renders a live count that hides itself at zero. BadgeBackgroundColor, BadgeTextColor, BadgeRingColor, BadgeRingThickness, and BadgeBorderRadius style the badge.",
-		"/structural/tabs.templ",
-		badgeUsage,
+		"/structural/tabs.templ", badgeUsage,
 	) {
 		<div
 			class="flex flex-col gap-4"
@@ -402,7 +402,7 @@ templ TabsBadgeExample() {
 				Items: []uiStructural.TabItemSettings{
 					{Label: "General", Value: "general", Content: TabsDemoGeneralPanel()},
 					{Label: "Security", Value: "security", BadgeCount: 3, Content: TabsDemoSecurityPanel()},
-					{Label: "Notifications", Value: "notifications", BadgeCountOneWayStatePath: "alertCount", BadgeBackgroundColor: "red-500/20", BadgeRingColor: "red-500/50", BadgeRingThickness: uiStructural.TabRingThicknessSm, BadgeTextColor: "red-50", Content: TabsDemoNotificationsPanel()},
+					{Label: "Notifications", Value: "notifications", BadgeCountOneWayStatePath: "alertCount", BadgeBackgroundColor: "red-500/20", BadgeBorderRadius: uiStructural.TabBorderRadiusLg, BadgeRingColor: "red-500/50", BadgeRingThickness: uiStructural.TabRingThicknessSm, BadgeTextColor: "red-50", Content: TabsDemoNotificationsPanel()},
 				},
 				SelectedValueTwoWayStatePath: "selectedBadgeTab",
 			})
@@ -442,8 +442,7 @@ templ TabsDeepLinkExample() {
 	@DemoExampleCard(
 		"Deep Linking",
 		"IsUrlHashSynced reads the URL hash on load and on every hash change, so a link to #security opens the Security tab. Clicking a tab writes the hash.",
-		"/structural/tabs.templ",
-		deepLinkUsage,
+		"/structural/tabs.templ", deepLinkUsage,
 	) {
 		<div class="flex flex-col gap-4" x-data="{selectedDeepLinkTab: 'general'}">
 			<div class="flex flex-wrap gap-2">
@@ -496,14 +495,16 @@ templ TabsOverflowExample() {
     SelectedValueTwoWayStatePath: "selectedOverflowTab",
 
     // OptionalFields
+    MinWidthPercent: 50,
     MaxWidthPercent: 80,
+    MinWidthClass:   "min-w-64",
+    MaxWidthClass:   "max-w-80",
 })`
 	}}
 	@DemoExampleCard(
 		"Overflow Scroll",
-		"MaxWidthPercent caps the tab list width as a percentage of its container. The horizontal tab list scrolls when the tabs exceed it, and the default width fills the container.",
-		"/structural/tabs.templ",
-		overflowUsage,
+		"MinWidthPercent and MaxWidthPercent set the tab list width bounds as percentages of its container. MinWidthClass and MaxWidthClass apply Tailwind width classes to the same bounds. The horizontal tab list scrolls when the tabs exceed it.",
+		"/structural/tabs.templ", overflowUsage,
 	) {
 		<div
 			class="max-w-96 overflow-hidden rounded-md border border-neutral-800"
@@ -522,7 +523,10 @@ templ TabsOverflowExample() {
 					{Label: "Danger", Value: "danger", Icon: "ph-warning", Content: TabsDemoDangerPanel()},
 				},
 				SelectedValueTwoWayStatePath: "selectedOverflowTab",
+				MinWidthPercent:                50,
 				MaxWidthPercent:                80,
+				MinWidthClass:                  "min-w-64",
+				MaxWidthClass:                  "max-w-80",
 			})
 		</div>
 	}
@@ -546,35 +550,67 @@ templ TabsVerticalOverflowExample() {
 
     // OptionalFields
     Orientation:      uiStructural.TabOrientationVertical,
+    MinHeightPercent: 30,
     MaxHeightPercent: 60,
+    MinHeightClass:   "min-h-32",
+    MaxHeightClass:   "max-h-48",
+
+    // Or cap the list to a number of tabs
+    MaxVisibleTabs: 4,
 })`
 	}}
 	@DemoExampleCard(
 		"Vertical Overflow Scroll",
-		"MaxHeightPercent caps the vertical tab list height as a percentage of the tab area. The vertical tab list scrolls when the tabs exceed it.",
-		"/structural/tabs.templ",
-		verticalOverflowUsage,
+		"MinHeightPercent and MaxHeightPercent set the vertical tab list height bounds as percentages of the tab area. MinHeightClass and MaxHeightClass apply Tailwind height classes to the same bounds. MaxVisibleTabs measures the tallest tab at runtime and caps the list to that many tabs instead. The vertical tab list scrolls when the tabs exceed the cap.",
+		"/structural/tabs.templ", verticalOverflowUsage,
 	) {
-		<div
-			class="flex h-64 overflow-hidden rounded-md border border-neutral-800"
-			x-data="{selectedVerticalOverflowTab: 'general'}"
-		>
-			@uiStructural.Tabs(uiStructural.TabSettings{
-				Items: []uiStructural.TabItemSettings{
-					{Label: "General", Value: "general", Icon: "ph-gear", Content: TabsDemoGeneralPanel()},
-					{Label: "Security", Value: "security", Icon: "ph-shield-check", Content: TabsDemoSecurityPanel()},
-					{Label: "Notifications", Value: "notifications", Icon: "ph-bell", Content: TabsDemoNotificationsPanel()},
-					{Label: "Billing", Value: "billing", Icon: "ph-credit-card", Content: TabsDemoBillingPanel()},
-					{Label: "API", Value: "api", Icon: "ph-key", Content: TabsDemoApiPanel()},
-					{Label: "Integrations", Value: "integrations", Icon: "ph-plugs-connected", Content: TabsDemoIntegrationsPanel()},
-					{Label: "Team", Value: "team", Icon: "ph-users", Content: TabsDemoTeamPanel()},
-					{Label: "Audit", Value: "audit", Icon: "ph-clock-counter-clockwise", Content: TabsDemoAuditPanel()},
-					{Label: "Danger", Value: "danger", Icon: "ph-warning", Content: TabsDemoDangerPanel()},
-				},
-				SelectedValueTwoWayStatePath: "selectedVerticalOverflowTab",
-				Orientation:                        uiStructural.TabOrientationVertical,
-				MaxHeightPercent:                   60,
-			})
+		<div class="flex flex-col gap-4">
+			<div
+				class="flex h-64 overflow-hidden rounded-md border border-neutral-800"
+				x-data="{selectedVerticalOverflowTab: 'general'}"
+			>
+				@uiStructural.Tabs(uiStructural.TabSettings{
+					Items: []uiStructural.TabItemSettings{
+						{Label: "General", Value: "general", Icon: "ph-gear", Content: TabsDemoGeneralPanel()},
+						{Label: "Security", Value: "security", Icon: "ph-shield-check", Content: TabsDemoSecurityPanel()},
+						{Label: "Notifications", Value: "notifications", Icon: "ph-bell", Content: TabsDemoNotificationsPanel()},
+						{Label: "Billing", Value: "billing", Icon: "ph-credit-card", Content: TabsDemoBillingPanel()},
+						{Label: "API", Value: "api", Icon: "ph-key", Content: TabsDemoApiPanel()},
+						{Label: "Integrations", Value: "integrations", Icon: "ph-plugs-connected", Content: TabsDemoIntegrationsPanel()},
+						{Label: "Team", Value: "team", Icon: "ph-users", Content: TabsDemoTeamPanel()},
+						{Label: "Audit", Value: "audit", Icon: "ph-clock-counter-clockwise", Content: TabsDemoAuditPanel()},
+						{Label: "Danger", Value: "danger", Icon: "ph-warning", Content: TabsDemoDangerPanel()},
+					},
+					SelectedValueTwoWayStatePath: "selectedVerticalOverflowTab",
+					Orientation:                        uiStructural.TabOrientationVertical,
+					MinHeightPercent:                   30,
+					MaxHeightPercent:                   60,
+					MinHeightClass:                     "min-h-32",
+					MaxHeightClass:                     "max-h-48",
+				})
+			</div>
+			<div
+				class="flex h-64 overflow-hidden rounded-md border border-neutral-800"
+				id="tabs-demo-vertical-overflow-visible"
+				x-data="{selectedVisibleTabsTab: 'general'}"
+			>
+				@uiStructural.Tabs(uiStructural.TabSettings{
+					Items: []uiStructural.TabItemSettings{
+						{Label: "General", Value: "general", Icon: "ph-gear", Content: TabsDemoGeneralPanel()},
+						{Label: "Security", Value: "security", Icon: "ph-shield-check", Content: TabsDemoSecurityPanel()},
+						{Label: "Notifications", Value: "notifications", Icon: "ph-bell", Content: TabsDemoNotificationsPanel()},
+						{Label: "Billing", Value: "billing", Icon: "ph-credit-card", Content: TabsDemoBillingPanel()},
+						{Label: "API", Value: "api", Icon: "ph-key", Content: TabsDemoApiPanel()},
+						{Label: "Integrations", Value: "integrations", Icon: "ph-plugs-connected", Content: TabsDemoIntegrationsPanel()},
+						{Label: "Team", Value: "team", Icon: "ph-users", Content: TabsDemoTeamPanel()},
+						{Label: "Audit", Value: "audit", Icon: "ph-clock-counter-clockwise", Content: TabsDemoAuditPanel()},
+						{Label: "Danger", Value: "danger", Icon: "ph-warning", Content: TabsDemoDangerPanel()},
+					},
+					SelectedValueTwoWayStatePath: "selectedVisibleTabsTab",
+					Orientation:                        uiStructural.TabOrientationVertical,
+					MaxVisibleTabs:                     4,
+				})
+			</div>
 		</div>
 	}
 }

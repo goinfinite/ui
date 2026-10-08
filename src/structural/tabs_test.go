@@ -1,6 +1,11 @@
 package uiStructural
 
-import "testing"
+import (
+	"bytes"
+	"context"
+	"strings"
+	"testing"
+)
 
 func TestTabOrientationResolver(t *testing.T) {
 	tests := []struct {
@@ -170,24 +175,6 @@ func TestTabEdgeClassResolver(t *testing.T) {
 	}
 }
 
-func TestTabTextColorClassResolver(t *testing.T) {
-	tests := []struct {
-		name      string
-		textColor string
-		want      string
-	}{
-		{name: "empty defaults to the muted token", textColor: "", want: "text-neutral-50/80"},
-		{name: "custom token", textColor: "secondary-500", want: "text-secondary-500"},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tabTextColorClassResolver(tt.textColor); got != tt.want {
-				t.Errorf("tabTextColorClassResolver() = %q, want %q", got, tt.want)
-			}
-		})
-	}
-}
-
 func TestTabPercentClassResolver(t *testing.T) {
 	tests := []struct {
 		name        string
@@ -271,103 +258,6 @@ func TestTabAlignmentClassResolver(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tabAlignmentClassResolver(tt.alignment); got != tt.want {
 				t.Errorf("tabAlignmentClassResolver() = %q, want %q", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestTabPaddingClassResolver(t *testing.T) {
-	tests := []struct {
-		name        string
-		paddingSize string
-		want        string
-	}{
-		{name: "empty leaves the padding unset", paddingSize: "", want: ""},
-		{name: "none", paddingSize: TabPaddingSizeNone, want: "p-0"},
-		{name: "xs", paddingSize: TabPaddingSizeXs, want: "p-3"},
-		{name: "sm", paddingSize: TabPaddingSizeSm, want: "p-4"},
-		{name: "md", paddingSize: TabPaddingSizeMd, want: "p-5"},
-		{name: "lg", paddingSize: TabPaddingSizeLg, want: "p-6"},
-		{name: "xl", paddingSize: TabPaddingSizeXl, want: "p-8"},
-		{name: "unknown leaves the padding unset", paddingSize: "huge", want: ""},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tabPaddingClassResolver(tt.paddingSize); got != tt.want {
-				t.Errorf("tabPaddingClassResolver() = %q, want %q", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestTabGapClassResolver(t *testing.T) {
-	tests := []struct {
-		name    string
-		gapSize string
-		want    string
-	}{
-		{name: "empty defaults to xs", gapSize: "", want: "gap-1"},
-		{name: "none", gapSize: TabGapSizeNone, want: "gap-0"},
-		{name: "xs", gapSize: TabGapSizeXs, want: "gap-1"},
-		{name: "sm", gapSize: TabGapSizeSm, want: "gap-2"},
-		{name: "md", gapSize: TabGapSizeMd, want: "gap-3"},
-		{name: "lg", gapSize: TabGapSizeLg, want: "gap-6"},
-		{name: "xl", gapSize: TabGapSizeXl, want: "gap-8"},
-		{name: "unknown defaults to xs", gapSize: "huge", want: "gap-1"},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tabGapClassResolver(tt.gapSize); got != tt.want {
-				t.Errorf("tabGapClassResolver() = %q, want %q", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestTabRingClassResolver(t *testing.T) {
-	tests := []struct {
-		name          string
-		ringColor     string
-		ringThickness string
-		want          string
-	}{
-		{name: "empty color and thickness render no ring", ringColor: "", ringThickness: "", want: ""},
-		{name: "color without thickness renders no ring", ringColor: "red-500/50", ringThickness: "", want: ""},
-		{name: "thickness without color renders no ring", ringColor: "", ringThickness: TabRingThicknessMd, want: ""},
-		{name: "xs thickness", ringColor: "red-500/50", ringThickness: TabRingThicknessXs, want: "ring-1 ring-red-500/50"},
-		{name: "sm thickness", ringColor: "red-500/50", ringThickness: TabRingThicknessSm, want: "ring-1.5 ring-red-500/50"},
-		{name: "md thickness", ringColor: "red-500/50", ringThickness: TabRingThicknessMd, want: "ring-2 ring-red-500/50"},
-		{name: "lg thickness", ringColor: "red-500/50", ringThickness: TabRingThicknessLg, want: "ring-2.5 ring-red-500/50"},
-		{name: "xl thickness", ringColor: "red-500/50", ringThickness: TabRingThicknessXl, want: "ring-3 ring-red-500/50"},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tabRingClassResolver(tt.ringColor, tt.ringThickness); got != tt.want {
-				t.Errorf("tabRingClassResolver() = %q, want %q", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestTabShadowClassResolver(t *testing.T) {
-	tests := []struct {
-		name       string
-		shadowSize string
-		want       string
-	}{
-		{name: "empty leaves the shadow unset", shadowSize: "", want: ""},
-		{name: "none", shadowSize: TabShadowSizeNone, want: "shadow-none"},
-		{name: "xs", shadowSize: TabShadowSizeXs, want: "shadow-xs"},
-		{name: "sm", shadowSize: TabShadowSizeSm, want: "shadow-sm"},
-		{name: "md", shadowSize: TabShadowSizeMd, want: "shadow-md"},
-		{name: "lg", shadowSize: TabShadowSizeLg, want: "shadow-lg"},
-		{name: "xl", shadowSize: TabShadowSizeXl, want: "shadow-xl"},
-		{name: "unknown leaves the shadow unset", shadowSize: "huge", want: ""},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tabShadowClassResolver(tt.shadowSize); got != tt.want {
-				t.Errorf("tabShadowClassResolver() = %q, want %q", got, tt.want)
 			}
 		})
 	}
@@ -612,5 +502,51 @@ func TestTabTabindexExpressionBuilder(t *testing.T) {
 				t.Errorf("tabTabindexExpressionBuilder() = %q, want %q", got, tt.want)
 			}
 		})
+	}
+}
+
+func TestTabsRendersVisibleTabsCap(t *testing.T) {
+	settings := TabSettings{
+		Items: []TabItemSettings{
+			{Label: "General", Value: "general"},
+			{Label: "Security", Value: "security"},
+			{Label: "Notifications", Value: "notifications"},
+		},
+		SelectedValueTwoWayStatePath: "selectedTab",
+		Orientation:                  TabOrientationVertical,
+		MaxVisibleTabs:               2,
+	}
+	var buffer bytes.Buffer
+	renderErr := Tabs(settings).Render(context.Background(), &buffer)
+	if renderErr != nil {
+		t.Fatalf("TabsRenderFailed: %v", renderErr)
+	}
+	renderedHtml := buffer.String()
+	for _, expectedMarkup := range []string{
+		"data-ui-tabs-list",
+		`x-data="tabs(2)"`,
+		"tabsViewportMaxHeightPx",
+	} {
+		if !strings.Contains(renderedHtml, expectedMarkup) {
+			t.Errorf("RenderedHtmlMissing: %s", expectedMarkup)
+		}
+	}
+}
+
+func TestTabsIgnoresVisibleTabsCapWhenHorizontal(t *testing.T) {
+	settings := TabSettings{
+		Items: []TabItemSettings{
+			{Label: "General", Value: "general"},
+		},
+		SelectedValueTwoWayStatePath: "selectedTab",
+		MaxVisibleTabs:               2,
+	}
+	var buffer bytes.Buffer
+	renderErr := Tabs(settings).Render(context.Background(), &buffer)
+	if renderErr != nil {
+		t.Fatalf("TabsRenderFailed: %v", renderErr)
+	}
+	if strings.Contains(buffer.String(), "tabs(2)") {
+		t.Errorf("HorizontalTabsRenderedVisibleTabsCap")
 	}
 }

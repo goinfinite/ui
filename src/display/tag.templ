@@ -117,23 +117,7 @@ templ Tag(componentSettings TagSettings) {
 	if componentSettings.OuterTextColor != "" {
 		{{ initialOuterTextColor = componentSettings.OuterTextColor }}
 	}
-	{{ initialOuterRadius := "rounded" }}
-	switch componentSettings.OuterRadius {
-		case TagRadiusNone:
-			{{ initialOuterRadius = "rounded-none" }}
-		case TagRadiusXs:
-			{{ initialOuterRadius = "rounded-xs" }}
-		case TagRadiusSm:
-			{{ initialOuterRadius = "rounded-sm" }}
-		case TagRadiusMd:
-			{{ initialOuterRadius = "rounded-md" }}
-		case TagRadiusLg:
-			{{ initialOuterRadius = "rounded-lg" }}
-		case TagRadiusXl:
-			{{ initialOuterRadius = "rounded-xl" }}
-		case TagRadiusFull:
-			{{ initialOuterRadius = "rounded-full" }}
-	}
+	{{ initialOuterRadius := uiToolset.BorderRadiusClassResolver(componentSettings.OuterRadius, "rounded") }}
 	{{
 		initialOuterClasses := initialOuterSizeClasses + " " +
 			" border-" + initialOuterRingColor + " bg-" + initialOuterBackgroundColor +
@@ -155,35 +139,13 @@ templ Tag(componentSettings TagSettings) {
 		case TagSizeXl:
 			{{ initialInnerSizeClasses = "text-xl p-1.5 gap-1.5" }}
 	}
-	{{ initialInnerBackgroundColor := "neutral-50/10" }}
-	if componentSettings.InnerBackgroundColor != "" {
-		{{ initialInnerBackgroundColor = componentSettings.InnerBackgroundColor }}
-	}
-	{{ initialInnerTextColor := "neutral-50" }}
-	if componentSettings.InnerTextColor != "" {
-		{{ initialInnerTextColor = componentSettings.InnerTextColor }}
-	}
-	{{ initialInnerRadius := "rounded" }}
-	switch componentSettings.InnerRadius {
-		case TagRadiusNone:
-			{{ initialInnerRadius = "rounded-none" }}
-		case TagRadiusXs:
-			{{ initialInnerRadius = "rounded-xs" }}
-		case TagRadiusSm:
-			{{ initialInnerRadius = "rounded-sm" }}
-		case TagRadiusMd:
-			{{ initialInnerRadius = "rounded-md" }}
-		case TagRadiusLg:
-			{{ initialInnerRadius = "rounded-lg" }}
-		case TagRadiusXl:
-			{{ initialInnerRadius = "rounded-xl" }}
-		case TagRadiusFull:
-			{{ initialInnerRadius = "rounded-full" }}
-	}
+	{{ initialInnerBackgroundColorClass := uiToolset.BackgroundColorClassResolver(componentSettings.InnerBackgroundColor, "bg-neutral-50/10") }}
+	{{ initialInnerTextColorClass := uiToolset.TextColorClassResolver(componentSettings.InnerTextColor, "text-neutral-50") }}
+	{{ initialInnerRadius := uiToolset.BorderRadiusClassResolver(componentSettings.InnerRadius, "rounded") }}
 	{{
 		initialInnerClasses := initialInnerSizeClasses + " " +
-			"bg-" + initialInnerBackgroundColor +
-			" text-" + initialInnerTextColor +
+			initialInnerBackgroundColorClass +
+			" " + initialInnerTextColorClass +
 			" " + initialInnerRadius
 	}}
 	{{ iconSizeClasses := "text-lg" }}

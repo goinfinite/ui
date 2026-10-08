@@ -8,6 +8,8 @@ package uiDisplay
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
+import uiToolset "github.com/goinfinite/ui/src/toolset"
+
 const (
 	HeaderIconPositionLeft string = "left"
 	HeaderIconPositionTop  string = "top"
@@ -59,39 +61,12 @@ func HeaderIcon(componentSettings HeaderIconSettings) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		iconChipClasses := "ph-duotone inline-flex leading-none items-center justify-center " + componentSettings.Name
-		if componentSettings.Color != "" {
-			iconChipClasses += " text-" + componentSettings.Color
-		}
-		if componentSettings.BackgroundColor != "" {
-			iconChipClasses += " bg-" + componentSettings.BackgroundColor
-		}
-		switch componentSettings.PaddingSize {
-		case HeaderIconPaddingSizeNone:
-			iconChipClasses += " p-0"
-		case HeaderIconPaddingSizeXs:
-			iconChipClasses += " p-1"
-		case HeaderIconPaddingSizeSm:
-			iconChipClasses += " p-1.5"
-		case HeaderIconPaddingSizeMd:
-			iconChipClasses += " p-2"
-		case HeaderIconPaddingSizeLg:
-			iconChipClasses += " p-2.5"
-		case HeaderIconPaddingSizeXl:
-			iconChipClasses += " p-3"
-		}
-		switch componentSettings.BorderRadius {
-		case HeaderIconBorderRadiusNone:
-			iconChipClasses += " rounded-none"
-		case HeaderIconBorderRadiusXs:
-			iconChipClasses += " rounded-xs"
-		case HeaderIconBorderRadiusSm:
-			iconChipClasses += " rounded-sm"
-		case HeaderIconBorderRadiusMd:
-			iconChipClasses += " rounded"
-		case HeaderIconBorderRadiusLg:
-			iconChipClasses += " rounded-lg"
-		case HeaderIconBorderRadiusXl:
-			iconChipClasses += " rounded-xl"
+		iconChipClasses += " " + uiToolset.TextColorClassResolver(componentSettings.Color, "")
+		iconChipClasses += " " + uiToolset.BackgroundColorClassResolver(componentSettings.BackgroundColor, "")
+		iconChipClasses += " " + uiToolset.CompactPaddingClassResolver(componentSettings.PaddingSize, "")
+		borderRadiusClass := uiToolset.BorderRadiusClassResolver(componentSettings.BorderRadius, "")
+		if borderRadiusClass != "" {
+			iconChipClasses += " " + borderRadiusClass
 		}
 		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!-- HeaderIcon -->")
 		if templ_7745c5c3_Err != nil {

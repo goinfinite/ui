@@ -1,18 +1,27 @@
 UiToolset.RegisterAlpineState(() => {
-  const refreshAssetFile = "dataTableDemoRefreshFragments.json";
-  const defaultItemsPerPage = 5;
+  const refreshAssets = [
+    { assetFile: "dataTableDemoRefreshFragments.json", defaultItemsPerPage: 5 },
+    { assetFile: "carouselDemoRefreshFragments.json", defaultItemsPerPage: 6 },
+    {
+      assetFile: "carouselTooltipDemoRefreshFragments.json",
+      defaultItemsPerPage: 6,
+    },
+  ];
   const defaultPageNumber = 0;
 
-  function isRefreshAssetRequest(requestUrl) {
-    return (
-      typeof requestUrl === "string" && requestUrl.includes(refreshAssetFile)
+  function refreshAssetForRequest(requestUrl) {
+    if (typeof requestUrl !== "string") {
+      return undefined;
+    }
+    return refreshAssets.find((refreshAsset) =>
+      requestUrl.includes(refreshAsset.assetFile),
     );
   }
 
-  function resolveFragmentKey(requestUrl) {
-    const request = new URL(requestUrl, window.location.href);
+  function resolveFragmentKey(refreshAsset, request) {
     const itemsPerPage = Number(
-      request.searchParams.get("itemsPerPage") ?? defaultItemsPerPage,
+      request.searchParams.get("itemsPerPage") ??
+        refreshAsset.defaultItemsPerPage,
     );
     const pageNumber = Number(
       request.searchParams.get("page") ?? defaultPageNumber,
@@ -20,34 +29,50 @@ UiToolset.RegisterAlpineState(() => {
     return `${pageNumber}-${itemsPerPage}`;
   }
 
-  function resolveFragmentHtml(assetBody, requestUrl) {
-    const fragmentKey = resolveFragmentKey(requestUrl);
+  function resolveFragmentHtml(refreshAsset, assetBody, requestUrl) {
+    const request = new URL(requestUrl, window.location.href);
+    const fragmentKey = resolveFragmentKey(refreshAsset, request);
     const fragmentHtml = JSON.parse(assetBody)[fragmentKey];
     if (fragmentHtml === undefined) {
-      throw new Error(`DataTableDemoFragmentMissing: ${fragmentKey}`);
+      throw new Error(
+        `DemoRefreshFragmentMissing (${refreshAsset.assetFile}): ${fragmentKey}`,
+      );
     }
-    return fragmentHtml;
+    const componentId = request.searchParams.get("componentId");
+    if (componentId === null) {
+      return fragmentHtml;
+    }
+    return fragmentHtml.replaceAll(
+      "carousel-demo-fragment-carousel",
+      componentId,
+    );
   }
 
   const originalFetch = window.fetch.bind(window);
   window.fetch = async (input, init) => {
     const response = await originalFetch(input, init);
-    if (!isRefreshAssetRequest(input) || !response.ok) {
+    const refreshAsset = refreshAssetForRequest(input);
+    if (!refreshAsset || !response.ok) {
       return response;
     }
-    return new Response(resolveFragmentHtml(await response.text(), input), {
-      status: 200,
-      headers: { "content-type": "text/html" },
-    });
+    return new Response(
+      resolveFragmentHtml(refreshAsset, await response.text(), input),
+      {
+        status: 200,
+        headers: { "content-type": "text/html" },
+      },
+    );
   };
 
   document.addEventListener("htmx:beforeSwap", (event) => {
     const requestUrl = event.detail.xhr?.responseURL;
-    if (!isRefreshAssetRequest(requestUrl) || event.detail.xhr.status !== 200) {
+    const refreshAsset = refreshAssetForRequest(requestUrl);
+    if (!refreshAsset || event.detail.xhr.status !== 200) {
       return;
     }
     try {
       event.detail.serverResponse = resolveFragmentHtml(
+        refreshAsset,
         event.detail.serverResponse,
         requestUrl,
       );

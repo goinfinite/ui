@@ -75,14 +75,16 @@ templ SidebarAttachmentModeExample() {
 	MiddleContent: SidebarDemoMiddle(),
 
 	// OptionalFields
+	HeaderContent:                 SidebarDemoHeader(),
+	FooterContent:                 SidebarDemoFooter(),
+	AttachmentMode:                uiStructural.SidebarAttachmentModeInline,
 	AttachmentModeTwoWayStatePath: "attachmentMode",
 })`
 	}}
 	@DemoExampleCard(
 		"Attachment Modes",
-		"inline keeps the sidebar in the page flow. fixed pins it to the viewport while the rest of the page scrolls.",
-		"/structural/sidebar.templ",
-		attachmentUsage,
+		"inline keeps the sidebar in the page flow. fixed pins it to the viewport while the rest of the page scrolls. Set AttachmentMode directly, or use AttachmentModeTwoWayStatePath to switch at runtime.",
+		"/structural/sidebar.templ", attachmentUsage,
 	) {
 		<div
 			class="grid items-center gap-10 md:grid-cols-2"
@@ -112,6 +114,7 @@ templ SidebarAttachmentModeExample() {
 					HeaderContent:                 SidebarDemoHeader(),
 					FooterContent:                 SidebarDemoFooter(),
 					BackgroundColor:               "bg-neutral-50/5",
+					AttachmentMode:                uiStructural.SidebarAttachmentModeInline,
 					IsVisibleTwoWayStatePath:      "isAttachmentVisible",
 					IsCollapsedTwoWayStatePath:    "isCollapsed",
 					AttachmentModeTwoWayStatePath: "attachmentMode",
@@ -127,6 +130,8 @@ templ SidebarOffCanvasExample() {
 	MiddleContent: SidebarDemoMiddle(),
 
 	// OptionalFields
+	HeaderContent:                 SidebarDemoHeader(),
+	FooterContent:                 SidebarDemoFooter(),
 	IsOffCanvas:                   true,
 	IsOffCanvasTwoWayStatePath:    "isOffCanvas",
 	IsVisibleTwoWayStatePath:      "isVisible",
@@ -135,8 +140,7 @@ templ SidebarOffCanvasExample() {
 	@DemoExampleCard(
 		"Off-Canvas",
 		"IsOffCanvas overlays the sidebar on the content instead of pushing it. Pair it with IsVisibleTwoWayStatePath for a drawer.",
-		"/structural/sidebar.templ",
-		offCanvasUsage,
+		"/structural/sidebar.templ", offCanvasUsage,
 	) {
 		<div
 			class="grid items-center gap-10 md:grid-cols-2"
@@ -188,14 +192,23 @@ templ SidebarSideExample() {
 	MiddleContent: SidebarDemoMiddle(),
 
 	// OptionalFields
+	HeaderContent:       SidebarDemoHeader(),
+	FooterContent:       SidebarDemoFooter(),
 	SideTwoWayStatePath: "side",
+})
+
+@uiStructural.Sidebar(uiStructural.SidebarSettings{
+	MiddleContent: SidebarDemoMiddle(),
+
+	// OptionalFields
+	HeaderContent: SidebarDemoHeader(),
+	FooterContent: SidebarDemoFooter(),
+	Side:          uiStructural.SidebarSideRight,
 })`
 	}}
 	@DemoExampleCard(
-		"Side",
-		"Side attaches the sidebar to the left or right edge.",
-		"/structural/sidebar.templ",
-		sideUsage,
+		"Side", "Side attaches the sidebar to the left or right edge. Set Side directly to pin it, or use SideTwoWayStatePath to switch at runtime.",
+		"/structural/sidebar.templ", sideUsage,
 	) {
 		<div
 			class="grid items-center gap-10 md:grid-cols-2"
@@ -219,16 +232,27 @@ templ SidebarSideExample() {
 					})
 				</div>
 			</div>
-			<div class="h-128 flex-none overflow-hidden rounded-md border border-neutral-800">
-				@uiStructural.Sidebar(uiStructural.SidebarSettings{
-					MiddleContent:              SidebarDemoMiddle(),
-					HeaderContent:              SidebarDemoHeader(),
-					FooterContent:              SidebarDemoFooter(),
-					BackgroundColor:            "bg-neutral-50/5",
-					IsVisibleTwoWayStatePath:   "isSideVisible",
-					IsCollapsedTwoWayStatePath: "isCollapsed",
-					SideTwoWayStatePath:        "side",
-				})
+			<div class="flex flex-col gap-4">
+				<div class="h-128 flex-none overflow-hidden rounded-md border border-neutral-800">
+					@uiStructural.Sidebar(uiStructural.SidebarSettings{
+						MiddleContent:              SidebarDemoMiddle(),
+						HeaderContent:              SidebarDemoHeader(),
+						FooterContent:              SidebarDemoFooter(),
+						BackgroundColor:            "bg-neutral-50/5",
+						IsVisibleTwoWayStatePath:   "isSideVisible",
+						IsCollapsedTwoWayStatePath: "isCollapsed",
+						SideTwoWayStatePath:        "side",
+					})
+				</div>
+				<div class="h-128 flex-none overflow-hidden rounded-md border border-neutral-800">
+					@uiStructural.Sidebar(uiStructural.SidebarSettings{
+						MiddleContent:   SidebarDemoMiddle(),
+						HeaderContent:   SidebarDemoHeader(),
+						FooterContent:   SidebarDemoFooter(),
+						BackgroundColor: "bg-neutral-50/5",
+						Side:            uiStructural.SidebarSideRight,
+					})
+				</div>
 			</div>
 		</div>
 	}
@@ -240,26 +264,52 @@ templ SidebarWidthBackgroundExample() {
 	MiddleContent: SidebarDemoMiddle(),
 
 	// OptionalFields
+	HeaderContent:   SidebarDemoHeader(),
+	FooterContent:   SidebarDemoFooter(),
 	Width:           "w-46",
 	BackgroundColor: "bg-primary-900/80",
+})
+
+@uiStructural.Sidebar(uiStructural.SidebarSettings{
+	MiddleContent: SidebarDemoMiddle(),
+
+	// OptionalFields
+	HeaderContent: SidebarDemoHeader(),
+	FooterContent: SidebarDemoFooter(),
+	Width:         "w-16",
+	IsCollapsed:   true,
 })`
 	}}
 	@DemoExampleCard(
 		"Width & Background",
-		"Width accepts a Tailwind width class. BackgroundColor accepts a Tailwind background class, opacity included.",
-		"/structural/sidebar.templ",
-		widthUsage,
+		"Width accepts a Tailwind width class. BackgroundColor accepts a Tailwind background class, opacity included. The second preview sets IsCollapsed: true with a matching Width for a static collapsed sidebar.",
+		"/structural/sidebar.templ", widthUsage,
 	) {
-		<div class="h-128 flex-none overflow-hidden rounded-md border border-neutral-800" x-data="{isWidthVisible: true, isCollapsed: false}">
-			@uiStructural.Sidebar(uiStructural.SidebarSettings{
-				MiddleContent:              SidebarDemoMiddle(),
-				HeaderContent:              SidebarDemoHeader(),
-				FooterContent:              SidebarDemoFooter(),
-				BackgroundColor:            "bg-primary-900/80",
-				Width:                      "w-46",
-				IsVisibleTwoWayStatePath:   "isWidthVisible",
-				IsCollapsedTwoWayStatePath: "isCollapsed",
-			})
+		<div class="grid gap-6 md:grid-cols-2" x-data="{isWidthVisible: true, isCollapsed: false}">
+			<div class="h-128 overflow-hidden rounded-md border border-neutral-800">
+				@uiStructural.Sidebar(uiStructural.SidebarSettings{
+					MiddleContent:              SidebarDemoMiddle(),
+					HeaderContent:              SidebarDemoHeader(),
+					FooterContent:              SidebarDemoFooter(),
+					BackgroundColor:            "bg-primary-900/80",
+					Width:                      "w-46",
+					IsVisibleTwoWayStatePath:   "isWidthVisible",
+					IsCollapsedTwoWayStatePath: "isCollapsed",
+				})
+			</div>
+			<div
+				class="h-128 overflow-hidden rounded-md border border-neutral-800"
+				x-data="{isCollapsed: true}"
+			>
+				@uiStructural.Sidebar(uiStructural.SidebarSettings{
+					MiddleContent:   SidebarDemoMiddle(),
+					HeaderContent:   SidebarDemoHeader(),
+					FooterContent:   SidebarDemoFooter(),
+					BackgroundColor: "bg-primary-900/80",
+					Width:           "w-16",
+					IsCollapsed:     true,
+				})
+			</div>
 		</div>
 	}
 }

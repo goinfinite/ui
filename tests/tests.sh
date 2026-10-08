@@ -30,13 +30,13 @@ parseInvocation() {
 
 buildRegistryFilters() {
 	local level="$1" feature="$2" scope="$3"
-	if [ -n "$level" ]; then
+	if [[ -n "$level" ]]; then
 		echo "--level=$level"
 	fi
-	if [ -n "$feature" ]; then
+	if [[ -n "$feature" ]]; then
 		echo "--feature=$feature"
 	fi
-	if [ -n "$scope" ]; then
+	if [[ -n "$scope" ]]; then
 		echo "--scope=$scope"
 	fi
 }
@@ -53,7 +53,7 @@ startDemoServer() {
 waitForDemoServer() {
 	local demoUrl="$1" demoServerPid="$2"
 	local readyDeadline=$((SECONDS + 10))
-	while [ "$SECONDS" -lt "$readyDeadline" ]; do
+	while [[ "$SECONDS" -lt "$readyDeadline" ]]; do
 		if kill -0 "$demoServerPid" 2>/dev/null &&
 			curl -fs -o /dev/null "$demoUrl/index.html"; then
 			return 0
@@ -70,7 +70,7 @@ waitForDemoServer() {
 selectRegisteredNodes() {
 	local selection
 	selection="$(node tests/lib/registry.mjs select "$@")"
-	if [ -z "$selection" ]; then
+	if [[ -z "$selection" ]]; then
 		echo "tests.sh: no tests selected" >&2
 		exit 2
 	fi
@@ -80,7 +80,7 @@ selectRegisteredNodes() {
 selectionRequiresDemo() {
 	local selection="$1"
 	while IFS=$'\t' read -r _ _ nodeRequiresDemo; do
-		if [ "$nodeRequiresDemo" = "true" ]; then
+		if [[ "$nodeRequiresDemo" = "true" ]]; then
 			return 0
 		fi
 	done <<<"$selection"
@@ -97,11 +97,11 @@ runNode() {
 reportResult() {
 	local passedCount="$1" failedCount="$2" timeoutCount="$3" elapsedSeconds="$4"
 	echo ""
-	if [ "$timeoutCount" -gt 0 ]; then
+	if [[ "$timeoutCount" -gt 0 ]]; then
 		echo "RESULT: TIMEOUT ($passedCount passed, $failedCount failed, ${elapsedSeconds}s)"
 		exit 2
 	fi
-	if [ "$failedCount" -gt 0 ]; then
+	if [[ "$failedCount" -gt 0 ]]; then
 		echo "RESULT: FAIL ($passedCount passed, $failedCount failed, ${elapsedSeconds}s)"
 		exit 1
 	fi
@@ -119,7 +119,7 @@ invocation="$(parseInvocation "$@")"
 IFS='|' read -r level feature scope listMode <<<"$invocation"
 mapfile -t registryFilters < <(buildRegistryFilters "$level" "$feature" "$scope")
 
-if [ "$listMode" = "true" ]; then
+if [[ "$listMode" = "true" ]]; then
 	node tests/lib/registry.mjs list "${registryFilters[@]}"
 	exit 0
 fi

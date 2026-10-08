@@ -33,8 +33,9 @@ Dropdown select component with support for flat string options or label-value pa
 **Flow:**
 
 1. `src/form/selectInput.templ` — Component definition with SelectInputSettings struct and SelectLabelValueOption data structure
-2. `src/form/inputHint.templ` — Shared hint renderer for the tooltip and description display modes
-3. `src/form/selectInput_templ.go` — Compiled output rendering select with native radio options, an embedded JSON script for label lookup, and Alpine.js state management
+2. `src/form/selectInputState.js` — Alpine.js data component for the select dropdown: open toggle, close, and the open-direction decision that stops at the viewport bottom and at every clipping ancestor so the list never opens downward into an overflow-hidden container
+3. `src/form/inputHint.templ` — Shared hint renderer for the tooltip and description display modes
+4. `src/form/selectInput_templ.go` — Compiled output rendering select with native radio options, an embedded JSON script for label lookup, and Alpine.js state management
 
 Supports optional hint text rendered either as a focusable info-icon tooltip inside the dropdown row or as a description line below the fieldset.
 
@@ -110,8 +111,9 @@ Interactive button component with customizable label, icons (left/right using Ph
 **Flow:**
 
 1. `src/control/button.templ` — Component definition with ButtonSettings struct supporting OnClickFunc handlers, icon binding, the type attribute, and the optional tooltip
-2. `src/control/buttonTooltipState.js` — Alpine data component that teleports the tooltip to the document body, positions it with fixed coordinates on hover or focus, and flips it to stay inside the viewport
-3. `src/control/button_templ.go` — Compiled output rendering the button with Alpine.js event binding and the teleported tooltip
+2. `src/toolset/tooltipState.js` — Shared Alpine data component that teleports a tooltip to the document body, positions it with fixed coordinates on hover or focus, and flips it to stay inside the viewport
+3. `src/toolset/tooltip.go` — The once-handle that embeds the shared tooltip state, plus TooltipSurfaceClassesResolver for the shared fixed-layer tooltip classes and the shared TooltipPosition* placement values
+4. `src/control/button_templ.go` — Compiled output rendering the button with Alpine.js event binding and the teleported tooltip
 
 ---
 
@@ -229,9 +231,9 @@ Page controls with a live readout, a page-number strip, first/previous/next/last
 **Flow:**
 
 1. `src/structural/pagination.templ` — Component definition with PaginationSettings; renders the readout, page-number strip, buttons, and items-per-page selector
-2. `src/structural/pagination.go` — Builds the readout and page-count expressions from the state paths and item total
+2. `src/structural/pagination.go` — Builds the readout and page-count expressions from the state paths and item total, and holds the shared items-per-page choices and items-per-page resolvers used by DataTable and Carousel
 3. `src/structural/paginationState.js` — Builds the page-number strip from the current page and page total, marking the current page with `aria-current`
-4. `src/structural/pagination_test.go` — Table-driven tests for the readout and page-count expressions
+4. `src/structural/pagination_test.go` — Table-driven tests for the readout, page-count, last-page-number, and items-per-page expressions
 5. `src/structural/pagination_templ.go` — Compiled output rendering the navigation landmark
 
 ---
@@ -242,10 +244,12 @@ Horizontal and vertical tab headers bound to one selected value, with per-tab la
 
 **Flow:**
 
-1. `src/structural/tabs.templ` — Component definition with TabSettings and TabItemSettings; renders the tab list and the panels, with tab list and content surface settings
-2. `src/structural/tabs.go` — Unique id prefix generator, the selected, click, keyboard, and URL-hash sync expression builders, and the orientation, side, alignment, border radius, text color, aria-label, percent class, constraint class, and badge class resolvers
-3. `src/structural/tabs_test.go` — Table-driven tests for the expression builders and resolvers
-4. `src/structural/tabs_templ.go` — Compiled output rendering the ARIA tablist with roving tabindex, arrow and Home/End keyboard handlers, and the x-show panels
+1. `src/structural/tabs.templ` — Component definition with TabSettings and TabItemSettings; renders the tab list and the panels, with tab list and content surface settings, and caps the vertical tab list to MaxVisibleTabs when set
+2. `src/structural/tabs.go` — The tab id prefix generator, the selected, click, keyboard, and URL-hash sync expression builders, and the orientation, side, alignment, border radius, aria-label, percent class, constraint class, and badge class resolvers
+3. `src/structural/tabsState.js` — Alpine data component that measures the tallest tab and caps the vertical tab list to MaxVisibleTabs, re-measuring on list resize
+4. `src/toolset/styleTokens.go` — Shared token-to-class resolvers that Tabs and the other components call
+5. `src/structural/tabs_test.go` — Table-driven tests for the expression builders and resolvers, and the MaxVisibleTabs render behavior
+6. `src/structural/tabs_templ.go` — Compiled output rendering the ARIA tablist with roving tabindex, arrow and Home/End keyboard handlers, and the x-show panels
 
 ---
 
@@ -265,16 +269,39 @@ Standalone filter bar that renders one editor per declared filter (text contains
 
 ## Data Table
 
-Generic server-driven table taking column definitions and rows. Adds sortable headers, row selection with bulk actions, the filter bar, a default search box, header action slots, a pagination footer, loading and error states, and refresh from a query URL template. Uses `htmx.ajax` when HTMX is present and a `fetch` fallback otherwise.
+Generic server-driven table taking column definitions and rows. Adds sortable headers that pin to the scroll viewport by default, row selection with bulk actions, the filter bar, a default search box, header action slots, a pagination footer, loading and error states, and refresh from a query URL template. Uses `htmx.ajax` when HTMX is present and a `fetch` fallback otherwise.
 
 **Flow:**
 
-1. `src/structural/dataTable.templ` — Generic component (DataTable[T]) with DataTableSettings and DataTableColumnSettings; renders the filter bar, toolbar, table region, error row, and pagination
-2. `src/structural/dataTable.go` — DataTableSettings and DataTableColumnSettings types with their methods (client settings, id, page size, pagination label, density, text case, checkbox shape, checkbox size, row stripe), the named density/alignment/sort-direction/page-size types, and the URL placeholder constants. The alignment type carries the column alignment and justify class methods. PageNumber is zero-based and ShouldUseOneBasedPageDisplay changes only the strip labels. The `Initial*` fields seed client state; `HeaderClass`, `CellClass`, `RowClassResolver`, and `IsStriped` carry styling; `CheckboxCheckedColor` and `CheckboxUncheckedColor` carry the selection color
-3. `src/structural/dataTableState.js` — Alpine data component: builds the refresh URL from the template, debounces refreshes, swaps the region carrying `data-ui-data-table`, and owns selection and sort helpers
-4. `src/structural/pagination.templ` — Table footer pagination
-5. `src/structural/filterBar.templ` — Table filter bar
-6. `src/structural/dataTable_templ.go` — Compiled output
+1. `src/structural/dataTable.templ` — Generic component (DataTable[T]) with DataTableSettings and DataTableColumnSettings; renders the filter bar, toolbar, table region, error row, and pagination; the settings script renders inside the component root; the scroll viewport carries `data-ui-data-table-scroll`
+2. `src/structural/dataTable.go` — DataTableSettings and DataTableColumnSettings types with their methods (client settings, id, page size, pagination label, density, text case, checkbox shape, checkbox size, row stripe, root class, sticky header class, scroll container class), the named density and sort-direction types, and the URL placeholder constants. The shared TextAlignment type serves the DataTable column alignment; the shared HorizontalAlignment type serves the search box. PageNumber is zero-based and ShouldUseOneBasedPageDisplay changes only the strip labels. The `Initial*` fields seed client state; `HeaderClass`, `CellClass`, `RowClassResolver`, and `IsStriped` carry styling; `MinWidthClass` and `MaxWidthClass` size the surface; `MinHeightClass`, `MaxHeightClass`, and `MaxVisibleRows` size the scroll viewport; `IsHeaderStatic` unpins the header; `CheckboxCheckedColor` and `CheckboxUncheckedColor` carry the selection color
+3. `src/structural/dataTableState.js` — Alpine data component: debounces refreshes, swaps the region carrying `data-ui-data-table`, owns selection and sort helpers, and measures the scroll viewport to show `MaxVisibleRows` rows; builds the refresh URL through `UiToolset.ServerFragmentRefreshComponent.refreshUrlBuilder`
+4. `src/structural/serverFragmentRefreshComponentState.js` — Shared refresh helpers, all under `UiToolset.ServerFragmentRefreshComponent`: the refresh URL builder, the fragment fetcher, and the lifecycle (settings resolver, event watcher, error handler attacher, handler detacher, request debouncer, failure handler, loading clearer)
+5. `src/structural/pagination.templ` — Table footer pagination
+6. `src/structural/filterBar.templ` — Table filter bar
+7. `src/structural/dataTable_templ.go` — Compiled output
+
+---
+
+## Carousel
+
+Multi-item slider over a server page. The server returns a chunk of items; the client slides a window of `ItemsPerView` inside that chunk. The visible count follows Tailwind's named breakpoints measured against the browser window. Adds prev/next arrows (outside or inside), dot indicators (top or bottom), a search box (top or bottom), swipe, optional autoplay with pause-on-hover, the filter bar below the track, a pagination footer, and loading and error states. Items can wrap in `CarouselItemTooltip`, which shows a hover tooltip that teleports to the document body so a scroll container or a modal cannot clip it. Refresh reuses the DataTable query URL template and the shared refresh URL builder, and swaps the track and pagination regions from one response through `htmx.ajax` when HTMX is present and `fetch` otherwise.
+
+**Flow:**
+
+1. `src/structural/carousel.templ` — Generic component (Carousel[T]) with CarouselSettings; renders the search box, arrows, track, dots, error state, filter bar, and pagination; the track sits in `data-ui-carousel` and the footer in `data-ui-carousel-pagination`; the settings script renders inside the component root
+2. `src/structural/carousel.go` — CarouselSettings and the CarouselItemsPerViewSettings type, the surface/arrows/dots/item token constants and class resolvers, plus the id, items-per-view, items-per-page, search-box position, autoplay interval, aria-label, and color resolvers and the client-settings builder
+3. `src/structural/carouselItemTooltip.templ` — CarouselItemTooltip: wraps one item in a hover and focus trigger scope and renders a tooltip that teleports to the document body, with content, position, color, and compact-ring settings
+4. `src/structural/carouselItemTooltip_test.go` — Render tests for the teleport markup, the aria-describedby wiring, the plain wrapper without content, and the customization tokens
+5. `src/structural/alignment.go` — The HorizontalAlignment and TextAlignment types and their class methods
+6. `src/toolset/styleTokens.go` — Shared token-to-class resolvers that Carousel, Tabs, Card, Modal, Alert, HeaderIcon, Tag, and Toast call
+7. `src/toolset/tooltip.go` and `src/toolset/tooltipState.js` — The shared tooltip once-handle, surface classes, position values, and Alpine data component that CarouselItemTooltip, the Button, and the InputHint render
+8. `src/structural/carouselState.js` — Alpine data component: clamps the window, derives the responsive items-per-view from the named breakpoints against the window width, applies the track transform, handles prev/next/dot/swipe input, runs the autoplay timer with pause-on-hover, sets off-window items inert, and refreshes through `htmx.ajax` when HTMX is present and `fetch` otherwise, swapping both regions
+9. `src/structural/serverFragmentRefreshComponentState.js` — Shared refresh URL builder for the query template, the placeholders, and the filter values, plus the refresh lifecycle helpers under `UiToolset.ServerFragmentRefreshComponent`
+10. `src/structural/pagination.go` — The shared ItemsPerPage type and items-per-page resolvers
+11. `src/structural/pagination.templ` — Chunk footer pagination
+12. `src/structural/filterBar.templ` — Chunk filter bar
+13. `src/structural/carousel_templ.go` — Compiled output
 
 ---
 
@@ -360,6 +387,32 @@ Utility for minifying JavaScript and CSS at compile time or runtime using esbuil
 
 ---
 
+## Style Tokens
+
+Shared token-to-class resolvers for components that expose a styling token. Each resolver maps a token to the matching Tailwind class and takes the fallback class the caller wants when the token is empty or unknown.
+
+**Flow:**
+
+1. `src/toolset/styleTokens.go` — `BackgroundColorClassResolver()`, `TextColorClassResolver()`, `BorderColorClassResolver()`, `BorderRadiusClassResolver()`, `ShapeClassResolver()`, `ShadowClassResolver()`, `RingThicknessClassResolver()`, `RingClassResolver()`, `CompactRingClassResolver()`, `PaddingClassResolver()`, `CompactPaddingClassResolver()`, and `GapClassResolver()`
+2. `src/structural/carousel.go`, `carousel.templ`, `tabs.go`, `tabs.templ`, `card.templ` — structural callers
+3. `src/display/modal.templ`, `alert.templ`, `headerIcon.templ`, `toast.templ`, `accordion.templ`, `tag.templ`, `confirmationDialog.templ` — display callers
+4. `src/control/button.templ`, `rangeSlider.templ`, `src/form/checkboxInput.templ` — control and form callers
+
+---
+
+## Component Id
+
+Shared helpers that build the DOM id a component exposes, so one page holds several copies without colliding on element ids, radio group names, or input names. `ComponentIdPrefixGenerator` mints a unique per-render id prefix from a component name and a counter, for components that render once and do not refresh: the tabs and the accordion. `HashComponentIdParts` hashes the inputs that identify a refreshing component so its id stays the same across the page render and every refresh render: the carousel and the data table.
+
+**Flow:**
+
+1. `src/toolset/componentIdPrefix.go` — `NewComponentIdPrefixGenerator()` and `GenerateNext()`
+2. `src/structural/tabs.go` and `src/display/accordion.templ` — one generator per component
+3. `src/toolset/componentIdHash.go` — `HashComponentIdParts()`
+4. `src/structural/carousel.go` and `dataTable.go` — id derived from the component id hash
+
+---
+
 ## Text Case
 
 Shared text-case values and a class resolver for components that expose a casing setting. Each component applies the matching CSS transform to its label or title; `TextCaseNone` leaves the text as typed.
@@ -381,7 +434,7 @@ Build-time HTML generation showcasing all UI components with usage examples and 
 
 **Flow:**
 
-1. `demo/demo.go` — Entrypoint that renders DemoIndex() to docs/index.html and the data table refresh fragments to one JSON asset in docs/assets/
+1. `demo/demo.go` — `demoGenerator` renders DemoIndex() to docs/index.html and the data table and carousel refresh fragments to one JSON asset each in docs/assets/, writing each output only when its content changed
 2. `demo/demoIndex.templ` plus one `demo/*Demo.templ` file per component, framed by `demo/demoExample.templ` — Page structure, sidebar navigation, and every usage example
 3. `demo/data.go` — Demo record type, 25 sample rows, filter declarations, table column definitions, and the settings builder that slices one page
 4. `demo/dataTableDemoRouting.js` — Browser-side router that serves the requested page's pre-rendered fragment from the JSON asset as the refresh response

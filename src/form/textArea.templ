@@ -27,6 +27,10 @@ type TextAreaSettings struct {
 	HintStatePath                     string
 	HintDisplay                       string
 	HintDisplayTooltipBackgroundColor string
+	HintDisplayTooltipMinWidthClass   string
+	HintDisplayTooltipMaxWidthClass   string
+	HintDisplayTooltipMinHeightClass  string
+	HintDisplayTooltipMaxHeightClass  string
 }
 
 templ TextArea(componentSettings TextAreaSettings) {
@@ -145,6 +149,10 @@ templ TextArea(componentSettings TextAreaSettings) {
 						Value:                  componentSettings.HintValue,
 						StatePath:              componentSettings.HintStatePath,
 						TooltipBackgroundColor: componentSettings.HintDisplayTooltipBackgroundColor,
+						TooltipMinWidthClass:   componentSettings.HintDisplayTooltipMinWidthClass,
+						TooltipMaxWidthClass:   componentSettings.HintDisplayTooltipMaxWidthClass,
+						TooltipMinHeightClass:  componentSettings.HintDisplayTooltipMinHeightClass,
+						TooltipMaxHeightClass:  componentSettings.HintDisplayTooltipMaxHeightClass,
 						IconStyle:              InputHintIconStyleBoxed,
 					})
 				}

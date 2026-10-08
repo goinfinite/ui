@@ -2,7 +2,27 @@ package uiStructural
 
 import "strconv"
 
+type ItemsPerPage uint
+
 var paginationDefaultItemsPerPageSizeChoices = []uint{5, 10, 30, 50}
+
+func itemsPerPageSizeChoicesResolver(choices []ItemsPerPage) []uint {
+	if len(choices) == 0 {
+		return paginationDefaultItemsPerPageSizeChoices
+	}
+	itemsPerPageSizeChoices := make([]uint, len(choices))
+	for index, itemsPerPage := range choices {
+		itemsPerPageSizeChoices[index] = uint(itemsPerPage)
+	}
+	return itemsPerPageSizeChoices
+}
+
+func itemsPerPageResolver(itemsPerPage ItemsPerPage, choices []uint) uint {
+	if itemsPerPage > 0 {
+		return uint(itemsPerPage)
+	}
+	return choices[0]
+}
 
 func paginationPagesTotalExpressionBuilder(
 	itemsPerPagePath string, itemsTotal, pagesTotal uint,

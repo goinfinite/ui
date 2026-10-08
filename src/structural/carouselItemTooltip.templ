@@ -1,0 +1,85 @@
+package uiStructural
+
+import (
+	"fmt"
+	"sync/atomic"
+
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+var carouselItemTooltipIdCounter atomic.Uint64
+
+func generateCarouselItemTooltipId() string {
+	return fmt.Sprintf("carousel-item-tooltip-%d", carouselItemTooltipIdCounter.Add(1))
+}
+
+type CarouselItemTooltipSettings struct {
+	Content string
+	// OptionalFields
+	BackgroundColor string
+	ContentHtml     templ.Component
+	Position        string
+	RingColor       string
+	RingThickness   string
+	TextColor       string
+	MinWidthClass   string
+	MaxWidthClass   string
+	MinHeightClass  string
+	MaxHeightClass  string
+}
+
+templ CarouselItemTooltip(componentSettings CarouselItemTooltipSettings) {
+	{{ hasTooltip := componentSettings.Content != "" || componentSettings.ContentHtml != nil }}
+	{{ tooltipId := "" }}
+	if hasTooltip {
+		@uiToolset.TooltipAlpineStateOnce.Once()
+		{{ tooltipId = generateCarouselItemTooltipId() }}
+	}
+	<div
+		class="h-full"
+		if hasTooltip {
+			x-data={ templ.JSFuncCall("tooltip", componentSettings.Position) }
+			x-ref="trigger"
+			tabindex="0"
+			aria-describedby={ tooltipId }
+			@mouseenter="showTooltip()"
+			@mouseleave="hideTooltip()"
+			@focusin="showTooltip()"
+			@focusout="hideTooltip()"
+		}
+	>
+		{ children... }
+		if hasTooltip {
+			{{
+				tooltipSurfaceClasses := uiToolset.TooltipSurfaceClassesResolver(
+					uiToolset.TooltipSurfaceSettings{
+						BackgroundColor: componentSettings.BackgroundColor,
+						TextColor:       componentSettings.TextColor,
+						RingColor:       componentSettings.RingColor,
+						RingThickness:   componentSettings.RingThickness,
+						MinWidthClass:   componentSettings.MinWidthClass,
+						MaxWidthClass:   componentSettings.MaxWidthClass,
+						MinHeightClass:  componentSettings.MinHeightClass,
+						MaxHeightClass:  componentSettings.MaxHeightClass,
+					},
+				)
+			}}
+			<template x-teleport="body">
+				<div
+					x-ref="tooltip"
+					id={ tooltipId }
+					role="tooltip"
+					:style="resolvedTooltipStyle"
+					class={ tooltipSurfaceClasses }
+				>
+					if componentSettings.Content != "" {
+						{ componentSettings.Content }
+					}
+					if componentSettings.ContentHtml != nil {
+						@componentSettings.ContentHtml
+					}
+				</div>
+			</template>
+		}
+	</div>
+}

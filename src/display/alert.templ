@@ -1,8 +1,10 @@
 package uiDisplay
 
 import (
-	"github.com/goinfinite/ui/src/control"
 	"strconv"
+
+	"github.com/goinfinite/ui/src/control"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
 const (
@@ -150,71 +152,21 @@ templ Alert(componentSettings AlertSettings) {
 			{{ alertVariationIconColor = "text-blue-400" }}
 	}
 	// Background Color
-	{{ backgroundColor := alertVariationBgColor }}
-	if componentSettings.BackgroundColor != "" {
-		{{ backgroundColor = "bg-" + componentSettings.BackgroundColor }}
-	}
+	{{ backgroundColor := uiToolset.BackgroundColorClassResolver(componentSettings.BackgroundColor, alertVariationBgColor) }}
 	{{ alertClasses += " " + backgroundColor }}
 	// Text Color
-	{{ textColor := alertVariationTextColor }}
-	if componentSettings.TextColor != "" {
-		{{ textColor = "text-" + componentSettings.TextColor }}
-	}
+	{{ textColor := uiToolset.TextColorClassResolver(componentSettings.TextColor, alertVariationTextColor) }}
 	{{ alertClasses += " " + textColor }}
 	// Ring Classes
-	{{ ringClasses := "ring-0" }}
-	if componentSettings.RingThickness != "" {
-		switch componentSettings.RingThickness {
-			case AlertRingThicknessXs:
-				{{ ringClasses = "ring-1" }}
-			case AlertRingThicknessSm:
-				{{ ringClasses = "ring-1.5" }}
-			case AlertRingThicknessMd:
-				{{ ringClasses = "ring-2" }}
-			case AlertRingThicknessLg:
-				{{ ringClasses = "ring-2.5" }}
-			case AlertRingThicknessXl:
-				{{ ringClasses = "ring-3" }}
-		}
-		if componentSettings.RingColor != "" {
-			{{ ringClasses += " ring-" + componentSettings.RingColor }}
-		}
+	{{ ringClasses := uiToolset.RingThicknessClassResolver(componentSettings.RingThickness, "ring-0") }}
+	if componentSettings.RingThickness != "" && componentSettings.RingColor != "" {
+		{{ ringClasses += " ring-" + componentSettings.RingColor }}
 	}
 	{{ alertClasses += " " + ringClasses }}
 	// Border Radius
-	{{ borderRadius := "" }}
-	if componentSettings.BorderRadius == "" {
-		{{ componentSettings.BorderRadius = AlertBorderRadiusMd }}
-	}
-	switch componentSettings.BorderRadius {
-		case AlertBorderRadiusNone:
-			{{ borderRadius = "rounded-none" }}
-		case AlertBorderRadiusXs:
-			{{ borderRadius = "rounded-xs" }}
-		case AlertBorderRadiusSm:
-			{{ borderRadius = "rounded-sm" }}
-		case AlertBorderRadiusMd:
-			{{ borderRadius = "rounded" }}
-		case AlertBorderRadiusLg:
-			{{ borderRadius = "rounded-lg" }}
-		case AlertBorderRadiusXl:
-			{{ borderRadius = "rounded-xl" }}
-	}
-	{{ alertClasses += " " + borderRadius }}
+	{{ alertClasses += " " + uiToolset.BorderRadiusClassResolver(componentSettings.BorderRadius, "rounded") }}
 	// Shadow
-	{{ shadowClasses := "" }}
-	switch componentSettings.ShadowSize {
-		case AlertShadowSizeXs:
-			{{ shadowClasses = "shadow-xs" }}
-		case AlertShadowSizeSm:
-			{{ shadowClasses = "shadow-sm" }}
-		case AlertShadowSizeMd:
-			{{ shadowClasses = "shadow-md" }}
-		case AlertShadowSizeLg:
-			{{ shadowClasses = "shadow-lg" }}
-		case AlertShadowSizeXl:
-			{{ shadowClasses = "shadow-xl" }}
-	}
+	{{ shadowClasses := uiToolset.ShadowClassResolver(componentSettings.ShadowSize, "") }}
 	if shadowClasses != "" {
 		{{ alertClasses += " " + shadowClasses }}
 	}
@@ -240,7 +192,7 @@ templ Alert(componentSettings AlertSettings) {
 			<i
 				class={ "ph-duotone " + componentSettings.TitleLeftIcon + " " + iconClasses }
 				if componentSettings.TitleLeftIconTwoWayStatePath != "" {
-					:class={ "'" + componentSettings.TitleLeftIconTwoWayStatePath + "'" }
+					:class={ componentSettings.TitleLeftIconTwoWayStatePath }
 				}
 			></i>
 		} else if componentSettings.Variation != "" {
@@ -253,10 +205,7 @@ templ Alert(componentSettings AlertSettings) {
 				@componentSettings.ContentHtml
 			} else {
 				<!-- AlertTitle -->
-				{{ titleTextColor := "" }}
-				if componentSettings.TextTitleColor != "" {
-					{{ titleTextColor = "text-" + componentSettings.TextTitleColor }}
-				}
+				{{ titleTextColor := uiToolset.TextColorClassResolver(componentSettings.TextTitleColor, "") }}
 				{{ titleClasses := alertTitleClasses }}
 				if titleTextColor != "" {
 					{{ titleClasses += " " + titleTextColor }}
@@ -272,10 +221,7 @@ templ Alert(componentSettings AlertSettings) {
 					</div>
 				}
 				<!-- AlertDescription -->
-				{{ descriptionTextColor := "" }}
-				if componentSettings.TextDescriptionColor != "" {
-					{{ descriptionTextColor = "text-" + componentSettings.TextDescriptionColor }}
-				}
+				{{ descriptionTextColor := uiToolset.TextColorClassResolver(componentSettings.TextDescriptionColor, "") }}
 				{{ descriptionClasses := alertDescriptionClasses }}
 				if descriptionTextColor != "" {
 					{{ descriptionClasses += " " + descriptionTextColor }}
@@ -297,7 +243,7 @@ templ Alert(componentSettings AlertSettings) {
 			<i
 				class={ "ph-duotone " + componentSettings.TitleRightIcon + " " + iconClasses }
 				if componentSettings.TitleRightIconTwoWayStatePath != "" {
-					:class={ "'" + componentSettings.TitleRightIconTwoWayStatePath + "'" }
+					:class={ componentSettings.TitleRightIconTwoWayStatePath }
 				}
 			></i>
 		}

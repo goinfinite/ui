@@ -13,6 +13,9 @@ UiToolset.RegisterAlpineState(() => {
     sortDirection: "",
     searchQuery: "",
     filterValues: {},
+    maxVisibleRows: 0,
+    scrollViewportMaxHeightPx: 0,
+    scrollViewportResizeObserver: null,
     selectedRowIds: [],
     isLoading: false,
     hasRefreshError: false,
@@ -28,6 +31,59 @@ UiToolset.RegisterAlpineState(() => {
 
     tableBody() {
       return this.rootElement.querySelector("tbody");
+    },
+
+    scrollViewport() {
+      return this.rootElement.querySelector("[data-ui-data-table-scroll]");
+    },
+
+    scrollViewportTable() {
+      return this.scrollViewport()?.querySelector("table") ?? null;
+    },
+
+    applyScrollViewportMaxHeight() {
+      if (this.maxVisibleRows === 0) {
+        this.scrollViewportMaxHeightPx = 0;
+        return;
+      }
+      const viewport = this.scrollViewport();
+      const tableHeader = viewport?.querySelector("thead");
+      const dataRows = viewport
+        ? Array.from(viewport.querySelectorAll("tbody tr")).filter(
+            (row) => !row.querySelector("td[colspan]"),
+          )
+        : [];
+      if (!tableHeader || dataRows.length === 0) {
+        this.scrollViewportMaxHeightPx = 0;
+        return;
+      }
+      const rowHeight = Math.max(
+        ...dataRows.map((row) => row.getBoundingClientRect().height),
+      );
+      if (rowHeight === 0) {
+        return;
+      }
+      const visibleRows = Math.min(this.maxVisibleRows, dataRows.length);
+      this.scrollViewportMaxHeightPx = Math.ceil(
+        tableHeader.getBoundingClientRect().height + rowHeight * visibleRows,
+      );
+    },
+
+    observeScrollViewportTable() {
+      this.scrollViewportResizeObserver?.disconnect();
+      const table = this.scrollViewportTable();
+      if (!table || typeof ResizeObserver === "undefined") {
+        return;
+      }
+      this.scrollViewportResizeObserver = new ResizeObserver(() =>
+        this.applyScrollViewportMaxHeight(),
+      );
+      this.scrollViewportResizeObserver.observe(table);
+    },
+
+    refreshScrollViewportLayout() {
+      this.applyScrollViewportMaxHeight();
+      this.observeScrollViewportTable();
     },
 
     currentPageRowIds() {
@@ -91,116 +147,12 @@ UiToolset.RegisterAlpineState(() => {
       return unsortedSortIconClass;
     },
 
-    placeholderValue(placeholderName) {
-      switch (placeholderName) {
-        case "pageNumber":
-          return String(this.pageNumber);
-        case "itemsPerPage":
-          return String(this.itemsPerPage);
-        case "sortKey":
-          return this.sortKey;
-        case "sortDirection":
-          return this.sortDirection;
-        case "search":
-          return this.searchQuery;
-        default:
-          return "";
-      }
-    },
-
-    resolveTemplatePair(queryPair) {
-      const separatorIndex = queryPair.indexOf("=");
-      if (separatorIndex === -1) {
-        return queryPair;
-      }
-      const pairValue = queryPair.slice(separatorIndex + 1);
-      const placeholderPattern =
-        /^\{(pageNumber|itemsPerPage|sortKey|sortDirection|search)\}$/;
-      const placeholderMatch = pairValue.match(placeholderPattern);
-      if (!placeholderMatch) {
-        return queryPair;
-      }
-      const placeholderValue = this.placeholderValue(placeholderMatch[1]);
-      if (placeholderValue === "") {
-        return null;
-      }
-      const pairKey = queryPair.slice(0, separatorIndex + 1);
-      return pairKey + encodeURIComponent(placeholderValue);
-    },
-
-    buildFilterPairs() {
-      const filterPairs = [];
-      for (const [filterKey, filterValue] of Object.entries(
-        this.filterValues ?? {},
-      )) {
-        const queryParamName =
-          this.filterQueryParamNames[filterKey] ?? filterKey;
-        const encodedQueryParamName = encodeURIComponent(queryParamName);
-        if (Array.isArray(filterValue)) {
-          for (const singleValue of filterValue) {
-            if (
-              singleValue === null ||
-              singleValue === undefined ||
-              singleValue === ""
-            ) {
-              continue;
-            }
-            filterPairs.push(
-              `${encodedQueryParamName}=${encodeURIComponent(singleValue)}`,
-            );
-          }
-          continue;
-        }
-        if (filterValue && typeof filterValue === "object") {
-          if (filterValue.min) {
-            const encodedMin = encodeURIComponent(filterValue.min);
-            filterPairs.push(`${encodedQueryParamName}Min=${encodedMin}`);
-          }
-          if (filterValue.max) {
-            const encodedMax = encodeURIComponent(filterValue.max);
-            filterPairs.push(`${encodedQueryParamName}Max=${encodedMax}`);
-          }
-          continue;
-        }
-        if (
-          filterValue === null ||
-          filterValue === undefined ||
-          filterValue === ""
-        ) {
-          continue;
-        }
-        const encodedValue = encodeURIComponent(filterValue);
-        filterPairs.push(`${encodedQueryParamName}=${encodedValue}`);
-      }
-      return filterPairs;
-    },
-
-    buildRefreshUrl() {
-      const [baseUrl, queryString = ""] = this.queryUrlTemplate.split("?");
-      const queryPairs = queryString ? queryString.split("&") : [];
-      const resolvedPairs = queryPairs
-        .map((queryPair) => this.resolveTemplatePair(queryPair))
-        .filter((queryPair) => queryPair !== null);
-      const allPairs = [...resolvedPairs, ...this.buildFilterPairs()];
-      if (allPairs.length === 0) {
-        return baseUrl;
-      }
-      return `${baseUrl}?${allPairs.join("&")}`;
-    },
-
     async fetchTableRegion(refreshUrl, abortSignal) {
-      const response = await fetch(refreshUrl, {
-        headers: { "HX-Request": "true" },
-        signal: abortSignal,
-      });
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-      const responseText = await response.text();
-      const responseDocument = new DOMParser().parseFromString(
-        responseText,
-        "text/html",
-      );
+      const responseDocument =
+        await UiToolset.ServerFragmentRefreshComponent.fragmentFetcher(
+          refreshUrl,
+          abortSignal,
+        );
       const freshTableRegion = responseDocument.querySelector(
         "[data-ui-data-table]",
       );
@@ -220,7 +172,8 @@ UiToolset.RegisterAlpineState(() => {
       this.refreshAbortController = abortController;
       this.isLoading = true;
       this.hasRefreshError = false;
-      const refreshUrl = this.buildRefreshUrl();
+      const refreshUrl =
+        UiToolset.ServerFragmentRefreshComponent.refreshUrlBuilder(this);
 
       try {
         if (window.htmx?.ajax) {
@@ -236,6 +189,7 @@ UiToolset.RegisterAlpineState(() => {
           if (!this.hasRefreshError) {
             this.liveMessage = "Table refreshed";
           }
+          this.refreshScrollViewportLayout();
           return;
         }
         const freshTableRegion = await this.fetchTableRegion(
@@ -247,32 +201,29 @@ UiToolset.RegisterAlpineState(() => {
         }
         this.tableRegion().replaceWith(freshTableRegion);
         this.liveMessage = "Table refreshed";
+        this.refreshScrollViewportLayout();
       } catch (refreshError) {
-        if (abortController.signal.aborted) {
-          return;
-        }
-        this.hasRefreshError = true;
-        console.error(
-          `DataTableRefreshFailed: ${refreshError?.message ?? refreshError}`,
+        UiToolset.ServerFragmentRefreshComponent.failureHandler(
+          this,
+          abortController,
+          refreshError,
+          "DataTable",
         );
       } finally {
-        if (!abortController.signal.aborted) {
-          this.isLoading = false;
-        }
+        UiToolset.ServerFragmentRefreshComponent.loadingClearer(
+          this,
+          abortController,
+        );
       }
     },
 
     requestRefresh() {
-      clearTimeout(this.refreshTimeoutId);
-      this.refreshTimeoutId = setTimeout(
-        () => this.refresh(),
-        this.refreshDebounceMs,
-      );
+      UiToolset.ServerFragmentRefreshComponent.requestDebouncer(this);
     },
 
-    resetPageAndRefresh() {
+    refreshFromFirstPage() {
       this.pageNumber = 0;
-      this.requestRefresh();
+      UiToolset.ServerFragmentRefreshComponent.requestDebouncer(this);
     },
 
     toggleSort(columnSortKey) {
@@ -294,42 +245,21 @@ UiToolset.RegisterAlpineState(() => {
     },
 
     destroy() {
-      for (const { refreshEventName, refreshEventHandler } of this
-        .refreshEventHandlers) {
-        window.removeEventListener(refreshEventName, refreshEventHandler);
-      }
-      this.rootElement.removeEventListener(
-        "htmx:responseError",
-        this.htmxErrorHandler,
-      );
-      this.rootElement.removeEventListener(
-        "htmx:sendError",
-        this.htmxErrorHandler,
-      );
-      this.refreshAbortController?.abort();
-      clearTimeout(this.refreshTimeoutId);
+      UiToolset.ServerFragmentRefreshComponent.handlersDetacher(this);
+      this.scrollViewportResizeObserver?.disconnect();
     },
 
     init() {
       this.rootElement = this.$el;
-      const settingsElement = document.getElementById(settingsScriptId);
-      if (!settingsElement) {
-        console.error(`DataTableSettingsScriptMissing: ${settingsScriptId}`);
+      const clientSettings =
+        UiToolset.ServerFragmentRefreshComponent.settingsResolver(
+          this,
+          settingsScriptId,
+          "DataTable",
+        );
+      if (!clientSettings) {
         return;
       }
-
-      let clientSettings;
-      try {
-        clientSettings = JSON.parse(settingsElement.textContent);
-      } catch (parseError) {
-        console.error(`DataTableSettingsParseFailed: ${parseError.message}`);
-        return;
-      }
-
-      this.queryUrlTemplate = clientSettings.queryUrlTemplate || "";
-      this.refreshDebounceMs = clientSettings.refreshDebounceMs || 300;
-      this.refreshOnEvents = clientSettings.refreshOnEvents || [];
-      this.filterQueryParamNames = clientSettings.filterQueryParamNames || {};
 
       const initialState = clientSettings.initialState || {};
       this.pageNumber = initialState.pageNumber ?? 0;
@@ -338,15 +268,9 @@ UiToolset.RegisterAlpineState(() => {
       this.sortDirection = initialState.sortDirection ?? "";
       this.searchQuery = initialState.searchQuery ?? "";
       this.filterValues = initialState.filterValues ?? {};
+      this.maxVisibleRows = clientSettings.maxVisibleRows ?? 0;
 
-      for (const refreshEventName of this.refreshOnEvents) {
-        const refreshEventHandler = () => this.requestRefresh();
-        this.refreshEventHandlers.push({
-          refreshEventName,
-          refreshEventHandler,
-        });
-        window.addEventListener(refreshEventName, refreshEventHandler);
-      }
+      UiToolset.ServerFragmentRefreshComponent.eventsWatcher(this);
 
       this.$watch("selectedRowIds", () => {
         this.liveMessage =
@@ -355,18 +279,9 @@ UiToolset.RegisterAlpineState(() => {
             : `${this.selectedRowIds.length} rows selected`;
       });
 
-      this.htmxErrorHandler = () => {
-        this.hasRefreshError = true;
-        this.isLoading = false;
-      };
-      this.rootElement.addEventListener(
-        "htmx:responseError",
-        this.htmxErrorHandler,
-      );
-      this.rootElement.addEventListener(
-        "htmx:sendError",
-        this.htmxErrorHandler,
-      );
+      UiToolset.ServerFragmentRefreshComponent.errorHandlersAttacher(this);
+
+      this.refreshScrollViewportLayout();
     },
   }));
 });

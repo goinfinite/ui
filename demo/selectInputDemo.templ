@@ -1,8 +1,10 @@
 package main
 
 import (
+	uiControl "github.com/goinfinite/ui/src/control"
 	uiDisplay "github.com/goinfinite/ui/src/display"
 	uiForm "github.com/goinfinite/ui/src/form"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
 templ SelectInputDemoOption1() {
@@ -45,8 +47,7 @@ templ SelectInputLabelValueExample() {
 	@DemoExampleCard(
 		"LabelValueOptions",
 		"LabelValueOptions send a stored Value while showing a human Label. The bound state holds the Value.",
-		"/form/selectInput.templ",
-		labelValueUsage,
+		"/form/selectInput.templ", labelValueUsage,
 	) {
 		@DemoAlpineStateBlock(`<div x-data="{country: 'BR'}"></div>`)
 		<div x-data="{country: 'BR'}">
@@ -93,8 +94,7 @@ templ SelectInputHtmlOptionsExample() {
 	@DemoExampleCard(
 		"HTML Option Labels",
 		"LabelHtml replaces the plain option label with custom markup in the dropdown.",
-		"/form/selectInput.templ",
-		htmlOptionsUsage,
+		"/form/selectInput.templ", htmlOptionsUsage,
 	) {
 		@DemoAlpineStateBlock(`<div x-data="{country: 'BR'}"></div>`)
 		<div class="flex flex-col gap-3" x-data="{country: 'BR'}">
@@ -133,19 +133,25 @@ templ SelectInputHintsExample() {
 	Label:     "Country",
 
 	// OptionalFields
-	FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
-	TwoWayStatePath: "country",
-	HintValue:        "This is a helpful hint.",
-	HintDisplay:      uiForm.InputHintDisplayDescription,
+	FlatOptions:                       []string{"Argentina", "Brazil", "Chile"},
+	TwoWayStatePath:                   "country",
+	ShouldIncludeBlankOption:          true,
+	HintValue:                         "This is a helpful hint.",
+	HintStatePath:                     "hintText",
+	HintDisplay:                       uiForm.InputHintDisplayTooltip,
+	HintDisplayTooltipBackgroundColor: "violet-950/95",
+	HintDisplayTooltipMinWidthClass:   "min-w-40",
+	HintDisplayTooltipMaxWidthClass:   "max-w-64",
+	HintDisplayTooltipMinHeightClass:  "min-h-10",
+	HintDisplayTooltipMaxHeightClass:  "max-h-24",
 })`
 	}}
 	@DemoExampleCard(
 		"Hints",
-		"HintValue explains the field. HintDisplay shows it as a description below the field or as a tooltip.",
-		"/form/selectInput.templ",
-		hintsUsage,
+		"HintValue explains the field. HintDisplay shows it as a description below the field or as a tooltip. HintStatePath reads the hint text from Alpine state. The HintDisplayTooltip fields shape the tooltip surface.",
+		"/form/selectInput.templ", hintsUsage,
 	) {
-		<div class="flex flex-col gap-6" x-data="{country: 'Brazil'}">
+		<div class="flex flex-col gap-6" x-data="{country: 'Brazil', hintText: 'This hint comes from Alpine state.'}">
 			@uiForm.SelectInput(uiForm.SelectInputSettings{
 				InputName: "countryHintDescription",
 				Label:     "Country",
@@ -172,6 +178,24 @@ templ SelectInputHintsExample() {
 				HintValue:                "This is a helpful hint displayed as a tooltip.",
 				HintDisplay:              uiForm.InputHintDisplayTooltip,
 			})
+			@uiForm.SelectInput(uiForm.SelectInputSettings{
+				InputName: "countryHintState",
+				Label:     "Country",
+				FlatOptions: []string{
+					"Argentina",
+					"Brazil",
+					"Chile",
+				},
+				TwoWayStatePath:                   "country",
+				ShouldIncludeBlankOption:          true,
+				HintStatePath:                     "hintText",
+				HintDisplay:                       uiForm.InputHintDisplayTooltip,
+				HintDisplayTooltipBackgroundColor: "violet-950/95",
+				HintDisplayTooltipMinWidthClass:   "min-w-40",
+				HintDisplayTooltipMaxWidthClass:   "max-w-64",
+				HintDisplayTooltipMinHeightClass:  "min-h-10",
+				HintDisplayTooltipMaxHeightClass:  "max-h-24",
+			})
 		</div>
 	}
 }
@@ -193,8 +217,7 @@ templ SelectInputHintIconStyleExample() {
 	@DemoExampleCard(
 		"Hint Icon Styles",
 		"HintIconStyle renders the hint trigger as an icon or as a boxed tooltip.",
-		"/form/selectInput.templ",
-		hintIconUsage,
+		"/form/selectInput.templ", hintIconUsage,
 	) {
 		<div x-data="{country: 'Brazil'}">
 			@uiForm.SelectInput(uiForm.SelectInputSettings{
@@ -231,8 +254,7 @@ templ SelectInputOnChangeExample() {
 	@DemoExampleCard(
 		"OnChangeFunc",
 		"OnChangeFunc runs when the selection changes and when the field is cleared.",
-		"/form/selectInput.templ",
-		onChangeUsage,
+		"/form/selectInput.templ", onChangeUsage,
 	) {
 		@DemoAlpineStateBlock(`<div x-data="{country: 'Brazil', changeCount: 0, onCountryChange() { this.changeCount++ }}"></div>`)
 		<div
@@ -251,6 +273,176 @@ templ SelectInputOnChangeExample() {
 			<p class={ DemoLiveStateClasses }>
 				Change count: <span x-text="changeCount"></span>
 			</p>
+		</div>
+	}
+}
+
+templ SelectInputSizesExample() {
+	{{
+		sizesUsage := `@uiForm.SelectInput(uiForm.SelectInputSettings{
+	InputName: "countrySize",
+	Label:     "Country",
+
+	// OptionalFields
+	FlatOptions: []string{"Argentina", "Brazil", "Chile"},
+	Size:        uiForm.SelectInputSizeLg,
+})`
+	}}
+	@DemoExampleCard(
+		"Sizes",
+		"Size scales the select trigger and its label: xs, sm, md (the default), lg, or xl.",
+		"/form/selectInput.templ", sizesUsage,
+	) {
+		<div class="flex flex-col gap-3 lg:*:max-w-50" x-data="{xs: '', sm: '', md: '', lg: '', xl: ''}">
+			for _, selectSize := range []string{
+				uiForm.SelectInputSizeXs,
+				uiForm.SelectInputSizeSm,
+				uiForm.SelectInputSizeMd,
+				uiForm.SelectInputSizeLg,
+				uiForm.SelectInputSizeXl,
+			} {
+				@uiForm.SelectInput(uiForm.SelectInputSettings{
+					InputName:       "countrySize",
+					Label:           "Country (" + selectSize + ")",
+					FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+					TwoWayStatePath: selectSize,
+					Size:            selectSize,
+				})
+			}
+		</div>
+	}
+}
+
+templ SelectInputTextCaseExample() {
+	{{
+		textCaseUsage := `@uiForm.SelectInput(uiForm.SelectInputSettings{
+	InputName: "countryCase",
+	Label:     "Country",
+
+	// OptionalFields
+	FlatOptions: []string{"Argentina", "Brazil", "Chile"},
+	TextCase:    uiToolset.TextCaseUpper,
+})`
+	}}
+	@DemoExampleCard(
+		"Text Case",
+		"TextCase transforms the field label. It accepts uiToolset.TextCaseNone (the default, as typed), TextCaseLower, TextCaseUpper, or TextCaseCapitalize.",
+		"/form/selectInput.templ", textCaseUsage,
+	) {
+		<div class="flex flex-col gap-3 lg:*:max-w-50" x-data="{none: '', lower: '', upper: '', capitalize: ''}">
+			for _, textCase := range []string{
+				uiToolset.TextCaseNone,
+				uiToolset.TextCaseLower,
+				uiToolset.TextCaseUpper,
+				uiToolset.TextCaseCapitalize,
+			} {
+				@uiForm.SelectInput(uiForm.SelectInputSettings{
+					InputName:       "countryCase",
+					Label:           "Country (" + textCase + ")",
+					FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+					TwoWayStatePath: textCase,
+					TextCase:        textCase,
+				})
+			}
+		</div>
+	}
+}
+
+templ SelectInputDropdownBackgroundExample() {
+	{{
+		dropdownBackgroundUsage := `@uiForm.SelectInput(uiForm.SelectInputSettings{
+	InputName: "countryDropdown",
+	Label:     "Country",
+
+	// OptionalFields
+	FlatOptions:             []string{"Argentina", "Brazil", "Chile"},
+	TwoWayStatePath:         "countryDropdown",
+	DropdownBackgroundColor: "emerald-900",
+})`
+	}}
+	@DemoExampleCard(
+		"Dropdown Background",
+		"DropdownBackgroundColor sets the dropdown surface color. It accepts a Tailwind token.",
+		"/form/selectInput.templ", dropdownBackgroundUsage,
+	) {
+		<div class="flex flex-col gap-3 lg:*:max-w-50" x-data="{countryDropdown: 'Brazil'}">
+			<p class="text-sm text-neutral-400">Open the dropdown to see the background color.</p>
+			@uiForm.SelectInput(uiForm.SelectInputSettings{
+				InputName:               "countryDropdown",
+				Label:                   "Country",
+				FlatOptions:             []string{"Argentina", "Brazil", "Chile"},
+				TwoWayStatePath:         "countryDropdown",
+				DropdownBackgroundColor: "emerald-900",
+			})
+		</div>
+	}
+}
+
+templ SelectInputRequiredExample() {
+	{{
+		requiredUsage := `@uiForm.SelectInput(uiForm.SelectInputSettings{
+	InputName: "countryRequired",
+	Label:     "Country",
+
+	// OptionalFields
+	FlatOptions:              []string{"Argentina", "Brazil", "Chile"},
+	TwoWayStatePath:          "country",
+	ShouldIncludeBlankOption: true,
+	IsRequired:               true,
+})`
+	}}
+	@DemoExampleCard(
+		"Required", "IsRequired marks the field as required.",
+		"/form/selectInput.templ", requiredUsage,
+	) {
+		<div x-data="{country: 'Brazil'}">
+			@uiForm.SelectInput(uiForm.SelectInputSettings{
+				InputName:                "countryRequired",
+				Label:                    "Country",
+				FlatOptions:              []string{"Argentina", "Brazil", "Chile"},
+				TwoWayStatePath:          "country",
+				ShouldIncludeBlankOption: true,
+				IsRequired:               true,
+			})
+		</div>
+	}
+}
+
+templ SelectInputDisabledBindingExample() {
+	{{
+		disabledUsage := `@uiForm.SelectInput(uiForm.SelectInputSettings{
+	InputName: "countryDisabled",
+	Label:     "Country",
+
+	// OptionalFields
+	FlatOptions:               []string{"Argentina", "Brazil", "Chile"},
+	TwoWayStatePath:           "country",
+	ShouldIncludeBlankOption:  true,
+	IsDisabledOneWayStatePath: "isDisabled",
+})`
+	}}
+	@DemoExampleCard(
+		"Disabled Binding",
+		"IsDisabledOneWayStatePath disables the select from Alpine state.",
+		"/form/selectInput.templ", disabledUsage,
+	) {
+		@DemoAlpineStateBlock(`<div x-data="{country: 'Brazil', isDisabled: true}"></div>`)
+		<div class="flex flex-col gap-3" x-data="{country: 'Brazil', isDisabled: true}">
+			@uiForm.SelectInput(uiForm.SelectInputSettings{
+				InputName:                 "countryDisabled",
+				Label:                     "Country",
+				FlatOptions:               []string{"Argentina", "Brazil", "Chile"},
+				TwoWayStatePath:           "country",
+				ShouldIncludeBlankOption:  true,
+				IsDisabledOneWayStatePath: "isDisabled",
+			})
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "Toggle Disabled",
+				IconLeft:        "ph-prohibit",
+				OnClickFunc:     "isDisabled = !isDisabled",
+				Size:            uiControl.ButtonSizeSm,
+				BackgroundColor: "neutral-700",
+			})
 		</div>
 	}
 }
@@ -295,6 +487,11 @@ templ SelectInputDemo() {
 			{Title: "Hints", Icon: "ph-info", Content: SelectInputHintsExample()},
 			{Title: "Hint Icon Styles", Icon: "ph-question", Content: SelectInputHintIconStyleExample()},
 			{Title: "OnChangeFunc", Icon: "ph-arrows-clockwise", Content: SelectInputOnChangeExample()},
+			{Title: "Sizes", Icon: "ph-ruler", Content: SelectInputSizesExample()},
+			{Title: "Text Case", Icon: "ph-text-t", Content: SelectInputTextCaseExample()},
+			{Title: "Dropdown Background", Icon: "ph-paint-brush", Content: SelectInputDropdownBackgroundExample()},
+			{Title: "Required", Icon: "ph-asterisk", Content: SelectInputRequiredExample()},
+			{Title: "Disabled Binding", Icon: "ph-prohibit", Content: SelectInputDisabledBindingExample()},
 		})
 	</div>
 }

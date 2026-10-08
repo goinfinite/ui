@@ -4,6 +4,7 @@ import (
 	uiControl "github.com/goinfinite/ui/src/control"
 	uiDisplay "github.com/goinfinite/ui/src/display"
 	uiStructural "github.com/goinfinite/ui/src/structural"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
 templ CardDemoBody() {
@@ -39,20 +40,21 @@ templ CardSurfaceEdgesExample() {
 	MiddleContent: CardDemoBody(),
 
 	// OptionalFields
-	BackgroundColor: "primary-900/60",
-	TextColor:       "neutral-50",
-	PaddingSize:     uiStructural.CardPaddingSizeLg,
-	BorderRadius:    uiStructural.CardBorderRadiusNone,
-	ShadowSize:      uiStructural.CardShadowSizeLg,
-	RingColor:       "primary-500",
-	RingThickness:   uiStructural.CardRingThicknessMd,
+	BackgroundColor:  "primary-900/60",
+	TextColor:        "neutral-50",
+	PaddingSize:      uiStructural.CardPaddingSizeLg,
+	BorderRadius:     uiStructural.CardBorderRadiusNone,
+	ShadowSize:       uiStructural.CardShadowSizeLg,
+	RingColor:        "primary-500",
+	RingThickness:    uiStructural.CardRingThicknessMd,
+	HeaderSubHeading: "Custom background, text, and ring",
+	ActionsContent:   CardDemoActions(),
 })`
 	}}
 	@DemoExampleCard(
 		"Surface & Edges",
 		"Background, text, radius, shadow, ring, and padding accept Tailwind tokens.",
-		"/structural/card.templ",
-		surfaceUsage,
+		"/structural/card.templ", surfaceUsage,
 	) {
 		@uiStructural.Card(uiStructural.CardSettings{
 			MiddleContent:    CardDemoBody(),
@@ -93,8 +95,7 @@ templ CardHeaderIconExample() {
 	@DemoExampleCard(
 		"Header Icon Styles",
 		"HeaderIcon stamps a Phosphor icon in the header. Position, color, background, radius, and padding size style it.",
-		"/structural/card.templ",
-		iconUsage,
+		"/structural/card.templ", iconUsage,
 	) {
 		<div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
 			@uiStructural.Card(uiStructural.CardSettings{
@@ -130,8 +131,7 @@ templ CardContentOnlyExample() {
 	@DemoExampleCard(
 		"Content-Only Card",
 		"With no header settings the card is a bare surface around MiddleContent.",
-		"/structural/card.templ",
-		contentUsage,
+		"/structural/card.templ", contentUsage,
 	) {
 		@uiStructural.Card(uiStructural.CardSettings{
 			MiddleContent: CardDemoContentOnlyBody(),
@@ -155,8 +155,7 @@ templ CardStateBoundHeaderExample() {
 	@DemoExampleCard(
 		"State-Bound Header",
 		"HeaderTitleOneWayStatePath and HeaderSubHeadingOneWayStatePath drive the header text from Alpine state.",
-		"/structural/card.templ",
-		stateUsage,
+		"/structural/card.templ", stateUsage,
 	) {
 		<div x-data="{cardTitle: 'Live Title', cardSubHeading: 'Bound to Alpine state'}" class="flex flex-col gap-3">
 			@uiStructural.Card(uiStructural.CardSettings{
@@ -176,6 +175,68 @@ templ CardStateBoundHeaderExample() {
 	}
 }
 
+templ CardDemoCustomHeader() {
+	<div class="flex items-center justify-between gap-3 border-b border-neutral-50/10 pb-3">
+		<div class="flex items-center gap-2">
+			<i class="ph-duotone ph-rocket-launch text-xl text-primary-300"></i>
+			<span class="font-bold">Deploy Pipeline</span>
+		</div>
+		<span class="rounded-full bg-emerald-500/20 px-2 py-0.5 text-xs font-bold text-emerald-200">Ready</span>
+	</div>
+}
+
+templ CardCustomHeaderSlotExample() {
+	{{
+		headerSlotUsage := `@uiStructural.Card(uiStructural.CardSettings{
+	MiddleContent: CardDemoBody(),
+
+	// OptionalFields
+	HeaderContent: CardDemoCustomHeader(),
+})`
+	}}
+	@DemoExampleCard(
+		"Custom Header Slot",
+		"HeaderContent replaces the standard header block with your own component.",
+		"/structural/card.templ", headerSlotUsage,
+	) {
+		@uiStructural.Card(uiStructural.CardSettings{
+			MiddleContent: CardDemoBody(),
+			HeaderContent: CardDemoCustomHeader(),
+		})
+	}
+}
+
+templ CardHeaderStylingExample() {
+	{{
+		stylingUsage := `@uiStructural.Card(uiStructural.CardSettings{
+	MiddleContent: CardDemoBody(),
+
+	// OptionalFields
+	HeaderTitle:           "Styled Header",
+	HeaderSubHeading:      "Sized, tinted, and uppercased",
+	HeaderSize:            uiDisplay.HeaderSizeLg,
+	HeaderTitleColor:      "amber-300",
+	HeaderSubHeadingColor: "amber-200/70",
+	TextCase:              uiToolset.TextCaseUpper,
+})`
+	}}
+	@DemoExampleCard(
+		"Header Styling",
+		"HeaderSize scales the title and sub-heading. HeaderTitleColor and HeaderSubHeadingColor tint them. TextCase transforms both.",
+		"/structural/card.templ", stylingUsage,
+	) {
+		@uiStructural.Card(uiStructural.CardSettings{
+			MiddleContent:         CardDemoBody(),
+			HeaderTitle:           "Styled Header",
+			HeaderSubHeading:      "Sized, tinted, and uppercased",
+			HeaderSize:            uiDisplay.HeaderSizeLg,
+			HeaderTitleColor:      "amber-300",
+			HeaderSubHeadingColor: "amber-200/70",
+			TextCase:              uiToolset.TextCaseUpper,
+		})
+	}
+}
+
 templ CardContentGapExample() {
 	{{
 		gapUsage := `@uiStructural.Card(uiStructural.CardSettings{
@@ -190,8 +251,7 @@ templ CardContentGapExample() {
 	@DemoExampleCard(
 		"Content Gap",
 		"GapSize sets the space between the header, body, and footer. The default CardGapSizeMd renders gap-3.",
-		"/structural/card.templ",
-		gapUsage,
+		"/structural/card.templ", gapUsage,
 	) {
 		<div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
 			@uiStructural.Card(uiStructural.CardSettings{
@@ -244,6 +304,8 @@ templ CardDemo() {
 			{Title: "Content Gap", Icon: "ph-arrows-down-up", Content: CardContentGapExample()},
 			{Title: "Content-Only Card", Icon: "ph-square", Content: CardContentOnlyExample()},
 			{Title: "State-Bound Header", Icon: "ph-arrows-clockwise", Content: CardStateBoundHeaderExample()},
+			{Title: "Custom Header Slot", Icon: "ph-app-window", Content: CardCustomHeaderSlotExample()},
+			{Title: "Header Styling", Icon: "ph-text-t", Content: CardHeaderStylingExample()},
 		})
 	</div>
 }

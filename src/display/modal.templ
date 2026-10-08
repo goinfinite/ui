@@ -1,6 +1,9 @@
 package uiDisplay
 
-import uiControl "github.com/goinfinite/ui/src/control"
+import (
+	uiControl "github.com/goinfinite/ui/src/control"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
 
 const (
 	ModalSizeXs   string = "xs"
@@ -110,21 +113,12 @@ templ modalHeaderActionButtons(settings modalHeaderActionSettings) {
 templ Modal(componentSettings ModalSettings) {
 	<!-- Modal Backdrop -->
 	{{ backdropClasses := "fixed inset-0 z-100 flex items-center justify-center" }}
-	{{ backdropBackgroundColor := "bg-neutral-900/75" }}
-	if componentSettings.BackdropColor != "" {
-		{{ backdropBackgroundColor = "bg-" + componentSettings.BackdropColor }}
-	}
+	{{ backdropBackgroundColor := uiToolset.BackgroundColorClassResolver(componentSettings.BackdropColor, "bg-neutral-900/75") }}
 	{{ backdropClasses += " " + backdropBackgroundColor }}
 	<!-- Modal Container Classes -->
 	{{ modalClasses := "relative flex flex-col gap-4 transition-all duration-300" }}
-	{{ backgroundColor := "bg-primary-900" }}
-	if componentSettings.BackgroundColor != "" {
-		{{ backgroundColor = "bg-" + componentSettings.BackgroundColor }}
-	}
-	{{ textColor := "text-neutral-50" }}
-	if componentSettings.TextColor != "" {
-		{{ textColor = "text-" + componentSettings.TextColor }}
-	}
+	{{ backgroundColor := uiToolset.BackgroundColorClassResolver(componentSettings.BackgroundColor, "bg-primary-900") }}
+	{{ textColor := uiToolset.TextColorClassResolver(componentSettings.TextColor, "text-neutral-50") }}
 	{{ modalClasses += " " + backgroundColor + " " + textColor }}
 	<!-- Modal Size -->
 	{{
@@ -134,8 +128,7 @@ templ Modal(componentSettings ModalSettings) {
 		)
 		reachableSizes := modalReachableSizesResolver(componentSettings.InitialSize, possibleSizes)
 		modalSizeClasses := modalSizeClassesResolver(
-			componentSettings.InitialSize,
-			componentSettings.WidthPercent,
+			componentSettings.InitialSize, componentSettings.WidthPercent,
 			componentSettings.HeightPercent,
 			componentSettings.ShouldHeightMatchContent,
 		)
@@ -168,70 +161,17 @@ templ Modal(componentSettings ModalSettings) {
 	<!-- Modal Size Constraints -->
 	{{
 		modalClasses += " " + modalSizeConstraintClassesResolver(
-			componentSettings.MinWidthPercent,
-			componentSettings.MaxWidthPercent,
-			componentSettings.MinHeightPercent,
-			componentSettings.MaxHeightPercent,
+			componentSettings.MinWidthPercent, componentSettings.MaxWidthPercent,
+			componentSettings.MinHeightPercent, componentSettings.MaxHeightPercent,
 			componentSettings.ShouldHeightMatchContent,
 		)
 	}}
 	<!-- Modal Border Radius -->
-	{{ borderRadiusClasses := "rounded" }}
-	switch componentSettings.BorderRadius {
-		case ModalBorderRadiusNone:
-			{{ borderRadiusClasses = "rounded-none" }}
-		case ModalBorderRadiusXs:
-			{{ borderRadiusClasses = "rounded-xs" }}
-		case ModalBorderRadiusSm:
-			{{ borderRadiusClasses = "rounded-sm" }}
-		case ModalBorderRadiusMd:
-			{{ borderRadiusClasses = "rounded" }}
-		case ModalBorderRadiusLg:
-			{{ borderRadiusClasses = "rounded-lg" }}
-		case ModalBorderRadiusXl:
-			{{ borderRadiusClasses = "rounded-xl" }}
-		default:
-			{{ borderRadiusClasses = "rounded" }}
-	}
-	{{ modalClasses += " " + borderRadiusClasses }}
+	{{ modalClasses += " " + uiToolset.BorderRadiusClassResolver(componentSettings.BorderRadius, "rounded") }}
 	<!-- Modal Shadow -->
-	{{ shadowClasses := "shadow-md" }}
-	switch componentSettings.ShadowSize {
-		case ModalShadowSizeNone:
-			{{ shadowClasses = "shadow-none" }}
-		case ModalShadowSizeXs:
-			{{ shadowClasses = "shadow-xs" }}
-		case ModalShadowSizeSm:
-			{{ shadowClasses = "shadow-sm" }}
-		case ModalShadowSizeMd:
-			{{ shadowClasses = "shadow-md" }}
-		case ModalShadowSizeLg:
-			{{ shadowClasses = "shadow-lg" }}
-		case ModalShadowSizeXl:
-			{{ shadowClasses = "shadow-xl" }}
-		default:
-			{{ shadowClasses = "shadow-md" }}
-	}
-	{{ modalClasses += " " + shadowClasses }}
+	{{ modalClasses += " " + uiToolset.ShadowClassResolver(componentSettings.ShadowSize, "shadow-md") }}
 	<!-- Modal Ring -->
-	{{ ringClasses := "" }}
-	if componentSettings.RingColor != "" && componentSettings.RingThickness != "" {
-		{{ ringThickness := "ring-1" }}
-		switch componentSettings.RingThickness {
-			case ModalRingThicknessXs:
-				{{ ringThickness = "ring-1" }}
-			case ModalRingThicknessSm:
-				{{ ringThickness = "ring-1.5" }}
-			case ModalRingThicknessMd:
-				{{ ringThickness = "ring-2" }}
-			case ModalRingThicknessLg:
-				{{ ringThickness = "ring-2.5" }}
-			case ModalRingThicknessXl:
-				{{ ringThickness = "ring-3" }}
-		}
-		{{ ringClasses = ringThickness + " ring-" + componentSettings.RingColor }}
-	}
-	{{ modalClasses += " " + ringClasses }}
+	{{ modalClasses += " " + uiToolset.RingClassResolver(componentSettings.RingColor, componentSettings.RingThickness) }}
 	<!-- Modal HTML -->
 	<div
 		class={ backdropClasses }
@@ -248,10 +188,8 @@ templ Modal(componentSettings ModalSettings) {
 		{{ modalInternalState := "" }}
 		{{
 			isResizable := modalIsResizableResolver(
-				componentSettings.IsUnresizable,
-				componentSettings.WidthPercent,
-				componentSettings.HeightPercent,
-				reachableSizes,
+				componentSettings.IsUnresizable, componentSettings.WidthPercent,
+				componentSettings.HeightPercent, reachableSizes,
 			)
 		}}
 		if componentSettings.CurrentSizeTwoWayStatePath == "" && isResizable {
@@ -302,8 +240,7 @@ templ Modal(componentSettings ModalSettings) {
 			if componentSettings.CurrentSizeTwoWayStatePath != "" {
 				:class={ modalSizeClassMapExpressionBuilder(
 					componentSettings.CurrentSizeTwoWayStatePath,
-					componentSettings.WidthPercent,
-					componentSettings.HeightPercent,
+					componentSettings.WidthPercent, componentSettings.HeightPercent,
 					componentSettings.ShouldHeightMatchContent,
 				) }
 			}

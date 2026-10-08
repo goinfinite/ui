@@ -26,11 +26,13 @@ templ DataTableDefaultSearchBox() {
 		InputType:       uiForm.InputTypeText,
 		InputName:       "search",
 		Label:           "Search",
+		IconLeft:        "ph-magnifying-glass",
 		TwoWayStatePath: "searchQuery",
 	})
 }
 
 templ DataTable[Row any](componentSettings DataTableSettings[Row]) {
+	@serverFragmentRefreshComponentAlpineStateOnce.Once()
 	@dataTableAlpineStateOnce.Once()
 	{{ tableId := componentSettings.idResolver() }}
 	{{ settingsScriptId := tableId + "-settings" }}
@@ -43,44 +45,41 @@ templ DataTable[Row any](componentSettings DataTableSettings[Row]) {
 	}
 	{{ checkboxShape := componentSettings.checkboxShapeResolver() }}
 	{{ searchBoxJustifyClass := componentSettings.SearchBoxAlignment.justifyClassResolver() }}
+	{{ searchBoxWidthClass := "w-full" }}
+	if componentSettings.IsSearchBoxCompact {
+		{{ searchBoxWidthClass = "w-72" }}
+	}
 	{{ searchBoxComponent := componentSettings.SearchBox }}
 	if searchBoxComponent == nil && strings.Contains(componentSettings.QueryUrlTemplate, DataTableUrlPlaceholderSearch) {
 		{{ searchBoxComponent = DataTableDefaultSearchBox() }}
 	}
 	{{ rowStripeClasses := componentSettings.rowStripeClassesResolver() }}
-	{{ stickyHeaderClasses := "" }}
-	if componentSettings.IsHeaderSticky {
-		{{ stickyHeaderClasses = " sticky top-0 z-10 bg-neutral-900" }}
-	}
-	{{ scrollContainerClasses := "overflow-x-auto" }}
-	if componentSettings.IsHeaderSticky {
-		{{ scrollContainerClasses = "max-h-128 overflow-auto" }}
-	}
+	{{ rootClasses := componentSettings.rootClassesResolver() }}
+	{{ stickyHeaderClasses := componentSettings.stickyHeaderClassesResolver() }}
+	{{ scrollContainerClasses := componentSettings.scrollContainerClassesResolver() }}
 	{{ hasSelection := componentSettings.RowIdResolver != nil }}
 	{{ columnCount := len(componentSettings.Columns) }}
 	if hasSelection {
 		{{ columnCount = columnCount + 1 }}
 	}
-	{{ itemsPerPageSizeChoices := componentSettings.itemsPerPageSizeChoicesResolver() }}
-	{{ itemsPerPage := componentSettings.itemsPerPageResolver(itemsPerPageSizeChoices) }}
+	{{ itemsPerPageSizeChoices := itemsPerPageSizeChoicesResolver(componentSettings.ItemsPerPageSizeChoices) }}
+	{{ itemsPerPage := itemsPerPageResolver(componentSettings.ItemsPerPage, itemsPerPageSizeChoices) }}
 	{{ pageNumber := componentSettings.PageNumber }}
 	{{ paginationAriaLabel := componentSettings.paginationAriaLabelResolver() }}
-	@templ.JSONScript(settingsScriptId, componentSettings.clientSettingsResolver(itemsPerPage, pageNumber))
 	<div
-		class="flex flex-col overflow-hidden rounded-md border border-neutral-50/10 bg-neutral-50/2.5"
+		class={ rootClasses }
 		x-data={ templ.JSFuncCall("dataTable", settingsScriptId) }
 		hx-sync="this:replace"
-		if componentSettings.Id != "" {
-			id={ componentSettings.Id }
-		}
+		id={ tableId }
 	>
+		@templ.JSONScript(settingsScriptId, componentSettings.clientSettingsResolver(itemsPerPage, pageNumber))
 		if len(componentSettings.Filters) > 0 {
 			<div class="border-b border-neutral-50/10 p-2">
 				@FilterBar(FilterBarSettings{
 					Filters:                        componentSettings.Filters,
 					ValuesTwoWayStatePath:          "filterValues",
 					EnumSelectRadioGroupNamePrefix: tableId + "-",
-					OnChangeFunc:                   "resetPageAndRefresh()",
+					OnChangeFunc:                   "refreshFromFirstPage()",
 					DropdownBackgroundColor:        componentSettings.FilterDropdownBackgroundColor,
 				})
 			</div>
@@ -89,7 +88,7 @@ templ DataTable[Row any](componentSettings DataTableSettings[Row]) {
 			<div class="flex flex-wrap items-center justify-between gap-2 border-b border-neutral-50/10 p-2">
 				<div class={ "flex flex-1 flex-wrap items-center gap-2 " + searchBoxJustifyClass }>
 					if searchBoxComponent != nil {
-						<div class="w-72" @input="resetPageAndRefresh()">
+						<div class={ searchBoxWidthClass } @input="refreshFromFirstPage()">
 							@searchBoxComponent
 						</div>
 					}
@@ -115,7 +114,12 @@ templ DataTable[Row any](componentSettings DataTableSettings[Row]) {
 		<p class="sr-only" aria-live="polite" x-text="liveMessage"></p>
 		<div data-ui-data-table>
 			<div x-show="!hasRefreshError">
-				<div class={ scrollContainerClasses } :class="{ 'pointer-events-none opacity-50': isLoading }">
+				<div
+					data-ui-data-table-scroll
+					class={ scrollContainerClasses }
+					:class="{ 'pointer-events-none opacity-50': isLoading }"
+					:style="{ maxHeight: scrollViewportMaxHeightPx > 0 ? scrollViewportMaxHeightPx + 'px' : '' }"
+				>
 					<table class="w-full border-collapse text-sm">
 						<thead>
 							<tr class={ headerRowClasses }>

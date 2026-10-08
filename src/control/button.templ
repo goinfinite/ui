@@ -1,18 +1,10 @@
 package uiControl
 
 import (
-	_ "embed"
 	"fmt"
 	"sync/atomic"
 
 	uiToolset "github.com/goinfinite/ui/src/toolset"
-)
-
-//go:embed buttonTooltipState.js
-var buttonTooltipAlpineState string
-
-var buttonTooltipAlpineStateOnce = templ.NewOnceHandle(
-	templ.WithComponent(uiToolset.MinifierTemplateJs(&buttonTooltipAlpineState)),
 )
 
 var buttonTooltipIdCounter atomic.Uint64
@@ -31,11 +23,6 @@ const (
 	ButtonShapeCircular string = "circular"
 	ButtonShapeRounded  string = "rounded"
 	ButtonShapeSquare   string = "square"
-
-	ButtonTooltipPositionTop    string = "top"
-	ButtonTooltipPositionBottom string = "bottom"
-	ButtonTooltipPositionLeft   string = "left"
-	ButtonTooltipPositionRight  string = "right"
 
 	ButtonRingThicknessXs string = "xs"
 	ButtonRingThicknessSm string = "sm"
@@ -75,6 +62,10 @@ type ButtonSettings struct {
 	TooltipRingColor              string
 	TooltipRingThickness          string
 	TooltipTextColor              string
+	TooltipMinWidthClass          string
+	TooltipMaxWidthClass          string
+	TooltipMinHeightClass         string
+	TooltipMaxHeightClass         string
 	RingColor                     string
 	RingColorHover                string
 	RingThickness                 string
@@ -89,13 +80,13 @@ templ Button(componentSettings ButtonSettings) {
 	{{ hasTooltip := componentSettings.TooltipContent != "" || componentSettings.TooltipContentHtml != nil || componentSettings.TooltipContentOneWayStatePath != "" }}
 	{{ tooltipId := "" }}
 	if hasTooltip {
-		@buttonTooltipAlpineStateOnce.Once()
+		@uiToolset.TooltipAlpineStateOnce.Once()
 		{{ tooltipId = generateButtonTooltipId() }}
 	}
 	<div
 		class={ "relative " + buttonWidth }
 		if hasTooltip {
-			x-data={ templ.JSFuncCall("buttonTooltip", componentSettings.TooltipPosition) }
+			x-data={ templ.JSFuncCall("tooltip", componentSettings.TooltipPosition) }
 			@mouseenter="showTooltip()"
 			@mouseleave="hideTooltip()"
 			@focusin="showTooltip()"
@@ -150,36 +141,14 @@ templ Button(componentSettings ButtonSettings) {
 		}
 		{{ textCaseClass := uiToolset.TextCaseClassResolver(componentSettings.TextCase) }}
 		{{ ringClasses := "" }}
-		{{ ringThickness := "ring-1.5" }}
-		if componentSettings.RingThickness != "" {
-			switch componentSettings.RingThickness {
-				case ButtonRingThicknessXs:
-					{{ ringThickness = "ring-1" }}
-				case ButtonRingThicknessSm:
-					{{ ringThickness = "ring-1.5" }}
-				case ButtonRingThicknessMd:
-					{{ ringThickness = "ring-2" }}
-				case ButtonRingThicknessLg:
-					{{ ringThickness = "ring-2.5" }}
-				case ButtonRingThicknessXl:
-					{{ ringThickness = "ring-3" }}
-			}
-		}
+		{{ ringThicknessClass := uiToolset.RingThicknessClassResolver(componentSettings.RingThickness, "ring-1.5") }}
 		if componentSettings.RingColor != "" {
-			{{ ringClasses = ringThickness + " ring-" + componentSettings.RingColor }}
+			{{ ringClasses = ringThicknessClass + " ring-" + componentSettings.RingColor }}
 		}
 		if componentSettings.RingColorHover != "" {
 			{{ ringClasses += " hover:ring-" + componentSettings.RingColorHover }}
 		}
-		{{ radiusRoundness := "rounded" }}
-		switch componentSettings.Shape {
-			case ButtonShapeCircular:
-				{{ radiusRoundness = "rounded-full" }}
-			case ButtonShapeRounded:
-				{{ radiusRoundness = "rounded" }}
-			case ButtonShapeSquare:
-				{{ radiusRoundness = "rounded-none" }}
-		}
+		{{ radiusRoundness := uiToolset.ShapeClassResolver(componentSettings.Shape, "rounded") }}
 		{{ iconSize := "text-base" }}
 		switch componentSettings.Size {
 			case ButtonSizeXs:
@@ -255,41 +224,27 @@ templ Button(componentSettings ButtonSettings) {
 			}
 		</button>
 		if hasTooltip {
-			{{ tooltipBackgroundColor := "neutral-800/95" }}
-			if componentSettings.TooltipBackgroundColor != "" {
-				{{ tooltipBackgroundColor = componentSettings.TooltipBackgroundColor }}
-			}
-			{{ tooltipTextColor := "neutral-50" }}
-			if componentSettings.TooltipTextColor != "" {
-				{{ tooltipTextColor = componentSettings.TooltipTextColor }}
-			}
-			{{ tooltipRingClasses := "" }}
-			if componentSettings.TooltipRingColor != "" {
-				{{ tooltipRingThickness := "ring-1" }}
-				if componentSettings.TooltipRingThickness != "" {
-					switch componentSettings.TooltipRingThickness {
-						case ButtonRingThicknessXs:
-							{{ tooltipRingThickness = "ring-0.5" }}
-						case ButtonRingThicknessSm:
-							{{ tooltipRingThickness = "ring-1" }}
-						case ButtonRingThicknessMd:
-							{{ tooltipRingThickness = "ring-1.5" }}
-						case ButtonRingThicknessLg:
-							{{ tooltipRingThickness = "ring-2" }}
-						case ButtonRingThicknessXl:
-							{{ tooltipRingThickness = "ring-2.5" }}
-					}
-				}
-				{{ tooltipRingClasses = tooltipRingThickness + " ring-" + componentSettings.TooltipRingColor }}
-			}
-			{{ tooltipBaseClass := "fixed z-100 invisible w-fit p-1.5 bg-" + tooltipBackgroundColor + " text-" + tooltipTextColor + " text-xs rounded-md shadow-md transition-opacity duration-150 pointer-events-none " + tooltipRingClasses }}
+			{{
+				tooltipSurfaceClasses := uiToolset.TooltipSurfaceClassesResolver(
+					uiToolset.TooltipSurfaceSettings{
+						BackgroundColor: componentSettings.TooltipBackgroundColor,
+						TextColor:       componentSettings.TooltipTextColor,
+						RingColor:       componentSettings.TooltipRingColor,
+						RingThickness:   componentSettings.TooltipRingThickness,
+						MinWidthClass:   componentSettings.TooltipMinWidthClass,
+						MaxWidthClass:   componentSettings.TooltipMaxWidthClass,
+						MinHeightClass:  componentSettings.TooltipMinHeightClass,
+						MaxHeightClass:  componentSettings.TooltipMaxHeightClass,
+					},
+				)
+			}}
 			<template x-teleport="body">
 				<div
 					x-ref="tooltip"
 					id={ tooltipId }
 					role="tooltip"
 					:style="resolvedTooltipStyle"
-					class={ tooltipBaseClass }
+					class={ tooltipSurfaceClasses }
 					if componentSettings.TooltipContentOneWayStatePath != "" {
 						x-text={ componentSettings.TooltipContentOneWayStatePath }
 					}

@@ -16,36 +16,55 @@ import (
 //go:embed dataTableDemoRouting.js
 var dataTableDemoRoutingScript string
 
-const dataTableDemoFragmentsAssetPath = "docs/assets/dataTableDemoRefreshFragments.json"
+const (
+	dataTableDemoFragmentsAssetPath       = "docs/assets/dataTableDemoRefreshFragments.json"
+	carouselDemoFragmentsAssetPath        = "docs/assets/carouselDemoRefreshFragments.json"
+	carouselTooltipDemoFragmentsAssetPath = "docs/assets/carouselTooltipDemoRefreshFragments.json"
+	carouselDemoItemsPerPage              = 6
+)
 
-func renderDemoIndex() error {
-	indexFile, err := os.Create("docs/index.html")
-	if err != nil {
-		return errors.New("CreateHtmlFileFailed (index.html): " + err.Error())
+type demoGenerator struct{}
+
+func (generator demoGenerator) reconcileOutput(
+	outputPath string, outputBody []byte,
+) error {
+	existingBody, readErr := os.ReadFile(outputPath)
+	if readErr == nil && bytes.Equal(existingBody, outputBody) {
+		return nil
 	}
-	renderErr := DemoIndex().Render(context.Background(), indexFile)
-	closeErr := indexFile.Close()
-	if renderErr != nil {
+	if readErr != nil && !errors.Is(readErr, os.ErrNotExist) {
 		return errors.New(
-			"WriteHtmlFileFailed (index.html): " + renderErr.Error(),
+			"ReadDemoOutputFailed (" + outputPath + "): " + readErr.Error(),
 		)
 	}
-	if closeErr != nil {
+	writeErr := os.WriteFile(outputPath, outputBody, 0o644)
+	if writeErr != nil {
 		return errors.New(
-			"CloseHtmlFileFailed (index.html): " + closeErr.Error(),
+			"WriteDemoOutputFailed (" + outputPath + "): " + writeErr.Error(),
 		)
 	}
 	return nil
 }
 
-func formatDataTableDemoFragmentKey(
-	pageNumber uint, itemsPerPage uiStructural.DataTablePageSize,
+func (generator demoGenerator) renderIndex() error {
+	indexBody := &bytes.Buffer{}
+	renderErr := DemoIndex().Render(context.Background(), indexBody)
+	if renderErr != nil {
+		return errors.New(
+			"RenderHtmlFailed (index.html): " + renderErr.Error(),
+		)
+	}
+	return generator.reconcileOutput("docs/index.html", indexBody.Bytes())
+}
+
+func (generator demoGenerator) formatFragmentKey(
+	pageNumber uint, itemsPerPage uiStructural.ItemsPerPage,
 ) string {
 	return fmt.Sprintf("%d-%d", pageNumber, itemsPerPage)
 }
 
-func renderDataTableDemoFragment(
-	pageNumber uint, itemsPerPage uiStructural.DataTablePageSize,
+func (generator demoGenerator) renderDataTableFragment(
+	pageNumber uint, itemsPerPage uiStructural.ItemsPerPage,
 ) (string, error) {
 	fragmentBody := &bytes.Buffer{}
 	renderErr := DataTableRefreshFragment(pageNumber, itemsPerPage).
@@ -58,32 +77,92 @@ func renderDataTableDemoFragment(
 	return fragmentBody.String(), nil
 }
 
-func buildDataTableDemoFragments() (map[string]string, error) {
-	fragments := map[string]string{}
-	for pageNumber := range dataTableDemoPagesTotal {
-		fragmentBody, err := renderDataTableDemoFragment(
-			pageNumber, dataTableDemoItemsPerPage,
+func (generator demoGenerator) renderCarouselFragment(
+	pageNumber uint, itemsPerPage uiStructural.ItemsPerPage,
+) (string, error) {
+	fragmentBody := &bytes.Buffer{}
+	renderErr := CarouselRefreshFragment(pageNumber, itemsPerPage).
+		Render(context.Background(), fragmentBody)
+	if renderErr != nil {
+		return "", errors.New(
+			"RenderCarouselFragmentFailed: " + renderErr.Error(),
 		)
+	}
+	return fragmentBody.String(), nil
+}
+
+func (generator demoGenerator) buildFragments(
+	pagesTotal uint, itemsPerPage, allRecordsItemsPerPage uiStructural.ItemsPerPage,
+	renderFragment func(
+		pageNumber uint, itemsPerPage uiStructural.ItemsPerPage,
+	) (string, error),
+) (map[string]string, error) {
+	fragments := map[string]string{}
+	for pageNumber := range pagesTotal {
+		fragmentBody, err := renderFragment(pageNumber, itemsPerPage)
 		if err != nil {
 			return nil, err
 		}
-		fragmentKey := formatDataTableDemoFragmentKey(
-			pageNumber, dataTableDemoItemsPerPage,
-		)
-		fragments[fragmentKey] = fragmentBody
+		fragments[generator.formatFragmentKey(pageNumber, itemsPerPage)] = fragmentBody
 	}
-	allRecordsPageSize := uiStructural.DataTablePageSize(len(dataTableDemoRecords))
-	allRecordsBody, err := renderDataTableDemoFragment(0, allRecordsPageSize)
+	allRecordsBody, err := renderFragment(0, allRecordsItemsPerPage)
 	if err != nil {
 		return nil, err
 	}
-	allRecordsKey := formatDataTableDemoFragmentKey(0, allRecordsPageSize)
-	fragments[allRecordsKey] = allRecordsBody
+	fragments[generator.formatFragmentKey(0, allRecordsItemsPerPage)] = allRecordsBody
 	return fragments, nil
 }
 
-func writeDataTableDemoFragmentsAsset() error {
-	fragments, err := buildDataTableDemoFragments()
+func (generator demoGenerator) buildDataTableFragments() (map[string]string, error) {
+	return generator.buildFragments(
+		dataTableDemoPagesTotal, dataTableDemoItemsPerPage,
+		uiStructural.ItemsPerPage(len(dataTableDemoRecords)),
+		generator.renderDataTableFragment,
+	)
+}
+
+func (generator demoGenerator) buildCarouselFragments() (map[string]string, error) {
+	carouselItemsPerPage := uiStructural.ItemsPerPage(carouselDemoItemsPerPage)
+	carouselDemoPagesTotal := demoTablePageCountResolver(
+		uint(len(dataTableDemoRecords)), carouselItemsPerPage,
+	)
+	return generator.buildFragments(
+		carouselDemoPagesTotal, carouselItemsPerPage,
+		uiStructural.ItemsPerPage(len(dataTableDemoRecords)),
+		generator.renderCarouselFragment,
+	)
+}
+
+func (generator demoGenerator) renderCarouselTooltipFragment(
+	pageNumber uint, itemsPerPage uiStructural.ItemsPerPage,
+) (string, error) {
+	fragmentBody := &bytes.Buffer{}
+	renderErr := CarouselTooltipRefreshFragment(pageNumber, itemsPerPage).
+		Render(context.Background(), fragmentBody)
+	if renderErr != nil {
+		return "", errors.New(
+			"RenderCarouselTooltipFragmentFailed: " + renderErr.Error(),
+		)
+	}
+	return fragmentBody.String(), nil
+}
+
+func (generator demoGenerator) buildCarouselTooltipFragments() (map[string]string, error) {
+	carouselItemsPerPage := uiStructural.ItemsPerPage(carouselDemoItemsPerPage)
+	carouselDemoPagesTotal := demoTablePageCountResolver(
+		uint(len(dataTableDemoRecords)), carouselItemsPerPage,
+	)
+	return generator.buildFragments(
+		carouselDemoPagesTotal, carouselItemsPerPage,
+		uiStructural.ItemsPerPage(len(dataTableDemoRecords)),
+		generator.renderCarouselTooltipFragment,
+	)
+}
+
+func (generator demoGenerator) writeFragmentsAsset(
+	assetPath string, buildFragments func() (map[string]string, error),
+) error {
+	fragments, err := buildFragments()
 	if err != nil {
 		return err
 	}
@@ -93,32 +172,50 @@ func writeDataTableDemoFragmentsAsset() error {
 	encodeErr := fragmentsEncoder.Encode(fragments)
 	if encodeErr != nil {
 		return errors.New(
-			"EncodeDataTableDemoFragmentsFailed: " + encodeErr.Error(),
+			"EncodeDemoFragmentsFailed (" + assetPath + "): " +
+				encodeErr.Error(),
 		)
 	}
-	writeErr := os.WriteFile(
-		dataTableDemoFragmentsAssetPath, fragmentsBody.Bytes(), 0o644,
-	)
-	if writeErr != nil {
-		return errors.New(
-			"WriteDataTableDemoFragmentsFailed (" +
-				dataTableDemoFragmentsAssetPath + "): " + writeErr.Error(),
-		)
-	}
-	return nil
+	return generator.reconcileOutput(assetPath, fragmentsBody.Bytes())
 }
 
 func main() {
-	err := renderDemoIndex()
-	if err != nil {
-		slog.Error("RenderDemoIndexFailed", slog.String("err", err.Error()))
+	generator := demoGenerator{}
+	renderErr := generator.renderIndex()
+	if renderErr != nil {
+		slog.Error("RenderDemoIndexFailed", slog.String("err", renderErr.Error()))
 		os.Exit(1)
 	}
-	err = writeDataTableDemoFragmentsAsset()
-	if err != nil {
-		slog.Error(
-			"WriteDataTableDemoFragmentsFailed", slog.String("err", err.Error()),
+	fragmentAssets := []struct {
+		assetPath      string
+		buildFragments func() (map[string]string, error)
+		failureLogKey  string
+	}{
+		{
+			assetPath:      dataTableDemoFragmentsAssetPath,
+			buildFragments: generator.buildDataTableFragments,
+			failureLogKey:  "WriteDataTableDemoFragmentsFailed",
+		},
+		{
+			assetPath:      carouselDemoFragmentsAssetPath,
+			buildFragments: generator.buildCarouselFragments,
+			failureLogKey:  "WriteCarouselDemoFragmentsFailed",
+		},
+		{
+			assetPath:      carouselTooltipDemoFragmentsAssetPath,
+			buildFragments: generator.buildCarouselTooltipFragments,
+			failureLogKey:  "WriteCarouselTooltipDemoFragmentsFailed",
+		},
+	}
+	for _, fragmentAsset := range fragmentAssets {
+		writeErr := generator.writeFragmentsAsset(
+			fragmentAsset.assetPath, fragmentAsset.buildFragments,
 		)
-		os.Exit(1)
+		if writeErr != nil {
+			slog.Error(
+				fragmentAsset.failureLogKey, slog.String("err", writeErr.Error()),
+			)
+			os.Exit(1)
+		}
 	}
 }

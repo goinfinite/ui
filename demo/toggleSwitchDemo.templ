@@ -3,6 +3,7 @@ package main
 import (
 	uiDisplay "github.com/goinfinite/ui/src/display"
 	uiForm "github.com/goinfinite/ui/src/form"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
 templ ToggleSwitchSizesExample() {
@@ -16,10 +17,8 @@ templ ToggleSwitchSizesExample() {
 })`
 	}}
 	@DemoExampleCard(
-		"Sizes",
-		"Size scales the track, thumb, and label: xs, sm, md, lg, or xl.",
-		"/form/toggleSwitch.templ",
-		sizesUsage,
+		"Sizes", "Size scales the track, thumb, and label: xs, sm, md, lg, or xl.",
+		"/form/toggleSwitch.templ", sizesUsage,
 	) {
 		<div class="flex flex-col gap-3" x-data="{isSizeExampleEnabled: false}">
 			for _, toggleSwitchSize := range []string{uiForm.ToggleSwitchSizeXs, uiForm.ToggleSwitchSizeSm, uiForm.ToggleSwitchSizeMd, uiForm.ToggleSwitchSizeLg, uiForm.ToggleSwitchSizeXl} {
@@ -41,24 +40,26 @@ templ ToggleSwitchLabelPositionExample() {
 
 	// OptionalFields
 	LabelPosition: uiForm.ToggleSwitchLabelPositionLeft,
+	TextCase:      uiToolset.TextCaseUpper,
 })`
 	}}
 	@DemoExampleCard(
 		"Label Position",
-		"LabelPosition places the label on the left or the right of the switch.",
-		"/form/toggleSwitch.templ",
-		labelPositionUsage,
+		"LabelPosition places the label on the left or the right of the switch. TextCase transforms the label.",
+		"/form/toggleSwitch.templ", labelPositionUsage,
 	) {
 		<div class="flex flex-col gap-3" x-data="{isSizeExampleEnabled: false}">
 			@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
 				Label:           "Label on left",
 				TwoWayStatePath: "isSizeExampleEnabled",
 				LabelPosition:   uiForm.ToggleSwitchLabelPositionLeft,
+				TextCase:        uiToolset.TextCaseUpper,
 			})
 			@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
 				Label:           "Label on right",
 				TwoWayStatePath: "isSizeExampleEnabled",
 				LabelPosition:   uiForm.ToggleSwitchLabelPositionRight,
+				TextCase:        uiToolset.TextCaseUpper,
 			})
 		</div>
 	}
@@ -73,14 +74,16 @@ templ ToggleSwitchColorsExample() {
 	// OptionalFields
 	TrackBackgroundColor:        "emerald-900/40",
 	TrackCheckedBackgroundColor: "emerald-500",
+	ThumbBackgroundColor:        "amber-300",
+	ThumbBorderColor:            "amber-500",
+	TextColor:                   "amber-100",
 	FocusRingColor:              "emerald-500/50",
 })`
 	}}
 	@DemoExampleCard(
 		"Color Variants",
-		"Track, thumb, and focus colors accept Tailwind color tokens.",
-		"/form/toggleSwitch.templ",
-		colorsUsage,
+		"Track, thumb, border, text, and focus colors accept Tailwind color tokens.",
+		"/form/toggleSwitch.templ", colorsUsage,
 	) {
 		<div
 			class="flex flex-col gap-3"
@@ -128,8 +131,7 @@ templ ToggleSwitchStatesExample() {
 	@DemoExampleCard(
 		"Required & Disabled",
 		"IsRequired marks the switch as required. IsDisabled blocks edits.",
-		"/form/toggleSwitch.templ",
-		statesUsage,
+		"/form/toggleSwitch.templ", statesUsage,
 	) {
 		<div class="flex flex-col gap-3" x-data="{isRequiredExampleEnabled: false, isSizeExampleEnabled: false}">
 			@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
@@ -142,6 +144,42 @@ templ ToggleSwitchStatesExample() {
 				TwoWayStatePath: "isSizeExampleEnabled",
 				IsDisabled:      true,
 			})
+		</div>
+	}
+}
+
+templ ToggleSwitchCustomValuesExample() {
+	{{
+		customValuesUsage := `@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
+	Label:           "Email notifications",
+	TwoWayStatePath: "selectedChannels",
+	InputName:       "channels",
+
+	// OptionalFields
+	CustomValue: "email",
+})`
+	}}
+	@DemoExampleCard(
+		"Custom Values",
+		"CustomValue turns the switch into an array toggle: it adds the value when checked and removes it when unchecked. InputName includes the selection in form submission.",
+		"/form/toggleSwitch.templ", customValuesUsage,
+	) {
+		<div class="flex flex-col gap-3" x-data="{selectedChannels: ['email']}">
+			@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
+				Label:           "Email notifications",
+				TwoWayStatePath: "selectedChannels",
+				InputName:       "channels",
+				CustomValue:     "email",
+			})
+			@uiForm.ToggleSwitch(uiForm.ToggleSwitchSettings{
+				Label:           "SMS notifications",
+				TwoWayStatePath: "selectedChannels",
+				InputName:       "channels",
+				CustomValue:     "sms",
+			})
+			<p class={ DemoLiveStateClasses }>
+				Values: <span x-text="selectedChannels"></span>
+			</p>
 		</div>
 	}
 }
@@ -211,6 +249,7 @@ templ ToggleSwitchDemo() {
 			{Title: "Label Position", Icon: "ph-text-align-left", Content: ToggleSwitchLabelPositionExample()},
 			{Title: "Color Variants", Icon: "ph-palette", Content: ToggleSwitchColorsExample()},
 			{Title: "Required & Disabled", Icon: "ph-prohibit", Content: ToggleSwitchStatesExample()},
+			{Title: "Custom Values", Icon: "ph-list-plus", Content: ToggleSwitchCustomValuesExample()},
 		})
 	</div>
 }

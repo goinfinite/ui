@@ -15,10 +15,8 @@ templ RangeSliderSizesExample() {
 })`
 	}}
 	@DemoExampleCard(
-		"Sizes",
-		"Size scales the track, thumb, and labels: xs, sm, md, lg, or xl.",
-		"/control/rangeSlider.templ",
-		sizesUsage,
+		"Sizes", "Size scales the track, thumb, and labels: xs, sm, md, lg, or xl.",
+		"/control/rangeSlider.templ", sizesUsage,
 	) {
 		<div class="flex flex-col gap-3" x-data="{sliderValue: 50}">
 			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
@@ -57,8 +55,7 @@ templ RangeSliderThumbShapesExample() {
 	@DemoExampleCard(
 		"Thumb Shapes",
 		"ThumbShape draws the thumb as circular, rounded, square, or pipe.",
-		"/control/rangeSlider.templ",
-		shapesUsage,
+		"/control/rangeSlider.templ", shapesUsage,
 	) {
 		<div class="flex flex-col gap-3" x-data="{sliderValue: 50}">
 			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
@@ -89,15 +86,15 @@ templ RangeSliderThumbColorsExample() {
 	// OptionalFields
 	ThumbBackgroundColor:      "emerald-500",
 	ThumbTextColor:            "neutral-50",
+	ThumbLabel:                "A",
 	ThumbLabelIcon:            "ph-check",
 	ThumbLabelOneWayStatePath: "sliderValue",
 })`
 	}}
 	@DemoExampleCard(
 		"Thumb Colors & Icons",
-		"Thumb background and text colors accept Tailwind tokens. ThumbLabelIcon stamps an icon on the thumb and ThumbLabelOneWayStatePath prints live state on it.",
-		"/control/rangeSlider.templ",
-		colorsUsage,
+		"Thumb background and text colors accept Tailwind tokens. ThumbLabel prints static text on the thumb, ThumbLabelIcon stamps an icon on it, and ThumbLabelOneWayStatePath prints live state on it.",
+		"/control/rangeSlider.templ", colorsUsage,
 	) {
 		<div class="flex flex-col gap-3" x-data="{sliderValue: 50}">
 			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
@@ -121,6 +118,12 @@ templ RangeSliderThumbColorsExample() {
 				ThumbTextColor:            "neutral-50",
 				ThumbLabelOneWayStatePath: "sliderValue",
 			})
+			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+				ThumbValueTwoWayStatePath: "sliderValue",
+				ThumbBackgroundColor:      "primary-500",
+				ThumbTextColor:            "neutral-50",
+				ThumbLabel:                "A",
+			})
 		</div>
 	}
 }
@@ -136,13 +139,16 @@ templ RangeSliderValueBubbleExample() {
 	ThumbValueBubblePosition:        uiControl.RangeSliderThumbValueBubblePositionTop,
 	ThumbValueBubbleBackgroundColor: "red-500",
 	ThumbValueBubbleTextColor:       "neutral-50",
+	ThumbValueBubbleSize:            uiControl.RangeSliderThumbValueBubbleSizeLg,
+	ThumbValueBubbleShape:           uiControl.RangeSliderThumbValueBubbleShapeRounded,
+	ThumbValueBubbleRingColor:       "violet-500",
+	ThumbValueBubbleRingThickness:   uiControl.RangeSliderThumbValueBubbleRingThicknessXl,
 })`
 	}}
 	@DemoExampleCard(
 		"Value Bubble",
 		"ThumbValueBubbleEnabled shows the live value above or below the thumb. The default display mode always shows it; ThumbValueBubbleDisplayModeHover shows it only while the slider is hovered or dragged. Bubble colors, size, shape, ring, and position style it.",
-		"/control/rangeSlider.templ",
-		bubbleUsage,
+		"/control/rangeSlider.templ", bubbleUsage,
 	) {
 		<div class="flex flex-col gap-3" x-data="{sliderValue: 50}">
 			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
@@ -184,24 +190,25 @@ templ RangeSliderValueBubbleExample() {
 templ RangeSliderTrackLabelsExample() {
 	{{
 		labelsUsage := `@uiControl.RangeSlider(uiControl.RangeSliderSettings{
-	ThumbValueTwoWayStatePath: "sliderValue",
-	TrackStartValue:           "0",
-	TrackEndValue:             "100",
+	ThumbValueTwoWayStatePath:      "sliderValue",
+	TrackStartValueOneWayStatePath: "rangeStart",
+	TrackEndValueOneWayStatePath:   "rangeEnd",
 
 	// OptionalFields
 	TrackStartValueLabelEnabled:  true,
 	TrackStartValueLabelPosition: uiControl.RangeSliderTrackValueLabelPositionTop,
+	TrackStartValueLabelIcon:     "ph-arrow-left",
 	TrackEndValueLabelEnabled:    true,
 	TrackEndValueLabelPosition:   uiControl.RangeSliderTrackValueLabelPositionTop,
+	TrackEndValueLabelIcon:       "ph-arrow-right",
 })`
 	}}
 	@DemoExampleCard(
 		"Track Labels",
-		"Track start and end labels print the range bounds. Their position moves them above or below the track.",
-		"/control/rangeSlider.templ",
-		labelsUsage,
+		"Track start and end labels print the range bounds from static values or Alpine state. Their position moves the labels above or below the track, and their icons mark each bound.",
+		"/control/rangeSlider.templ", labelsUsage,
 	) {
-		<div class="flex flex-col gap-3" x-data="{sliderValue: 50}">
+		<div class="flex flex-col gap-3" x-data="{sliderValue: 50, rangeStart: 0, rangeEnd: 100}">
 			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
 				ThumbValueTwoWayStatePath:   "sliderValue",
 				TrackStartValue:             "0",
@@ -227,6 +234,17 @@ templ RangeSliderTrackLabelsExample() {
 				TrackEndValueLabelEnabled:    true,
 				TrackEndValueLabelPosition:   uiControl.RangeSliderTrackValueLabelPositionBottom,
 			})
+			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+				ThumbValueTwoWayStatePath:      "sliderValue",
+				TrackStartValueOneWayStatePath: "rangeStart",
+				TrackEndValueOneWayStatePath:   "rangeEnd",
+				TrackStartValueLabelEnabled:    true,
+				TrackStartValueLabelPosition:   uiControl.RangeSliderTrackValueLabelPositionTop,
+				TrackStartValueLabelIcon:       "ph-arrow-left",
+				TrackEndValueLabelEnabled:      true,
+				TrackEndValueLabelPosition:     uiControl.RangeSliderTrackValueLabelPositionTop,
+				TrackEndValueLabelIcon:         "ph-arrow-right",
+			})
 		</div>
 	}
 }
@@ -239,24 +257,28 @@ templ RangeSliderTrackColorsExample() {
 	TrackEndValue:             "100",
 
 	// OptionalFields
+	TrackBackgroundColor:          "neutral-50/15",
 	TrackBackgroundColorFrom:      "red-500",
 	TrackBackgroundColorVia:       "emerald-500",
 	TrackBackgroundColorTo:        "cyan-500",
+	TrackFillColor:                "sky-500",
+	TrackFillColorVia:             "yellow-500",
 	TrackStartValueLabelTextColor: "red-500",
 	TrackEndValueLabelTextColor:   "cyan-500",
 })`
 	}}
 	@DemoExampleCard(
 		"Track Colors & Icons",
-		"Track background colors paint a solid or gradient track. Label text colors and icons mark the bounds.",
-		"/control/rangeSlider.templ",
-		trackUsage,
+		"Track background colors paint a solid or gradient track, and TrackFillColor paints the filled span. Label text colors and icons mark the bounds.",
+		"/control/rangeSlider.templ", trackUsage,
 	) {
 		<div class="flex flex-col gap-3" x-data="{sliderValue: 50}">
 			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
 				ThumbValueTwoWayStatePath:     "sliderValue",
 				TrackStartValue:               "0",
 				TrackEndValue:                 "100",
+				TrackBackgroundColor:          "neutral-50/15",
+				TrackFillColor:                "sky-500",
 				TrackStartValueLabelEnabled:   true,
 				TrackStartValueLabelTextColor: "red-500",
 				TrackEndValueLabelEnabled:     true,
@@ -269,6 +291,9 @@ templ RangeSliderTrackColorsExample() {
 				TrackBackgroundColorFrom:      "red-500",
 				TrackBackgroundColorVia:       "emerald-500",
 				TrackBackgroundColorTo:        "cyan-500",
+				TrackFillColorFrom:            "red-500",
+				TrackFillColorVia:             "yellow-500",
+				TrackFillColorTo:              "emerald-500",
 				TrackStartValueLabelEnabled:   true,
 				TrackStartValueLabelTextColor: "red-500",
 				TrackEndValueLabelEnabled:     true,
@@ -306,8 +331,7 @@ templ RangeSliderStepsTicksExample() {
 	@DemoExampleCard(
 		"Steps & Ticks",
 		"TrackSteps snaps the thumb to increments. TrackTicksEnabled draws tick marks every TrackTickStep.",
-		"/control/rangeSlider.templ",
-		stepsUsage,
+		"/control/rangeSlider.templ", stepsUsage,
 	) {
 		<div class="flex flex-col gap-3" x-data="{sliderValue: 50}">
 			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
@@ -336,13 +360,14 @@ templ RangeSliderTrackTooltipExample() {
 	TrackTooltipPosition:        uiControl.RangeSliderTrackTooltipPositionTop,
 	TrackTooltipBackgroundColor: "primary-500",
 	TrackTooltipTextColor:       "neutral-50",
+	TrackTooltipRingColor:       "primary-200",
+	TrackTooltipRingThickness:   uiControl.RangeSliderTrackTooltipRingThicknessMd,
 })`
 	}}
 	@DemoExampleCard(
 		"Track Tooltip",
-		"TrackTooltipEnabled previews the value under the pointer as it moves along the track. The preview snaps to TrackSteps and clamps to the track bounds.",
-		"/control/rangeSlider.templ",
-		tooltipUsage,
+		"TrackTooltipEnabled previews the value under the pointer as it moves along the track. The preview snaps to TrackSteps and clamps to the track bounds. TrackTooltipRingColor and TrackTooltipRingThickness outline it.",
+		"/control/rangeSlider.templ", tooltipUsage,
 	) {
 		<div
 			class="flex flex-col gap-3"
@@ -409,38 +434,56 @@ templ RangeSliderTrackTooltipExample() {
 templ RangeSliderDualModeExample() {
 	{{
 		dualUsage := `@uiControl.RangeSlider(uiControl.RangeSliderSettings{
-	ThumbDualValueModeEnabled:      true,
-	ThumbValueTwoWayStatePath:      "lowerValue",
-	ThumbAriaLabel:                 "Minimum price",
-	ThumbUpperValueTwoWayStatePath: "upperValue",
-	ThumbUpperAriaLabel:            "Maximum price",
-	ThumbValueBubbleEnabled:        true,
-	ThumbUpperValueBubbleEnabled:   true,
-	TrackStartValue:                "0",
-	TrackEndValue:                  "100",
+	ThumbDualValueModeEnabled:            true,
+	ThumbValueTwoWayStatePath:            "lowerValue",
+	ThumbAriaLabel:                       "Minimum price",
+	ThumbUpperValueTwoWayStatePath:       "upperValue",
+	ThumbUpperAriaLabel:                  "Maximum price",
+	ThumbUpperTextColor:                  "neutral-50",
+	ThumbUpperLabel:                      "Max",
+	ThumbUpperLabelIcon:                  "ph-arrow-up",
+	ThumbUpperLabelOneWayStatePath:       "upperValue",
+	ThumbValueBubbleEnabled:              true,
+	ThumbUpperValueBubbleEnabled:         true,
+	ThumbValueBubbleRingColor:            "emerald-200",
+	ThumbValueBubbleRingThickness:        uiControl.RangeSliderThumbValueBubbleRingThicknessSm,
+	ThumbUpperValueBubbleDisplayMode:     uiControl.RangeSliderThumbValueBubbleDisplayModeHover,
+	ThumbUpperValueBubbleTextColor:       "neutral-50",
+	ThumbUpperValueBubbleRingColor:       "red-700",
+	ThumbUpperValueBubbleRingThickness:   uiControl.RangeSliderThumbValueBubbleRingThicknessLg,
+	ThumbUpperValueBubbleSize:            uiControl.RangeSliderThumbValueBubbleSizeLg,
+	TrackStartValue:                      "0",
+	TrackEndValue:                        "100",
 })`
 	}}
 	@DemoExampleCard(
 		"Dual-Thumb Mode",
-		"ThumbDualValueModeEnabled turns the slider into a range picker. Each thumb binds its own state path and aria label.",
-		"/control/rangeSlider.templ",
-		dualUsage,
+		"ThumbDualValueModeEnabled turns the slider into a range picker. Each thumb binds its own state path and aria label. The upper thumb takes its own colors, labels, icons, and bubble styling.",
+		"/control/rangeSlider.templ", dualUsage,
 	) {
 		<div x-data="{lowerValue: 25, upperValue: 75}" class="flex flex-col gap-3">
 			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
-				ThumbDualValueModeEnabled:      true,
-				ThumbBackgroundColor:           "emerald-500",
-				ThumbValueTwoWayStatePath:      "lowerValue",
-				ThumbAriaLabel:                 "Minimum price",
-				ThumbUpperValueTwoWayStatePath: "upperValue",
-				ThumbUpperAriaLabel:            "Maximum price",
-				ThumbValueBubbleEnabled:        true,
-				ThumbUpperValueBubbleEnabled:   true,
-				TrackStartValue:                "0",
-				TrackEndValue:                  "100",
-				TrackSteps:                     "1",
-				TrackStartValueLabelEnabled:    true,
-				TrackEndValueLabelEnabled:      true,
+				ThumbDualValueModeEnabled:            true,
+				ThumbBackgroundColor:                 "emerald-500",
+				ThumbValueTwoWayStatePath:            "lowerValue",
+				ThumbAriaLabel:                       "Minimum price",
+				ThumbUpperValueTwoWayStatePath:       "upperValue",
+				ThumbUpperAriaLabel:                  "Maximum price",
+				ThumbUpperTextColor:                  "neutral-50",
+				ThumbValueBubbleEnabled:              true,
+				ThumbUpperValueBubbleEnabled:         true,
+				ThumbValueBubbleRingColor:            "emerald-200",
+				ThumbValueBubbleRingThickness:        uiControl.RangeSliderThumbValueBubbleRingThicknessSm,
+				ThumbUpperValueBubbleDisplayMode:     uiControl.RangeSliderThumbValueBubbleDisplayModeHover,
+				ThumbUpperValueBubbleTextColor:       "neutral-50",
+				ThumbUpperValueBubbleRingColor:       "red-700",
+				ThumbUpperValueBubbleRingThickness:   uiControl.RangeSliderThumbValueBubbleRingThicknessLg,
+				ThumbUpperValueBubbleSize:            uiControl.RangeSliderThumbValueBubbleSizeLg,
+				TrackStartValue:                      "0",
+				TrackEndValue:                        "100",
+				TrackSteps:                           "1",
+				TrackStartValueLabelEnabled:          true,
+				TrackEndValueLabelEnabled:            true,
 			})
 			<p class={ DemoLiveStateClasses }>Price Range: $<span x-text="lowerValue"></span> - $<span x-text="upperValue"></span></p>
 			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
@@ -466,6 +509,55 @@ templ RangeSliderDualModeExample() {
 				TrackStartValueLabelEnabled:          true,
 				TrackEndValueLabelEnabled:            true,
 			})
+			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+				ThumbDualValueModeEnabled:      true,
+				ThumbValueTwoWayStatePath:      "lowerValue",
+				ThumbAriaLabel:                 "Upper label minimum",
+				ThumbUpperValueTwoWayStatePath: "upperValue",
+				ThumbUpperAriaLabel:            "Upper label maximum",
+				ThumbUpperLabel:                "Max",
+				ThumbUpperLabelIcon:            "ph-arrow-up",
+				ThumbUpperLabelOneWayStatePath: "upperValue",
+				TrackStartValue:                "0",
+				TrackEndValue:                  "100",
+				TrackSteps:                     "1",
+			})
+		</div>
+	}
+}
+
+templ RangeSliderStaticValuesExample() {
+	{{
+		staticValuesUsage := `@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+	ThumbDualValueModeEnabled: true,
+	ThumbValue:                "25",
+	ThumbUpperValue:           "75",
+
+	// OptionalFields
+	TrackStartValue: "0",
+	TrackEndValue:   "100",
+})`
+	}}
+	@DemoExampleCard(
+		"Static Thumb Values",
+		"ThumbValue places one thumb without binding Alpine state. In dual mode ThumbUpperValue places the upper thumb.",
+		"/control/rangeSlider.templ", staticValuesUsage,
+	) {
+		<div class="flex flex-col gap-3">
+			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+				ThumbValue:      "30",
+				TrackStartValue: "0",
+				TrackEndValue:   "100",
+			})
+			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+				ThumbDualValueModeEnabled: true,
+				ThumbValue:                "25",
+				ThumbAriaLabel:            "Static minimum",
+				ThumbUpperValue:           "75",
+				ThumbUpperAriaLabel:       "Static maximum",
+				TrackStartValue:           "0",
+				TrackEndValue:             "100",
+			})
 		</div>
 	}
 }
@@ -486,8 +578,7 @@ templ RangeSliderNormalizationExample() {
 	@DemoExampleCard(
 		"Initial State Normalization",
 		"ShouldNormalizeInitialState orders crossed thumbs and pulls out-of-range values back into the track on load. Without it the thumbs start where the state says.",
-		"/control/rangeSlider.templ",
-		normalizeUsage,
+		"/control/rangeSlider.templ", normalizeUsage,
 	) {
 		<div id="range-slider-initial-state-demo" x-data="{lowerValue: 80, upperValue: 20, overflowLowerValue: 150, overflowUpperValue: 20, sliderValue: 150}" class="flex flex-col gap-3">
 			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
@@ -571,6 +662,7 @@ templ RangeSliderDemo() {
 			{Title: "Steps & Ticks", Icon: "ph-dots-nine", Content: RangeSliderStepsTicksExample()},
 			{Title: "Track Tooltip", Icon: "ph-cursor-click", Content: RangeSliderTrackTooltipExample()},
 			{Title: "Dual-Thumb Mode", Icon: "ph-arrows-left-right", Content: RangeSliderDualModeExample()},
+			{Title: "Static Thumb Values", Icon: "ph-hash", Content: RangeSliderStaticValuesExample()},
 			{Title: "Initial State Normalization", Icon: "ph-sort-ascending", Content: RangeSliderNormalizationExample()},
 		})
 	</div>

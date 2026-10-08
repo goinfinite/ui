@@ -5,6 +5,7 @@ import (
 	"context"
 	"reflect"
 	"regexp"
+	"strings"
 	"testing"
 
 	uiForm "github.com/goinfinite/ui/src/form"
@@ -14,56 +15,6 @@ import (
 type dataTableTestRecord struct {
 	Id   string
 	Name string
-}
-
-func TestDataTableInitialFilterValuesResolver(t *testing.T) {
-	testCases := []struct {
-		name           string
-		filters        []FilterSettings
-		providedValues map[string]any
-		expectedValues map[string]any
-	}{
-		{
-			name: "defaults for scalar and range filters",
-			filters: []FilterSettings{
-				{Key: "name", Kind: FilterKindTextContains},
-				{Key: "cpu", Kind: FilterKindNumberRange},
-			},
-			expectedValues: map[string]any{
-				"name": "",
-				"cpu":  map[string]string{"min": "", "max": ""},
-			},
-		},
-		{
-			name: "provided values override defaults",
-			filters: []FilterSettings{
-				{Key: "status", Kind: FilterKindEnumSelect},
-			},
-			providedValues: map[string]any{"status": "running"},
-			expectedValues: map[string]any{"status": "running"},
-		},
-		{
-			name:           "no filters and no provided values",
-			filters:        []FilterSettings{},
-			expectedValues: map[string]any{},
-		},
-	}
-
-	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
-			settings := DataTableSettings[dataTableTestRecord]{
-				Filters:             testCase.filters,
-				InitialFilterValues: testCase.providedValues,
-			}
-			actualValues := settings.initialFilterValuesResolver()
-			if !reflect.DeepEqual(actualValues, testCase.expectedValues) {
-				t.Errorf(
-					"InitialFilterValuesMismatch: got %v, want %v",
-					actualValues, testCase.expectedValues,
-				)
-			}
-		})
-	}
 }
 
 func TestDataTableClientSettingsResolver(t *testing.T) {
@@ -77,27 +28,16 @@ func TestDataTableClientSettingsResolver(t *testing.T) {
 		InitialSearchQuery:   "alpha",
 		InitialSortDirection: DataTableSortDirectionAsc,
 		InitialSortKey:       "name",
+		MaxVisibleRows:       3,
 		QueryUrlTemplate:     "/records?page={pageNumber}",
 	}
 	clientSettings := settings.clientSettingsResolver(5, 2)
 
-	expectedQueryParamNames := map[string]string{"status": "status", "cpu": "cores"}
-	if !reflect.DeepEqual(clientSettings.FilterQueryParamNames, expectedQueryParamNames) {
-		t.Errorf(
-			"FilterQueryParamNamesMismatch: got %v, want %v",
-			clientSettings.FilterQueryParamNames, expectedQueryParamNames,
-		)
-	}
-	expectedFilterValues := map[string]any{
-		"status": "running",
-		"cpu":    map[string]string{"min": "", "max": ""},
-	}
-	if !reflect.DeepEqual(clientSettings.InitialState.FilterValues, expectedFilterValues) {
-		t.Errorf(
-			"FilterValuesMismatch: got %v, want %v",
-			clientSettings.InitialState.FilterValues, expectedFilterValues,
-		)
-	}
+	assertFilterSettings(
+		t,
+		clientSettings.FilterQueryParamNames,
+		clientSettings.InitialState.FilterValues,
+	)
 	if clientSettings.InitialState.ItemsPerPage != 5 {
 		t.Errorf("ItemsPerPageMismatch: got %d, want 5", clientSettings.InitialState.ItemsPerPage)
 	}
@@ -113,14 +53,17 @@ func TestDataTableClientSettingsResolver(t *testing.T) {
 	if clientSettings.InitialState.SortKey != "name" {
 		t.Errorf("SortKeyMismatch: got %q, want %q", clientSettings.InitialState.SortKey, "name")
 	}
-	if clientSettings.RefreshDebounceMs != dataTableDefaultRefreshDebounceMs {
+	if clientSettings.RefreshDebounceMs != defaultRefreshDebounceMs {
 		t.Errorf(
 			"RefreshDebounceMsMismatch: got %d, want %d",
-			clientSettings.RefreshDebounceMs, dataTableDefaultRefreshDebounceMs,
+			clientSettings.RefreshDebounceMs, defaultRefreshDebounceMs,
 		)
 	}
 	if clientSettings.QueryUrlTemplate != "/records?page={pageNumber}" {
 		t.Errorf("QueryUrlTemplateMismatch: got %q, want %q", clientSettings.QueryUrlTemplate, "/records?page={pageNumber}")
+	}
+	if clientSettings.MaxVisibleRows != 3 {
+		t.Errorf("MaxVisibleRowsMismatch: got %d, want 3", clientSettings.MaxVisibleRows)
 	}
 
 	overrideSettings := settings
@@ -128,56 +71,6 @@ func TestDataTableClientSettingsResolver(t *testing.T) {
 	overrideClientSettings := overrideSettings.clientSettingsResolver(5, 1)
 	if overrideClientSettings.RefreshDebounceMs != 750 {
 		t.Errorf("RefreshDebounceMsMismatch: got %d, want 750", overrideClientSettings.RefreshDebounceMs)
-	}
-}
-
-func TestDataTableAlignmentClassResolver(t *testing.T) {
-	testCases := []struct {
-		name              string
-		alignment         DataTableAlignment
-		expectedClassName string
-	}{
-		{name: "left", alignment: DataTableAlignmentLeft, expectedClassName: "text-left"},
-		{name: "center", alignment: DataTableAlignmentCenter, expectedClassName: "text-center"},
-		{name: "right", alignment: DataTableAlignmentRight, expectedClassName: "text-right"},
-		{name: "default", alignment: "", expectedClassName: "text-left"},
-	}
-
-	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
-			actualClassName := testCase.alignment.alignmentClassResolver()
-			if actualClassName != testCase.expectedClassName {
-				t.Errorf(
-					"AlignmentClassMismatch(%q): got %q, want %q",
-					testCase.alignment, actualClassName, testCase.expectedClassName,
-				)
-			}
-		})
-	}
-}
-
-func TestDataTableJustifyClassResolver(t *testing.T) {
-	testCases := []struct {
-		name              string
-		alignment         DataTableAlignment
-		expectedClassName string
-	}{
-		{name: "left", alignment: DataTableAlignmentLeft, expectedClassName: "justify-start"},
-		{name: "center", alignment: DataTableAlignmentCenter, expectedClassName: "justify-center"},
-		{name: "right", alignment: DataTableAlignmentRight, expectedClassName: "justify-end"},
-		{name: "default", alignment: "", expectedClassName: "justify-start"},
-	}
-
-	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
-			actualClassName := testCase.alignment.justifyClassResolver()
-			if actualClassName != testCase.expectedClassName {
-				t.Errorf(
-					"JustifyClassMismatch(%q): got %q, want %q",
-					testCase.alignment, actualClassName, testCase.expectedClassName,
-				)
-			}
-		})
 	}
 }
 
@@ -279,6 +172,79 @@ func TestDataTableRowStripeClassesResolver(t *testing.T) {
 	}
 }
 
+func TestDataTableRootClassesResolver(t *testing.T) {
+	defaultSettings := DataTableSettings[dataTableTestRecord]{}
+	defaultClasses := defaultSettings.rootClassesResolver()
+	if !strings.Contains(defaultClasses, "rounded-md") {
+		t.Errorf("RootClassesMissingBase: %q", defaultClasses)
+	}
+
+	sizedSettings := DataTableSettings[dataTableTestRecord]{
+		MinWidthClass: "min-w-96",
+		MaxWidthClass: "max-w-7xl",
+	}
+	sizedClasses := sizedSettings.rootClassesResolver()
+	for _, expectedClass := range []string{"min-w-96", "max-w-7xl"} {
+		if !strings.Contains(sizedClasses, expectedClass) {
+			t.Errorf("RootClassesMissing(%q): %q", expectedClass, sizedClasses)
+		}
+	}
+}
+
+func TestDataTableStickyHeaderClassesResolver(t *testing.T) {
+	defaultSettings := DataTableSettings[dataTableTestRecord]{}
+	defaultClasses := defaultSettings.stickyHeaderClassesResolver()
+	for _, expectedClass := range []string{"sticky", "top-0", "z-10", "bg-neutral-900"} {
+		if !strings.Contains(defaultClasses, expectedClass) {
+			t.Errorf("StickyHeaderClassesMissing(%q): %q", expectedClass, defaultClasses)
+		}
+	}
+
+	staticSettings := DataTableSettings[dataTableTestRecord]{IsHeaderStatic: true}
+	if actualClasses := staticSettings.stickyHeaderClassesResolver(); actualClasses != "" {
+		t.Errorf("StaticHeaderClassesNotEmpty: %q", actualClasses)
+	}
+}
+
+func TestDataTableScrollContainerClassesResolver(t *testing.T) {
+	defaultSettings := DataTableSettings[dataTableTestRecord]{}
+	defaultClasses := defaultSettings.scrollContainerClassesResolver()
+	for _, expectedClass := range []string{"overflow-auto", "max-h-128"} {
+		if !strings.Contains(defaultClasses, expectedClass) {
+			t.Errorf("ScrollContainerClassesMissing(%q): %q", expectedClass, defaultClasses)
+		}
+	}
+
+	staticSettings := DataTableSettings[dataTableTestRecord]{IsHeaderStatic: true}
+	staticClasses := staticSettings.scrollContainerClassesResolver()
+	if !strings.Contains(staticClasses, "overflow-x-auto") {
+		t.Errorf("StaticScrollContainerClassesMissingOverflowX: %q", staticClasses)
+	}
+	if strings.Contains(staticClasses, "max-h-128") {
+		t.Errorf("StaticScrollContainerClassesCarryDefaultMaxHeight: %q", staticClasses)
+	}
+
+	explicitHeightSettings := DataTableSettings[dataTableTestRecord]{
+		MaxHeightClass: "max-h-64",
+		MinHeightClass: "min-h-32",
+	}
+	explicitHeightClasses := explicitHeightSettings.scrollContainerClassesResolver()
+	for _, expectedClass := range []string{"max-h-64", "min-h-32"} {
+		if !strings.Contains(explicitHeightClasses, expectedClass) {
+			t.Errorf("ScrollContainerClassesMissing(%q): %q", expectedClass, explicitHeightClasses)
+		}
+	}
+	if strings.Contains(explicitHeightClasses, "max-h-128") {
+		t.Errorf("ScrollContainerClassesCarryDefaultMaxHeight: %q", explicitHeightClasses)
+	}
+
+	measuredRowsSettings := DataTableSettings[dataTableTestRecord]{MaxVisibleRows: 6}
+	measuredRowsClasses := measuredRowsSettings.scrollContainerClassesResolver()
+	if !strings.Contains(measuredRowsClasses, "max-h-128") {
+		t.Errorf("MeasuredRowsFallbackMissing: %q", measuredRowsClasses)
+	}
+}
+
 func TestDataTablePaginationAriaLabelResolver(t *testing.T) {
 	testCases := []struct {
 		name          string
@@ -315,9 +281,11 @@ func TestDataTablePaginationAriaLabelResolver(t *testing.T) {
 
 func TestDataTableItemsPerPageSizeChoicesResolver(t *testing.T) {
 	providedSettings := DataTableSettings[dataTableTestRecord]{
-		ItemsPerPageSizeChoices: []DataTablePageSize{10, 20},
+		ItemsPerPageSizeChoices: []ItemsPerPage{10, 20},
 	}
-	actualProvidedChoices := providedSettings.itemsPerPageSizeChoicesResolver()
+	actualProvidedChoices := itemsPerPageSizeChoicesResolver(
+		providedSettings.ItemsPerPageSizeChoices,
+	)
 	expectedProvidedChoices := []uint{10, 20}
 	if !reflect.DeepEqual(actualProvidedChoices, expectedProvidedChoices) {
 		t.Errorf(
@@ -327,7 +295,9 @@ func TestDataTableItemsPerPageSizeChoicesResolver(t *testing.T) {
 	}
 
 	emptySettings := DataTableSettings[dataTableTestRecord]{}
-	actualDefaultChoices := emptySettings.itemsPerPageSizeChoicesResolver()
+	actualDefaultChoices := itemsPerPageSizeChoicesResolver(
+		emptySettings.ItemsPerPageSizeChoices,
+	)
 	expectedDefaultChoices := paginationDefaultItemsPerPageSizeChoices
 	if !reflect.DeepEqual(actualDefaultChoices, expectedDefaultChoices) {
 		t.Errorf(
@@ -341,7 +311,7 @@ func TestDataTableItemsPerPageResolver(t *testing.T) {
 	testCases := []struct {
 		name                    string
 		itemsPerPageSizeChoices []uint
-		itemsPerPage            DataTablePageSize
+		itemsPerPage            ItemsPerPage
 		expectedItemsPerPage    uint
 	}{
 		{
@@ -360,11 +330,8 @@ func TestDataTableItemsPerPageResolver(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			settings := DataTableSettings[dataTableTestRecord]{
-				ItemsPerPage: testCase.itemsPerPage,
-			}
-			actualItemsPerPage := settings.itemsPerPageResolver(
-				testCase.itemsPerPageSizeChoices,
+			actualItemsPerPage := itemsPerPageResolver(
+				testCase.itemsPerPage, testCase.itemsPerPageSizeChoices,
 			)
 			if actualItemsPerPage != testCase.expectedItemsPerPage {
 				t.Errorf(
@@ -401,8 +368,7 @@ func TestDataTableIdResolver(t *testing.T) {
 	rowVariantId := rowVariantSettings.idResolver()
 	if rowVariantId != derivedId {
 		t.Errorf(
-			"IdChangedWithDifferentRows: %q != %q",
-			rowVariantId, derivedId,
+			"IdChangedWithDifferentRows: %q != %q", rowVariantId, derivedId,
 		)
 	}
 
@@ -423,6 +389,10 @@ func TestDataTableIdResolver(t *testing.T) {
 	if sortedId == derivedId {
 		t.Errorf("IdCollidedForDifferentSortKeys: %q", sortedId)
 	}
+
+	if !strings.HasPrefix(derivedId, "dataTable-") {
+		t.Errorf("IdMissingComponentPrefix: got %q, want %q", derivedId, "dataTable-")
+	}
 }
 
 func TestDataTableWiresOneBasedPageDisplayIntoPageStripBuilder(t *testing.T) {
@@ -441,5 +411,34 @@ func TestDataTableWiresOneBasedPageDisplayIntoPageStripBuilder(t *testing.T) {
 	)
 	if !oneBasedStripCallPattern.MatchString(buffer.String()) {
 		t.Errorf("RenderedHtmlMissingOneBasedPageStripCall")
+	}
+}
+
+func TestDataTableRendersItsSettingsScriptInsideItsRoot(t *testing.T) {
+	settings := DataTableSettings[dataTableTestRecord]{
+		Id:               "records-table",
+		Columns:          []DataTableColumnSettings[dataTableTestRecord]{{Label: "Name"}},
+		QueryUrlTemplate: "/records?page={pageNumber}",
+	}
+	var buffer bytes.Buffer
+	renderErr := DataTable(settings).Render(context.Background(), &buffer)
+	if renderErr != nil {
+		t.Fatalf("DataTableRenderFailed: %v", renderErr)
+	}
+	renderedHtml := buffer.String()
+	rootIndex := strings.Index(renderedHtml, `id="records-table"`)
+	settingsIndex := strings.Index(renderedHtml, `id="records-table-settings"`)
+	tableIndex := strings.Index(renderedHtml, `<div data-ui-data-table>`)
+	if rootIndex < 0 || settingsIndex < 0 || tableIndex < 0 {
+		t.Fatalf(
+			"RenderedHtmlMissingMarker: root=%d settings=%d table=%d",
+			rootIndex, settingsIndex, tableIndex,
+		)
+	}
+	if settingsIndex < rootIndex || settingsIndex > tableIndex {
+		t.Errorf(
+			"SettingsScriptRenderedOutsideTheRoot: root=%d settings=%d table=%d",
+			rootIndex, settingsIndex, tableIndex,
+		)
 	}
 }

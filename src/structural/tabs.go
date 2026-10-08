@@ -1,17 +1,13 @@
 package uiStructural
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
-	"sync/atomic"
+
+	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
-var tabIdCounter atomic.Uint64
-
-func generateTabIdPrefix() string {
-	return fmt.Sprintf("ui-tab-%d", tabIdCounter.Add(1))
-}
+var tabIdPrefixGenerator = uiToolset.NewComponentIdPrefixGenerator("ui-tab")
 
 func tabOrientationResolver(orientation string) string {
 	if orientation == TabOrientationVertical {
@@ -50,13 +46,6 @@ func tabEdgeClassResolver(
 	}
 	return "rounded-t-" + radius +
 		" border-b-2 border-transparent -mb-px"
-}
-
-func tabTextColorClassResolver(textColor string) string {
-	if textColor != "" {
-		return "text-" + textColor
-	}
-	return "text-neutral-50/80"
 }
 
 func tabPercentClassResolver(classPrefix string, percent uint) string {
@@ -99,98 +88,12 @@ func tabAlignmentClassResolver(alignment string) string {
 	return "self-start"
 }
 
-func tabPaddingClassResolver(paddingSize string) string {
-	switch paddingSize {
-	case TabPaddingSizeNone:
-		return "p-0"
-	case TabPaddingSizeXs:
-		return "p-3"
-	case TabPaddingSizeSm:
-		return "p-4"
-	case TabPaddingSizeMd:
-		return "p-5"
-	case TabPaddingSizeLg:
-		return "p-6"
-	case TabPaddingSizeXl:
-		return "p-8"
-	}
-	return ""
-}
-
-func tabGapClassResolver(gapSize string) string {
-	switch gapSize {
-	case TabGapSizeNone:
-		return "gap-0"
-	case TabGapSizeXs:
-		return "gap-1"
-	case TabGapSizeSm:
-		return "gap-2"
-	case TabGapSizeMd:
-		return "gap-3"
-	case TabGapSizeLg:
-		return "gap-6"
-	case TabGapSizeXl:
-		return "gap-8"
-	}
-	return "gap-1"
-}
-
-func tabRingClassResolver(ringColor, ringThickness string) string {
-	if ringColor == "" || ringThickness == "" {
-		return ""
-	}
-	ringThicknessClass := "ring-1"
-	switch ringThickness {
-	case TabRingThicknessSm:
-		ringThicknessClass = "ring-1.5"
-	case TabRingThicknessMd:
-		ringThicknessClass = "ring-2"
-	case TabRingThicknessLg:
-		ringThicknessClass = "ring-2.5"
-	case TabRingThicknessXl:
-		ringThicknessClass = "ring-3"
-	}
-	return ringThicknessClass + " ring-" + ringColor
-}
-
-func tabShadowClassResolver(shadowSize string) string {
-	switch shadowSize {
-	case TabShadowSizeNone:
-		return "shadow-none"
-	case TabShadowSizeXs:
-		return "shadow-xs"
-	case TabShadowSizeSm:
-		return "shadow-sm"
-	case TabShadowSizeMd:
-		return "shadow-md"
-	case TabShadowSizeLg:
-		return "shadow-lg"
-	case TabShadowSizeXl:
-		return "shadow-xl"
-	}
-	return ""
-}
-
-func tabBadgeBackgroundColorClassResolver(backgroundColor string) string {
-	if backgroundColor != "" {
-		return "bg-" + backgroundColor
-	}
-	return "bg-neutral-50/10"
-}
-
-func tabBadgeTextColorClassResolver(textColor string) string {
-	if textColor != "" {
-		return "text-" + textColor
-	}
-	return "text-neutral-50/80"
-}
-
 func tabBadgeClassesResolver(item TabItemSettings) string {
 	badgeClasses := "px-1.5 py-0.5 text-xs font-bold"
 	badgeClasses += " rounded-" + tabBorderRadiusTokenResolver(item.BadgeBorderRadius)
-	badgeClasses += " " + tabBadgeBackgroundColorClassResolver(item.BadgeBackgroundColor)
-	badgeClasses += " " + tabBadgeTextColorClassResolver(item.BadgeTextColor)
-	badgeRingClasses := tabRingClassResolver(item.BadgeRingColor, item.BadgeRingThickness)
+	badgeClasses += " " + uiToolset.BackgroundColorClassResolver(item.BadgeBackgroundColor, "bg-neutral-50/10")
+	badgeClasses += " " + uiToolset.TextColorClassResolver(item.BadgeTextColor, "text-neutral-50/80")
+	badgeRingClasses := uiToolset.RingClassResolver(item.BadgeRingColor, item.BadgeRingThickness)
 	if badgeRingClasses != "" {
 		badgeClasses += " " + badgeRingClasses
 	}

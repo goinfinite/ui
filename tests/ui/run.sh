@@ -19,7 +19,7 @@ validateInvocation() {
 }
 
 requireDemoUrl() {
-	if [ -z "${DEMO_URL:-}" ]; then
+	if [[ -z "${DEMO_URL:-}" ]]; then
 		echo "run.sh: DEMO_URL is unset; enter the suite through tests/tests.sh" >&2
 		exit 2
 	fi
