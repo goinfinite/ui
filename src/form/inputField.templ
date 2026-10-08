@@ -98,8 +98,10 @@ type InputFieldSettings struct {
 	AffixRightValue                   string
 	AffixRightStatePath               string
 	AffixRightWidthPercent            uint
+	AffixRightComponent               templ.Component
 	IconLeft                          string
 	InputId                           string
+	InputTypeExpression               string
 	InputNumberMin                    string
 	InputNumberMax                    string
 	InputNumberStep                   string
@@ -185,6 +187,9 @@ templ InputField(componentSettings InputFieldSettings) {
 				}
 				<input
 					type={ componentSettings.InputType }
+					if componentSettings.InputTypeExpression != "" {
+						:type={ componentSettings.InputTypeExpression }
+					}
 					if componentSettings.Label != "" {
 						aria-label={ componentSettings.Label }
 					}
@@ -245,6 +250,9 @@ templ InputField(componentSettings InputFieldSettings) {
 							{ componentSettings.AffixRightValue }
 						}
 					</div>
+				}
+				if componentSettings.AffixRightComponent != nil {
+					@componentSettings.AffixRightComponent
 				}
 				if shouldRenderInputHintTooltip(componentSettings.HintDisplay, componentSettings.HintValue, componentSettings.HintStatePath) {
 					<span class="flex items-center self-center">
