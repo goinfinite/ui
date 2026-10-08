@@ -5,6 +5,8 @@ import (
 	"context"
 	"strings"
 	"testing"
+
+	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
 func TestTabOrientationResolver(t *testing.T) {
@@ -100,30 +102,6 @@ func TestTabSideResolver(t *testing.T) {
 	}
 }
 
-func TestTabBorderRadiusTokenResolver(t *testing.T) {
-	tests := []struct {
-		name         string
-		borderRadius string
-		want         string
-	}{
-		{name: "empty defaults to md", borderRadius: "", want: TabBorderRadiusMd},
-		{name: "none", borderRadius: TabBorderRadiusNone, want: TabBorderRadiusNone},
-		{name: "xs", borderRadius: TabBorderRadiusXs, want: TabBorderRadiusXs},
-		{name: "sm", borderRadius: TabBorderRadiusSm, want: TabBorderRadiusSm},
-		{name: "md", borderRadius: TabBorderRadiusMd, want: TabBorderRadiusMd},
-		{name: "lg", borderRadius: TabBorderRadiusLg, want: TabBorderRadiusLg},
-		{name: "xl", borderRadius: TabBorderRadiusXl, want: TabBorderRadiusXl},
-		{name: "unknown defaults to md", borderRadius: "huge", want: TabBorderRadiusMd},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tabBorderRadiusTokenResolver(tt.borderRadius); got != tt.want {
-				t.Errorf("tabBorderRadiusTokenResolver(%q) = %q, want %q", tt.borderRadius, got, tt.want)
-			}
-		})
-	}
-}
-
 func TestTabEdgeClassResolver(t *testing.T) {
 	tests := []struct {
 		name         string
@@ -154,9 +132,15 @@ func TestTabEdgeClassResolver(t *testing.T) {
 		},
 		{
 			name:         "custom radius replaces the md token",
-			borderRadius: TabBorderRadiusNone,
+			borderRadius: uiToolset.BorderRadiusNone,
 			isVertical:   false,
 			want:         "rounded-t-none border-b-2 border-transparent -mb-px",
+		},
+		{
+			name:         "2xl radius resolves",
+			borderRadius: uiToolset.BorderRadius2xl,
+			isVertical:   false,
+			want:         "rounded-t-2xl border-b-2 border-transparent -mb-px",
 		},
 		{
 			name:         "unknown radius falls back to md",
@@ -278,7 +262,7 @@ func TestTabBadgeClassesResolver(t *testing.T) {
 			name: "custom colors and radius replace the defaults",
 			item: TabItemSettings{
 				BadgeBackgroundColor: "red-500/20",
-				BadgeBorderRadius:    TabBorderRadiusSm,
+				BadgeBorderRadius:    uiToolset.BorderRadiusSm,
 				BadgeTextColor:       "red-50",
 			},
 			want: "px-1.5 py-0.5 text-xs font-bold rounded-sm bg-red-500/20 text-red-50",

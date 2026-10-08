@@ -3,6 +3,7 @@ package main
 import (
 	uiControl "github.com/goinfinite/ui/src/control"
 	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
 templ ToastApiResponseExample() {
@@ -51,7 +52,7 @@ templ ToastMountSettingsExample() {
 	Size:               uiDisplay.ToastSizeMd,
 	RingThickness:      uiDisplay.ToastRingThicknessMd,
 	RingColor:          "neutral-500",
-	Radius:             uiDisplay.ToastRadiusMd,
+	Radius:             uiToolset.BorderRadiusMd,
 })`
 	}}
 	@DemoExampleCard(
@@ -75,7 +76,7 @@ templ ToastDemo() {
 	Size:               uiDisplay.ToastSizeMd,
 	RingThickness:      uiDisplay.ToastRingThicknessMd,
 	RingColor:          "neutral-500",
-	Radius:             uiDisplay.ToastRadiusMd,
+	Radius:             uiToolset.BorderRadiusMd,
 })
 @uiControl.Button(uiControl.ButtonSettings{
 	OnClickFunc: "$store.toast.displayToast('Saved!', 'success')",
@@ -96,7 +97,7 @@ templ ToastDemo() {
 				Size:               uiDisplay.ToastSizeMd,
 				RingThickness:      uiDisplay.ToastRingThicknessMd,
 				RingColor:          "neutral-500",
-				Radius:             uiDisplay.ToastRadiusMd,
+				Radius:             uiToolset.BorderRadiusMd,
 			})
 			<div class="flex flex-wrap gap-2" x-data>
 				@uiControl.Button(uiControl.ButtonSettings{

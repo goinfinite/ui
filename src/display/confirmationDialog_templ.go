@@ -537,7 +537,7 @@ func confirmationDialog(settings ConfirmationDialogSettings, tone confirmationTo
 			settings.HeaderIconPosition = HeaderIconPositionTop
 		}
 		if settings.HeaderIconBorderRadius == "" {
-			settings.HeaderIconBorderRadius = HeaderIconBorderRadiusXl
+			settings.HeaderIconBorderRadius = uiToolset.BorderRadiusXl
 		}
 		if settings.HeaderIconPaddingSize == "" {
 			settings.HeaderIconPaddingSize = HeaderIconPaddingSizeLg

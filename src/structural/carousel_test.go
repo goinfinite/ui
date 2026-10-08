@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/a-h/templ"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
 type carouselTestItem struct {
@@ -282,7 +283,7 @@ func TestCarouselSurfaceClassesResolver(t *testing.T) {
 	}
 
 	lgSettings := CarouselSettings[carouselTestItem]{
-		BorderRadius: CarouselBorderRadiusLg,
+		BorderRadius: uiToolset.BorderRadiusLg,
 	}
 	if lgClasses := lgSettings.surfaceClassesResolver(); !strings.Contains(lgClasses, "rounded-lg") {
 		t.Errorf("SurfaceClassesMissingLg: %q", lgClasses)
@@ -290,7 +291,7 @@ func TestCarouselSurfaceClassesResolver(t *testing.T) {
 
 	providedSettings := CarouselSettings[carouselTestItem]{
 		BackgroundColor: "neutral-800/50",
-		BorderRadius:    CarouselBorderRadiusXl,
+		BorderRadius:    uiToolset.BorderRadiusXl,
 		ShadowSize:      CarouselShadowSizeLg,
 		RingColor:       "secondary-500/30",
 		RingThickness:   CarouselRingThicknessMd,

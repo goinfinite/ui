@@ -23,19 +23,12 @@ func tabSideResolver(side string) string {
 	return TabSideLeft
 }
 
-func tabBorderRadiusTokenResolver(borderRadius string) string {
-	switch borderRadius {
-	case TabBorderRadiusNone, TabBorderRadiusXs, TabBorderRadiusSm,
-		TabBorderRadiusMd, TabBorderRadiusLg, TabBorderRadiusXl:
-		return borderRadius
-	}
-	return TabBorderRadiusMd
-}
-
 func tabEdgeClassResolver(
 	borderRadius string, isVertical, isRight bool,
 ) string {
-	radius := tabBorderRadiusTokenResolver(borderRadius)
+	radius := uiToolset.BorderRadiusTokenResolver(
+		borderRadius, uiToolset.BorderRadiusMd,
+	)
 	if isVertical {
 		if isRight {
 			return "rounded-r-" + radius +
@@ -90,7 +83,9 @@ func tabAlignmentClassResolver(alignment string) string {
 
 func tabBadgeClassesResolver(item TabItemSettings) string {
 	badgeClasses := "px-1.5 py-0.5 text-xs font-bold"
-	badgeClasses += " rounded-" + tabBorderRadiusTokenResolver(item.BadgeBorderRadius)
+	badgeClasses += " rounded-" + uiToolset.BorderRadiusTokenResolver(
+		item.BadgeBorderRadius, uiToolset.BorderRadiusMd,
+	)
 	badgeClasses += " " + uiToolset.BackgroundColorClassResolver(item.BadgeBackgroundColor, "bg-neutral-50/10")
 	badgeClasses += " " + uiToolset.TextColorClassResolver(item.BadgeTextColor, "text-neutral-50/80")
 	badgeRingClasses := uiToolset.RingClassResolver(item.BadgeRingColor, item.BadgeRingThickness)

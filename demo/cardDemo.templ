@@ -43,7 +43,7 @@ templ CardSurfaceEdgesExample() {
 	BackgroundColor:  "primary-900/60",
 	TextColor:        "neutral-50",
 	PaddingSize:      uiStructural.CardPaddingSizeLg,
-	BorderRadius:     uiStructural.CardBorderRadiusNone,
+	BorderRadius:     uiToolset.BorderRadiusNone,
 	ShadowSize:       uiStructural.CardShadowSizeLg,
 	RingColor:        "primary-500",
 	RingThickness:    uiStructural.CardRingThicknessMd,
@@ -71,7 +71,7 @@ templ CardSurfaceEdgesExample() {
 			MiddleContent:  CardDemoBody(),
 			HeaderTitle:    "Square Card",
 			HeaderIcon:     "ph-square",
-			BorderRadius:   uiStructural.CardBorderRadiusNone,
+			BorderRadius:   uiToolset.BorderRadiusNone,
 			ShadowSize:     uiStructural.CardShadowSizeLg,
 			ActionsContent: CardDemoActions(),
 		})
@@ -88,7 +88,7 @@ templ CardHeaderIconExample() {
 	HeaderIconPosition:        uiDisplay.HeaderIconPositionLeft,
 	HeaderIconColor:           "primary-100",
 	HeaderIconBackgroundColor: "primary-500/30",
-	HeaderIconBorderRadius:    uiDisplay.HeaderIconBorderRadiusLg,
+	HeaderIconBorderRadius:    uiToolset.BorderRadiusLg,
 	HeaderIconPaddingSize:     uiDisplay.HeaderIconPaddingSizeMd,
 })`
 	}}
@@ -105,7 +105,7 @@ templ CardHeaderIconExample() {
 				HeaderIconPosition:        uiDisplay.HeaderIconPositionTop,
 				HeaderIconColor:           "secondary-100",
 				HeaderIconBackgroundColor: "secondary-500/30",
-				HeaderIconBorderRadius:    uiDisplay.HeaderIconBorderRadiusLg,
+				HeaderIconBorderRadius:    uiToolset.BorderRadiusLg,
 				HeaderIconPaddingSize:     uiDisplay.HeaderIconPaddingSizeMd,
 			})
 			@uiStructural.Card(uiStructural.CardSettings{
@@ -115,7 +115,7 @@ templ CardHeaderIconExample() {
 				HeaderIconPosition:        uiDisplay.HeaderIconPositionLeft,
 				HeaderIconColor:           "amber-300",
 				HeaderIconBackgroundColor: "amber-500/20",
-				HeaderIconBorderRadius:    uiDisplay.HeaderIconBorderRadiusXl,
+				HeaderIconBorderRadius:    uiToolset.BorderRadiusXl,
 				HeaderIconPaddingSize:     uiDisplay.HeaderIconPaddingSizeSm,
 			})
 		</div>
@@ -135,7 +135,7 @@ templ CardContentOnlyExample() {
 	) {
 		@uiStructural.Card(uiStructural.CardSettings{
 			MiddleContent: CardDemoContentOnlyBody(),
-			BorderRadius:  uiStructural.CardBorderRadiusLg,
+			BorderRadius:  uiToolset.BorderRadiusLg,
 			ShadowSize:    uiStructural.CardShadowSizeSm,
 		})
 	}

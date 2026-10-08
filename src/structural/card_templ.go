@@ -14,13 +14,6 @@ import (
 )
 
 const (
-	CardBorderRadiusNone string = "none"
-	CardBorderRadiusXs   string = "xs"
-	CardBorderRadiusSm   string = "sm"
-	CardBorderRadiusMd   string = "md"
-	CardBorderRadiusLg   string = "lg"
-	CardBorderRadiusXl   string = "xl"
-
 	CardShadowSizeNone string = "none"
 	CardShadowSizeXs   string = "xs"
 	CardShadowSizeSm   string = "sm"

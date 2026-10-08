@@ -1,5 +1,17 @@
 package uiToolset
 
+const (
+	BorderRadiusNone string = "none"
+	BorderRadiusXs   string = "xs"
+	BorderRadiusSm   string = "sm"
+	BorderRadiusMd   string = "md"
+	BorderRadiusLg   string = "lg"
+	BorderRadiusXl   string = "xl"
+	BorderRadius2xl  string = "2xl"
+	BorderRadius3xl  string = "3xl"
+	BorderRadiusFull string = "full"
+)
+
 func BackgroundColorClassResolver(backgroundColor, fallbackClass string) string {
 	if backgroundColor != "" {
 		return "bg-" + backgroundColor
@@ -21,24 +33,22 @@ func BorderColorClassResolver(borderColor, fallbackClass string) string {
 	return fallbackClass
 }
 
-func BorderRadiusClassResolver(borderRadius, fallbackClass string) string {
+func BorderRadiusTokenResolver(borderRadius, fallbackToken string) string {
 	switch borderRadius {
-	case "none":
-		return "rounded-none"
-	case "xs":
-		return "rounded-xs"
-	case "sm":
-		return "rounded-sm"
-	case "md":
-		return "rounded-md"
-	case "lg":
-		return "rounded-lg"
-	case "xl":
-		return "rounded-xl"
-	case "full":
-		return "rounded-full"
+	case BorderRadiusNone, BorderRadiusXs, BorderRadiusSm, BorderRadiusMd,
+		BorderRadiusLg, BorderRadiusXl, BorderRadius2xl, BorderRadius3xl,
+		BorderRadiusFull:
+		return borderRadius
 	}
-	return fallbackClass
+	return fallbackToken
+}
+
+func BorderRadiusClassResolver(borderRadius, fallbackClass string) string {
+	resolvedToken := BorderRadiusTokenResolver(borderRadius, "")
+	if resolvedToken == "" {
+		return fallbackClass
+	}
+	return "rounded-" + resolvedToken
 }
 
 func ShapeClassResolver(shape, fallbackClass string) string {

@@ -19,13 +19,6 @@ const (
 	AccordionPaddingSizeMd   string = "md"
 	AccordionPaddingSizeLg   string = "lg"
 	AccordionPaddingSizeXl   string = "xl"
-
-	AccordionBorderRadiusNone string = "none"
-	AccordionBorderRadiusXs   string = "xs"
-	AccordionBorderRadiusSm   string = "sm"
-	AccordionBorderRadiusMd   string = "md"
-	AccordionBorderRadiusLg   string = "lg"
-	AccordionBorderRadiusXl   string = "xl"
 )
 
 type AccordionItemSettings struct {
@@ -55,21 +48,14 @@ type AccordionSettings struct {
 var accordionIdPrefixGenerator = uiToolset.NewComponentIdPrefixGenerator("ui-accordion")
 
 func accordionEdgeRadiusClassesResolver(borderRadius string) string {
-	switch borderRadius {
-	case AccordionBorderRadiusNone:
+	resolvedToken := uiToolset.BorderRadiusTokenResolver(
+		borderRadius, uiToolset.BorderRadiusMd,
+	)
+	if resolvedToken == uiToolset.BorderRadiusNone {
 		return ""
-	case AccordionBorderRadiusXs:
-		return "first:rounded-t-xs last:rounded-b-xs"
-	case AccordionBorderRadiusSm:
-		return "first:rounded-t-sm last:rounded-b-sm"
-	case AccordionBorderRadiusMd:
-		return "first:rounded-t-md last:rounded-b-md"
-	case AccordionBorderRadiusLg:
-		return "first:rounded-t-lg last:rounded-b-lg"
-	case AccordionBorderRadiusXl:
-		return "first:rounded-t-xl last:rounded-b-xl"
 	}
-	return "first:rounded-t-md last:rounded-b-md"
+	return "first:rounded-t-" + resolvedToken +
+		" last:rounded-b-" + resolvedToken
 }
 
 func Accordion(componentSettings AccordionSettings) templ.Component {
@@ -148,7 +134,7 @@ func Accordion(componentSettings AccordionSettings) templ.Component {
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue(groupName)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/accordion.templ`, Line: 91, Col: 21}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/accordion.templ`, Line: 77, Col: 21}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
 				if templ_7745c5c3_Err != nil {
@@ -234,7 +220,7 @@ func Accordion(componentSettings AccordionSettings) templ.Component {
 			var templ_7745c5c3_Var11 string
 			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(item.Title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/accordion.templ`, Line: 98, Col: 62}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/accordion.templ`, Line: 84, Col: 62}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {

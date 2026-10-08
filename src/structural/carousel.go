@@ -21,13 +21,6 @@ const (
 	CarouselSearchBoxPositionTop    string = "top"
 	CarouselSearchBoxPositionBottom string = "bottom"
 
-	CarouselBorderRadiusNone string = "none"
-	CarouselBorderRadiusXs   string = "xs"
-	CarouselBorderRadiusSm   string = "sm"
-	CarouselBorderRadiusMd   string = "md"
-	CarouselBorderRadiusLg   string = "lg"
-	CarouselBorderRadiusXl   string = "xl"
-
 	CarouselShadowSizeNone string = "none"
 	CarouselShadowSizeXs   string = "xs"
 	CarouselShadowSizeSm   string = "sm"

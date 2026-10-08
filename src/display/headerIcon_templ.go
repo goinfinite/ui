@@ -14,13 +14,6 @@ const (
 	HeaderIconPositionLeft string = "left"
 	HeaderIconPositionTop  string = "top"
 
-	HeaderIconBorderRadiusNone string = "none"
-	HeaderIconBorderRadiusXs   string = "xs"
-	HeaderIconBorderRadiusSm   string = "sm"
-	HeaderIconBorderRadiusMd   string = "md"
-	HeaderIconBorderRadiusLg   string = "lg"
-	HeaderIconBorderRadiusXl   string = "xl"
-
 	HeaderIconPaddingSizeNone string = "none"
 	HeaderIconPaddingSizeXs   string = "xs"
 	HeaderIconPaddingSizeSm   string = "sm"

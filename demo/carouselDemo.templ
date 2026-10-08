@@ -137,7 +137,7 @@ templ CarouselDemoStylingExample() {
 
 	// OptionalFields
 	BackgroundColor:       "neutral-800/50",
-	BorderRadius:          uiStructural.CarouselBorderRadiusXl,
+	BorderRadius:          uiToolset.BorderRadiusXl,
 	PaddingSize:           uiStructural.CarouselPaddingSizeLg,
 	GapSize:               uiStructural.CarouselGapSizeLg,
 	RingColor:             "secondary-500/30",
@@ -154,7 +154,7 @@ templ CarouselDemoStylingExample() {
 	DotsInactiveColor:     "neutral-50/20",
 	DotsSize:              uiStructural.CarouselDotsSizeLg,
 	ItemBackgroundColor:   "neutral-50/5",
-	ItemBorderRadius:      uiStructural.CarouselBorderRadiusLg,
+	ItemBorderRadius:      uiToolset.BorderRadiusLg,
 	ItemPaddingSize:       uiStructural.CarouselPaddingSizeMd,
 	ItemRingColor:         "neutral-50/10",
 	ItemRingThickness:     uiStructural.CarouselRingThicknessXs,
@@ -172,7 +172,7 @@ templ CarouselDemoStylingExample() {
 				stylingSettings := buildDemoCarouselSettings("carousel-demo-styling-carousel", dataTableDemoRecords[:6], 0, 6)
 			stylingSettings.ItemRenderer = func(record DemoServerRecord) templ.Component { return CarouselDemoPlainItem(record) }
 			stylingSettings.BackgroundColor = "neutral-800/50"
-			stylingSettings.BorderRadius = uiStructural.CarouselBorderRadiusXl
+			stylingSettings.BorderRadius = uiToolset.BorderRadiusXl
 			stylingSettings.PaddingSize = uiStructural.CarouselPaddingSizeLg
 			stylingSettings.GapSize = uiStructural.CarouselGapSizeLg
 			stylingSettings.RingColor = "secondary-500/30"
@@ -189,7 +189,7 @@ templ CarouselDemoStylingExample() {
 			stylingSettings.DotsInactiveColor = "neutral-50/20"
 			stylingSettings.DotsSize = uiStructural.CarouselDotsSizeLg
 			stylingSettings.ItemBackgroundColor = "neutral-50/5"
-			stylingSettings.ItemBorderRadius = uiStructural.CarouselBorderRadiusLg
+			stylingSettings.ItemBorderRadius = uiToolset.BorderRadiusLg
 			stylingSettings.ItemPaddingSize = uiStructural.CarouselPaddingSizeMd
 			stylingSettings.ItemRingColor = "neutral-50/10"
 			stylingSettings.ItemRingThickness = uiStructural.CarouselRingThicknessXs

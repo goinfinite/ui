@@ -11,13 +11,6 @@ const (
 	AccordionPaddingSizeMd   string = "md"
 	AccordionPaddingSizeLg   string = "lg"
 	AccordionPaddingSizeXl   string = "xl"
-
-	AccordionBorderRadiusNone string = "none"
-	AccordionBorderRadiusXs   string = "xs"
-	AccordionBorderRadiusSm   string = "sm"
-	AccordionBorderRadiusMd   string = "md"
-	AccordionBorderRadiusLg   string = "lg"
-	AccordionBorderRadiusXl   string = "xl"
 )
 
 type AccordionItemSettings struct {
@@ -47,21 +40,14 @@ type AccordionSettings struct {
 var accordionIdPrefixGenerator = uiToolset.NewComponentIdPrefixGenerator("ui-accordion")
 
 func accordionEdgeRadiusClassesResolver(borderRadius string) string {
-	switch borderRadius {
-	case AccordionBorderRadiusNone:
+	resolvedToken := uiToolset.BorderRadiusTokenResolver(
+		borderRadius, uiToolset.BorderRadiusMd,
+	)
+	if resolvedToken == uiToolset.BorderRadiusNone {
 		return ""
-	case AccordionBorderRadiusXs:
-		return "first:rounded-t-xs last:rounded-b-xs"
-	case AccordionBorderRadiusSm:
-		return "first:rounded-t-sm last:rounded-b-sm"
-	case AccordionBorderRadiusMd:
-		return "first:rounded-t-md last:rounded-b-md"
-	case AccordionBorderRadiusLg:
-		return "first:rounded-t-lg last:rounded-b-lg"
-	case AccordionBorderRadiusXl:
-		return "first:rounded-t-xl last:rounded-b-xl"
 	}
-	return "first:rounded-t-md last:rounded-b-md"
+	return "first:rounded-t-" + resolvedToken +
+		" last:rounded-b-" + resolvedToken
 }
 
 templ Accordion(componentSettings AccordionSettings) {

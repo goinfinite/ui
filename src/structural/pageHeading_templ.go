@@ -8,7 +8,10 @@ package uiStructural
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import uiDisplay "github.com/goinfinite/ui/src/display"
+import (
+	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
 
 const (
 	PageHeadingLevelPage    string = "page"
@@ -98,7 +101,7 @@ func PageHeading(componentSettings PageHeadingSettings) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if componentSettings.HeaderIconBorderRadius == "" {
-				componentSettings.HeaderIconBorderRadius = uiDisplay.HeaderIconBorderRadiusXl
+				componentSettings.HeaderIconBorderRadius = uiToolset.BorderRadiusXl
 			}
 		}
 		if componentSettings.Description != "" {

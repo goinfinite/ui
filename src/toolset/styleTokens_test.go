@@ -65,6 +65,35 @@ func TestBorderColorClassResolver(t *testing.T) {
 	}
 }
 
+func TestBorderRadiusTokenResolver(t *testing.T) {
+	testCases := []struct {
+		name          string
+		borderRadius  string
+		fallbackToken string
+		want          string
+	}{
+		{name: "empty takes the fallback", borderRadius: "", fallbackToken: BorderRadiusMd, want: BorderRadiusMd},
+		{name: "none", borderRadius: BorderRadiusNone, fallbackToken: BorderRadiusMd, want: BorderRadiusNone},
+		{name: "xs", borderRadius: BorderRadiusXs, fallbackToken: BorderRadiusMd, want: BorderRadiusXs},
+		{name: "sm", borderRadius: BorderRadiusSm, fallbackToken: BorderRadiusMd, want: BorderRadiusSm},
+		{name: "md", borderRadius: BorderRadiusMd, fallbackToken: BorderRadiusLg, want: BorderRadiusMd},
+		{name: "lg", borderRadius: BorderRadiusLg, fallbackToken: BorderRadiusMd, want: BorderRadiusLg},
+		{name: "xl", borderRadius: BorderRadiusXl, fallbackToken: BorderRadiusMd, want: BorderRadiusXl},
+		{name: "2xl", borderRadius: BorderRadius2xl, fallbackToken: BorderRadiusMd, want: BorderRadius2xl},
+		{name: "3xl", borderRadius: BorderRadius3xl, fallbackToken: BorderRadiusMd, want: BorderRadius3xl},
+		{name: "full", borderRadius: BorderRadiusFull, fallbackToken: BorderRadiusMd, want: BorderRadiusFull},
+		{name: "unknown takes the fallback", borderRadius: "huge", fallbackToken: BorderRadiusMd, want: BorderRadiusMd},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			got := BorderRadiusTokenResolver(testCase.borderRadius, testCase.fallbackToken)
+			if got != testCase.want {
+				t.Errorf("BorderRadiusTokenResolver() = %q, want %q", got, testCase.want)
+			}
+		})
+	}
+}
+
 func TestBorderRadiusClassResolver(t *testing.T) {
 	testCases := []struct {
 		name          string
@@ -79,6 +108,8 @@ func TestBorderRadiusClassResolver(t *testing.T) {
 		{name: "md", borderRadius: "md", fallbackClass: "rounded-lg", want: "rounded-md"},
 		{name: "lg", borderRadius: "lg", fallbackClass: "rounded-lg", want: "rounded-lg"},
 		{name: "xl", borderRadius: "xl", fallbackClass: "rounded-lg", want: "rounded-xl"},
+		{name: "2xl", borderRadius: "2xl", fallbackClass: "rounded-lg", want: "rounded-2xl"},
+		{name: "3xl", borderRadius: "3xl", fallbackClass: "rounded-lg", want: "rounded-3xl"},
 		{name: "full", borderRadius: "full", fallbackClass: "rounded-lg", want: "rounded-full"},
 		{name: "unknown takes the fallback", borderRadius: "huge", fallbackClass: "rounded-lg", want: "rounded-lg"},
 	}

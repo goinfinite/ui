@@ -25,13 +25,6 @@ const (
 	TabAlignmentCenter string = "center"
 	TabAlignmentBottom string = "bottom"
 
-	TabBorderRadiusNone string = "none"
-	TabBorderRadiusXs   string = "xs"
-	TabBorderRadiusSm   string = "sm"
-	TabBorderRadiusMd   string = "md"
-	TabBorderRadiusLg   string = "lg"
-	TabBorderRadiusXl   string = "xl"
-
 	TabGapSizeNone string = "none"
 	TabGapSizeXs   string = "xs"
 	TabGapSizeSm   string = "sm"
@@ -200,7 +193,7 @@ templ Tabs(componentSettings TabSettings) {
 		{{ tabPanelsClasses += " " + contentRingClasses }}
 	}
 	if componentSettings.ContentBorderRadius != "" {
-		{{ tabPanelsClasses += " rounded-" + tabBorderRadiusTokenResolver(componentSettings.ContentBorderRadius) }}
+		{{ tabPanelsClasses += " rounded-" + uiToolset.BorderRadiusTokenResolver(componentSettings.ContentBorderRadius, uiToolset.BorderRadiusMd) }}
 	}
 	{{ tabPanelsClasses += " " + uiToolset.TextColorClassResolver(componentSettings.ContentTextColor, "") }}
 	<!-- Tabs -->

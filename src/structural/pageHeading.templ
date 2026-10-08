@@ -1,6 +1,9 @@
 package uiStructural
 
-import uiDisplay "github.com/goinfinite/ui/src/display"
+import (
+	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
 
 const (
 	PageHeadingLevelPage    string = "page"
@@ -66,7 +69,7 @@ templ PageHeading(componentSettings PageHeadingSettings) {
 			{{ componentSettings.HeaderIconPaddingSize = uiDisplay.HeaderIconPaddingSizeSm }}
 		}
 		if componentSettings.HeaderIconBorderRadius == "" {
-			{{ componentSettings.HeaderIconBorderRadius = uiDisplay.HeaderIconBorderRadiusXl }}
+			{{ componentSettings.HeaderIconBorderRadius = uiToolset.BorderRadiusXl }}
 		}
 	}
 	if componentSettings.Description != "" {
