@@ -36,7 +36,7 @@ func TestSearchableSelectInputSelectionExpressionBuilders(t *testing.T) {
 			actual: searchableSelectInputSingleSelectExpressionBuilder(
 				"country", "'AR'", "'Argentina'", "; onCountryChange()",
 			),
-			expected: "selectedLabelCache['AR'] = 'Argentina'; country = 'AR';" +
+			expected: "selectedLabelCache.set('AR', 'Argentina'); country = 'AR';" +
 				" userInput = 'Argentina'; closeDropdown(); onCountryChange()",
 		},
 		{
@@ -44,7 +44,7 @@ func TestSearchableSelectInputSelectionExpressionBuilders(t *testing.T) {
 			actual: searchableSelectInputMultiToggleExpressionBuilder(
 				"countries", "'AR'", "'Argentina'", "",
 			),
-			expected: "selectedLabelCache['AR'] = 'Argentina'; countries =" +
+			expected: "selectedLabelCache.set('AR', 'Argentina'); countries =" +
 				" countries.includes('AR') ? countries.filter((item) =>" +
 				" item !== 'AR') : [...countries, 'AR']; userInput = ''",
 		},
@@ -189,7 +189,7 @@ func TestSearchableSelectInputRendersTagsAndCustomValues(t *testing.T) {
 	}
 	renderedHtml := buffer.String()
 	for _, expectedText := range []string{
-		"optionLabel(selectedValue)", "Remove ", "userInput.trim()",
+		"optionLabelResolver(selectedValue)", "Remove ", "userInput.trim()",
 		`name="countries"`,
 	} {
 		if !strings.Contains(renderedHtml, expectedText) {

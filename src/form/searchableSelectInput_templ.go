@@ -477,33 +477,33 @@ func searchableSelectInputTriggerEndIcons(settings searchableSelectInputShellSet
 		}
 		ctx = templ.ClearChildren(ctx)
 		hasSelectionExpression := searchableSelectInputHasSelectionExpressionBuilder(settings.TwoWayStatePath)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "<div class=\"flex shrink-0 items-center gap-2.5 text-neutral-100/60\"><!-- SearchableSelectDropdownIcon --><i class=\"ph-bold ph-caret-down pt-0.5 text-sm transition-transform hover:text-neutral-300 group-focus-within:text-neutral-300 group-hover:text-neutral-300\" :class=\"isOpen ? 'rotate-180' : ''\"></i><!-- SearchableSelectClearIcon --><i x-show=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "<div class=\"flex shrink-0 items-center gap-2.5 text-neutral-100/60\"><!-- SearchableSelectDropdownIcon --><i class=\"ph-bold ph-caret-down pt-0.5 text-sm transition-transform hover:text-neutral-300 group-focus-within:text-neutral-300 group-hover:text-neutral-300\" :class=\"isOpen ? 'rotate-180' : ''\"></i><!-- SearchableSelectClearButton --><button type=\"button\" x-show=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var22 string
 		templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.ResolveAttributeValue(hasSelectionExpression)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/searchableSelectInput.templ`, Line: 154, Col: 34}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/searchableSelectInput.templ`, Line: 155, Col: 34}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var22)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\" @click.stop.prevent=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\" aria-label=\"Clear selection\" @click.stop.prevent=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var23 string
 		templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.ResolveAttributeValue(searchableSelectInputClearExpressionBuilder(settings.TwoWayStatePath, settings.ClientConfig.IsMultiSelect, settings.OnChangeSuffix))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/searchableSelectInput.templ`, Line: 155, Col: 156}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/searchableSelectInput.templ`, Line: 157, Col: 156}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var23)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "\" class=\"ph-bold ph-x-circle text-lg hover:text-neutral-300\"></i> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "\" class=\"cursor-pointer rounded bg-transparent leading-none transition-colors hover:text-neutral-300\"><i class=\"ph-bold ph-x-circle text-lg\"></i></button> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -531,9 +531,9 @@ func searchableSelectInputTriggerEndIcons(settings searchableSelectInputShellSet
 	})
 }
 
-func searchableSelectInputLocalOptionRow(
+func searchableSelectInputOptionRow(
 	settings searchableSelectInputShellSettings,
-	optionValue, optionLabel string,
+	visibilityExpression, valueExpression, labelExpression, labelText string,
 	optionContent templ.Component,
 ) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -556,66 +556,74 @@ func searchableSelectInputLocalOptionRow(
 			templ_7745c5c3_Var24 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		valueExpression := strconv.Quote(optionValue)
-		labelExpression := strconv.Quote(optionLabel)
 		selectedExpression := searchableSelectInputSelectedExpressionBuilder(settings.TwoWayStatePath, valueExpression, settings.ClientConfig.IsMultiSelect)
 		clickExpression := searchableSelectInputSingleSelectExpressionBuilder(settings.TwoWayStatePath, valueExpression, labelExpression, settings.OnChangeSuffix)
 		if settings.ClientConfig.IsMultiSelect {
 			clickExpression = searchableSelectInputMultiToggleExpressionBuilder(settings.TwoWayStatePath, valueExpression, labelExpression, settings.OnChangeSuffix)
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "<li x-show=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "<li")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var25 string
-		templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.ResolveAttributeValue("isItemVisible(" + valueExpression + ")")
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/searchableSelectInput.templ`, Line: 186, Col: 54}
+		if visibilityExpression != "" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, " x-show=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var25 string
+			templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.ResolveAttributeValue(visibilityExpression)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/searchableSelectInput.templ`, Line: 190, Col: 32}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var25)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var25)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "\" class=\"border-t border-neutral-50/5 first:border-t-0\"><button type=\"button\" role=\"option\" :aria-selected=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, " class=\"border-t border-neutral-50/5 first:border-t-0\"><button type=\"button\" role=\"option\" :aria-selected=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var26 string
 		templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.ResolveAttributeValue(selectedExpression)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/searchableSelectInput.templ`, Line: 190, Col: 38}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/searchableSelectInput.templ`, Line: 197, Col: 38}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var26)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "\" @click=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "\" @click=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var27 string
 		templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.ResolveAttributeValue(clickExpression)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/searchableSelectInput.templ`, Line: 191, Col: 27}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/searchableSelectInput.templ`, Line: 198, Col: 27}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var27)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "\" class=\"flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-left transition-colors hover:bg-neutral-50/5\"><span class=\"flex h-4 w-4 shrink-0 items-center justify-center rounded border-2 border-neutral-50/20 text-transparent transition-colors\" :class=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "\" class=\"flex w-full cursor-pointer items-center gap-2 bg-transparent px-3 py-2 text-left outline-none transition-colors hover:bg-neutral-50/5 focus-visible:bg-neutral-50/10\"><span class=\"flex h-4 w-4 shrink-0 items-center justify-center rounded border-2 border-neutral-50/20 text-transparent transition-colors\" :class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var28 string
 		templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.ResolveAttributeValue(selectedExpression + " ? 'border-secondary-500 text-secondary-500' : ''")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/searchableSelectInput.templ`, Line: 196, Col: 85}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/searchableSelectInput.templ`, Line: 203, Col: 85}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var28)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "\"><i class=\"ph-bold ph-check text-[0.625rem]\"></i></span> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "\"><i class=\"ph-bold ph-check text-[0.625rem]\"></i></span> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -624,26 +632,44 @@ func searchableSelectInputLocalOptionRow(
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "<span class=\"text-sm text-neutral-50\">")
+		} else if labelText != "" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "<span class=\"text-sm text-neutral-50\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var29 string
-			templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(optionLabel)
+			templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(labelText)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/searchableSelectInput.templ`, Line: 203, Col: 55}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/searchableSelectInput.templ`, Line: 210, Col: 53}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "</span>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		} else {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "<span class=\"text-sm text-neutral-50\" x-text=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var30 string
+			templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.ResolveAttributeValue(labelExpression)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/searchableSelectInput.templ`, Line: 212, Col: 66}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var30)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "\"></span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "</button></li>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "</button></li>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -667,38 +693,38 @@ func searchableSelectInputSelectedLabels(settings searchableSelectInputShellSett
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var30 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var30 == nil {
-			templ_7745c5c3_Var30 = templ.NopComponent
+		templ_7745c5c3_Var31 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var31 == nil {
+			templ_7745c5c3_Var31 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "<span class=\"max-w-full truncate text-sm text-neutral-100\" x-show=\"")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var31 string
-		templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.ResolveAttributeValue(searchableSelectInputHasSelectionExpressionBuilder(settings.TwoWayStatePath))
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/searchableSelectInput.templ`, Line: 212, Col: 87}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var31)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "\" x-text=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "<span class=\"max-w-full truncate text-sm text-neutral-100\" x-show=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var32 string
-		templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.ResolveAttributeValue("optionLabelsText(" + settings.TwoWayStatePath + ")")
+		templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.ResolveAttributeValue(searchableSelectInputHasSelectionExpressionBuilder(settings.TwoWayStatePath))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/searchableSelectInput.templ`, Line: 213, Col: 63}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/searchableSelectInput.templ`, Line: 221, Col: 87}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var32)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "\"></span>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "\" x-text=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var33 string
+		templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.ResolveAttributeValue("optionLabelsTextResolver(" + settings.TwoWayStatePath + ")")
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/searchableSelectInput.templ`, Line: 222, Col: 71}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var33)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "\"></span>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -722,38 +748,38 @@ func searchableSelectInputSelectedTags(settings searchableSelectInputShellSettin
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var33 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var33 == nil {
-			templ_7745c5c3_Var33 = templ.NopComponent
+		templ_7745c5c3_Var34 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var34 == nil {
+			templ_7745c5c3_Var34 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "<template x-for=\"")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var34 string
-		templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.ResolveAttributeValue("selectedValue in " + settings.TwoWayStatePath)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/searchableSelectInput.templ`, Line: 218, Col: 65}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var34)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "\" :key=\"selectedValue\"><span class=\"inline-flex max-w-full items-center gap-1 rounded bg-neutral-50/10 px-1.5 py-0.5 text-xs text-neutral-100\"><span class=\"truncate\" x-text=\"optionLabel(selectedValue)\"></span> <button type=\"button\" class=\"shrink-0 text-neutral-400 transition-colors hover:text-neutral-100\" :aria-label=\"'Remove ' + optionLabel(selectedValue)\" @click.stop=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "<template x-for=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var35 string
-		templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.ResolveAttributeValue(searchableSelectInputTagRemoveExpressionBuilder(settings.TwoWayStatePath, "selectedValue", settings.OnChangeSuffix))
+		templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.ResolveAttributeValue("selectedValue in " + settings.TwoWayStatePath)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/searchableSelectInput.templ`, Line: 225, Col: 133}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/searchableSelectInput.templ`, Line: 227, Col: 65}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var35)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "\"><i class=\"ph-bold ph-x text-[0.625rem]\"></i></button></span></template>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "\" :key=\"selectedValue\"><span class=\"inline-flex w-fit max-w-full items-center rounded border border-secondary-500 bg-secondary-500 text-neutral-50\"><span class=\"max-w-full truncate rounded bg-neutral-50/10 px-1.5 py-0.5 text-xs\" x-text=\"optionLabelResolver(selectedValue)\"></span> <button type=\"button\" class=\"flex cursor-pointer items-center rounded bg-transparent p-0.5 transition-opacity hover:opacity-80\" :aria-label=\"'Remove ' + optionLabelResolver(selectedValue)\" @click.stop=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var36 string
+		templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.ResolveAttributeValue(searchableSelectInputTagRemoveExpressionBuilder(settings.TwoWayStatePath, "selectedValue", settings.OnChangeSuffix))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/searchableSelectInput.templ`, Line: 234, Col: 133}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var36)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "\"><i class=\"ph-bold ph-x text-[0.625rem] leading-none\"></i></button></span></template>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -779,71 +805,71 @@ func searchableSelectInputHiddenInputs(
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var36 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var36 == nil {
-			templ_7745c5c3_Var36 = templ.NopComponent
+		templ_7745c5c3_Var37 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var37 == nil {
+			templ_7745c5c3_Var37 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		if inputName != "" {
 			if isMultiSelect {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "<template x-for=\"")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				var templ_7745c5c3_Var37 string
-				templ_7745c5c3_Var37, templ_7745c5c3_Err = templ.ResolveAttributeValue("selectedValue in " + statePath)
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/searchableSelectInput.templ`, Line: 238, Col: 52}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var37)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "\" :key=\"selectedValue\"><input type=\"hidden\" name=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "<template x-for=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var38 string
-				templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.ResolveAttributeValue(inputName)
+				templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.ResolveAttributeValue("selectedValue in " + statePath)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/searchableSelectInput.templ`, Line: 239, Col: 41}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/searchableSelectInput.templ`, Line: 247, Col: 52}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var38)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "\" :value=\"selectedValue\"></template>")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "<input type=\"hidden\" name=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "\" :key=\"selectedValue\"><input type=\"hidden\" name=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var39 string
 				templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.ResolveAttributeValue(inputName)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/searchableSelectInput.templ`, Line: 242, Col: 40}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/searchableSelectInput.templ`, Line: 248, Col: 41}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var39)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "\" :value=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "\" :value=\"selectedValue\"></template>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			} else {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 57, "<input type=\"hidden\" name=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var40 string
-				templ_7745c5c3_Var40, templ_7745c5c3_Err = templ.ResolveAttributeValue(statePath)
+				templ_7745c5c3_Var40, templ_7745c5c3_Err = templ.ResolveAttributeValue(inputName)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/searchableSelectInput.templ`, Line: 242, Col: 61}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/searchableSelectInput.templ`, Line: 251, Col: 40}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var40)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, "\" :value=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var41 string
+				templ_7745c5c3_Var41, templ_7745c5c3_Err = templ.ResolveAttributeValue(statePath)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/searchableSelectInput.templ`, Line: 251, Col: 61}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var41)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, "\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -853,10 +879,7 @@ func searchableSelectInputHiddenInputs(
 	})
 }
 
-func searchableSelectInputLocalDropdown(
-	settings searchableSelectInputShellSettings,
-	flatOptions []string, labelValueOptions []SelectLabelValueOption,
-) templ.Component {
+func searchableSelectInputDropdown(settings searchableSelectInputShellSettings) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -872,54 +895,38 @@ func searchableSelectInputLocalDropdown(
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var41 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var41 == nil {
-			templ_7745c5c3_Var41 = templ.NopComponent
+		templ_7745c5c3_Var42 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var42 == nil {
+			templ_7745c5c3_Var42 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		dropdownBackgroundClass := "bg-neutral-800/95"
-		if settings.DropdownBackgroundColor != "" {
-			dropdownBackgroundClass = "bg-" + settings.DropdownBackgroundColor
-		}
-		dropdownMaxHeightClass := "max-h-60"
-		if settings.DropdownMaxHeightClass != "" {
-			dropdownMaxHeightClass = settings.DropdownMaxHeightClass
-		}
-		var templ_7745c5c3_Var42 = []any{"absolute left-0 z-20 w-full overflow-auto rounded-md border border-neutral-50/5 shadow-lg hover:border-neutral-50/30 " + dropdownMaxHeightClass + " " + dropdownBackgroundClass}
-		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var42...)
+		var templ_7745c5c3_Var43 = []any{searchableSelectInputDropdownClassesResolver(settings)}
+		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var43...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "<ul x-ref=\"searchableSelectDropdown\" class=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "<ul x-ref=\"searchableSelectDropdown\" class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var43 string
-		templ_7745c5c3_Var43, templ_7745c5c3_Err = templ.ResolveAttributeValue(templ.CSSClasses(templ_7745c5c3_Var42).String())
+		var templ_7745c5c3_Var44 string
+		templ_7745c5c3_Var44, templ_7745c5c3_Err = templ.ResolveAttributeValue(templ.CSSClasses(templ_7745c5c3_Var43).String())
 		if templ_7745c5c3_Err != nil {
 			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/searchableSelectInput.templ`, Line: 1, Col: 0}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var43)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var44)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 57, "\" :class=\"openUpward ? 'bottom-full mb-1' : 'mt-1'\" x-show=\"isOpen\" role=\"listbox\" x-transition>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, "\" :class=\"openUpward ? 'bottom-full mb-1' : 'mt-1'\" x-show=\"isOpen\" role=\"listbox\" x-transition>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		for _, option := range flatOptions {
-			templ_7745c5c3_Err = searchableSelectInputLocalOptionRow(settings, option, option, nil).Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
+		templ_7745c5c3_Err = templ_7745c5c3_Var42.Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
 		}
-		for _, option := range labelValueOptions {
-			templ_7745c5c3_Err = searchableSelectInputLocalOptionRow(settings, option.Value, option.Label, option.LabelHtml).Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, "<li x-show=\"hasNoMatches\" class=\"px-3 py-2 text-sm text-neutral-400\">No matches</li></ul>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 62, "</ul>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -943,12 +950,12 @@ func SearchableSelectInput(componentSettings SearchableSelectInputSettings) temp
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var44 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var44 == nil {
-			templ_7745c5c3_Var44 = templ.NopComponent
+		templ_7745c5c3_Var45 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var45 == nil {
+			templ_7745c5c3_Var45 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, "<!-- SearchableSelectInput -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, "<!-- SearchableSelectInput -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -958,7 +965,7 @@ func SearchableSelectInput(componentSettings SearchableSelectInputSettings) temp
 		}
 		presentation := searchableSelectInputSelectionPresentationResolver(componentSettings.IsMultiSelect, componentSettings.SelectionDisplay, componentSettings.ShouldAllowCustomValues)
 		isTagDisplay := presentation.Display == SearchableSelectInputSelectionDisplayTags
-		clientConfig := searchableSelectInputClientConfigResolver(componentSettings.IsMultiSelect, presentation.AllowCustomValues, componentSettings.FlatOptions, componentSettings.LabelValueOptions, nil)
+		clientConfig := searchableSelectInputClientConfigResolver(componentSettings.IsMultiSelect, componentSettings.FlatOptions, componentSettings.LabelValueOptions, nil)
 		enterExpression := ""
 		if presentation.AllowCustomValues {
 			enterExpression = searchableSelectInputCustomValueAddExpressionBuilder(componentSettings.TwoWayStatePath, onChangeSuffix)
@@ -969,7 +976,7 @@ func SearchableSelectInput(componentSettings SearchableSelectInputSettings) temp
 		}
 		initExpression := ""
 		if !componentSettings.IsMultiSelect {
-			initExpression = "$watch('" + componentSettings.TwoWayStatePath + "', (value) => { userInput = optionLabel(value) }); userInput = optionLabel(" + componentSettings.TwoWayStatePath + " ?? '')"
+			initExpression = "$watch('" + componentSettings.TwoWayStatePath + "', (value) => { userInput = optionLabelResolver(value) }); userInput = optionLabelResolver(" + componentSettings.TwoWayStatePath + " ?? '')"
 		}
 		shellSettings := searchableSelectInputShellSettings{
 			Label:                             componentSettings.Label,
@@ -993,7 +1000,7 @@ func SearchableSelectInput(componentSettings SearchableSelectInputSettings) temp
 			HintDisplayTooltipMaxHeightClass:  componentSettings.HintDisplayTooltipMaxHeightClass,
 			HintIconStyle:                     componentSettings.HintIconStyle,
 		}
-		templ_7745c5c3_Var45 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_Var46 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
 			if !templ_7745c5c3_IsBuffer {
@@ -1005,7 +1012,7 @@ func SearchableSelectInput(componentSettings SearchableSelectInputSettings) temp
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Var46 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+			templ_7745c5c3_Var47 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 				templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 				templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
 				if !templ_7745c5c3_IsBuffer {
@@ -1023,7 +1030,7 @@ func SearchableSelectInput(componentSettings SearchableSelectInputSettings) temp
 						return templ_7745c5c3_Err
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -1033,7 +1040,7 @@ func SearchableSelectInput(componentSettings SearchableSelectInputSettings) temp
 						return templ_7745c5c3_Err
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 65, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -1047,15 +1054,50 @@ func SearchableSelectInput(componentSettings SearchableSelectInputSettings) temp
 				}
 				return nil
 			})
-			templ_7745c5c3_Err = searchableSelectInputTriggerRow(shellSettings).Render(templ.WithChildren(ctx, templ_7745c5c3_Var46), templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = searchableSelectInputTriggerRow(shellSettings).Render(templ.WithChildren(ctx, templ_7745c5c3_Var47), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = searchableSelectInputLocalDropdown(
-				shellSettings,
-				componentSettings.FlatOptions,
-				componentSettings.LabelValueOptions,
-			).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Var48 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+				templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+				templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+				if !templ_7745c5c3_IsBuffer {
+					defer func() {
+						templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+						if templ_7745c5c3_Err == nil {
+							templ_7745c5c3_Err = templ_7745c5c3_BufErr
+						}
+					}()
+				}
+				ctx = templ.InitializeContext(ctx)
+				for _, option := range componentSettings.FlatOptions {
+					templ_7745c5c3_Err = searchableSelectInputOptionRow(
+						shellSettings,
+						"isItemVisible("+strconv.Quote(option)+")",
+						strconv.Quote(option), strconv.Quote(option), option, nil,
+					).Render(ctx, templ_7745c5c3_Buffer)
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				}
+				for _, option := range componentSettings.LabelValueOptions {
+					templ_7745c5c3_Err = searchableSelectInputOptionRow(
+						shellSettings,
+						"isItemVisible("+strconv.Quote(option.Value)+")",
+						strconv.Quote(option.Value), strconv.Quote(option.Label),
+						option.Label, option.LabelHtml,
+					).Render(ctx, templ_7745c5c3_Buffer)
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 66, " <li x-show=\"hasNoMatches\" class=\"px-3 py-2 text-sm text-neutral-400\">No matches</li>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				return nil
+			})
+			templ_7745c5c3_Err = searchableSelectInputDropdown(shellSettings).Render(templ.WithChildren(ctx, templ_7745c5c3_Var48), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1069,7 +1111,7 @@ func SearchableSelectInput(componentSettings SearchableSelectInputSettings) temp
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = searchableSelectInputShell(shellSettings).Render(templ.WithChildren(ctx, templ_7745c5c3_Var45), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = searchableSelectInputShell(shellSettings).Render(templ.WithChildren(ctx, templ_7745c5c3_Var46), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

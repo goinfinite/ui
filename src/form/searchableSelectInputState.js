@@ -2,7 +2,6 @@ UiToolset.RegisterAlpineState(() => {
   const searchableSelectInputDefaultConfig = {
     items: [],
     isMultiSelect: false,
-    allowCustomValues: false,
     remote: null,
   };
 
@@ -18,10 +17,11 @@ UiToolset.RegisterAlpineState(() => {
     isOpen: false,
     openUpward: false,
     userInput: "",
-    selectedLabelCache: {},
+    selectedLabelCache: new Map(),
     remoteOptions: [],
     isLoading: false,
     hasError: false,
+    isAwaitingRemoteOptions: false,
     remoteRequestId: 0,
     remoteDebounceTimer: null,
 
@@ -44,6 +44,10 @@ UiToolset.RegisterAlpineState(() => {
           `SearchableSelectInputInvalidConfigJson: ${parseError.message}`,
         );
       }
+    },
+
+    destroy() {
+      clearTimeout(this.remoteDebounceTimer);
     },
 
     openDropdown() {
@@ -84,6 +88,7 @@ UiToolset.RegisterAlpineState(() => {
         return (
           this.userInput.length >= this.config.remote.minQueryLength &&
           !this.isLoading &&
+          !this.isAwaitingRemoteOptions &&
           !this.hasError &&
           this.remoteOptions.length === 0
         );
@@ -99,12 +104,12 @@ UiToolset.RegisterAlpineState(() => {
       );
     },
 
-    get minQueryLengthPrompt() {
+    get minQueryLengthPromptResolver() {
       return `Type at least ${this.config.remote.minQueryLength} characters`;
     },
 
-    optionLabel(value) {
-      const cachedLabel = this.selectedLabelCache[value];
+    optionLabelResolver(value) {
+      const cachedLabel = this.selectedLabelCache.get(value);
       if (cachedLabel !== undefined) {
         return cachedLabel;
       }
@@ -117,11 +122,11 @@ UiToolset.RegisterAlpineState(() => {
       return value;
     },
 
-    optionLabelsText(values) {
+    optionLabelsTextResolver(values) {
       if (!Array.isArray(values) || values.length === 0) {
         return "";
       }
-      return values.map((value) => this.optionLabel(value)).join(", ");
+      return values.map((value) => this.optionLabelResolver(value)).join(", ");
     },
 
     onInputChanged() {
@@ -135,8 +140,10 @@ UiToolset.RegisterAlpineState(() => {
         this.remoteOptions = [];
         this.isLoading = false;
         this.hasError = false;
+        this.isAwaitingRemoteOptions = false;
         return;
       }
+      this.isAwaitingRemoteOptions = true;
       this.remoteDebounceTimer = setTimeout(
         () => this.fetchRemoteOptions(),
         remoteConfig.debounceMs,
@@ -148,6 +155,7 @@ UiToolset.RegisterAlpineState(() => {
       const requestId = ++this.remoteRequestId;
       this.isLoading = true;
       this.hasError = false;
+      this.isAwaitingRemoteOptions = false;
       try {
         const requestUrl = new URL(remoteConfig.url, window.location.href);
         requestUrl.searchParams.set(remoteConfig.queryParam, this.userInput);

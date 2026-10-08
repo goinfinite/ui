@@ -68,10 +68,9 @@ type searchableSelectInputRemoteConfig struct {
 }
 
 type searchableSelectInputClientConfig struct {
-	Items             []searchableSelectInputItemConfig  `json:"items"`
-	IsMultiSelect     bool                               `json:"isMultiSelect"`
-	AllowCustomValues bool                               `json:"allowCustomValues"`
-	Remote            *searchableSelectInputRemoteConfig `json:"remote,omitempty"`
+	Items         []searchableSelectInputItemConfig  `json:"items"`
+	IsMultiSelect bool                               `json:"isMultiSelect"`
+	Remote        *searchableSelectInputRemoteConfig `json:"remote,omitempty"`
 }
 
 func searchableSelectInputItemsResolver(
@@ -99,16 +98,32 @@ func searchableSelectInputItemsResolver(
 }
 
 func searchableSelectInputClientConfigResolver(
-	isMultiSelect, allowCustomValues bool,
+	isMultiSelect bool,
 	flatOptions []string, labelValueOptions []SelectLabelValueOption,
 	remoteConfig *searchableSelectInputRemoteConfig,
 ) searchableSelectInputClientConfig {
+	items := searchableSelectInputItemsResolver(flatOptions, labelValueOptions)
 	return searchableSelectInputClientConfig{
-		Items:             searchableSelectInputItemsResolver(flatOptions, labelValueOptions),
-		IsMultiSelect:     isMultiSelect,
-		AllowCustomValues: allowCustomValues,
-		Remote:            remoteConfig,
+		Items:         items,
+		IsMultiSelect: isMultiSelect,
+		Remote:        remoteConfig,
 	}
+}
+
+func searchableSelectInputDropdownClassesResolver(
+	settings searchableSelectInputShellSettings,
+) string {
+	dropdownBackgroundClass := "bg-neutral-800/95"
+	if settings.DropdownBackgroundColor != "" {
+		dropdownBackgroundClass = "bg-" + settings.DropdownBackgroundColor
+	}
+	dropdownMaxHeightClass := "max-h-60"
+	if settings.DropdownMaxHeightClass != "" {
+		dropdownMaxHeightClass = settings.DropdownMaxHeightClass
+	}
+	return "absolute left-0 z-20 w-full overflow-auto rounded-md " +
+		"border border-neutral-50/5 shadow-lg hover:border-neutral-50/30 " +
+		dropdownMaxHeightClass + " " + dropdownBackgroundClass
 }
 
 func searchableSelectInputHasSelectionExpressionBuilder(statePath string) string {
@@ -127,7 +142,7 @@ func searchableSelectInputSelectedExpressionBuilder(
 func searchableSelectInputSingleSelectExpressionBuilder(
 	statePath, valueExpression, labelExpression, onChangeSuffix string,
 ) string {
-	return "selectedLabelCache[" + valueExpression + "] = " + labelExpression +
+	return "selectedLabelCache.set(" + valueExpression + ", " + labelExpression + ")" +
 		"; " + statePath + " = " + valueExpression +
 		"; userInput = " + labelExpression +
 		"; closeDropdown()" + onChangeSuffix
@@ -136,7 +151,7 @@ func searchableSelectInputSingleSelectExpressionBuilder(
 func searchableSelectInputMultiToggleExpressionBuilder(
 	statePath, valueExpression, labelExpression, onChangeSuffix string,
 ) string {
-	return "selectedLabelCache[" + valueExpression + "] = " + labelExpression +
+	return "selectedLabelCache.set(" + valueExpression + ", " + labelExpression + ")" +
 		"; " + statePath + " = " + statePath + ".includes(" + valueExpression + ")" +
 		" ? " + statePath + ".filter((item) => item !== " + valueExpression + ")" +
 		" : [..." + statePath + ", " + valueExpression + "]" +

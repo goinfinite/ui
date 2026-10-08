@@ -58,7 +58,7 @@ func remoteSearchableSelectInputRemoteConfigResolver(
 	return remoteConfig
 }
 
-func searchableSelectInputRemoteOptionRow(settings searchableSelectInputShellSettings) templ.Component {
+func RemoteSearchableSelectInput(componentSettings RemoteSearchableSelectInputSettings) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -79,143 +79,7 @@ func searchableSelectInputRemoteOptionRow(settings searchableSelectInputShellSet
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		selectedExpression := searchableSelectInputSelectedExpressionBuilder(settings.TwoWayStatePath, "option.value", settings.ClientConfig.IsMultiSelect)
-		clickExpression := searchableSelectInputSingleSelectExpressionBuilder(settings.TwoWayStatePath, "option.value", "option.label", settings.OnChangeSuffix)
-		if settings.ClientConfig.IsMultiSelect {
-			clickExpression = searchableSelectInputMultiToggleExpressionBuilder(settings.TwoWayStatePath, "option.value", "option.label", settings.OnChangeSuffix)
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<li class=\"border-t border-neutral-50/5 first:border-t-0\"><button type=\"button\" role=\"option\" :aria-selected=\"")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var2 string
-		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.ResolveAttributeValue(selectedExpression)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/remoteSearchableSelectInput.templ`, Line: 63, Col: 38}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var2)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" @click=\"")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.ResolveAttributeValue(clickExpression)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/remoteSearchableSelectInput.templ`, Line: 64, Col: 27}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" class=\"flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-left transition-colors hover:bg-neutral-50/5\"><span class=\"flex h-4 w-4 shrink-0 items-center justify-center rounded border-2 border-neutral-50/20 text-transparent transition-colors\" :class=\"")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var4 string
-		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue(selectedExpression + " ? 'border-secondary-500 text-secondary-500' : ''")
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/remoteSearchableSelectInput.templ`, Line: 69, Col: 85}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\"><i class=\"ph-bold ph-check text-[0.625rem]\"></i></span> <span class=\"text-sm text-neutral-50\" x-text=\"option.label\"></span></button></li>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		return nil
-	})
-}
-
-func searchableSelectInputRemoteDropdown(settings searchableSelectInputShellSettings) templ.Component {
-	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
-			return templ_7745c5c3_CtxErr
-		}
-		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-		if !templ_7745c5c3_IsBuffer {
-			defer func() {
-				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err == nil {
-					templ_7745c5c3_Err = templ_7745c5c3_BufErr
-				}
-			}()
-		}
-		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var5 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var5 == nil {
-			templ_7745c5c3_Var5 = templ.NopComponent
-		}
-		ctx = templ.ClearChildren(ctx)
-		dropdownBackgroundClass := "bg-neutral-800/95"
-		if settings.DropdownBackgroundColor != "" {
-			dropdownBackgroundClass = "bg-" + settings.DropdownBackgroundColor
-		}
-		dropdownMaxHeightClass := "max-h-60"
-		if settings.DropdownMaxHeightClass != "" {
-			dropdownMaxHeightClass = settings.DropdownMaxHeightClass
-		}
-		var templ_7745c5c3_Var6 = []any{"absolute left-0 z-20 w-full overflow-auto rounded-md border border-neutral-50/5 shadow-lg hover:border-neutral-50/30 " + dropdownMaxHeightClass + " " + dropdownBackgroundClass}
-		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var6...)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<ul x-ref=\"searchableSelectDropdown\" class=\"")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var7 string
-		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.ResolveAttributeValue(templ.CSSClasses(templ_7745c5c3_Var6).String())
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/remoteSearchableSelectInput.templ`, Line: 1, Col: 0}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" :class=\"openUpward ? 'bottom-full mb-1' : 'mt-1'\" x-show=\"isOpen\" role=\"listbox\" x-transition><li x-show=\"isLoading\" class=\"flex items-center gap-2 px-3 py-2 text-sm text-neutral-400\"><i class=\"ph-bold ph-spinner animate-spin\"></i> Loading...</li><li x-show=\"hasError\" class=\"px-3 py-2 text-sm text-red-400\">Could not load options.</li><li x-show=\"shouldPromptMinQueryLength\" class=\"px-3 py-2 text-sm text-neutral-400\" x-text=\"minQueryLengthPrompt\"></li><template x-for=\"option in remoteOptions\" :key=\"option.value\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = searchableSelectInputRemoteOptionRow(settings).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</template><li x-show=\"hasNoMatches\" class=\"px-3 py-2 text-sm text-neutral-400\">No matches</li></ul>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		return nil
-	})
-}
-
-func RemoteSearchableSelectInput(componentSettings RemoteSearchableSelectInputSettings) templ.Component {
-	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
-			return templ_7745c5c3_CtxErr
-		}
-		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-		if !templ_7745c5c3_IsBuffer {
-			defer func() {
-				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err == nil {
-					templ_7745c5c3_Err = templ_7745c5c3_BufErr
-				}
-			}()
-		}
-		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var8 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var8 == nil {
-			templ_7745c5c3_Var8 = templ.NopComponent
-		}
-		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<!-- RemoteSearchableSelectInput -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!-- RemoteSearchableSelectInput -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -224,10 +88,10 @@ func RemoteSearchableSelectInput(componentSettings RemoteSearchableSelectInputSe
 			onChangeSuffix = "; " + componentSettings.OnChangeFunc
 		}
 		remoteConfig := remoteSearchableSelectInputRemoteConfigResolver(componentSettings.OptionsUrl, componentSettings.OptionsQueryParam, componentSettings.MinQueryLength, componentSettings.DebounceMs)
-		clientConfig := searchableSelectInputClientConfigResolver(componentSettings.IsMultiSelect, false, nil, nil, remoteConfig)
+		clientConfig := searchableSelectInputClientConfigResolver(componentSettings.IsMultiSelect, nil, nil, remoteConfig)
 		initExpression := ""
 		if !componentSettings.IsMultiSelect {
-			initExpression = "$watch('" + componentSettings.TwoWayStatePath + "', (value) => { userInput = optionLabel(value) }); userInput = optionLabel(" + componentSettings.TwoWayStatePath + " ?? '')"
+			initExpression = "$watch('" + componentSettings.TwoWayStatePath + "', (value) => { userInput = optionLabelResolver(value) }); userInput = optionLabelResolver(" + componentSettings.TwoWayStatePath + " ?? '')"
 		}
 		shellSettings := searchableSelectInputShellSettings{
 			Label:                             componentSettings.Label,
@@ -251,7 +115,7 @@ func RemoteSearchableSelectInput(componentSettings RemoteSearchableSelectInputSe
 			HintDisplayTooltipMaxHeightClass:  componentSettings.HintDisplayTooltipMaxHeightClass,
 			HintIconStyle:                     componentSettings.HintIconStyle,
 		}
-		templ_7745c5c3_Var9 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_Var2 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
 			if !templ_7745c5c3_IsBuffer {
@@ -263,7 +127,7 @@ func RemoteSearchableSelectInput(componentSettings RemoteSearchableSelectInputSe
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Var10 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+			templ_7745c5c3_Var3 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 				templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 				templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
 				if !templ_7745c5c3_IsBuffer {
@@ -281,7 +145,7 @@ func RemoteSearchableSelectInput(componentSettings RemoteSearchableSelectInputSe
 						return templ_7745c5c3_Err
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -295,11 +159,40 @@ func RemoteSearchableSelectInput(componentSettings RemoteSearchableSelectInputSe
 				}
 				return nil
 			})
-			templ_7745c5c3_Err = searchableSelectInputTriggerRow(shellSettings).Render(templ.WithChildren(ctx, templ_7745c5c3_Var10), templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = searchableSelectInputTriggerRow(shellSettings).Render(templ.WithChildren(ctx, templ_7745c5c3_Var3), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = searchableSelectInputRemoteDropdown(shellSettings).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Var4 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+				templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+				templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+				if !templ_7745c5c3_IsBuffer {
+					defer func() {
+						templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+						if templ_7745c5c3_Err == nil {
+							templ_7745c5c3_Err = templ_7745c5c3_BufErr
+						}
+					}()
+				}
+				ctx = templ.InitializeContext(ctx)
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<li x-show=\"isLoading\" class=\"flex items-center gap-2 px-3 py-2 text-sm text-neutral-400\"><i class=\"ph-bold ph-spinner animate-spin\"></i> Loading...</li><li x-show=\"hasError\" class=\"px-3 py-2 text-sm text-red-400\">Could not load options.</li><li x-show=\"shouldPromptMinQueryLength\" class=\"px-3 py-2 text-sm text-neutral-400\" x-text=\"minQueryLengthPromptResolver\"></li><template x-for=\"option in remoteOptions\" :key=\"option.value\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = searchableSelectInputOptionRow(
+					shellSettings,
+					"", "option.value", "option.label", "", nil,
+				).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</template><li x-show=\"hasNoMatches\" class=\"px-3 py-2 text-sm text-neutral-400\">No matches</li>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				return nil
+			})
+			templ_7745c5c3_Err = searchableSelectInputDropdown(shellSettings).Render(templ.WithChildren(ctx, templ_7745c5c3_Var4), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -313,7 +206,7 @@ func RemoteSearchableSelectInput(componentSettings RemoteSearchableSelectInputSe
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = searchableSelectInputShell(shellSettings).Render(templ.WithChildren(ctx, templ_7745c5c3_Var9), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = searchableSelectInputShell(shellSettings).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

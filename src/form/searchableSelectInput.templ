@@ -149,12 +149,16 @@ templ searchableSelectInputTriggerEndIcons(settings searchableSelectInputShellSe
 	<div class="flex shrink-0 items-center gap-2.5 text-neutral-100/60">
 		<!-- SearchableSelectDropdownIcon -->
 		<i class="ph-bold ph-caret-down pt-0.5 text-sm transition-transform hover:text-neutral-300 group-focus-within:text-neutral-300 group-hover:text-neutral-300" :class="isOpen ? 'rotate-180' : ''"></i>
-		<!-- SearchableSelectClearIcon -->
-		<i
+		<!-- SearchableSelectClearButton -->
+		<button
+			type="button"
 			x-show={ hasSelectionExpression }
+			aria-label="Clear selection"
 			@click.stop.prevent={ searchableSelectInputClearExpressionBuilder(settings.TwoWayStatePath, settings.ClientConfig.IsMultiSelect, settings.OnChangeSuffix) }
-			class="ph-bold ph-x-circle text-lg hover:text-neutral-300"
-		></i>
+			class="cursor-pointer rounded bg-transparent leading-none transition-colors hover:text-neutral-300"
+		>
+			<i class="ph-bold ph-x-circle text-lg"></i>
+		</button>
 		if shouldRenderInputHintTooltip(settings.HintDisplay, settings.HintValue, settings.HintStatePath) {
 			@InputHintTooltip(InputHintSettings{
 				Value:                  settings.HintValue,
@@ -171,25 +175,28 @@ templ searchableSelectInputTriggerEndIcons(settings searchableSelectInputShellSe
 	</div>
 }
 
-templ searchableSelectInputLocalOptionRow(
+templ searchableSelectInputOptionRow(
 	settings searchableSelectInputShellSettings,
-	optionValue, optionLabel string,
+	visibilityExpression, valueExpression, labelExpression, labelText string,
 	optionContent templ.Component,
 ) {
-	{{ valueExpression := strconv.Quote(optionValue) }}
-	{{ labelExpression := strconv.Quote(optionLabel) }}
 	{{ selectedExpression := searchableSelectInputSelectedExpressionBuilder(settings.TwoWayStatePath, valueExpression, settings.ClientConfig.IsMultiSelect) }}
 	{{ clickExpression := searchableSelectInputSingleSelectExpressionBuilder(settings.TwoWayStatePath, valueExpression, labelExpression, settings.OnChangeSuffix) }}
 	if settings.ClientConfig.IsMultiSelect {
 		{{ clickExpression = searchableSelectInputMultiToggleExpressionBuilder(settings.TwoWayStatePath, valueExpression, labelExpression, settings.OnChangeSuffix) }}
 	}
-	<li x-show={ "isItemVisible(" + valueExpression + ")" } class="border-t border-neutral-50/5 first:border-t-0">
+	<li
+		if visibilityExpression != "" {
+			x-show={ visibilityExpression }
+		}
+		class="border-t border-neutral-50/5 first:border-t-0"
+	>
 		<button
 			type="button"
 			role="option"
 			:aria-selected={ selectedExpression }
 			@click={ clickExpression }
-			class="flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-left transition-colors hover:bg-neutral-50/5"
+			class="flex w-full cursor-pointer items-center gap-2 bg-transparent px-3 py-2 text-left outline-none transition-colors hover:bg-neutral-50/5 focus-visible:bg-neutral-50/10"
 		>
 			<span
 				class="flex h-4 w-4 shrink-0 items-center justify-center rounded border-2 border-neutral-50/20 text-transparent transition-colors"
@@ -199,8 +206,10 @@ templ searchableSelectInputLocalOptionRow(
 			</span>
 			if optionContent != nil {
 				@optionContent
+			} else if labelText != "" {
+				<span class="text-sm text-neutral-50">{ labelText }</span>
 			} else {
-				<span class="text-sm text-neutral-50">{ optionLabel }</span>
+				<span class="text-sm text-neutral-50" x-text={ labelExpression }></span>
 			}
 		</button>
 	</li>
@@ -210,21 +219,21 @@ templ searchableSelectInputSelectedLabels(settings searchableSelectInputShellSet
 	<span
 		class="max-w-full truncate text-sm text-neutral-100"
 		x-show={ searchableSelectInputHasSelectionExpressionBuilder(settings.TwoWayStatePath) }
-		x-text={ "optionLabelsText(" + settings.TwoWayStatePath + ")" }
+		x-text={ "optionLabelsTextResolver(" + settings.TwoWayStatePath + ")" }
 	></span>
 }
 
 templ searchableSelectInputSelectedTags(settings searchableSelectInputShellSettings) {
 	<template x-for={ "selectedValue in " + settings.TwoWayStatePath } :key="selectedValue">
-		<span class="inline-flex max-w-full items-center gap-1 rounded bg-neutral-50/10 px-1.5 py-0.5 text-xs text-neutral-100">
-			<span class="truncate" x-text="optionLabel(selectedValue)"></span>
+		<span class="inline-flex w-fit max-w-full items-center rounded border border-secondary-500 bg-secondary-500 text-neutral-50">
+			<span class="max-w-full truncate rounded bg-neutral-50/10 px-1.5 py-0.5 text-xs" x-text="optionLabelResolver(selectedValue)"></span>
 			<button
 				type="button"
-				class="shrink-0 text-neutral-400 transition-colors hover:text-neutral-100"
-				:aria-label="'Remove ' + optionLabel(selectedValue)"
+				class="flex cursor-pointer items-center rounded bg-transparent p-0.5 transition-opacity hover:opacity-80"
+				:aria-label="'Remove ' + optionLabelResolver(selectedValue)"
 				@click.stop={ searchableSelectInputTagRemoveExpressionBuilder(settings.TwoWayStatePath, "selectedValue", settings.OnChangeSuffix) }
 			>
-				<i class="ph-bold ph-x text-[0.625rem]"></i>
+				<i class="ph-bold ph-x text-[0.625rem] leading-none"></i>
 			</button>
 		</span>
 	</template>
@@ -244,33 +253,16 @@ templ searchableSelectInputHiddenInputs(
 	}
 }
 
-templ searchableSelectInputLocalDropdown(
-	settings searchableSelectInputShellSettings,
-	flatOptions []string, labelValueOptions []SelectLabelValueOption,
-) {
-	{{ dropdownBackgroundClass := "bg-neutral-800/95" }}
-	if settings.DropdownBackgroundColor != "" {
-		{{ dropdownBackgroundClass = "bg-" + settings.DropdownBackgroundColor }}
-	}
-	{{ dropdownMaxHeightClass := "max-h-60" }}
-	if settings.DropdownMaxHeightClass != "" {
-		{{ dropdownMaxHeightClass = settings.DropdownMaxHeightClass }}
-	}
+templ searchableSelectInputDropdown(settings searchableSelectInputShellSettings) {
 	<ul
 		x-ref="searchableSelectDropdown"
-		class={ "absolute left-0 z-20 w-full overflow-auto rounded-md border border-neutral-50/5 shadow-lg hover:border-neutral-50/30 " + dropdownMaxHeightClass + " " + dropdownBackgroundClass }
+		class={ searchableSelectInputDropdownClassesResolver(settings) }
 		:class="openUpward ? 'bottom-full mb-1' : 'mt-1'"
 		x-show="isOpen"
 		role="listbox"
 		x-transition
 	>
-		for _, option := range flatOptions {
-			@searchableSelectInputLocalOptionRow(settings, option, option, nil)
-		}
-		for _, option := range labelValueOptions {
-			@searchableSelectInputLocalOptionRow(settings, option.Value, option.Label, option.LabelHtml)
-		}
-		<li x-show="hasNoMatches" class="px-3 py-2 text-sm text-neutral-400">No matches</li>
+		{ children... }
 	</ul>
 }
 
@@ -282,7 +274,7 @@ templ SearchableSelectInput(componentSettings SearchableSelectInputSettings) {
 	}
 	{{ presentation := searchableSelectInputSelectionPresentationResolver(componentSettings.IsMultiSelect, componentSettings.SelectionDisplay, componentSettings.ShouldAllowCustomValues) }}
 	{{ isTagDisplay := presentation.Display == SearchableSelectInputSelectionDisplayTags }}
-	{{ clientConfig := searchableSelectInputClientConfigResolver(componentSettings.IsMultiSelect, presentation.AllowCustomValues, componentSettings.FlatOptions, componentSettings.LabelValueOptions, nil) }}
+	{{ clientConfig := searchableSelectInputClientConfigResolver(componentSettings.IsMultiSelect, componentSettings.FlatOptions, componentSettings.LabelValueOptions, nil) }}
 	{{ enterExpression := "" }}
 	if presentation.AllowCustomValues {
 		{{ enterExpression = searchableSelectInputCustomValueAddExpressionBuilder(componentSettings.TwoWayStatePath, onChangeSuffix) }}
@@ -293,7 +285,7 @@ templ SearchableSelectInput(componentSettings SearchableSelectInputSettings) {
 	}
 	{{ initExpression := "" }}
 	if !componentSettings.IsMultiSelect {
-		{{ initExpression = "$watch('" + componentSettings.TwoWayStatePath + "', (value) => { userInput = optionLabel(value) }); userInput = optionLabel(" + componentSettings.TwoWayStatePath + " ?? '')" }}
+		{{ initExpression = "$watch('" + componentSettings.TwoWayStatePath + "', (value) => { userInput = optionLabelResolver(value) }); userInput = optionLabelResolver(" + componentSettings.TwoWayStatePath + " ?? '')" }}
 	}
 	{{ shellSettings := searchableSelectInputShellSettings{
 		Label:                             componentSettings.Label,
@@ -328,11 +320,24 @@ templ SearchableSelectInput(componentSettings SearchableSelectInputSettings) {
 			@searchableSelectInputFilterInput(shellSettings, enterExpression, backspaceExpression)
 			@searchableSelectInputTriggerEndIcons(shellSettings)
 		}
-		@searchableSelectInputLocalDropdown(
-			shellSettings,
-			componentSettings.FlatOptions,
-			componentSettings.LabelValueOptions,
-		)
+		@searchableSelectInputDropdown(shellSettings) {
+			for _, option := range componentSettings.FlatOptions {
+				@searchableSelectInputOptionRow(
+					shellSettings,
+					"isItemVisible("+strconv.Quote(option)+")",
+					strconv.Quote(option), strconv.Quote(option), option, nil,
+				)
+			}
+			for _, option := range componentSettings.LabelValueOptions {
+				@searchableSelectInputOptionRow(
+					shellSettings,
+					"isItemVisible("+strconv.Quote(option.Value)+")",
+					strconv.Quote(option.Value), strconv.Quote(option.Label),
+					option.Label, option.LabelHtml,
+				)
+			}
+			<li x-show="hasNoMatches" class="px-3 py-2 text-sm text-neutral-400">No matches</li>
+		}
 		@searchableSelectInputHiddenInputs(
 			componentSettings.InputName,
 			componentSettings.TwoWayStatePath,
