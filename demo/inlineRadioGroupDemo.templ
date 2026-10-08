@@ -73,6 +73,56 @@ templ InlineRadioGroupSizesExample() {
 	}
 }
 
+templ InlineRadioGroupVerticalExample() {
+	{{
+		verticalUsage := `@uiForm.InlineRadioGroup(uiForm.InlineRadioGroupSettings{
+	Label:       "Select an option",
+	Orientation: uiForm.InlineRadioGroupOrientationVertical,
+	InputSettings: []uiForm.RadioInputSettings{
+		{Label: "Option 1", StateValue: "option1", TwoWayStatePath: "groupVerticalSelection"},
+		{Label: "Option 2", StateValue: "option2", TwoWayStatePath: "groupVerticalSelection"},
+		{Label: "Option 3", StateValue: "option3", TwoWayStatePath: "groupVerticalSelection"},
+	},
+
+	// OptionalFields
+	TwoWayStatePath: "groupVerticalSelection",
+})`
+	}}
+	@DemoExampleCard(
+		"Vertical Orientation",
+		"Orientation stacks the options in one column instead of one row.",
+		"/form/inlineRadioGroup.templ", verticalUsage,
+	) {
+		<div x-data="{groupVerticalSelection: 'option2'}" class="flex w-full max-w-50 flex-col gap-3">
+			@uiForm.InlineRadioGroup(uiForm.InlineRadioGroupSettings{
+				Label:       "Select an option",
+				Orientation: uiForm.InlineRadioGroupOrientationVertical,
+				InputSettings: []uiForm.RadioInputSettings{
+					{
+						Label:           "Option 1",
+						StateValue:      "option1",
+						TwoWayStatePath: "groupVerticalSelection",
+					},
+					{
+						Label:           "Option 2",
+						StateValue:      "option2",
+						TwoWayStatePath: "groupVerticalSelection",
+					},
+					{
+						Label:           "Option 3",
+						StateValue:      "option3",
+						TwoWayStatePath: "groupVerticalSelection",
+					},
+				},
+				TwoWayStatePath: "groupVerticalSelection",
+			})
+			<p class={ DemoLiveStateClasses }>
+				Value: <span x-text="groupVerticalSelection"></span>
+			</p>
+		</div>
+	}
+}
+
 templ InlineRadioGroupDemo() {
 	{{
 		demoUsage := `@uiForm.InlineRadioGroup(uiForm.InlineRadioGroupSettings{
@@ -127,6 +177,7 @@ templ InlineRadioGroupDemo() {
 			</div>
 		}
 		@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
+			{Title: "Vertical Orientation", Icon: "ph-rows", Content: InlineRadioGroupVerticalExample()},
 			{Title: "Sizes", Icon: "ph-ruler", Content: InlineRadioGroupSizesExample()},
 		})
 	</div>
