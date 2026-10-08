@@ -124,25 +124,44 @@ templ InlineRadioGroupVerticalExample() {
 }
 
 templ InlineRadioGroupMaxVisibleOptionsExample() {
-	<div x-data="{planetSelection: 'earth'}" class="flex w-full max-w-50 flex-col gap-3">
-		@uiForm.InlineRadioGroup(uiForm.InlineRadioGroupSettings{
-			Label:             "Planet",
-			Orientation:       uiForm.InlineRadioGroupOrientationVertical,
-			MaxVisibleOptions: 3,
-			InputSettings: []uiForm.RadioInputSettings{
-				{Label: "Mercury", StateValue: "mercury", TwoWayStatePath: "planetSelection"},
-				{Label: "Venus", StateValue: "venus", TwoWayStatePath: "planetSelection"},
-				{Label: "Earth", StateValue: "earth", TwoWayStatePath: "planetSelection"},
-				{Label: "Mars", StateValue: "mars", TwoWayStatePath: "planetSelection"},
-				{Label: "Jupiter", StateValue: "jupiter", TwoWayStatePath: "planetSelection"},
-				{Label: "Saturn", StateValue: "saturn", TwoWayStatePath: "planetSelection"},
-			},
-			TwoWayStatePath: "planetSelection",
-		})
-		<p class={ DemoLiveStateClasses }>
-			Value: <span x-text="planetSelection"></span>
-		</p>
-	</div>
+	{{
+		maxVisibleOptionsUsage := `@uiForm.InlineRadioGroup(uiForm.InlineRadioGroupSettings{
+	Label:             "Planet",
+	Orientation:       uiForm.InlineRadioGroupOrientationVertical,
+	MaxVisibleOptions: 3,
+	InputSettings: []uiForm.RadioInputSettings{
+		{Label: "Mercury", StateValue: "mercury", TwoWayStatePath: "planetSelection"},
+		{Label: "Venus", StateValue: "venus", TwoWayStatePath: "planetSelection"},
+		{Label: "Earth", StateValue: "earth", TwoWayStatePath: "planetSelection"},
+	},
+	TwoWayStatePath: "planetSelection",
+})`
+	}}
+	@DemoExampleCard(
+		"Max Visible Options",
+		"MaxVisibleOptions caps the visible option rows and scrolls the rest.",
+		"/form/inlineRadioGroup.templ", maxVisibleOptionsUsage,
+	) {
+		<div x-data="{planetSelection: 'earth'}" class="flex w-full max-w-50 flex-col gap-3">
+			@uiForm.InlineRadioGroup(uiForm.InlineRadioGroupSettings{
+				Label:             "Planet",
+				Orientation:       uiForm.InlineRadioGroupOrientationVertical,
+				MaxVisibleOptions: 3,
+				InputSettings: []uiForm.RadioInputSettings{
+					{Label: "Mercury", StateValue: "mercury", TwoWayStatePath: "planetSelection"},
+					{Label: "Venus", StateValue: "venus", TwoWayStatePath: "planetSelection"},
+					{Label: "Earth", StateValue: "earth", TwoWayStatePath: "planetSelection"},
+					{Label: "Mars", StateValue: "mars", TwoWayStatePath: "planetSelection"},
+					{Label: "Jupiter", StateValue: "jupiter", TwoWayStatePath: "planetSelection"},
+					{Label: "Saturn", StateValue: "saturn", TwoWayStatePath: "planetSelection"},
+				},
+				TwoWayStatePath: "planetSelection",
+			})
+			<p class={ DemoLiveStateClasses }>
+				Value: <span x-text="planetSelection"></span>
+			</p>
+		</div>
+	}
 }
 
 templ InlineRadioGroupDemo() {

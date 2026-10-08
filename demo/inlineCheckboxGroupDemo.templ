@@ -179,24 +179,42 @@ templ InlineCheckboxGroupColorsExample() {
 }
 
 templ InlineCheckboxGroupMaxVisibleOptionsExample() {
-	<div x-data="{selectedPlanets: []}" class="flex w-full max-w-50 flex-col gap-3">
-		@uiForm.InlineCheckboxGroup(uiForm.InlineCheckboxGroupSettings{
-			Label:             "Planets",
-			Orientation:       uiForm.InlineCheckboxGroupOrientationVertical,
-			MaxVisibleOptions: 3,
-			InputSettings: []uiForm.CheckboxInputSettings{
-				{Label: "Mercury", Value: "mercury", TwoWayStatePath: "selectedPlanets"},
-				{Label: "Venus", Value: "venus", TwoWayStatePath: "selectedPlanets"},
-				{Label: "Earth", Value: "earth", TwoWayStatePath: "selectedPlanets"},
-				{Label: "Mars", Value: "mars", TwoWayStatePath: "selectedPlanets"},
-				{Label: "Jupiter", Value: "jupiter", TwoWayStatePath: "selectedPlanets"},
-				{Label: "Saturn", Value: "saturn", TwoWayStatePath: "selectedPlanets"},
-			},
-		})
-		<p class={ DemoLiveStateClasses }>
-			Values: <span x-text="selectedPlanets.join(', ')"></span>
-		</p>
-	</div>
+	{{
+		maxVisibleOptionsUsage := `@uiForm.InlineCheckboxGroup(uiForm.InlineCheckboxGroupSettings{
+	Label:             "Planets",
+	Orientation:       uiForm.InlineCheckboxGroupOrientationVertical,
+	MaxVisibleOptions: 3,
+	InputSettings: []uiForm.CheckboxInputSettings{
+		{Label: "Mercury", Value: "mercury", TwoWayStatePath: "selectedPlanets"},
+		{Label: "Venus", Value: "venus", TwoWayStatePath: "selectedPlanets"},
+		{Label: "Earth", Value: "earth", TwoWayStatePath: "selectedPlanets"},
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Max Visible Options",
+		"MaxVisibleOptions caps the visible option rows and scrolls the rest.",
+		"/form/inlineCheckboxGroup.templ", maxVisibleOptionsUsage,
+	) {
+		<div x-data="{selectedPlanets: []}" class="flex w-full max-w-50 flex-col gap-3">
+			@uiForm.InlineCheckboxGroup(uiForm.InlineCheckboxGroupSettings{
+				Label:             "Planets",
+				Orientation:       uiForm.InlineCheckboxGroupOrientationVertical,
+				MaxVisibleOptions: 3,
+				InputSettings: []uiForm.CheckboxInputSettings{
+					{Label: "Mercury", Value: "mercury", TwoWayStatePath: "selectedPlanets"},
+					{Label: "Venus", Value: "venus", TwoWayStatePath: "selectedPlanets"},
+					{Label: "Earth", Value: "earth", TwoWayStatePath: "selectedPlanets"},
+					{Label: "Mars", Value: "mars", TwoWayStatePath: "selectedPlanets"},
+					{Label: "Jupiter", Value: "jupiter", TwoWayStatePath: "selectedPlanets"},
+					{Label: "Saturn", Value: "saturn", TwoWayStatePath: "selectedPlanets"},
+				},
+			})
+			<p class={ DemoLiveStateClasses }>
+				Values: <span x-text="selectedPlanets.join(', ')"></span>
+			</p>
+		</div>
+	}
 }
 
 templ InlineCheckboxGroupDemo() {
