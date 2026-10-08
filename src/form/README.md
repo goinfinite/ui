@@ -37,7 +37,41 @@ Single-line input with a floating label, optional affixes, and an optional hint.
 })
 ```
 
-`InputType` accepts the `uiForm.InputType*` constants. `IconLeft` takes a Phosphor icon class and renders it inside the field before the input, for example `"ph-magnifying-glass"`. An affix renders a static value (`AffixLeftValue`, `AffixRightValue`) or binds a state path (`AffixLeftStatePath`, `AffixRightStatePath`). Set `AffixLeftWidthPercent` or `AffixRightWidthPercent` to fix an affix to a percentage of the field width, for example `25` or `50`. Number inputs accept `InputNumberMin`, `InputNumberMax`, and `InputNumberStep`. `Size` accepts the `InputFieldSize*` constants and defaults to `md`; it scales the input, the affixes, and the floating label together. `TextCase` accepts a `uiToolset.TextCase*` value; it transforms the floating label and the placeholder. The default, `TextCaseNone`, leaves the text as typed.
+`InputType` accepts the `uiForm.InputType*` constants. `IconLeft` takes a Phosphor icon class and renders it inside the field before the input, for example `"ph-magnifying-glass"`. An affix renders a static value (`AffixLeftValue`, `AffixRightValue`) or binds a state path (`AffixLeftStatePath`, `AffixRightStatePath`). Set `AffixLeftWidthPercent` or `AffixRightWidthPercent` to fix an affix to a percentage of the field width, for example `25` or `50`. `AffixRightComponent` renders any templ component at the right edge, after the right affix; `PasswordInput` uses it for its action buttons. `InputTypeExpression` supplies the type from an Alpine expression and overrides `InputType` at runtime, for example `"isPasswordVisible ? 'text' : 'password'"`. Number inputs accept `InputNumberMin`, `InputNumberMax`, and `InputNumberStep`. `Size` accepts the `InputFieldSize*` constants and defaults to `md`; it scales the input, the affixes, and the floating label together. `TextCase` accepts a `uiToolset.TextCase*` value; it transforms the floating label and the placeholder. The default, `TextCaseNone`, leaves the text as typed.
+
+## PasswordInput
+
+Password field with a reveal toggle, an optional random password generator, and an optional strength meter. It composes `InputField`, so every `InputField` setting travels through.
+
+```go
+@uiForm.PasswordInput(uiForm.PasswordInputSettings{
+    InputName:       "password",
+    Label:           "Password",
+    TwoWayStatePath: "password",
+
+    // OptionalFields
+    ShouldShowGenerateButton: true,
+    ShouldShowStrengthMeter:  true,
+})
+```
+
+`Rules` configures the generator and the meter: `MinLength` (default 6), `MaxLength` (default 64), `GenerationLength` (default 16), and one `ShouldInclude*Chars` flag per character class. When no class is selected, every class is required. The generator runs on `UiToolset.CreateRandomPassword(options)` and guarantees at least one character from each selected class. The meter shows a percentage bar and a criteria checklist that updates as the user types; the checklist shows only the enabled criteria.
+
+## InlineCheckboxGroup
+
+A row or column of checkboxes under one shared label. The label notches into the top border of the field, matching `InlineRadioGroup` and the other notched fields.
+
+```go
+@uiForm.InlineCheckboxGroup(uiForm.InlineCheckboxGroupSettings{
+    Label: "Fruits",
+    InputSettings: []uiForm.CheckboxInputSettings{
+        {Label: "Apple", Value: "apple", TwoWayStatePath: "selectedFruits", InputName: "selectedFruits"},
+        {Label: "Banana", Value: "banana", TwoWayStatePath: "selectedFruits", InputName: "selectedFruits"},
+    },
+})
+```
+
+Each `CheckboxInputSettings` carries its own size, shape, colors, and errors. When the shared state path holds an array, Alpine adds and removes the checked values. `Orientation` accepts `InlineCheckboxGroupOrientationHorizontal` (the default) and `InlineCheckboxGroupOrientationVertical`. `TextCase` transforms only the shared label.
 
 ## TextArea
 
@@ -84,7 +118,37 @@ Dropdown that holds a list of selected values on one state path.
 })
 ```
 
-It shares the `FlatOptions` and `LabelValueOptions` modes with `SelectInput`. `OnChangeFunc` runs after a checkbox toggle or a clear.
+It shares the `FlatOptions` and `LabelValueOptions` modes with `SelectInput`. `OnChangeFunc` runs after a checkbox toggle or a clear. For a filter box or removable tags, use `SearchableSelectInput` with `IsMultiSelect`.
+
+## SearchableSelectInput
+
+Dropdown with a filter box. Typing narrows the local options in place, the list caps its height and scrolls, and a clear button empties the selection. Use it past roughly ten options, where a native select becomes hard to scan.
+
+```go
+@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
+    InputName:       "country",
+    Label:           "Country",
+    FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+    TwoWayStatePath: "country",
+})
+```
+
+It shares the `FlatOptions` and `LabelValueOptions` modes with `SelectInput`; the filter matches the label, case-insensitively. `IsMultiSelect` binds an array and keeps the dropdown open after each toggle. `SelectionDisplay` accepts `SearchableSelectInputSelectionDisplayText` (the default, joined labels) or `SearchableSelectInputSelectionDisplayTags` for removable tags inside the field. With tags, `ShouldAllowCustomValues` turns a typed value into a tag on Enter and Backspace on an empty input removes the last tag; each tag shows the option label while the bound array holds the stored value. Tags apply to multi mode only. `DropdownMaxHeightClass` caps the list (default `max-h-60`). `OnChangeFunc` runs on selection, on a multi-select toggle, on a tag change, and on clear. Single mode writes one hidden input; multi mode writes one hidden input per selected value, so a form submission carries every value under `InputName`.
+
+## RemoteSearchableSelectInput
+
+Searchable select whose options come from a URL as the user types. It debounces the requests, waits for the minimum query length, discards stale responses, and shows loading, empty, and error states.
+
+```go
+@uiForm.RemoteSearchableSelectInput(uiForm.RemoteSearchableSelectInputSettings{
+    InputName:       "country",
+    Label:           "Country",
+    OptionsUrl:      "/api/countries/search",
+    TwoWayStatePath: "country",
+})
+```
+
+`OptionsQueryParam` names the query parameter (default `q`), `MinQueryLength` gates the first request (default 3), and `DebounceMs` waits before each request (default 300). The endpoint receives `GET OptionsUrl?<query param>=<typed text>` and returns `{ "body": [{ "label": "...", "value": "..." }] }`; a bare JSON array of strings or `{label, value}` objects also works. `IsMultiSelect` binds an array and caches the selected labels while the query changes. `OnChangeFunc` runs on selection, on a multi-select toggle, and on clear.
 
 ## RadioInput
 
@@ -112,7 +176,7 @@ A row of radios with one shared label. The label notches into the top border of 
 })
 ```
 
-`InlineRadioGroup`'s `TextCase` transforms only the shared label. Each option label takes its own `RadioInputSettings.TextCase`.
+`Orientation` accepts `InlineRadioGroupOrientationHorizontal` (the default) and `InlineRadioGroupOrientationVertical`. `InlineRadioGroup`'s `TextCase` transforms only the shared label. Each option label takes its own `RadioInputSettings.TextCase`.
 
 ## ToggleSwitch
 
@@ -140,7 +204,9 @@ Shared hint helper for the fields above. It renders no field of its own.
 ## Non-obvious behaviors
 
 - `SelectInput` and `MultiSelectInput` render a `templ.JSONScript` block for label-value options. The block feeds the selected label lookup.
+- `SearchableSelectInput` and `RemoteSearchableSelectInput` render one `templ.JSONScript` config block and share one Alpine state, `searchableSelectInput`. The config carries the normalized options, the multi-select and custom-value flags, and the remote settings.
 - The floating legend collapses while the field is empty, so the empty field shows the label as a placeholder.
 - `InputField` hides its empty legend with `display: none`. Chrome reserves scroll space for a zero-sized legend, so the opacity-based collapse the other field components use can phantom-scroll an overflow container.
-- A `SelectInput` dropdown opens upward when the space below the trigger is too small for it. The space stops at the bottom of the viewport and at the bottom of every clipping ancestor, so the list never opens downward into an `overflow-hidden` panel such as the carousel surface.
+- A dropdown opens upward when the space below the trigger is too small for it. The space stops at the bottom of the viewport and at the bottom of every clipping ancestor, so the list never opens downward into an `overflow-hidden` panel such as the carousel surface. `UiToolset.SelectDropdown.openUpwardResolver` makes the decision for `SelectInput` and the searchable fields.
+- `UiToolset.CreateRandomPassword` accepts an options object: `length`, `minLength`, `maxLength`, and one `include*` flag per character class. With no arguments it keeps the original 16-character behavior.
 - `InputName` sets the key in an HTMX form submission. `InputId` is optional.
