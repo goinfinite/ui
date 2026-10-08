@@ -69,6 +69,39 @@ async function measureDropdownOpenLatency(page) {
   });
 }
 
+async function measureSearchableFilterLatency(page) {
+  return page.evaluate(async () => {
+    const combobox = document.querySelector(
+      "#searchable-select-input-demo input[role=combobox]",
+    );
+    combobox.focus();
+    combobox.click();
+    const start = performance.now();
+    combobox.value = "can";
+    combobox.dispatchEvent(new Event("input", { bubbles: true }));
+    await new Promise((resolve) => {
+      const poll = () => {
+        const optionRows = [
+          ...document.querySelectorAll(
+            "#searchable-select-input-demo ul[role=listbox] li",
+          ),
+        ];
+        const canadaRow = optionRows.find(
+          (optionRow) => optionRow.innerText.trim() === "Canada",
+        );
+        if (canadaRow && canadaRow.offsetParent !== null) resolve();
+        else requestAnimationFrame(poll);
+      };
+      poll();
+    });
+    const elapsed = performance.now() - start;
+    combobox.value = "Brazil";
+    combobox.dispatchEvent(new Event("input", { bubbles: true }));
+    document.body.click();
+    return elapsed;
+  });
+}
+
 test("@perf interaction latencies are measured and reported", async ({
   page,
 }) => {
@@ -92,10 +125,14 @@ test("@perf interaction latencies are measured and reported", async ({
   const dropdownMs = await measureSamples(() =>
     measureDropdownOpenLatency(page),
   );
+  const searchableFilterMs = await measureSamples(() =>
+    measureSearchableFilterLatency(page),
+  );
 
   expect(lcpMs).toBeGreaterThan(0);
   expect(expandMs).toBeGreaterThan(0);
   expect(dropdownMs).toBeGreaterThan(0);
+  expect(searchableFilterMs).toBeGreaterThan(0);
 
   writeFileSync(
     resultsPath,
@@ -104,6 +141,7 @@ test("@perf interaction latencies are measured and reported", async ({
         "demo.navigation-lcp": lcpMs,
         "form.textarea-expand": expandMs,
         "form.select-dropdown-open": dropdownMs,
+        "form.searchable-select-filter": searchableFilterMs,
       },
       null,
       2,
