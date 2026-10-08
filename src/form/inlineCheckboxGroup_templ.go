@@ -11,8 +11,8 @@ import templruntime "github.com/a-h/templ/runtime"
 import uiToolset "github.com/goinfinite/ui/src/toolset"
 
 const (
-	InlineCheckboxGroupOrientationHorizontal string = "horizontal"
-	InlineCheckboxGroupOrientationVertical   string = "vertical"
+	InlineCheckboxGroupOrientationHorizontal string = inlineGroupOrientationHorizontal
+	InlineCheckboxGroupOrientationVertical   string = inlineGroupOrientationVertical
 )
 
 type InlineCheckboxGroupSettings struct {
@@ -20,15 +20,9 @@ type InlineCheckboxGroupSettings struct {
 	InputSettings []CheckboxInputSettings
 
 	// OptionalFields
-	Orientation string
-	TextCase    string
-}
-
-func inlineCheckboxGroupContentClassesResolver(orientation string) string {
-	if orientation == InlineCheckboxGroupOrientationVertical {
-		return "flex min-h-8 flex-col items-start gap-2 p-1.5"
-	}
-	return "flex min-h-8 flex-row items-center gap-2 p-1.5"
+	Orientation       string
+	MaxVisibleOptions uint
+	TextCase          string
 }
 
 func InlineCheckboxGroup(componentSettings InlineCheckboxGroupSettings) templ.Component {
@@ -57,7 +51,8 @@ func InlineCheckboxGroup(componentSettings InlineCheckboxGroupSettings) templ.Co
 			return templ_7745c5c3_Err
 		}
 		legendClasses := "ml-1 select-none px-1 text-xs font-bold leading-none text-neutral-50/80 " + uiToolset.TextCaseClassResolver(componentSettings.TextCase)
-		contentClasses := inlineCheckboxGroupContentClassesResolver(componentSettings.Orientation)
+		contentClasses := inlineGroupContentClassesResolver(componentSettings.Orientation, componentSettings.MaxVisibleOptions)
+		maxVisibleOptionsStyle := inlineGroupMaxVisibleOptionsStyle(componentSettings.MaxVisibleOptions)
 		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"flex w-full flex-col\"><fieldset class=\"bg-neutral-50/7.5 relative -mt-1.5 w-full rounded border border-neutral-50/5 transition-colors focus-within:border-neutral-50/30 hover:border-neutral-50/30\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -87,7 +82,7 @@ func InlineCheckboxGroup(componentSettings InlineCheckboxGroupSettings) templ.Co
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.Label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inlineCheckboxGroup.templ`, Line: 33, Col: 29}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inlineCheckboxGroup.templ`, Line: 28, Col: 29}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -115,12 +110,35 @@ func InlineCheckboxGroup(componentSettings InlineCheckboxGroupSettings) templ.Co
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if maxVisibleOptionsStyle != "" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, " style=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var7 string
+			templ_7745c5c3_Var7, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(maxVisibleOptionsStyle)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inlineCheckboxGroup.templ`, Line: 30, Col: 97}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, ">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		for _, inputSettings := range componentSettings.InputSettings {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"w-fit\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<div class=\"w-fit\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -128,12 +146,12 @@ func InlineCheckboxGroup(componentSettings InlineCheckboxGroupSettings) templ.Co
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div></fieldset></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</div></fieldset></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

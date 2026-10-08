@@ -123,6 +123,28 @@ templ InlineRadioGroupVerticalExample() {
 	}
 }
 
+templ InlineRadioGroupMaxVisibleOptionsExample() {
+	<div x-data="{planetSelection: 'earth'}" class="flex w-full max-w-50 flex-col gap-3">
+		@uiForm.InlineRadioGroup(uiForm.InlineRadioGroupSettings{
+			Label:             "Planet",
+			Orientation:       uiForm.InlineRadioGroupOrientationVertical,
+			MaxVisibleOptions: 3,
+			InputSettings: []uiForm.RadioInputSettings{
+				{Label: "Mercury", StateValue: "mercury", TwoWayStatePath: "planetSelection"},
+				{Label: "Venus", StateValue: "venus", TwoWayStatePath: "planetSelection"},
+				{Label: "Earth", StateValue: "earth", TwoWayStatePath: "planetSelection"},
+				{Label: "Mars", StateValue: "mars", TwoWayStatePath: "planetSelection"},
+				{Label: "Jupiter", StateValue: "jupiter", TwoWayStatePath: "planetSelection"},
+				{Label: "Saturn", StateValue: "saturn", TwoWayStatePath: "planetSelection"},
+			},
+			TwoWayStatePath: "planetSelection",
+		})
+		<p class={ DemoLiveStateClasses }>
+			Value: <span x-text="planetSelection"></span>
+		</p>
+	</div>
+}
+
 templ InlineRadioGroupDemo() {
 	{{
 		demoUsage := `@uiForm.InlineRadioGroup(uiForm.InlineRadioGroupSettings{
@@ -178,6 +200,7 @@ templ InlineRadioGroupDemo() {
 		}
 		@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
 			{Title: "Vertical Orientation", Icon: "ph-rows", Content: InlineRadioGroupVerticalExample()},
+			{Title: "Max Visible Options", Icon: "ph-arrows-out-line-vertical", Content: InlineRadioGroupMaxVisibleOptionsExample()},
 			{Title: "Sizes", Icon: "ph-ruler", Content: InlineRadioGroupSizesExample()},
 		})
 	</div>

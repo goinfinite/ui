@@ -11,8 +11,8 @@ import templruntime "github.com/a-h/templ/runtime"
 import uiToolset "github.com/goinfinite/ui/src/toolset"
 
 const (
-	InlineRadioGroupOrientationHorizontal string = "horizontal"
-	InlineRadioGroupOrientationVertical   string = "vertical"
+	InlineRadioGroupOrientationHorizontal string = inlineGroupOrientationHorizontal
+	InlineRadioGroupOrientationVertical   string = inlineGroupOrientationVertical
 )
 
 type InlineRadioGroupSettings struct {
@@ -20,18 +20,12 @@ type InlineRadioGroupSettings struct {
 	InputSettings []RadioInputSettings
 
 	// OptionalFields
-	Orientation     string
-	TwoWayStatePath string
-	InputId         string
-	InputName       string
-	TextCase        string
-}
-
-func inlineRadioGroupContentClassesResolver(orientation string) string {
-	if orientation == InlineRadioGroupOrientationVertical {
-		return "flex min-h-8 flex-col items-start gap-2 p-1.5"
-	}
-	return "flex min-h-8 flex-row items-center gap-2 p-1.5"
+	Orientation       string
+	MaxVisibleOptions uint
+	TwoWayStatePath   string
+	InputId           string
+	InputName         string
+	TextCase          string
 }
 
 func InlineRadioGroup(componentSettings InlineRadioGroupSettings) templ.Component {
@@ -60,7 +54,8 @@ func InlineRadioGroup(componentSettings InlineRadioGroupSettings) templ.Componen
 			return templ_7745c5c3_Err
 		}
 		legendClasses := "ml-1 select-none px-1 text-xs font-bold leading-none text-neutral-50/80 " + uiToolset.TextCaseClassResolver(componentSettings.TextCase)
-		contentClasses := inlineRadioGroupContentClassesResolver(componentSettings.Orientation)
+		contentClasses := inlineGroupContentClassesResolver(componentSettings.Orientation, componentSettings.MaxVisibleOptions)
+		maxVisibleOptionsStyle := inlineGroupMaxVisibleOptionsStyle(componentSettings.MaxVisibleOptions)
 		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"flex w-full flex-col\"><fieldset class=\"bg-neutral-50/7.5 relative -mt-1.5 w-full rounded border border-neutral-50/5 transition-colors focus-within:border-neutral-50/30 hover:border-neutral-50/30\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -90,7 +85,7 @@ func InlineRadioGroup(componentSettings InlineRadioGroupSettings) templ.Componen
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.Label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inlineRadioGroup.templ`, Line: 36, Col: 29}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inlineRadioGroup.templ`, Line: 31, Col: 29}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -113,7 +108,7 @@ func InlineRadioGroup(componentSettings InlineRadioGroupSettings) templ.Componen
 				var templ_7745c5c3_Var5 string
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.InputId)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inlineRadioGroup.templ`, Line: 42, Col: 36}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inlineRadioGroup.templ`, Line: 37, Col: 36}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5)
 				if templ_7745c5c3_Err != nil {
@@ -132,7 +127,7 @@ func InlineRadioGroup(componentSettings InlineRadioGroupSettings) templ.Componen
 				var templ_7745c5c3_Var6 string
 				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.InputName)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inlineRadioGroup.templ`, Line: 45, Col: 40}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inlineRadioGroup.templ`, Line: 40, Col: 40}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
 				if templ_7745c5c3_Err != nil {
@@ -151,7 +146,7 @@ func InlineRadioGroup(componentSettings InlineRadioGroupSettings) templ.Componen
 				var templ_7745c5c3_Var7 string
 				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.TwoWayStatePath)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inlineRadioGroup.templ`, Line: 48, Col: 55}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inlineRadioGroup.templ`, Line: 43, Col: 55}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
 				if templ_7745c5c3_Err != nil {
@@ -185,7 +180,30 @@ func InlineRadioGroup(componentSettings InlineRadioGroupSettings) templ.Componen
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if maxVisibleOptionsStyle != "" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, " style=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var10 string
+			templ_7745c5c3_Var10, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(maxVisibleOptionsStyle)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inlineRadioGroup.templ`, Line: 47, Col: 97}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, ">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -195,7 +213,7 @@ func InlineRadioGroup(componentSettings InlineRadioGroupSettings) templ.Componen
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</div></fieldset></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</div></fieldset></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

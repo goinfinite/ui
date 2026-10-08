@@ -178,6 +178,27 @@ templ InlineCheckboxGroupColorsExample() {
 	}
 }
 
+templ InlineCheckboxGroupMaxVisibleOptionsExample() {
+	<div x-data="{selectedPlanets: []}" class="flex w-full max-w-50 flex-col gap-3">
+		@uiForm.InlineCheckboxGroup(uiForm.InlineCheckboxGroupSettings{
+			Label:             "Planets",
+			Orientation:       uiForm.InlineCheckboxGroupOrientationVertical,
+			MaxVisibleOptions: 3,
+			InputSettings: []uiForm.CheckboxInputSettings{
+				{Label: "Mercury", Value: "mercury", TwoWayStatePath: "selectedPlanets"},
+				{Label: "Venus", Value: "venus", TwoWayStatePath: "selectedPlanets"},
+				{Label: "Earth", Value: "earth", TwoWayStatePath: "selectedPlanets"},
+				{Label: "Mars", Value: "mars", TwoWayStatePath: "selectedPlanets"},
+				{Label: "Jupiter", Value: "jupiter", TwoWayStatePath: "selectedPlanets"},
+				{Label: "Saturn", Value: "saturn", TwoWayStatePath: "selectedPlanets"},
+			},
+		})
+		<p class={ DemoLiveStateClasses }>
+			Values: <span x-text="selectedPlanets.join(', ')"></span>
+		</p>
+	</div>
+}
+
 templ InlineCheckboxGroupDemo() {
 	{{
 		demoUsage := `@uiForm.InlineCheckboxGroup(uiForm.InlineCheckboxGroupSettings{
@@ -229,6 +250,7 @@ templ InlineCheckboxGroupDemo() {
 		}
 		@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
 			{Title: "Vertical Orientation", Icon: "ph-rows", Content: InlineCheckboxGroupVerticalExample()},
+			{Title: "Max Visible Options", Icon: "ph-arrows-out-line-vertical", Content: InlineCheckboxGroupMaxVisibleOptionsExample()},
 			{Title: "Sizes and Shapes", Icon: "ph-ruler", Content: InlineCheckboxGroupSizesExample()},
 			{Title: "Colors", Icon: "ph-palette", Content: InlineCheckboxGroupColorsExample()},
 		})
