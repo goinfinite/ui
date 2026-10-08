@@ -23,6 +23,7 @@ type PaginationSettings struct {
 
 	// OptionalFields
 	AriaLabel                    string
+	DropdownBackgroundColor      string
 	IsDisabledOneWayStatePath    string
 	IsHiddenWhenSinglePage       bool
 	ItemsPerPageInputName        string
@@ -150,6 +151,7 @@ templ Pagination(componentSettings PaginationSettings) {
 				InputName:                 itemsPerPageInputName,
 				Label:                     "Items per page",
 				FlatOptions:               itemsPerPageSizeChoiceLabels,
+				DropdownBackgroundColor:   componentSettings.DropdownBackgroundColor,
 				IsDisabledOneWayStatePath: componentSettings.IsDisabledOneWayStatePath,
 				OnChangeFunc:              pageNumberPath + " = 0" + onChangeSuffix,
 				Size:                      uiForm.SelectInputSizeSm,

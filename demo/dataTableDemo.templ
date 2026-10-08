@@ -64,7 +64,7 @@ templ DataTableColumnConfigExample() {
 	InitialSortDirection: uiStructural.DataTableSortDirectionAsc,
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Column Configuration",
 		"A column sets its alignment, width, and sortability. WidthPercent shares the row width, MaxWidthClass caps a long cell, and MinWidthClass holds a floor. A column with a SortKey renders a sort button; InitialSortKey and InitialSortDirection seed the active sort indicator.",
 		"/structural/dataTable.templ", columnUsage,
@@ -101,7 +101,7 @@ templ DataTableRowsConfigExample() {
 	CheckboxUncheckedColor: "sky-500",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Rows Configuration",
 		"RowIdResolver adds the selection column and identifies each row. RowLabelResolver names the row checkbox for screen readers. CheckboxShape, CheckboxSize, CheckboxCheckedColor, and CheckboxUncheckedColor change the selection checkbox. Select a row to see the colors change.",
 		"/structural/dataTable.templ", rowsUsage,
@@ -132,7 +132,7 @@ templ DataTableFiltersExample() {
 	InitialFilterValues:           map[string]any{"status": "running"},
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Filters",
 		"Each filter renders an editor and an active chip. InitialFilterValues seeds the starting values. FilterDropdownBackgroundColor paints the dropdown panel. A filter change updates the chips and the filter values.",
 		"/structural/dataTable.templ", filtersUsage,
@@ -189,7 +189,7 @@ templ DataTableSearchBoxExample() {
 	SearchBox: CustomSearchBox(),
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Search Box",
 		"The table renders a default search box when the query template carries the search placeholder. The box stretches to the available space by default; IsSearchBoxCompact fixes it to a narrow width so SearchBoxAlignment can place it left, center, or right. InitialSearchQuery seeds the starting text. Pass SearchBox to replace the default box with any component that binds to searchQuery.",
 		"/structural/dataTable.templ", searchUsage,
@@ -285,7 +285,7 @@ templ DataTableBulkActionsExample() {
 	}),
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Bulk Actions",
 		"BulkActions renders in the toolbar only while at least one row is selected. Select a row to reveal the action.",
 		"/structural/dataTable.templ", bulkUsage,
@@ -303,7 +303,8 @@ templ DataTableStylingExample() {
 		)
 	}}
 	{{
-		stylingSettings.HeaderClass = "bg-neutral-50/5"
+		stylingSettings.StickyHeaderBackgroundColor = "neutral-50/5"
+		stylingSettings.ItemsPerPageDropdownBackgroundColor = "emerald-900"
 		stylingSettings.IsStriped = true
 		stylingSettings.RowClassResolver = func(record DemoServerRecord) string {
 			if record.Status != "running" {
@@ -322,8 +323,9 @@ templ DataTableStylingExample() {
 	Rows: records,
 
 	// OptionalFields
-	HeaderClass: "bg-neutral-50/5",
-	IsStriped:   true,
+	StickyHeaderBackgroundColor:         "neutral-50/5",
+	ItemsPerPageDropdownBackgroundColor: "emerald-900",
+	IsStriped:                           true,
 	RowClassResolver: func(record Record) string {
 		if record.Status != "running" {
 			return "text-neutral-400"
@@ -332,9 +334,9 @@ templ DataTableStylingExample() {
 	},
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Row and Column Styling",
-		"HeaderClass paints the header row. IsStriped adds a zebra stripe. CellClass styles one column, and RowClassResolver styles each row from its data. A cell component that sets its own color overrides the row color.",
+		"StickyHeaderBackgroundColor paints the pinned header row. ItemsPerPageDropdownBackgroundColor paints the items-per-page menu. IsStriped adds a zebra stripe. CellClass styles one column, and RowClassResolver styles each row from its data. A cell component that sets its own color overrides the row color.",
 		"/structural/dataTable.templ", stylingUsage,
 	) {
 		@uiStructural.DataTable(stylingSettings)
@@ -413,7 +415,7 @@ templ DataTableStaticHeaderExample() {
 	MaxHeightClass: "max-h-40",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Static Header",
 		"The header pins to the top of the scroll viewport by default; IsHeaderStatic lets it scroll away with the body. MinWidthClass and MaxWidthClass size the table surface. MinHeightClass and MaxHeightClass size the scroll viewport. MaxVisibleRows measures the header and the tallest row and caps the viewport to that row count instead; the live table above uses it.",
 		"/structural/dataTable.templ", staticUsage,
@@ -454,7 +456,7 @@ templ DataTablePaginationDisplayExample() {
 	PaginationAriaLabel:            "Servers",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Pagination Display",
 		"Page numbers are zero-based by default; ShouldUseOneBasedPageDisplay shifts the labels to start at 1. IsPaginationHiddenWhenSinglePage hides the page controls when a single page holds every row. PaginationAriaLabel names the footer navigation for screen readers.",
 		"/structural/dataTable.templ", paginationUsage,

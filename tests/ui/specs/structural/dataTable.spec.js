@@ -446,4 +446,54 @@ test.describe("DataTable @structural", () => {
     expect(dropdownBounds.top).toBeGreaterThanOrEqual(0);
     expect(dropdownBounds.bottom).toBeLessThanOrEqual(viewportHeight);
   });
+
+  test("the filter dropdown paints above the pinned header", async ({
+    page,
+  }) => {
+    const table = page.locator(tableRoot);
+    await table.scrollIntoViewIfNeeded();
+    await table.locator("[data-ui-data-table-scroll]").evaluate((element) => {
+      element.scrollTop = element.scrollHeight;
+    });
+    await table.locator("fieldset [role=button]").first().click();
+
+    const dropdown = table.locator("fieldset ul").first();
+    await expect(dropdown).toBeVisible();
+    const stacking = await dropdown.evaluate((element) => {
+      element.style.height = "400px";
+      element.style.maxHeight = "400px";
+      const root = element.closest("[id]");
+      const headerRect = root.querySelector("thead th").getBoundingClientRect();
+      const dropdownRect = element.getBoundingClientRect();
+      const overlapTop = Math.max(headerRect.top, dropdownRect.top);
+      const overlapBottom = Math.min(headerRect.bottom, dropdownRect.bottom);
+      const overlapHeight = overlapBottom - overlapTop;
+      const hit = document.elementFromPoint(
+        dropdownRect.left + dropdownRect.width / 2,
+        overlapTop + overlapHeight / 2,
+      );
+      return {
+        overlaps: overlapHeight > 0,
+        dropdownWins: Boolean(hit?.closest("ul")),
+      };
+    });
+    expect(stacking.overlaps).toBe(true);
+    expect(stacking.dropdownWins).toBe(true);
+  });
+
+  test("the items per page menu renders an opaque surface", async ({
+    page,
+  }) => {
+    const table = page.locator(tableRoot);
+    await table.scrollIntoViewIfNeeded();
+    await table.locator("nav [role=button]").click();
+
+    const dropdown = table.locator("nav ul");
+    await expect(dropdown).toBeVisible();
+    expect(
+      await dropdown.evaluate(
+        (element) => getComputedStyle(element).backgroundColor,
+      ),
+    ).not.toBe("rgba(0, 0, 0, 0)");
+  });
 });

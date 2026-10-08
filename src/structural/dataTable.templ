@@ -53,10 +53,15 @@ templ DataTable[Row any](componentSettings DataTableSettings[Row]) {
 	if searchBoxComponent == nil && strings.Contains(componentSettings.QueryUrlTemplate, DataTableUrlPlaceholderSearch) {
 		{{ searchBoxComponent = DataTableDefaultSearchBox() }}
 	}
+	{{ hasFilterBar := len(componentSettings.Filters) > 0 }}
+	{{ hasToolbar := searchBoxComponent != nil || componentSettings.HeaderActions != nil || componentSettings.BulkActions != nil }}
 	{{ rowStripeClasses := componentSettings.rowStripeClassesResolver() }}
 	{{ rootClasses := componentSettings.rootClassesResolver() }}
 	{{ stickyHeaderClasses := componentSettings.stickyHeaderClassesResolver() }}
 	{{ scrollContainerClasses := componentSettings.scrollContainerClassesResolver() }}
+	if !hasFilterBar && !hasToolbar {
+		{{ scrollContainerClasses = scrollContainerClasses + " rounded-t-md" }}
+	}
 	{{ hasSelection := componentSettings.RowIdResolver != nil }}
 	{{ columnCount := len(componentSettings.Columns) }}
 	if hasSelection {
@@ -73,7 +78,7 @@ templ DataTable[Row any](componentSettings DataTableSettings[Row]) {
 		id={ tableId }
 	>
 		@templ.JSONScript(settingsScriptId, componentSettings.clientSettingsResolver(itemsPerPage, pageNumber))
-		if len(componentSettings.Filters) > 0 {
+		if hasFilterBar {
 			<div class="border-b border-neutral-50/10 p-2">
 				@FilterBar(FilterBarSettings{
 					Filters:                        componentSettings.Filters,
@@ -84,7 +89,7 @@ templ DataTable[Row any](componentSettings DataTableSettings[Row]) {
 				})
 			</div>
 		}
-		if searchBoxComponent != nil || componentSettings.HeaderActions != nil || componentSettings.BulkActions != nil {
+		if hasToolbar {
 			<div class="flex flex-wrap items-center justify-between gap-2 border-b border-neutral-50/10 p-2">
 				<div class={ "flex flex-1 flex-wrap items-center gap-2 " + searchBoxJustifyClass }>
 					if searchBoxComponent != nil {
@@ -243,6 +248,7 @@ templ DataTable[Row any](componentSettings DataTableSettings[Row]) {
 					ItemsTotal:                   componentSettings.ItemsTotal,
 					PagesTotal:                   componentSettings.PagesTotal,
 					AriaLabel:                    paginationAriaLabel,
+					DropdownBackgroundColor:      componentSettings.ItemsPerPageDropdownBackgroundColor,
 					IsDisabledOneWayStatePath:    "isLoading",
 					IsHiddenWhenSinglePage:       componentSettings.IsPaginationHiddenWhenSinglePage,
 					ItemsPerPageInputName:        tableId + "-itemsPerPage",

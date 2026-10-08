@@ -50,47 +50,49 @@ type DataTableSettings[Row any] struct {
 	Rows    []Row
 
 	// OptionalFields
-	BulkActions                      templ.Component
-	CheckboxCheckedColor             string
-	CheckboxShape                    string
-	CheckboxSize                     string
-	CheckboxUncheckedColor           string
-	Density                          DataTableDensity
-	EmptyState                       templ.Component
-	FilterDropdownBackgroundColor    string
-	Filters                          []FilterSettings
-	HeaderActions                    templ.Component
-	HeaderClass                      string
-	Id                               string
-	InitialFilterValues              map[string]any
-	InitialSearchQuery               string
-	InitialSortDirection             DataTableSortDirection
-	InitialSortKey                   string
-	IsHeaderStatic                   bool
-	IsPaginationHiddenWhenSinglePage bool
-	IsSearchBoxCompact               bool
-	IsStriped                        bool
-	ItemsPerPage                     ItemsPerPage
-	ItemsPerPageSizeChoices          []ItemsPerPage
-	ItemsTotal                       uint
-	MaxHeightClass                   string
-	MaxVisibleRows                   uint
-	MaxWidthClass                    string
-	MinHeightClass                   string
-	MinWidthClass                    string
-	PageNumber                       uint
-	PaginationAriaLabel              string
-	PagesTotal                       uint
-	QueryUrlTemplate                 string
-	RefreshDebounceMs                uint
-	RefreshOnEvents                  []string
-	RowClassResolver                 func(row Row) string
-	RowIdResolver                    func(row Row) string
-	RowLabelResolver                 func(row Row) string
-	SearchBox                        templ.Component
-	SearchBoxAlignment               HorizontalAlignment
-	ShouldUseOneBasedPageDisplay     bool
-	TextCase                         string
+	BulkActions                         templ.Component
+	CheckboxCheckedColor                string
+	CheckboxShape                       string
+	CheckboxSize                        string
+	CheckboxUncheckedColor              string
+	Density                             DataTableDensity
+	EmptyState                          templ.Component
+	FilterDropdownBackgroundColor       string
+	Filters                             []FilterSettings
+	HeaderActions                       templ.Component
+	HeaderClass                         string
+	Id                                  string
+	InitialFilterValues                 map[string]any
+	InitialSearchQuery                  string
+	InitialSortDirection                DataTableSortDirection
+	InitialSortKey                      string
+	IsHeaderStatic                      bool
+	IsPaginationHiddenWhenSinglePage    bool
+	IsSearchBoxCompact                  bool
+	IsStriped                           bool
+	ItemsPerPage                        ItemsPerPage
+	ItemsPerPageDropdownBackgroundColor string
+	ItemsPerPageSizeChoices             []ItemsPerPage
+	ItemsTotal                          uint
+	MaxHeightClass                      string
+	MaxVisibleRows                      uint
+	MaxWidthClass                       string
+	MinHeightClass                      string
+	MinWidthClass                       string
+	PageNumber                          uint
+	PaginationAriaLabel                 string
+	PagesTotal                          uint
+	QueryUrlTemplate                    string
+	RefreshDebounceMs                   uint
+	RefreshOnEvents                     []string
+	RowClassResolver                    func(row Row) string
+	RowIdResolver                       func(row Row) string
+	RowLabelResolver                    func(row Row) string
+	SearchBox                           templ.Component
+	SearchBoxAlignment                  HorizontalAlignment
+	ShouldUseOneBasedPageDisplay        bool
+	StickyHeaderBackgroundColor         string
+	TextCase                            string
 }
 
 type dataTableInitialState struct {
@@ -198,7 +200,7 @@ func (settings DataTableSettings[Row]) rowStripeClassesResolver() string {
 }
 
 func (settings DataTableSettings[Row]) rootClassesResolver() string {
-	rootClasses := "flex flex-col overflow-hidden rounded-md border border-neutral-50/10 bg-neutral-50/2.5"
+	rootClasses := "flex flex-col rounded-md border border-neutral-50/10 bg-neutral-50/2.5"
 	if settings.MinWidthClass != "" {
 		rootClasses += " " + settings.MinWidthClass
 	}
@@ -208,11 +210,18 @@ func (settings DataTableSettings[Row]) rootClassesResolver() string {
 	return rootClasses
 }
 
+func (settings DataTableSettings[Row]) stickyHeaderBackgroundClassResolver() string {
+	if settings.StickyHeaderBackgroundColor != "" {
+		return "bg-" + settings.StickyHeaderBackgroundColor
+	}
+	return "bg-neutral-950/70"
+}
+
 func (settings DataTableSettings[Row]) stickyHeaderClassesResolver() string {
 	if settings.IsHeaderStatic {
 		return ""
 	}
-	return " sticky top-0 z-10 bg-neutral-900"
+	return " sticky top-0 z-10 backdrop-blur-md " + settings.stickyHeaderBackgroundClassResolver()
 }
 
 func (settings DataTableSettings[Row]) scrollContainerClassesResolver() string {
