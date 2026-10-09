@@ -137,7 +137,7 @@ func Tag(componentSettings TagSettings) templ.Component {
 		if componentSettings.OuterTextColor != "" {
 			initialOuterTextColor = componentSettings.OuterTextColor
 		}
-		initialOuterRadius := uiToolset.BorderRadiusClassResolver(componentSettings.OuterRadius, "rounded")
+		initialOuterRadius := uiToolset.BorderRadiusClassResolver(componentSettings.OuterRadius, "rounded-md")
 		initialOuterClasses := initialOuterSizeClasses + " " +
 			" border-" + initialOuterRingColor + " bg-" + initialOuterBackgroundColor +
 			" text-" + initialOuterTextColor +
@@ -159,7 +159,7 @@ func Tag(componentSettings TagSettings) templ.Component {
 		}
 		initialInnerBackgroundColorClass := uiToolset.BackgroundColorClassResolver(componentSettings.InnerBackgroundColor, "bg-neutral-50/10")
 		initialInnerTextColorClass := uiToolset.TextColorClassResolver(componentSettings.InnerTextColor, "text-neutral-50")
-		initialInnerRadius := uiToolset.BorderRadiusClassResolver(componentSettings.InnerRadius, "rounded")
+		initialInnerRadius := uiToolset.BorderRadiusClassResolver(componentSettings.InnerRadius, "rounded-md")
 		initialInnerClasses := initialInnerSizeClasses + " " +
 			initialInnerBackgroundColorClass +
 			" " + initialInnerTextColorClass +

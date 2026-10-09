@@ -32,6 +32,21 @@ func TestTagRendersTinySizeClasses(t *testing.T) {
 	}
 }
 
+func TestTagRendersDefaultRoundedMd(t *testing.T) {
+	var buffer bytes.Buffer
+	renderErr := Tag(TagSettings{
+		OuterLeftLabel: "Info",
+		InnerLabel:     "Warning",
+	}).Render(context.Background(), &buffer)
+	if renderErr != nil {
+		t.Fatalf("TagRenderFailed: %v", renderErr)
+	}
+	renderedHtml := buffer.String()
+	if strings.Count(renderedHtml, "rounded-md") < 2 {
+		t.Errorf("RenderedTagMissingRoundedMd: %q", renderedHtml)
+	}
+}
+
 func TestTagRendersBoundValueWithoutLowercase(t *testing.T) {
 	var buffer bytes.Buffer
 	renderErr := Tag(TagSettings{
