@@ -32,10 +32,12 @@ test.describe("DataTable advanced examples @structural", () => {
 
   test("filters panel starts with its chip", async ({ page }) => {
     const target = await openExamplePanel(page, demoSection, "Filters");
+    const chip = target.locator(
+      'span[x-show]:has(button[aria-label="Remove Status filter"])',
+    );
 
-    await expect(
-      target.locator("span").filter({ hasText: "Status: running" }),
-    ).toBeVisible();
+    await expect(chip).toBeVisible();
+    await expect(chip.locator("span[x-text]")).toHaveText("running");
   });
 
   test("search box panel binds the starting query", async ({ page }) => {

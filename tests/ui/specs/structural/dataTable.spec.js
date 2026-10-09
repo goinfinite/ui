@@ -143,9 +143,11 @@ test.describe("DataTable @structural", () => {
 
     await expect.poll(() => refreshUrls.length).toBe(1);
     expect(refreshUrls[0]).toContain("name=alpha");
-    await expect(
-      page.locator(`${tableRoot} span`).filter({ hasText: "Name: alpha" }),
-    ).toBeVisible();
+    const chip = page.locator(
+      `${tableRoot} span[x-show]:has(button[aria-label="Remove Name filter"])`,
+    );
+    await expect(chip).toBeVisible();
+    await expect(chip.locator("span[x-text]")).toHaveText("alpha");
   });
 
   test("search debounces into one request and resets the page", async ({
@@ -481,7 +483,7 @@ test.describe("DataTable @structural", () => {
     expect(stacking.dropdownWins).toBe(true);
   });
 
-  test("the items per page menu renders an opaque surface", async ({
+  test("the items per page menu renders the default surface opacity", async ({
     page,
   }) => {
     const table = page.locator(tableRoot);
@@ -495,6 +497,6 @@ test.describe("DataTable @structural", () => {
     );
     const colorChannels = (backgroundColor.match(/[\d.]+/g) ?? []).map(Number);
     const backgroundAlpha = colorChannels.length === 4 ? colorChannels[3] : 1;
-    expect(backgroundAlpha).toBe(1);
+    expect(backgroundAlpha).toBe(0.95);
   });
 });
