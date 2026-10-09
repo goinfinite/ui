@@ -48,7 +48,7 @@ Dropdown select component with support for flat string options or label-value pa
 
 1. `src/form/selectInput.templ` — Component definition with SelectInputSettings struct (including IsMultiSelect and InputId), SelectLabelValueOption data structure, the option checkbox renderer, and the dropdown height and MaxVisibleOptions settings
 2. `src/form/selectInputState.js` — Alpine.js data component for the select dropdown: open toggle, close, the multi-select summary formatter, and the open-direction decision
-3. `src/import/toolset/selectDropdown.js` — Shared open-upward decision that stops at the viewport bottom and at every clipping ancestor so the list never opens downward into an overflow-hidden container
+3. `src/import/toolset/selectDropdown.js` — Shared open-upward decision that measures the space above and below the trigger, bounded by the viewport and every clipping ancestor, so the list never opens downward into an overflow-hidden container
 4. `src/form/selectDropdown.go` — Shared dropdown height classes resolver and the MaxVisibleOptions height style, with the row height of each dropdown family
 5. `src/form/inputHint.templ` — Shared hint renderer for the tooltip and description display modes
 6. `src/form/selectInput_templ.go` — Compiled output rendering select with native radio or checkbox options, an embedded JSON script for label lookup and the multi-select summary, and Alpine.js state management
@@ -66,7 +66,7 @@ Dropdown with a filter box that narrows local options in place, a clear button, 
 1. `src/form/searchableSelectInput.templ` — SearchableSelectInputSettings and the shared shell, trigger, filter input, action icons, selected labels, selected tags with tag color settings, local option rows, and local dropdown
 2. `src/form/searchableSelectInput.go` — The client config types and resolvers (normalized items, multi-select and custom-value flags, remote settings, the selection presentation), the dropdown class resolver, plus the selection, toggle, clear, custom-value, tag-remove, tag-backspace, and selected-state expression builders
 3. `src/form/searchableSelectInputState.js` — Shared Alpine data component: filter, visibility, No matches, selected-label lookup, and the remote fetch lifecycle
-4. `src/import/toolset/selectDropdown.js` — Shared open-upward decision that stops at the viewport bottom and at every clipping ancestor
+4. `src/import/toolset/selectDropdown.js` — Shared open-upward decision that measures the space above and below the trigger, bounded by the viewport and every clipping ancestor
 5. `src/form/searchableSelectInput_test.go` — Tests for the item and presentation resolvers, the expression builders, and the rendered dropdown
 6. `src/form/searchableSelectInput_templ.go` — Compiled output
 
@@ -80,7 +80,7 @@ Searchable select whose options come from a URL as the user types, with debounce
 
 **Flow:**
 
-1. `src/form/remoteSearchableSelectInput.templ` — RemoteSearchableSelectInputSettings, the remote config resolver, the dropdown height and MaxVisibleOptions settings, and the remote option rows and dropdown with the minimum-length prompt, sharing the searchable shell, trigger, and filter input
+1. `src/form/remoteSearchableSelectInput.templ` — RemoteSearchableSelectInputSettings, the remote config resolver, the dropdown height and MaxVisibleOptions settings, the InitialOptions that label bound values until the user types, and the remote option rows and dropdown with the minimum-length prompt, sharing the searchable shell, trigger, and filter input
 2. `src/form/searchableSelectInputState.js` — Shared Alpine data component owning the remote fetch lifecycle: request id for stale discard, loading and error flags, and the debounced request
 3. `src/form/remoteSearchableSelectInput_test.go` — Tests for the remote config resolver
 4. `src/form/remoteSearchableSelectInput_templ.go` — Compiled output

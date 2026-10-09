@@ -57,7 +57,7 @@ The JavaScript files live in `src/import/toolset/`. Include them with `@uiImport
 
 Call the utilities through the `UiToolset` object.
 
-- `UiToolset.CreateRandomPassword()`: Creates a random password of length 16 characters.
+- `UiToolset.CreateRandomPassword(options)`: creates a random password. `options` carries `length` (default 16), `minLength` (default 6), `maxLength` (default 64), and one `include*` flag per character class. With no arguments it keeps the 16-character behavior.
 - `UiToolset.ResolveApiResponseDisplay(apiResponse, httpStatusCode)`: Resolves the message and outcome (`success`, `partialSuccess`, or `error`) from an Infinite API response envelope.
 - `UiToolset.ToggleLoadingOverlay()`: Toggles the loading overlay element with the id `loading-overlay`.
 - `UiToolset.JsonAjax(method, url, payload, toast)`: Makes a JSON AJAX request. It shows the loading overlay and can display a toast from the response envelope.
