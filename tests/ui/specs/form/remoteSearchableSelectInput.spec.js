@@ -36,6 +36,21 @@ test.describe("RemoteSearchableSelectInput", () => {
     );
   });
 
+  test("@smoke initial options label a preset value before any request", async ({
+    page,
+  }) => {
+    const panel = await openExamplePanel(page, section, "Preset Value");
+    const combobox = panel.locator("input[role=combobox]");
+    await expect(combobox).toHaveValue("Brazil");
+
+    await combobox.click();
+    const listbox = panel.locator("ul[role=listbox]");
+    await expect(listbox.getByRole("option", { name: "Brazil" })).toBeVisible();
+
+    await combobox.fill("chi");
+    await expect(listbox.getByRole("option", { name: "Brazil" })).toBeHidden();
+  });
+
   test("loading indicator shows while the request is in flight", async ({
     page,
   }) => {

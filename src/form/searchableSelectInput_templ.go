@@ -1055,7 +1055,7 @@ func SearchableSelectInput(componentSettings SearchableSelectInputSettings) temp
 		}
 		presentation := searchableSelectInputSelectionPresentationResolver(componentSettings.IsMultiSelect, componentSettings.SelectionDisplay, componentSettings.ShouldAllowCustomValues)
 		isTagDisplay := presentation.Display == SearchableSelectInputSelectionDisplayTags
-		clientConfig := searchableSelectInputClientConfigResolver(componentSettings.IsMultiSelect, componentSettings.FlatOptions, componentSettings.LabelValueOptions, nil)
+		clientConfig := searchableSelectInputClientConfigResolver(componentSettings.IsMultiSelect, componentSettings.FlatOptions, componentSettings.LabelValueOptions, nil, nil)
 		enterExpression := ""
 		if presentation.AllowCustomValues {
 			enterExpression = searchableSelectInputCustomValueAddExpressionBuilder(componentSettings.TwoWayStatePath, onChangeSuffix)

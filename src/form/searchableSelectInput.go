@@ -68,9 +68,10 @@ type searchableSelectInputRemoteConfig struct {
 }
 
 type searchableSelectInputClientConfig struct {
-	Items         []searchableSelectInputItemConfig  `json:"items"`
-	IsMultiSelect bool                               `json:"isMultiSelect"`
-	Remote        *searchableSelectInputRemoteConfig `json:"remote,omitempty"`
+	Items          []searchableSelectInputItemConfig  `json:"items"`
+	InitialOptions []searchableSelectInputItemConfig  `json:"initialOptions"`
+	IsMultiSelect  bool                               `json:"isMultiSelect"`
+	Remote         *searchableSelectInputRemoteConfig `json:"remote,omitempty"`
 }
 
 func searchableSelectInputItemsResolver(
@@ -99,14 +100,14 @@ func searchableSelectInputItemsResolver(
 
 func searchableSelectInputClientConfigResolver(
 	isMultiSelect bool,
-	flatOptions []string, labelValueOptions []SelectLabelValueOption,
+	flatOptions []string, labelValueOptions, initialOptions []SelectLabelValueOption,
 	remoteConfig *searchableSelectInputRemoteConfig,
 ) searchableSelectInputClientConfig {
-	items := searchableSelectInputItemsResolver(flatOptions, labelValueOptions)
 	return searchableSelectInputClientConfig{
-		Items:         items,
-		IsMultiSelect: isMultiSelect,
-		Remote:        remoteConfig,
+		Items:          searchableSelectInputItemsResolver(flatOptions, labelValueOptions),
+		InitialOptions: searchableSelectInputItemsResolver(nil, initialOptions),
+		IsMultiSelect:  isMultiSelect,
+		Remote:         remoteConfig,
 	}
 }
 
@@ -144,6 +145,7 @@ func searchableSelectInputSingleSelectExpressionBuilder(
 	return "selectedLabelCache.set(" + valueExpression + ", " + labelExpression + ")" +
 		"; " + statePath + " = " + valueExpression +
 		"; userInput = " + labelExpression +
+		"; isUserSearching = false" +
 		"; closeDropdown()" + onChangeSuffix
 }
 
@@ -154,7 +156,7 @@ func searchableSelectInputMultiToggleExpressionBuilder(
 		"; " + statePath + " = " + statePath + ".includes(" + valueExpression + ")" +
 		" ? " + statePath + ".filter((item) => item !== " + valueExpression + ")" +
 		" : [..." + statePath + ", " + valueExpression + "]" +
-		"; userInput = ''" + onChangeSuffix
+		"; userInput = ''; isUserSearching = false" + onChangeSuffix
 }
 
 func searchableSelectInputClearExpressionBuilder(
@@ -164,7 +166,7 @@ func searchableSelectInputClearExpressionBuilder(
 	if isMultiSelect {
 		emptyValue = "[]"
 	}
-	return statePath + " = " + emptyValue + "; userInput = ''" + onChangeSuffix
+	return statePath + " = " + emptyValue + "; userInput = ''; isUserSearching = false" + onChangeSuffix
 }
 
 func searchableSelectInputCustomValueAddExpressionBuilder(

@@ -38,6 +38,42 @@ templ RemoteSearchableSelectInputMultiSelectExample() {
 	}
 }
 
+templ RemoteSearchableSelectInputPresetValueExample() {
+	{{
+		presetValueUsage := `@uiForm.RemoteSearchableSelectInput(uiForm.RemoteSearchableSelectInputSettings{
+	InputName:       "country",
+	Label:           "Country",
+	OptionsUrl:      "/api/countries/search",
+	TwoWayStatePath: "country",
+
+	// OptionalFields
+	InitialOptions: []uiForm.SelectLabelValueOption{
+		{Label: "Brazil", Value: "Brazil"},
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Preset Value",
+		"InitialOptions labels a value that is already bound, so the trigger shows the label and the dropdown lists it before any request. A fetched option wins for the same value.",
+		"/form/remoteSearchableSelectInput.templ", presetValueUsage,
+	) {
+		<div x-data="{country: 'Brazil'}" class="flex flex-col gap-3">
+			@uiForm.RemoteSearchableSelectInput(uiForm.RemoteSearchableSelectInputSettings{
+				InputName:       "countryPresetValue",
+				Label:           "Country",
+				OptionsUrl:      "remote-searchable-select-demo",
+				TwoWayStatePath: "country",
+				InitialOptions: []uiForm.SelectLabelValueOption{
+					{Label: "Brazil", Value: "Brazil"},
+				},
+			})
+			<p class={ DemoLiveStateClasses }>
+				Value: <span x-text="country"></span>
+			</p>
+		</div>
+	}
+}
+
 templ RemoteSearchableSelectInputQuerySettingsExample() {
 	{{
 		querySettingsUsage := `@uiForm.RemoteSearchableSelectInput(uiForm.RemoteSearchableSelectInputSettings{
@@ -237,6 +273,7 @@ templ RemoteSearchableSelectInputDemo() {
 		}
 		@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
 			{Title: "Multi-Select", Icon: "ph-list-checks", Content: RemoteSearchableSelectInputMultiSelectExample()},
+			{Title: "Preset Value", Icon: "ph-push-pin", Content: RemoteSearchableSelectInputPresetValueExample()},
 			{Title: "Query Settings", Icon: "ph-sliders", Content: RemoteSearchableSelectInputQuerySettingsExample()},
 			{Title: "Error State", Icon: "ph-warning-circle", Content: RemoteSearchableSelectInputErrorExample()},
 			{Title: "Hints", Icon: "ph-info", Content: RemoteSearchableSelectInputHintsExample()},

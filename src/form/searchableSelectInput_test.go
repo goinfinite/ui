@@ -37,7 +37,7 @@ func TestSearchableSelectInputSelectionExpressionBuilders(t *testing.T) {
 				"country", "'AR'", "'Argentina'", "; onCountryChange()",
 			),
 			expected: "selectedLabelCache.set('AR', 'Argentina'); country = 'AR';" +
-				" userInput = 'Argentina'; closeDropdown(); onCountryChange()",
+				" userInput = 'Argentina'; isUserSearching = false; closeDropdown(); onCountryChange()",
 		},
 		{
 			name: "multi toggle",
@@ -46,21 +46,22 @@ func TestSearchableSelectInputSelectionExpressionBuilders(t *testing.T) {
 			),
 			expected: "selectedLabelCache.set('AR', 'Argentina'); countries =" +
 				" countries.includes('AR') ? countries.filter((item) =>" +
-				" item !== 'AR') : [...countries, 'AR']; userInput = ''",
+				" item !== 'AR') : [...countries, 'AR']; userInput = '';" +
+				" isUserSearching = false",
 		},
 		{
 			name: "clear multi",
 			actual: searchableSelectInputClearExpressionBuilder(
 				"countries", true, "",
 			),
-			expected: "countries = []; userInput = ''",
+			expected: "countries = []; userInput = ''; isUserSearching = false",
 		},
 		{
 			name: "clear single",
 			actual: searchableSelectInputClearExpressionBuilder(
 				"country", false, "",
 			),
-			expected: "country = ''; userInput = ''",
+			expected: "country = ''; userInput = ''; isUserSearching = false",
 		},
 		{
 			name: "custom value add",

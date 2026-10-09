@@ -1,6 +1,7 @@
 UiToolset.RegisterAlpineState(() => {
   const searchableSelectInputDefaultConfig = {
     items: [],
+    initialOptions: [],
     isMultiSelect: false,
     remote: null,
   };
@@ -17,6 +18,7 @@ UiToolset.RegisterAlpineState(() => {
     isOpen: false,
     openUpward: false,
     userInput: "",
+    isUserSearching: false,
     selectedLabelCache: new Map(),
     remoteOptions: [],
     isLoading: false,
@@ -86,6 +88,7 @@ UiToolset.RegisterAlpineState(() => {
     get hasNoMatches() {
       if (this.isRemote) {
         return (
+          this.isUserSearching &&
           this.userInput.length >= this.config.remote.minQueryLength &&
           !this.isLoading &&
           !this.isAwaitingRemoteOptions &&
@@ -114,7 +117,8 @@ UiToolset.RegisterAlpineState(() => {
       }
       const option =
         this.config.items.find((item) => item.value === value) ||
-        this.remoteOptions.find((item) => item.value === value);
+        this.remoteOptions.find((item) => item.value === value) ||
+        this.config.initialOptions.find((item) => item.value === value);
       if (option !== undefined) {
         return option.label;
       }
@@ -129,6 +133,7 @@ UiToolset.RegisterAlpineState(() => {
     },
 
     onInputChanged() {
+      this.isUserSearching = this.userInput.trim() !== "";
       if (!this.isRemote) {
         return;
       }

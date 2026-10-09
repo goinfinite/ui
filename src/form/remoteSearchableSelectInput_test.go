@@ -57,6 +57,31 @@ func TestRemoteSearchableSelectInputRemoteConfigResolver(t *testing.T) {
 	}
 }
 
+func TestRemoteSearchableSelectInputRendersInitialOptions(t *testing.T) {
+	settings := RemoteSearchableSelectInputSettings{
+		InputName:       "country",
+		Label:           "Country",
+		OptionsUrl:      "/api/countries",
+		TwoWayStatePath: "country",
+		InitialOptions: []SelectLabelValueOption{
+			{Label: "Brazil", Value: "Brazil"},
+		},
+	}
+	var buffer bytes.Buffer
+	renderErr := RemoteSearchableSelectInput(settings).Render(context.Background(), &buffer)
+	if renderErr != nil {
+		t.Fatalf("RemoteSearchableSelectInputRenderFailed: %v", renderErr)
+	}
+	renderedHtml := buffer.String()
+	for _, expectedText := range []string{
+		`"initialOptions"`, `"label":"Brazil"`, `"value":"Brazil"`,
+	} {
+		if !strings.Contains(renderedHtml, expectedText) {
+			t.Errorf("RenderedHtmlMissing(%q)", expectedText)
+		}
+	}
+}
+
 func TestRemoteSearchableSelectInputRendersOpaqueDropdownAboveStickyHeaders(t *testing.T) {
 	settings := RemoteSearchableSelectInputSettings{
 		InputName:       "country",

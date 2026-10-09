@@ -12,6 +12,7 @@ type RemoteSearchableSelectInputSettings struct {
 	TwoWayStatePath                   string
 	InputId                           string
 	IsMultiSelect                     bool
+	InitialOptions                    []SelectLabelValueOption
 	OnChangeFunc                      string
 	Size                              string
 	TextCase                          string
@@ -59,10 +60,10 @@ templ RemoteSearchableSelectInput(componentSettings RemoteSearchableSelectInputS
 		{{ onChangeSuffix = "; " + componentSettings.OnChangeFunc }}
 	}
 	{{ remoteConfig := remoteSearchableSelectInputRemoteConfigResolver(componentSettings.OptionsUrl, componentSettings.OptionsQueryParam, componentSettings.MinQueryLength, componentSettings.DebounceMs) }}
-	{{ clientConfig := searchableSelectInputClientConfigResolver(componentSettings.IsMultiSelect, nil, nil, remoteConfig) }}
+	{{ clientConfig := searchableSelectInputClientConfigResolver(componentSettings.IsMultiSelect, nil, nil, componentSettings.InitialOptions, remoteConfig) }}
 	{{ initExpression := "" }}
 	if !componentSettings.IsMultiSelect {
-		{{ initExpression = "$watch('" + componentSettings.TwoWayStatePath + "', (value) => { userInput = optionLabelResolver(value) }); userInput = optionLabelResolver(" + componentSettings.TwoWayStatePath + " ?? '')" }}
+		{{ initExpression = "$watch('" + componentSettings.TwoWayStatePath + "', (value) => { userInput = optionLabelResolver(value); isUserSearching = false }); userInput = optionLabelResolver(" + componentSettings.TwoWayStatePath + " ?? '')" }}
 	}
 	{{ shellSettings := searchableSelectInputShellSettings{
 		Label:                             componentSettings.Label,
@@ -97,6 +98,12 @@ templ RemoteSearchableSelectInput(componentSettings RemoteSearchableSelectInputS
 			@searchableSelectInputTriggerEndIcons(shellSettings)
 		}
 		@searchableSelectInputDropdown(shellSettings) {
+			<template x-for="option in config.initialOptions" :key="option.value">
+				@searchableSelectInputOptionRow(
+					shellSettings,
+					"!isUserSearching", "option.value", "option.label", "", nil,
+				)
+			</template>
 			<li x-show="isLoading" class="flex items-center gap-2 px-3 py-2 text-sm text-neutral-400">
 				<i class="ph-bold ph-spinner animate-spin"></i>
 				Loading...

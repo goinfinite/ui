@@ -20,6 +20,7 @@ type RemoteSearchableSelectInputSettings struct {
 	TwoWayStatePath                   string
 	InputId                           string
 	IsMultiSelect                     bool
+	InitialOptions                    []SelectLabelValueOption
 	OnChangeFunc                      string
 	Size                              string
 	TextCase                          string
@@ -90,10 +91,10 @@ func RemoteSearchableSelectInput(componentSettings RemoteSearchableSelectInputSe
 			onChangeSuffix = "; " + componentSettings.OnChangeFunc
 		}
 		remoteConfig := remoteSearchableSelectInputRemoteConfigResolver(componentSettings.OptionsUrl, componentSettings.OptionsQueryParam, componentSettings.MinQueryLength, componentSettings.DebounceMs)
-		clientConfig := searchableSelectInputClientConfigResolver(componentSettings.IsMultiSelect, nil, nil, remoteConfig)
+		clientConfig := searchableSelectInputClientConfigResolver(componentSettings.IsMultiSelect, nil, nil, componentSettings.InitialOptions, remoteConfig)
 		initExpression := ""
 		if !componentSettings.IsMultiSelect {
-			initExpression = "$watch('" + componentSettings.TwoWayStatePath + "', (value) => { userInput = optionLabelResolver(value) }); userInput = optionLabelResolver(" + componentSettings.TwoWayStatePath + " ?? '')"
+			initExpression = "$watch('" + componentSettings.TwoWayStatePath + "', (value) => { userInput = optionLabelResolver(value); isUserSearching = false }); userInput = optionLabelResolver(" + componentSettings.TwoWayStatePath + " ?? '')"
 		}
 		shellSettings := searchableSelectInputShellSettings{
 			Label:                             componentSettings.Label,
@@ -179,7 +180,18 @@ func RemoteSearchableSelectInput(componentSettings RemoteSearchableSelectInputSe
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<li x-show=\"isLoading\" class=\"flex items-center gap-2 px-3 py-2 text-sm text-neutral-400\"><i class=\"ph-bold ph-spinner animate-spin\"></i> Loading...</li><li x-show=\"hasError\" class=\"px-3 py-2 text-sm text-red-400\">Could not load options.</li><li x-show=\"shouldPromptMinQueryLength\" class=\"px-3 py-2 text-sm text-neutral-400\" x-text=\"minQueryLengthPromptResolver\"></li><template x-for=\"option in remoteOptions\" :key=\"option.value\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<template x-for=\"option in config.initialOptions\" :key=\"option.value\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = searchableSelectInputOptionRow(
+					shellSettings,
+					"!isUserSearching", "option.value", "option.label", "", nil,
+				).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</template><li x-show=\"isLoading\" class=\"flex items-center gap-2 px-3 py-2 text-sm text-neutral-400\"><i class=\"ph-bold ph-spinner animate-spin\"></i> Loading...</li><li x-show=\"hasError\" class=\"px-3 py-2 text-sm text-red-400\">Could not load options.</li><li x-show=\"shouldPromptMinQueryLength\" class=\"px-3 py-2 text-sm text-neutral-400\" x-text=\"minQueryLengthPromptResolver\"></li><template x-for=\"option in remoteOptions\" :key=\"option.value\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -190,7 +202,7 @@ func RemoteSearchableSelectInput(componentSettings RemoteSearchableSelectInputSe
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</template><li x-show=\"hasNoMatches\" class=\"px-3 py-2 text-sm text-neutral-400\">No matches</li>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</template><li x-show=\"hasNoMatches\" class=\"px-3 py-2 text-sm text-neutral-400\">No matches</li>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
