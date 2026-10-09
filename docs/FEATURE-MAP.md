@@ -20,8 +20,8 @@ Password field with a reveal toggle, an optional random password generator, and 
 
 **Flow:**
 
-1. `src/form/passwordInput.templ` — PasswordInputSettings, the rules resolver (length range, generation length, character classes), the criteria-item resolver, the action buttons (reveal and generate) with their boxed or plain style (ActionButtonStyle), the meter with its color settings, and the InputField composition
-2. `src/form/passwordInputState.js` — Alpine data component: reveal flag, strength percentage, per-criterion flags, the generator call, and the clipboard copy with a language-matched toast
+1. `src/form/passwordInput.templ` — PasswordInputSettings, the rules resolver (length range, generation length, character classes), the criteria-item resolver, the reveal and generate action buttons rendered as uiControl.Button with padding and min-width/min-height constraints and a boxed or plain style (ActionButtonStyle), the meter with its color settings, and the InputField composition
+2. `src/form/passwordInputState.js` — Alpine data component: reveal flag, strength percentage, per-criterion flags, the generator call, and the clipboard copy with a language-matched toast that ends with an exclamation mark
 3. `src/import/toolset/randomPassword.js` — `createRandomPassword(options)` with configurable length and character classes; guarantees one character from each selected class
 4. `src/form/passwordInput_test.go` — Table-driven tests for the rules and criteria resolvers plus the rendered actions and meter
 5. `src/form/passwordInput_templ.go` — Compiled output
@@ -154,7 +154,7 @@ Interactive button component with customizable label, icons (left/right using Ph
 
 **Flow:**
 
-1. `src/control/button.templ` — Component definition with ButtonSettings struct supporting OnClickFunc handlers, icon binding, the type attribute, and the optional tooltip
+1. `src/control/button.templ` — Component definition with ButtonSettings struct supporting OnClickFunc handlers, icon binding, a padding override with min/max width and height constraints, a static or Alpine-bound aria label, the type attribute, and the optional tooltip
 2. `src/toolset/tooltipState.js` — Shared Alpine data component that teleports a tooltip to the document body, positions it with fixed coordinates on hover or focus, and flips it to stay inside the viewport
 3. `src/toolset/tooltip.go` — The once-handle that embeds the shared tooltip state, plus TooltipSurfaceClassesResolver for the shared fixed-layer tooltip classes and the shared TooltipPosition* placement values
 4. `src/control/button_templ.go` — Compiled output rendering the button with Alpine.js event binding and the teleported tooltip
@@ -241,7 +241,7 @@ Small label/badge component for categorization and tagging with customizable siz
 
 **Flow:**
 
-1. `src/display/tag.templ` — Component definition with TagSettings struct; `OnRemoveFunc` renders a named remove button
+1. `src/display/tag.templ` — Component definition with TagSettings struct; `OnRemoveFunc` renders a named remove button; `OuterRadius` and `InnerRadius` default to `rounded-md`
 2. `src/display/tag_templ.go` — Compiled output rendering small badge element with Tailwind styling
 
 ---
@@ -303,7 +303,7 @@ Standalone filter bar that renders one editor per declared filter (text contains
 
 **Flow:**
 
-1. `src/structural/filterBar.templ` — Component definition with FilterBarSettings and FilterSettings; renders editors and chips bound to a values object
+1. `src/structural/filterBar.templ` — Component definition with FilterBarSettings and FilterSettings; renders editors and chips bound to a values object; the FilterChipStyle struct carries each chip color token and the label text case (default lowercase)
 2. `src/structural/filterBarState.js` — Alpine component with chip visibility, chip label, single-filter reset, clear-all, and any-active helpers
 3. `src/form/selectInput.templ` — Multi-select dropdown editor (IsMultiSelect) for the multi-enum kind
 4. `src/display/tag.templ` — Removable Tag variant used for the chips
@@ -317,7 +317,7 @@ Generic server-driven table taking column definitions and rows. Adds sortable he
 
 **Flow:**
 
-1. `src/structural/dataTable.templ` — Generic component (DataTable[T]) with DataTableSettings and DataTableColumnSettings; renders the filter bar, toolbar, table region, error row, and pagination; the settings script renders inside the component root; the scroll viewport carries `data-ui-data-table-scroll`
+1. `src/structural/dataTable.templ` — Generic component (DataTable[T]) with DataTableSettings and DataTableColumnSettings; renders the filter bar, toolbar, table region, error row, and pagination; FilterChipStyle forwards to the shared filter bar; the settings script renders inside the component root; the scroll viewport carries `data-ui-data-table-scroll`
 2. `src/structural/dataTable.go` — DataTableSettings and DataTableColumnSettings types with their methods (client settings, id, page size, pagination label, density, text case, checkbox shape, checkbox size, row stripe, root class, sticky header class, scroll container class), the named density and sort-direction types, and the URL placeholder constants. The shared TextAlignment type serves the DataTable column alignment; the shared HorizontalAlignment type serves the search box. PageNumber is zero-based and ShouldUseOneBasedPageDisplay changes only the strip labels. The `Initial*` fields seed client state; `HeaderClass`, `CellClass`, `RowClassResolver`, and `IsStriped` carry styling; `StickyHeaderBackgroundColor` paints the pinned header and `ItemsPerPageDropdownBackgroundColor` paints the items-per-page menu; the root never clips a child dropdown, and the scroll container rounds its top corners when the table body touches the root's top edge; `MinWidthClass` and `MaxWidthClass` size the surface; `MinHeightClass`, `MaxHeightClass`, and `MaxVisibleRows` size the scroll viewport; `IsHeaderStatic` unpins the header; `CheckboxCheckedColor` and `CheckboxUncheckedColor` carry the selection color
 3. `src/structural/dataTableState.js` — Alpine data component: debounces refreshes, swaps the region carrying `data-ui-data-table`, owns selection and sort helpers, and measures the scroll viewport to show `MaxVisibleRows` rows; builds the refresh URL through `UiToolset.ServerFragmentRefreshComponent.refreshUrlBuilder`
 4. `src/structural/serverFragmentRefreshComponentState.js` — Shared refresh helpers, all under `UiToolset.ServerFragmentRefreshComponent`: the refresh URL builder, the fragment fetcher, and the lifecycle (settings resolver, event watcher, error handler attacher, handler detacher, request debouncer, failure handler, loading clearer)
@@ -333,7 +333,7 @@ Multi-item slider over a server page. The server returns a chunk of items; the c
 
 **Flow:**
 
-1. `src/structural/carousel.templ` — Generic component (Carousel[T]) with CarouselSettings; renders the search box, arrows, track, dots, error state, filter bar, and pagination; the track sits in `data-ui-carousel` and the footer in `data-ui-carousel-pagination`; the settings script renders inside the component root
+1. `src/structural/carousel.templ` — Generic component (Carousel[T]) with CarouselSettings; renders the search box, arrows, track, dots, error state, filter bar, and pagination; FilterChipStyle forwards to the shared filter bar; the track sits in `data-ui-carousel` and the footer in `data-ui-carousel-pagination`; the settings script renders inside the component root
 2. `src/structural/carousel.go` — CarouselSettings and the CarouselItemsPerViewSettings type, the surface/arrows/dots/item token constants and class resolvers, plus the id, items-per-view, items-per-page, search-box position, autoplay interval, aria-label, and color resolvers and the client-settings builder
 3. `src/structural/carouselItemTooltip.templ` — CarouselItemTooltip: wraps one item in a hover and focus trigger scope and renders a tooltip that teleports to the document body, with content, position, color, and compact-ring settings
 4. `src/structural/carouselItemTooltip_test.go` — Render tests for the teleport markup, the aria-describedby wiring, the plain wrapper without content, and the customization tokens
@@ -355,8 +355,8 @@ Dismissible notification toast component with title, description, and Alpine.js 
 
 **Flow:**
 
-1. `src/display/toast.templ` — Component definition with ToastSettings struct exposing optional AutoDismissSeconds (defaults to 10s)
-2. `src/display/toastState.js` — Alpine toast state and HTMX response handling
+1. `src/display/toast.templ` — Component definition with ToastSettings struct exposing optional AutoDismissSeconds (defaults to 10s) and a type-tinted surface when BackgroundColor is unset
+2. `src/display/toastState.js` — Alpine toast state, the type-to-background resolver, and HTMX response handling
 3. `src/display/toast_templ.go` — Compiled output rendering toast element with Alpine.js binding and timer logic
 4. `src/import/toolset/apiResponse.js` — API response message and outcome resolution
 5. `src/import/toolset/jsonAjax.js` — JsonAjax response handling delegated to the toast store
