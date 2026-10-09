@@ -51,10 +51,11 @@ fix: give each select input option checkbox a unique id
 fix: open the select dropdown upward only when it fits above the field
 fix: list the full record count as a page size choice in the carousel tooltip demo
 fix: list all six planets in the inline checkbox group demo
-test: assert the exact filter chip value and the data table dropdown background
+test: assert the exact filter chip value and the data table dropdown alpha
 feat: add InitialOptions to the RemoteSearchableSelectInput so a bound value shows its label before the first request
 docs: update the readmes, the contexts, the feature map, and the changelog
 chore(docs): regenerate the demo page
+fix: round the filter bar chips with the xl radius and widen the closable extra small tag padding
 
 0.2.5 - 2026/10/07
 BREAKING: move the refresh URL builder, the fragment fetcher, and the refresh lifecycle helpers under UiToolset.ServerFragmentRefreshComponent
