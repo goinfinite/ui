@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/a-h/templ"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
 type carouselTestItem struct {
@@ -282,7 +283,7 @@ func TestCarouselSurfaceClassesResolver(t *testing.T) {
 	}
 
 	lgSettings := CarouselSettings[carouselTestItem]{
-		BorderRadius: CarouselBorderRadiusLg,
+		BorderRadius: uiToolset.BorderRadiusLg,
 	}
 	if lgClasses := lgSettings.surfaceClassesResolver(); !strings.Contains(lgClasses, "rounded-lg") {
 		t.Errorf("SurfaceClassesMissingLg: %q", lgClasses)
@@ -290,10 +291,10 @@ func TestCarouselSurfaceClassesResolver(t *testing.T) {
 
 	providedSettings := CarouselSettings[carouselTestItem]{
 		BackgroundColor: "neutral-800/50",
-		BorderRadius:    CarouselBorderRadiusXl,
-		ShadowSize:      CarouselShadowSizeLg,
+		BorderRadius:    uiToolset.BorderRadiusXl,
+		ShadowSize:      uiToolset.ShadowSizeLg,
 		RingColor:       "secondary-500/30",
-		RingThickness:   CarouselRingThicknessMd,
+		RingThickness:   uiToolset.RingThicknessMd,
 	}
 	providedClasses := providedSettings.surfaceClassesResolver()
 	for _, expectedClass := range []string{
@@ -307,7 +308,7 @@ func TestCarouselSurfaceClassesResolver(t *testing.T) {
 
 func TestCarouselArrowsClassesResolver(t *testing.T) {
 	outsideClasses := carouselArrowsClassesResolver(
-		CarouselArrowsPositionOutside, CarouselArrowsShapeRounded,
+		CarouselArrowsPositionOutside, uiToolset.ShapeRounded,
 		CarouselArrowsSizeSm, "", "",
 	)
 	for _, expectedClass := range []string{"rounded", "h-7", "w-7", "bg-neutral-50/7.5"} {
@@ -317,7 +318,7 @@ func TestCarouselArrowsClassesResolver(t *testing.T) {
 	}
 
 	insideClasses := carouselArrowsClassesResolver(
-		CarouselArrowsPositionInside, CarouselArrowsShapeSquare,
+		CarouselArrowsPositionInside, uiToolset.ShapeSquare,
 		CarouselArrowsSizeLg, "secondary-500/20", "secondary-100",
 	)
 	for _, expectedClass := range []string{
@@ -364,8 +365,8 @@ func TestCarouselItemClassesResolver(t *testing.T) {
 	}
 
 	providedClasses := carouselItemClassesResolver(
-		"neutral-50/5", "lg", CarouselPaddingSizeMd,
-		"neutral-50/10", CarouselRingThicknessXs, CarouselShadowSizeSm,
+		"neutral-50/5", "lg", uiToolset.PaddingSizeMd,
+		"neutral-50/10", uiToolset.RingThicknessXs, uiToolset.ShadowSizeSm,
 	)
 	for _, expectedClass := range []string{"bg-neutral-50/5", "rounded-lg", "p-5", "ring-1", "ring-neutral-50/10", "shadow-sm"} {
 		if !strings.Contains(providedClasses, expectedClass) {

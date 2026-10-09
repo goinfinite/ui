@@ -1,7 +1,10 @@
 package uiStructural
 
 import (
+	"bytes"
+	"context"
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -160,5 +163,31 @@ func TestPaginationReadoutExpression(t *testing.T) {
 				)
 			}
 		})
+	}
+}
+
+func TestPaginationRendersItemsPerPageDropdownBackground(t *testing.T) {
+	settings := PaginationSettings{
+		PageNumberTwoWayStatePath:   "pageNumber",
+		ItemsPerPageTwoWayStatePath: "itemsPerPage",
+		ItemsTotal:                  240,
+	}
+	var buffer bytes.Buffer
+	renderErr := Pagination(settings).Render(context.Background(), &buffer)
+	if renderErr != nil {
+		t.Fatalf("PaginationRenderFailed: %v", renderErr)
+	}
+	if !strings.Contains(buffer.String(), "bg-neutral-800/95") {
+		t.Errorf("RenderedHtmlMissingDefaultDropdownBackground")
+	}
+
+	settings.DropdownBackgroundColor = "emerald-900"
+	coloredBuffer := bytes.Buffer{}
+	renderErr = Pagination(settings).Render(context.Background(), &coloredBuffer)
+	if renderErr != nil {
+		t.Fatalf("PaginationRenderFailed: %v", renderErr)
+	}
+	if !strings.Contains(coloredBuffer.String(), "bg-emerald-900") {
+		t.Errorf("RenderedHtmlMissingCustomDropdownBackground")
 	}
 }

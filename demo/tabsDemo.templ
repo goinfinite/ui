@@ -111,7 +111,7 @@ templ TabsVerticalExample() {
     Orientation: uiStructural.TabOrientationVertical,
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Vertical",
 		"Orientation renders the tab list as a column beside the panels, for sidebar-style layouts. Up and Down arrows move between the tabs.",
 		"/structural/tabs.templ", verticalUsage,
@@ -148,7 +148,7 @@ templ TabsRightSideExample() {
     Side:        uiStructural.TabSideRight,
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Right Side",
 		"Side places the vertical tab list on the right side of the panels, for layouts that read better with the navigation on the right. Up and Down arrows still move between the tabs.",
 		"/structural/tabs.templ", rightSideUsage,
@@ -186,7 +186,7 @@ templ TabsVerticalAlignmentExample() {
     Alignment:   uiStructural.TabAlignmentCenter,
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Vertical Alignment",
 		"Alignment aligns the vertical tab list with the tab content. It accepts TabAlignmentTop (the default), TabAlignmentCenter, and TabAlignmentBottom, and only applies with TabOrientationVertical.",
 		"/structural/tabs.templ",
@@ -221,7 +221,7 @@ templ TabsIconPositionExample() {
     SelectedValueTwoWayStatePath: "selectedIconTab",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Icon Position",
 		"IconPosition places the icon above the label instead of beside it. The default, TabIconPositionLeft, keeps the icon on the left.",
 		"/structural/tabs.templ", iconPositionUsage,
@@ -253,12 +253,12 @@ templ TabsBorderRadiusExample() {
     SelectedValueTwoWayStatePath: "selectedRadiusTab",
 
     // OptionalFields
-    BorderRadius: uiStructural.TabBorderRadiusXl,
+    BorderRadius: uiToolset.BorderRadiusXl,
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Border Radius",
-		"BorderRadius rounds the tab edges. It accepts TabBorderRadiusNone through TabBorderRadiusXl, and the default is TabBorderRadiusMd.",
+		"BorderRadius rounds the tab edges. It accepts BorderRadiusNone through BorderRadiusFull, and the default is BorderRadiusMd.",
 		"/structural/tabs.templ", borderRadiusUsage,
 	) {
 		<div
@@ -272,7 +272,7 @@ templ TabsBorderRadiusExample() {
 					{Label: "Advanced", Value: "advanced", Icon: "ph-sliders", Content: TabsDemoAdvancedPanel()},
 				},
 				SelectedValueTwoWayStatePath: "selectedRadiusTab",
-				BorderRadius:                     uiStructural.TabBorderRadiusXl,
+				BorderRadius:                     uiToolset.BorderRadiusXl,
 			})
 		</div>
 	}
@@ -290,17 +290,17 @@ templ TabsSurfaceExample() {
 
     // OptionalFields
     BackgroundColor: "neutral-50/5",
-    BorderRadius:    uiStructural.TabBorderRadiusNone,
-    GapSize:         uiStructural.TabGapSizeLg,
-    PaddingSize:     uiStructural.TabPaddingSizeXs,
+    BorderRadius:    uiToolset.BorderRadiusNone,
+    GapSize:         uiToolset.GapSizeLg,
+    PaddingSize:     uiToolset.PaddingSizeXs,
     RingColor:       "neutral-50/10",
-    RingThickness:   uiStructural.TabRingThicknessMd,
-    ShadowSize:      uiStructural.TabShadowSizeMd,
+    RingThickness:   uiToolset.RingThicknessMd,
+    ShadowSize:      uiToolset.ShadowSizeMd,
     TextCase:        uiToolset.TextCaseUpper,
     TextColor:       "neutral-50/60",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Surface Customization",
 		"BackgroundColor paints the tab list. BorderRadius rounds the tab edges. GapSize and PaddingSize space and inset the tabs. RingColor and RingThickness frame the list. ShadowSize adds a shadow. TextCase transforms the labels. TextColor tints the unselected tab labels.",
 		"/structural/tabs.templ", surfaceUsage,
@@ -317,12 +317,12 @@ templ TabsSurfaceExample() {
 				},
 				SelectedValueTwoWayStatePath: "selectedSurfaceTab",
 				BackgroundColor:                "neutral-50/5",
-				BorderRadius:                   uiStructural.TabBorderRadiusNone,
-				GapSize:                        uiStructural.TabGapSizeLg,
-				PaddingSize:                    uiStructural.TabPaddingSizeXs,
+				BorderRadius:                   uiToolset.BorderRadiusNone,
+				GapSize:                        uiToolset.GapSizeLg,
+				PaddingSize:                    uiToolset.PaddingSizeXs,
 				RingColor:                      "neutral-50/10",
-				RingThickness:                  uiStructural.TabRingThicknessMd,
-				ShadowSize:                     uiStructural.TabShadowSizeMd,
+				RingThickness:                  uiToolset.RingThicknessMd,
+				ShadowSize:                     uiToolset.ShadowSizeMd,
 				TextCase:                       uiToolset.TextCaseUpper,
 				TextColor:                      "neutral-50/60",
 			})
@@ -342,15 +342,15 @@ templ TabsContentSurfaceExample() {
 
     // OptionalFields
     ContentBackgroundColor: "neutral-50/5",
-    ContentBorderRadius:    uiStructural.TabBorderRadiusMd,
-    ContentPaddingSize:     uiStructural.TabPaddingSizeMd,
+    ContentBorderRadius:    uiToolset.BorderRadiusMd,
+    ContentPaddingSize:     uiToolset.PaddingSizeMd,
     ContentRingColor:       "neutral-50/10",
-    ContentRingThickness:   uiStructural.TabRingThicknessMd,
-    ContentShadowSize:      uiStructural.TabShadowSizeMd,
+    ContentRingThickness:   uiToolset.RingThicknessMd,
+    ContentShadowSize:      uiToolset.ShadowSizeMd,
     ContentTextColor:       "neutral-50/70",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Content Surface",
 		"The Content fields style the panel area: ContentBackgroundColor, ContentPaddingSize, ContentBorderRadius, ContentRingColor, ContentRingThickness, ContentShadowSize, and ContentTextColor. ContentPaddingSize replaces the default inset that separates the content from the tab list.",
 		"/structural/tabs.templ", contentSurfaceUsage,
@@ -367,11 +367,11 @@ templ TabsContentSurfaceExample() {
 				},
 				SelectedValueTwoWayStatePath: "selectedContentTab",
 				ContentBackgroundColor:           "neutral-50/5",
-				ContentBorderRadius:              uiStructural.TabBorderRadiusMd,
-				ContentPaddingSize:               uiStructural.TabPaddingSizeMd,
+				ContentBorderRadius:              uiToolset.BorderRadiusMd,
+				ContentPaddingSize:               uiToolset.PaddingSizeMd,
 				ContentRingColor:                 "neutral-50/10",
-				ContentRingThickness:             uiStructural.TabRingThicknessMd,
-				ContentShadowSize:                uiStructural.TabShadowSizeMd,
+				ContentRingThickness:             uiToolset.RingThicknessMd,
+				ContentShadowSize:                uiToolset.ShadowSizeMd,
 				ContentTextColor:                 "neutral-50/70",
 			})
 		</div>
@@ -384,12 +384,12 @@ templ TabsBadgeExample() {
     Items: []uiStructural.TabItemSettings{
         {Label: "General", Value: "general", Content: TabsDemoGeneralPanel()},
         {Label: "Security", Value: "security", BadgeCount: 3, Content: TabsDemoSecurityPanel()},
-        {Label: "Notifications", Value: "notifications", BadgeCountOneWayStatePath: "alertCount", BadgeBackgroundColor: "red-500/20", BadgeBorderRadius: uiStructural.TabBorderRadiusLg, BadgeRingColor: "red-500/50", BadgeRingThickness: uiStructural.TabRingThicknessSm, BadgeTextColor: "red-50", Content: TabsDemoNotificationsPanel()},
+        {Label: "Notifications", Value: "notifications", BadgeCountOneWayStatePath: "alertCount", BadgeBackgroundColor: "red-500/20", BadgeBorderRadius: uiToolset.BorderRadiusLg, BadgeRingColor: "red-500/50", BadgeRingThickness: uiToolset.RingThicknessSm, BadgeTextColor: "red-50", Content: TabsDemoNotificationsPanel()},
     },
     SelectedValueTwoWayStatePath: "selectedBadgeTab",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Badge Counts",
 		"BadgeCount renders a static count, and BadgeCountOneWayStatePath renders a live count that hides itself at zero. BadgeBackgroundColor, BadgeTextColor, BadgeRingColor, BadgeRingThickness, and BadgeBorderRadius style the badge.",
 		"/structural/tabs.templ", badgeUsage,
@@ -402,7 +402,7 @@ templ TabsBadgeExample() {
 				Items: []uiStructural.TabItemSettings{
 					{Label: "General", Value: "general", Content: TabsDemoGeneralPanel()},
 					{Label: "Security", Value: "security", BadgeCount: 3, Content: TabsDemoSecurityPanel()},
-					{Label: "Notifications", Value: "notifications", BadgeCountOneWayStatePath: "alertCount", BadgeBackgroundColor: "red-500/20", BadgeBorderRadius: uiStructural.TabBorderRadiusLg, BadgeRingColor: "red-500/50", BadgeRingThickness: uiStructural.TabRingThicknessSm, BadgeTextColor: "red-50", Content: TabsDemoNotificationsPanel()},
+					{Label: "Notifications", Value: "notifications", BadgeCountOneWayStatePath: "alertCount", BadgeBackgroundColor: "red-500/20", BadgeBorderRadius: uiToolset.BorderRadiusLg, BadgeRingColor: "red-500/50", BadgeRingThickness: uiToolset.RingThicknessSm, BadgeTextColor: "red-50", Content: TabsDemoNotificationsPanel()},
 				},
 				SelectedValueTwoWayStatePath: "selectedBadgeTab",
 			})
@@ -439,7 +439,7 @@ templ TabsDeepLinkExample() {
     IsUrlHashSynced: true,
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Deep Linking",
 		"IsUrlHashSynced reads the URL hash on load and on every hash change, so a link to #security opens the Security tab. Clicking a tab writes the hash.",
 		"/structural/tabs.templ", deepLinkUsage,
@@ -501,7 +501,7 @@ templ TabsOverflowExample() {
     MaxWidthClass:   "max-w-80",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Overflow Scroll",
 		"MinWidthPercent and MaxWidthPercent set the tab list width bounds as percentages of its container. MinWidthClass and MaxWidthClass apply Tailwind width classes to the same bounds. The horizontal tab list scrolls when the tabs exceed it.",
 		"/structural/tabs.templ", overflowUsage,
@@ -559,7 +559,7 @@ templ TabsVerticalOverflowExample() {
     MaxVisibleTabs: 4,
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Vertical Overflow Scroll",
 		"MinHeightPercent and MaxHeightPercent set the vertical tab list height bounds as percentages of the tab area. MinHeightClass and MaxHeightClass apply Tailwind height classes to the same bounds. MaxVisibleTabs measures the tallest tab at runtime and caps the list to that many tabs instead. The vertical tab list scrolls when the tabs exceed the cap.",
 		"/structural/tabs.templ", verticalOverflowUsage,

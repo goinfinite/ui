@@ -119,13 +119,13 @@ Icon with an optional background chip.
     // OptionalFields
     Color:           "red-950",
     BackgroundColor: "neutral-300",
-    BorderRadius:    uiDisplay.HeaderIconBorderRadiusXl,
-    PaddingSize:     uiDisplay.HeaderIconPaddingSizeLg,
+    BorderRadius:    uiToolset.BorderRadiusXl,
+    PaddingSize:     uiToolset.PaddingSizeLg,
 })
 ```
 
 - `Color` sets the icon text color. `BackgroundColor` sets the chip behind it. Icon placement (left of the title or above it) belongs to `HeaderBlock`'s `HeaderIconPosition`.
-- `BorderRadius` accepts `HeaderIconBorderRadiusNone` through `HeaderIconBorderRadiusXl`. `PaddingSize` accepts `HeaderIconPaddingSizeNone` through `HeaderIconPaddingSizeXl`.
+- `BorderRadius` accepts `uiToolset.BorderRadiusNone` through `uiToolset.BorderRadiusFull`. `PaddingSize` accepts `uiToolset.PaddingSizeNone` through `uiToolset.PaddingSizeXl`.
 
 ## LoadingOverlay
 
@@ -187,6 +187,7 @@ Composite label with an outer ring and an inner background.
 - `Size` accepts `TagSizeTiny` through `TagSizeXl`; `TagSizeTiny` renders a dense layout for table cells.
 - `TextCase` accepts a `uiToolset.TextCase*` value and transforms the label segments. The default, `TextCaseNone`, leaves them as typed.
 - Set `OnRemoveFunc` to render a removable chip. `RemoveButtonLabel` names the remove button.
+- `OuterRadius` and `InnerRadius` accept `uiToolset.BorderRadius*` values; both default to `uiToolset.BorderRadiusMd`.
 - `OuterBackgroundColor`, `OuterRingColor`, and `OuterTextColor` accept color tokens, for example `"neutral-50/10"`.
 
 ## Toast
@@ -203,5 +204,7 @@ Notification popup driven by an Alpine global store.
 ```
 
 Render one Toast per page. Then call `$store.toast.displayToast(message, type)` or `$store.toast.displayToastWithApiResponse(apiResponse, httpStatusCode)`. Call `$store.toast.clearToast()` to hide it early.
+
+The toast surface takes a translucent tint from its type: `success` is green, `partialSuccess` is yellow, and `danger` is red. Set `BackgroundColor` to replace that tint with a fixed color.
 
 When HTMX is present, the Toast listens to `htmx:afterRequest`. A JSON response with a `readableMessage`, a `humanReadableMessage` outcome, or a string `body` displays a toast automatically. The styling follows the HTTP status: 2xx success, 207 partial success, 4xx and above danger. Auto-dismiss defaults to 10 seconds.

@@ -81,7 +81,7 @@ templ SidebarAttachmentModeExample() {
 	AttachmentModeTwoWayStatePath: "attachmentMode",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Attachment Modes",
 		"inline keeps the sidebar in the page flow. fixed pins it to the viewport while the rest of the page scrolls. Set AttachmentMode directly, or use AttachmentModeTwoWayStatePath to switch at runtime.",
 		"/structural/sidebar.templ", attachmentUsage,
@@ -137,7 +137,7 @@ templ SidebarOffCanvasExample() {
 	IsVisibleTwoWayStatePath:      "isVisible",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Off-Canvas",
 		"IsOffCanvas overlays the sidebar on the content instead of pushing it. Pair it with IsVisibleTwoWayStatePath for a drawer.",
 		"/structural/sidebar.templ", offCanvasUsage,
@@ -206,7 +206,7 @@ templ SidebarSideExample() {
 	Side:          uiStructural.SidebarSideRight,
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Side", "Side attaches the sidebar to the left or right edge. Set Side directly to pin it, or use SideTwoWayStatePath to switch at runtime.",
 		"/structural/sidebar.templ", sideUsage,
 	) {
@@ -280,7 +280,7 @@ templ SidebarWidthBackgroundExample() {
 	IsCollapsed:   true,
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Width & Background",
 		"Width accepts a Tailwind width class. BackgroundColor accepts a Tailwind background class, opacity included. The second preview sets IsCollapsed: true with a matching Width for a static collapsed sidebar.",
 		"/structural/sidebar.templ", widthUsage,

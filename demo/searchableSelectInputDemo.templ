@@ -1,0 +1,586 @@
+package main
+
+import (
+	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiForm "github.com/goinfinite/ui/src/form"
+)
+
+const searchableSelectInputDemoCountryOptions = `"Argentina", "Australia", "Brazil", "Canada", "Chile", "China", "France", "Germany", "India", "Japan", "Mexico", "Portugal"`
+
+templ SearchableSelectInputDemoOption1() {
+	<div class="flex flex-col">
+		<h4 class="text-base font-bold">🇦🇷 Argentina</h4>
+		<p class="text-sm text-neutral-400">Known for its dance and wine.</p>
+	</div>
+}
+
+templ SearchableSelectInputDemoOption2() {
+	<div class="flex flex-col">
+		<h4 class="text-base font-bold">🇧🇷 Brazil</h4>
+		<p class="text-sm text-neutral-400">Known for its music and natural beauty.</p>
+	</div>
+}
+
+templ SearchableSelectInputDemoOption3() {
+	<div class="flex flex-col">
+		<h4 class="text-base font-bold">🇨🇱 Chile</h4>
+		<p class="text-sm text-neutral-400">Known for its deserts and mysterious islands.</p>
+	</div>
+}
+
+templ SearchableSelectInputMultiSelectExample() {
+	{{
+		multiSelectUsage := `@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
+	InputName: "countries",
+	Label:     "Countries",
+
+	// OptionalFields
+	FlatOptions:     []string{` + searchableSelectInputDemoCountryOptions + `},
+	TwoWayStatePath: "countries",
+	IsMultiSelect:   true,
+})`
+	}}
+	@DemoExampleCard(
+		"Multi-Select",
+		"IsMultiSelect binds an array and keeps the dropdown open after each toggle. The trigger shows the selected labels, and the clear button empties the array.",
+		"/form/searchableSelectInput.templ", multiSelectUsage,
+	) {
+		<div x-data="{countries: ['Brazil', 'Canada']}" class="flex flex-col gap-3">
+			@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
+				InputName: "countries",
+				Label:     "Countries",
+				FlatOptions: []string{
+					"Argentina", "Australia", "Brazil", "Canada",
+					"Chile", "China", "France", "Germany", "India",
+					"Japan", "Mexico", "Portugal",
+				},
+				TwoWayStatePath: "countries",
+				IsMultiSelect:   true,
+			})
+			<p class={ DemoLiveStateClasses }>
+				Values: <span x-text="JSON.stringify(countries)"></span>
+			</p>
+		</div>
+	}
+}
+
+templ SearchableSelectInputTagsExample() {
+	{{
+		tagsUsage := `@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
+	InputName: "countries",
+	Label:     "Countries",
+
+	// OptionalFields
+	FlatOptions:             []string{"Argentina", "Brazil", "Chile"},
+	TwoWayStatePath:         "tagCountries",
+	IsMultiSelect:           true,
+	SelectionDisplay:        uiForm.SearchableSelectInputSelectionDisplayTags,
+	ShouldAllowCustomValues: true,
+})`
+	}}
+	@DemoExampleCard(
+		"Selected as Tags",
+		"SelectionDisplay tags renders every selection as a removable tag. ShouldAllowCustomValues turns a typed value into a tag on Enter, and Backspace removes the last tag.",
+		"/form/searchableSelectInput.templ", tagsUsage,
+	) {
+		<div x-data="{tagCountries: ['Brazil']}" class="flex flex-col gap-3">
+			@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
+				InputName: "tagCountries",
+				Label:     "Countries",
+				FlatOptions: []string{
+					"Argentina", "Brazil", "Chile",
+				},
+				TwoWayStatePath:         "tagCountries",
+				IsMultiSelect:           true,
+				SelectionDisplay:        uiForm.SearchableSelectInputSelectionDisplayTags,
+				ShouldAllowCustomValues: true,
+			})
+			<p class={ DemoLiveStateClasses }>
+				Values: <span x-text="JSON.stringify(tagCountries)"></span>
+			</p>
+		</div>
+	}
+}
+
+templ SearchableSelectInputTagsOptionsOnlyExample() {
+	{{
+		tagsOptionsOnlyUsage := `@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
+	InputName: "countries",
+	Label:     "Countries",
+
+	// OptionalFields
+	FlatOptions:      []string{"Argentina", "Brazil", "Chile"},
+	TwoWayStatePath:  "tagOptionCountries",
+	IsMultiSelect:    true,
+	SelectionDisplay: uiForm.SearchableSelectInputSelectionDisplayTags,
+})`
+	}}
+	@DemoExampleCard(
+		"Tags Options Only",
+		"Without ShouldAllowCustomValues, only the declared options become tags.",
+		"/form/searchableSelectInput.templ", tagsOptionsOnlyUsage,
+	) {
+		<div x-data="{tagOptionCountries: ['Brazil']}" class="flex flex-col gap-3">
+			@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
+				InputName: "tagOptionCountries",
+				Label:     "Countries",
+				FlatOptions: []string{
+					"Argentina", "Brazil", "Chile",
+				},
+				TwoWayStatePath:  "tagOptionCountries",
+				IsMultiSelect:    true,
+				SelectionDisplay: uiForm.SearchableSelectInputSelectionDisplayTags,
+			})
+			<p class={ DemoLiveStateClasses }>
+				Values: <span x-text="JSON.stringify(tagOptionCountries)"></span>
+			</p>
+		</div>
+	}
+}
+
+templ SearchableSelectInputTagColorsExample() {
+	{{
+		tagColorsUsage := `@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
+	InputName: "countries",
+	Label:     "Countries",
+
+	// OptionalFields
+	FlatOptions:             []string{"Argentina", "Brazil", "Chile"},
+	TwoWayStatePath:         "coloredTagCountries",
+	IsMultiSelect:           true,
+	SelectionDisplay:        uiForm.SearchableSelectInputSelectionDisplayTags,
+	TagOuterBackgroundColor: "primary-500",
+	TagOuterTextColor:       "neutral-950",
+	TagInnerBackgroundColor: "neutral-50/20",
+})`
+	}}
+	@DemoExampleCard(
+		"Tag Colors",
+		"TagOuterBackgroundColor paints the chip and its border. TagOuterTextColor paints its text, and TagInnerBackgroundColor paints the label bubble.",
+		"/form/searchableSelectInput.templ", tagColorsUsage,
+	) {
+		<div x-data="{coloredTagCountries: ['Brazil']}" class="flex flex-col gap-3">
+			@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
+				InputName: "coloredTagCountries",
+				Label:     "Countries",
+				FlatOptions: []string{
+					"Argentina", "Brazil", "Chile",
+				},
+				TwoWayStatePath:         "coloredTagCountries",
+				IsMultiSelect:           true,
+				SelectionDisplay:        uiForm.SearchableSelectInputSelectionDisplayTags,
+				TagOuterBackgroundColor: "primary-500",
+				TagOuterTextColor:       "neutral-950",
+				TagInnerBackgroundColor: "neutral-50/20",
+			})
+			<p class={ DemoLiveStateClasses }>
+				Values: <span x-text="JSON.stringify(coloredTagCountries)"></span>
+			</p>
+		</div>
+	}
+}
+
+templ SearchableSelectInputTagsLabelValueExample() {
+	{{
+		tagsLabelValueUsage := `@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
+	InputName: "countryCode",
+	Label:     "Countries",
+
+	// OptionalFields
+	LabelValueOptions: []uiForm.SelectLabelValueOption{
+		{Label: "Argentina", Value: "AR"},
+		{Label: "Brazil", Value: "BR"},
+		{Label: "Chile", Value: "CL"},
+	},
+	TwoWayStatePath:  "tagCountryCodes",
+	IsMultiSelect:    true,
+	SelectionDisplay: uiForm.SearchableSelectInputSelectionDisplayTags,
+})`
+	}}
+	@DemoExampleCard(
+		"Tags with LabelValueOptions",
+		"Each tag shows the option label while the bound array holds the stored value.",
+		"/form/searchableSelectInput.templ", tagsLabelValueUsage,
+	) {
+		<div x-data="{tagCountryCodes: ['BR']}" class="flex flex-col gap-3">
+			@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
+				InputName: "tagCountryCode",
+				Label:     "Countries",
+				LabelValueOptions: []uiForm.SelectLabelValueOption{
+					{
+						Label: "Argentina",
+						Value: "AR",
+					},
+					{
+						Label: "Brazil",
+						Value: "BR",
+					},
+					{
+						Label: "Chile",
+						Value: "CL",
+					},
+				},
+				TwoWayStatePath:  "tagCountryCodes",
+				IsMultiSelect:    true,
+				SelectionDisplay: uiForm.SearchableSelectInputSelectionDisplayTags,
+			})
+			<p class={ DemoLiveStateClasses }>
+				Values: <span x-text="JSON.stringify(tagCountryCodes)"></span>
+			</p>
+		</div>
+	}
+}
+
+templ SearchableSelectInputLabelValueExample() {
+	{{
+		labelValueUsage := `@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
+	InputName: "countryCode",
+	Label:     "Country",
+
+	// OptionalFields
+	LabelValueOptions: []uiForm.SelectLabelValueOption{
+		{Label: "Argentina", Value: "AR"},
+		{Label: "Brazil", Value: "BR"},
+		{Label: "Chile", Value: "CL"},
+	},
+	TwoWayStatePath: "country",
+})`
+	}}
+	@DemoExampleCard(
+		"LabelValueOptions",
+		"LabelValueOptions store one value while showing another label, and filter on the label. LabelHtml replaces the row content with custom markup.",
+		"/form/searchableSelectInput.templ", labelValueUsage,
+	) {
+		<div class="flex flex-col gap-6" x-data="{country: 'BR'}">
+			@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
+				InputName: "countryCode",
+				Label:     "Country",
+				LabelValueOptions: []uiForm.SelectLabelValueOption{
+					{
+						Label: "Argentina",
+						Value: "AR",
+					},
+					{
+						Label: "Brazil",
+						Value: "BR",
+					},
+					{
+						Label: "Chile",
+						Value: "CL",
+					},
+				},
+				TwoWayStatePath: "country",
+			})
+			@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
+				InputName: "countryWithHtml",
+				Label:     "Country (HTML labels)",
+				LabelValueOptions: []uiForm.SelectLabelValueOption{
+					{
+						Label:     "Argentina",
+						LabelHtml: SearchableSelectInputDemoOption1(),
+						Value:     "AR",
+					},
+					{
+						Label:     "Brazil",
+						LabelHtml: SearchableSelectInputDemoOption2(),
+						Value:     "BR",
+					},
+					{
+						Label:     "Chile",
+						LabelHtml: SearchableSelectInputDemoOption3(),
+						Value:     "CL",
+					},
+				},
+				TwoWayStatePath: "country",
+			})
+			<p class={ DemoLiveStateClasses }>
+				Value: <span x-text="country"></span>
+			</p>
+		</div>
+	}
+}
+
+templ SearchableSelectInputNoMatchesExample() {
+	{{
+		noMatchesUsage := `@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
+	InputName:       "country",
+	Label:           "Country",
+	FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+	TwoWayStatePath: "country",
+})`
+	}}
+	@DemoExampleCard(
+		"No Matches",
+		"Type a query that matches no option. The dropdown stays open and shows the No matches row.",
+		"/form/searchableSelectInput.templ", noMatchesUsage,
+	) {
+		<div x-data="{country: ''}" class="flex flex-col gap-3">
+			<p class="text-sm text-neutral-400">Open the field and type a value, for example "xyz".</p>
+			@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
+				InputName:       "countryNoMatches",
+				Label:           "Country",
+				FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+				TwoWayStatePath: "country",
+			})
+			<p class={ DemoLiveStateClasses }>
+				Value: <span x-text="country"></span>
+			</p>
+		</div>
+	}
+}
+
+templ SearchableSelectInputSizesExample() {
+	{{
+		sizesUsage := `@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
+	InputName:       "country",
+	Label:           "Country",
+	FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+	TwoWayStatePath: "country",
+	Size:            uiForm.SelectInputSizeLg,
+})`
+	}}
+	@DemoExampleCard(
+		"Sizes",
+		"Size scales the trigger, the filter input, and the legend: xs, sm, md (the default), lg, or xl.",
+		"/form/searchableSelectInput.templ", sizesUsage,
+	) {
+		<div class="flex flex-col gap-3 lg:*:max-w-50" x-data="{xs: '', sm: '', md: '', lg: '', xl: ''}">
+			for _, selectSize := range []string{
+				uiForm.SelectInputSizeXs,
+				uiForm.SelectInputSizeSm,
+				uiForm.SelectInputSizeMd,
+				uiForm.SelectInputSizeLg,
+				uiForm.SelectInputSizeXl,
+			} {
+				@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
+					InputName:       "countrySearchableSize",
+					Label:           "Country (" + selectSize + ")",
+					FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+					TwoWayStatePath: selectSize,
+					Size:            selectSize,
+				})
+			}
+		</div>
+	}
+}
+
+templ SearchableSelectInputDropdownHeightExample() {
+	{{
+		dropdownHeightUsage := `@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
+	InputName: "country",
+	Label:     "Country",
+
+	// OptionalFields
+	FlatOptions:            []string{` + searchableSelectInputDemoCountryOptions + `},
+	TwoWayStatePath:        "country",
+	DropdownMinHeightClass: "min-h-24",
+	DropdownMaxHeightClass: "max-h-40",
+	MaxVisibleOptions:      3,
+})`
+	}}
+	@DemoExampleCard(
+		"Dropdown Height",
+		"DropdownMinHeightClass and DropdownMaxHeightClass cap the option list. MaxVisibleOptions caps it to a row count and wins over both.",
+		"/form/searchableSelectInput.templ", dropdownHeightUsage,
+	) {
+		<div x-data="{country: ''}" class="flex flex-col gap-3">
+			<p class="text-sm text-neutral-400">Open the dropdown to see the capped list scroll.</p>
+			@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
+				InputName: "countryDropdownHeight",
+				Label:     "Country",
+				FlatOptions: []string{
+					"Argentina", "Australia", "Brazil", "Canada",
+					"Chile", "China", "France", "Germany", "India",
+					"Japan", "Mexico", "Portugal",
+				},
+				TwoWayStatePath:        "country",
+				DropdownMinHeightClass: "min-h-24",
+				DropdownMaxHeightClass: "max-h-40",
+				MaxVisibleOptions:      3,
+			})
+		</div>
+	}
+}
+
+templ SearchableSelectInputHintsExample() {
+	{{
+		hintsUsage := `@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
+	InputName:       "country",
+	Label:           "Country",
+	FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+	TwoWayStatePath: "country",
+	HintValue:       "This is a helpful hint.",
+	HintDisplay:     uiForm.InputHintDisplayTooltip,
+})`
+	}}
+	@DemoExampleCard(
+		"Hints",
+		"HintDisplay shows the hint as a description below the field or as a tooltip inside the trigger.",
+		"/form/searchableSelectInput.templ", hintsUsage,
+	) {
+		<div class="flex flex-col gap-6" x-data="{country: 'Brazil'}">
+			@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
+				InputName:       "countryHintDescription",
+				Label:           "Country",
+				FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+				TwoWayStatePath: "country",
+				HintValue:       "This is a helpful hint displayed as a description below the select.",
+				HintDisplay:     uiForm.InputHintDisplayDescription,
+			})
+			@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
+				InputName:       "countryHintTooltip",
+				Label:           "Country",
+				FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+				TwoWayStatePath: "country",
+				HintValue:       "This is a helpful hint displayed as a tooltip.",
+				HintDisplay:     uiForm.InputHintDisplayTooltip,
+			})
+		</div>
+	}
+}
+
+templ SearchableSelectInputHintIconStyleExample() {
+	{{
+		hintIconUsage := `@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
+	InputName:       "country",
+	Label:           "Country",
+	FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+	TwoWayStatePath: "country",
+	HintValue:       "This is a helpful hint.",
+	HintDisplay:     uiForm.InputHintDisplayTooltip,
+	HintIconStyle:   uiForm.InputHintIconStyleBoxed,
+})`
+	}}
+	@DemoExampleCard(
+		"Hint Icon Styles",
+		"HintIconStyle renders the hint trigger as an icon or as a boxed tooltip.",
+		"/form/searchableSelectInput.templ", hintIconUsage,
+	) {
+		<div x-data="{country: 'Brazil'}" class="flex flex-col gap-6">
+			@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
+				InputName:       "countryHintBoxed",
+				Label:           "Country",
+				FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+				TwoWayStatePath: "country",
+				HintValue:       "This is a helpful hint displayed as a boxed tooltip.",
+				HintDisplay:     uiForm.InputHintDisplayTooltip,
+				HintIconStyle:   uiForm.InputHintIconStyleBoxed,
+			})
+		</div>
+	}
+}
+
+templ SearchableSelectInputOnChangeExample() {
+	{{
+		onChangeUsage := `@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
+	InputName:       "country",
+	Label:           "Country",
+	FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+	TwoWayStatePath: "country",
+	OnChangeFunc:    "onCountryChange()",
+})`
+	}}
+	@DemoExampleCard(
+		"OnChangeFunc",
+		"OnChangeFunc runs on selection, on a multi-select toggle, and on clear.",
+		"/form/searchableSelectInput.templ", onChangeUsage,
+	) {
+		@DemoAlpineStateBlock(`<div x-data="{country: 'Brazil', changeCount: 0, onCountryChange() { this.changeCount++ }}"></div>`)
+		<div
+			class="flex flex-col gap-3"
+			x-data="{country: 'Brazil', changeCount: 0, onCountryChange() { this.changeCount++ }}"
+		>
+			@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
+				InputName:       "countryChange",
+				Label:           "Country",
+				FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+				TwoWayStatePath: "country",
+				OnChangeFunc:    "onCountryChange()",
+			})
+			<p class={ DemoLiveStateClasses }>
+				Change count: <span x-text="changeCount"></span>
+			</p>
+		</div>
+	}
+}
+
+templ SearchableSelectInputDisabledBindingExample() {
+	{{
+		disabledUsage := `@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
+	InputName:                 "country",
+	Label:                     "Country",
+	FlatOptions:               []string{"Argentina", "Brazil", "Chile"},
+	TwoWayStatePath:           "country",
+	IsDisabledOneWayStatePath: "isDisabled",
+})`
+	}}
+	@DemoExampleCard(
+		"Disabled Binding",
+		"IsDisabledOneWayStatePath blocks pointer events and raises the opacity while the path is truthy.",
+		"/form/searchableSelectInput.templ", disabledUsage,
+	) {
+		<div class="flex flex-col gap-3" x-data="{country: 'Brazil', isDisabled: true}">
+			@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
+				InputName:                 "countryDisabled",
+				Label:                     "Country",
+				FlatOptions:               []string{"Argentina", "Brazil", "Chile"},
+				TwoWayStatePath:           "country",
+				IsDisabledOneWayStatePath: "isDisabled",
+			})
+		</div>
+	}
+}
+
+templ SearchableSelectInputDemo() {
+	{{
+		demoUsage := `@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
+	InputName: "country",
+	Label:     "Country",
+
+	// OptionalFields
+	FlatOptions:     []string{` + searchableSelectInputDemoCountryOptions + `},
+	TwoWayStatePath: "country",
+})`
+	}}
+	<div class="flex flex-col gap-4" id="searchable-select-input-demo">
+		@DemoComponentSection(DemoComponentSectionSettings{
+			ComponentPath:          "/form/searchableSelectInput.templ",
+			Description:            "A searchable select adds a filter box to a dropdown. The filter narrows the options in place, the list caps its height and scrolls, and a clear button empties the selection. Multi mode binds an array and shows the selected labels; SelectionDisplay tags shows them as removable tags, with optional typed custom values. Use it past roughly ten options, where a native select becomes hard to scan.",
+			LiveExampleDescription: "A single select over twelve countries. Open the field and type to narrow the list.",
+			Title:                  ".SearchableSelectInput",
+			UsageCode:              demoUsage,
+			AlpineStateCode:        `<div x-data="{country: 'Brazil'}"></div>`,
+		}) {
+			<div x-data="{country: 'Brazil'}" class="flex flex-col gap-3">
+				@uiForm.SearchableSelectInput(uiForm.SearchableSelectInputSettings{
+					InputName: "country",
+					Label:     "Country",
+					FlatOptions: []string{
+						"Argentina", "Australia", "Brazil", "Canada",
+						"Chile", "China", "France", "Germany", "India",
+						"Japan", "Mexico", "Portugal",
+					},
+					TwoWayStatePath: "country",
+				})
+				<p class={ DemoLiveStateClasses }>
+					Value: <span x-text="country"></span>
+				</p>
+			</div>
+		}
+		@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
+			{Title: "Multi-Select", Icon: "ph-list-checks", Content: SearchableSelectInputMultiSelectExample()},
+			{Title: "Selected as Tags", Icon: "ph-tag", Content: SearchableSelectInputTagsExample()},
+			{Title: "Tag Colors", Icon: "ph-palette", Content: SearchableSelectInputTagColorsExample()},
+			{Title: "Tags Options Only", Icon: "ph-tag-simple", Content: SearchableSelectInputTagsOptionsOnlyExample()},
+			{Title: "Tags with LabelValueOptions", Icon: "ph-tag-chevron", Content: SearchableSelectInputTagsLabelValueExample()},
+			{Title: "LabelValueOptions", Icon: "ph-tag", Content: SearchableSelectInputLabelValueExample()},
+			{Title: "No Matches", Icon: "ph-magnifying-glass", Content: SearchableSelectInputNoMatchesExample()},
+			{Title: "Dropdown Height", Icon: "ph-arrows-out-line-vertical", Content: SearchableSelectInputDropdownHeightExample()},
+			{Title: "Sizes", Icon: "ph-ruler", Content: SearchableSelectInputSizesExample()},
+			{Title: "Hints", Icon: "ph-info", Content: SearchableSelectInputHintsExample()},
+			{Title: "Hint Icon Styles", Icon: "ph-question", Content: SearchableSelectInputHintIconStyleExample()},
+			{Title: "OnChangeFunc", Icon: "ph-arrows-clockwise", Content: SearchableSelectInputOnChangeExample()},
+			{Title: "Disabled Binding", Icon: "ph-prohibit", Content: SearchableSelectInputDisabledBindingExample()},
+		})
+	</div>
+}

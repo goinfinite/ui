@@ -9,9 +9,7 @@ func sidebarIsInlineAttachmentExpressionBuilder(
 	return "true"
 }
 
-func sidebarDynamicClassesBuilder(
-	componentSettings SidebarSettings, attachmentMode string,
-) string {
+func sidebarDynamicClassesBuilder(componentSettings SidebarSettings) string {
 	dynamicClasses := "{"
 	if componentSettings.IsVisibleTwoWayStatePath != "" {
 		dynamicClasses += "'invisible': !" +

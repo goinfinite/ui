@@ -25,42 +25,8 @@ const (
 	TabAlignmentCenter string = "center"
 	TabAlignmentBottom string = "bottom"
 
-	TabBorderRadiusNone string = "none"
-	TabBorderRadiusXs   string = "xs"
-	TabBorderRadiusSm   string = "sm"
-	TabBorderRadiusMd   string = "md"
-	TabBorderRadiusLg   string = "lg"
-	TabBorderRadiusXl   string = "xl"
-
-	TabGapSizeNone string = "none"
-	TabGapSizeXs   string = "xs"
-	TabGapSizeSm   string = "sm"
-	TabGapSizeMd   string = "md"
-	TabGapSizeLg   string = "lg"
-	TabGapSizeXl   string = "xl"
-
 	TabIconPositionLeft string = "left"
 	TabIconPositionTop  string = "top"
-
-	TabPaddingSizeNone string = "none"
-	TabPaddingSizeXs   string = "xs"
-	TabPaddingSizeSm   string = "sm"
-	TabPaddingSizeMd   string = "md"
-	TabPaddingSizeLg   string = "lg"
-	TabPaddingSizeXl   string = "xl"
-
-	TabRingThicknessXs string = "xs"
-	TabRingThicknessSm string = "sm"
-	TabRingThicknessMd string = "md"
-	TabRingThicknessLg string = "lg"
-	TabRingThicknessXl string = "xl"
-
-	TabShadowSizeNone string = "none"
-	TabShadowSizeXs   string = "xs"
-	TabShadowSizeSm   string = "sm"
-	TabShadowSizeMd   string = "md"
-	TabShadowSizeLg   string = "lg"
-	TabShadowSizeXl   string = "xl"
 )
 
 type TabItemSettings struct {
@@ -200,7 +166,7 @@ templ Tabs(componentSettings TabSettings) {
 		{{ tabPanelsClasses += " " + contentRingClasses }}
 	}
 	if componentSettings.ContentBorderRadius != "" {
-		{{ tabPanelsClasses += " rounded-" + tabBorderRadiusTokenResolver(componentSettings.ContentBorderRadius) }}
+		{{ tabPanelsClasses += " rounded-" + uiToolset.BorderRadiusTokenResolver(componentSettings.ContentBorderRadius, uiToolset.BorderRadiusMd) }}
 	}
 	{{ tabPanelsClasses += " " + uiToolset.TextColorClassResolver(componentSettings.ContentTextColor, "") }}
 	<!-- Tabs -->

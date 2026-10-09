@@ -20,9 +20,9 @@ Surface container with an optional header block and content slots.
 
 - `MiddleContent` is the card body. `FooterContent` sits below it. `HeaderContent` replaces the whole header block.
 - The optional header block carries `HeaderTitle`, `HeaderSubHeading`, `HeaderTitleOneWayStatePath`, `HeaderSubHeadingOneWayStatePath`, `HeaderTitleColor`, `HeaderSubHeadingColor`, `HeaderSize`, and the `HeaderIcon*` icon controls. `ActionsContent` puts buttons in the header row, right-aligned.
-- `BorderRadius` accepts `CardBorderRadiusNone` through `CardBorderRadiusXl`; the default is `CardBorderRadiusLg`. Use `CardBorderRadiusNone` for square edges.
-- `PaddingSize` accepts `CardPaddingSizeNone` through `CardPaddingSizeXl`; the default is `CardPaddingSizeMd`.
-- `GapSize` accepts `CardGapSizeNone` through `CardGapSizeXl`; the default is `CardGapSizeMd`, which renders `gap-3` between the header, body, and footer.
+- `BorderRadius` accepts `uiToolset.BorderRadiusNone` through `uiToolset.BorderRadiusFull`; the default is `uiToolset.BorderRadiusLg`. Use `uiToolset.BorderRadiusNone` for square edges.
+- `PaddingSize` accepts `uiToolset.PaddingSizeNone` through `uiToolset.PaddingSizeXl`; the default is `uiToolset.PaddingSizeMd`.
+- `GapSize` accepts `uiToolset.GapSizeNone` through `uiToolset.GapSizeXl`; the default is `uiToolset.GapSizeMd`, which renders `gap-3` between the header, body, and footer.
 - `ShadowSize`, `RingColor`, and `RingThickness` follow the same token scales as Modal and Alert. `BackgroundColor` and `TextColor` take color tokens. `TextCase` takes a `uiToolset.TextCase*` value and transforms the header title and sub-heading.
 
 ## Carousel
@@ -47,15 +47,15 @@ Surface container with an optional header block and content slots.
 - The visible count follows Tailwind's named breakpoints, mobile-first. `ItemsPerView` is a `CarouselItemsPerViewSettings` value: `Base` is the base (one when unset), and `Sm` (≥640px), `Md` (≥768px), `Lg` (≥1024px), `Xl` (≥1280px), and `TwoXl` (≥1536px) each raise the count from their width up. A breakpoint you leave unset inherits the lower one, exactly like a missing `md:` class. The count is measured against the browser window, the same basis the rest of the library uses.
 - `ItemsPerPage` and `ItemsPerPageSizeChoices` page the server chunk. `ItemsTotal` and `PagesTotal` feed the footer readout and page count, exactly like DataTable.
 - `QueryUrlTemplate` uses the same placeholders as DataTable: `CarouselUrlPlaceholderPageNumber`, `CarouselUrlPlaceholderItemsPerPage`, and `CarouselUrlPlaceholderSearch`.
-- `Filters` renders the shared `FilterBar` below the track, before the pagination. Filter values append to the URL as `key=value` pairs; number and date ranges append as `keyMin` and `keyMax`. The filter bar stays outside the swapped region, so a refresh cannot steal focus from a field you are typing in.
+- `Filters` renders the shared `FilterBar` below the track, before the pagination. Filter values append to the URL as `key=value` pairs; number and date ranges append as `keyMin` and `keyMax`. The filter bar stays outside the swapped region, so a refresh cannot steal focus from a field you are typing in. `FilterChipStyle` forwards to the shared FilterBar and repaints the active-filter chip; see FilterBar for the fields.
 - A search box renders centered above the track when the query URL template carries the search placeholder. It carries a magnifier icon and stretches to the available space. Pass `SearchBox` to replace it. `IsSearchBoxCompact` fixes the box to a narrow width so `SearchBoxAlignment` can place it left, center (the default), or right. `SearchBoxPosition` takes `CarouselSearchBoxPositionTop` (the default) or `CarouselSearchBoxPositionBottom` and places the bar above or below the track.
 - `IsAutoplay` advances the window on a timer. `AutoplayIntervalMs` sets the interval, 4000 when unset. `IsAutoplayPausedOnHover` stops the timer while the pointer is over the carousel.
 - `IsSwipeEnabled` moves the window on a horizontal drag or swipe. The threshold is 40 pixels.
 - `IsPaginationHiddenWhenSinglePage` hides the page-number controls while every item fits on one page. The readout and the items-per-page selector stay.
-- Surface styling: `BackgroundColor`, `TextColor`, `BorderRadius` (`CarouselBorderRadiusNone` through `CarouselBorderRadiusXl`), `PaddingSize` and `ItemPaddingSize` (`CarouselPaddingSizeNone` through `CarouselPaddingSizeXl`), `GapSize` (`CarouselGapSizeNone` through `CarouselGapSizeXl`), `ShadowSize` (`CarouselShadowSizeNone` through `CarouselShadowSizeXl`), and `RingColor` with `RingThickness` (`CarouselRingThicknessXs` through `CarouselRingThicknessXl`).
-- Arrow styling: `ArrowsPosition` (`CarouselArrowsPositionOutside`, the default, or `CarouselArrowsPositionInside` to overlay the track), `ArrowsShape` (`CarouselArrowsShapeCircular`, the default, `CarouselArrowsShapeRounded`, or `CarouselArrowsShapeSquare`), `ArrowsSize` (`CarouselArrowsSizeSm/Md/Lg`; the arrow is a fixed-size square, 32 pixels on the default), `ArrowsBackgroundColor`, and `ArrowsIconColor`. A custom background still brightens on hover.
+- Surface styling: `BackgroundColor`, `TextColor`, `BorderRadius` (`uiToolset.BorderRadiusNone` through `uiToolset.BorderRadiusFull`), `PaddingSize` and `ItemPaddingSize` (`uiToolset.PaddingSizeNone` through `uiToolset.PaddingSizeXl`), `GapSize` (`uiToolset.GapSizeNone` through `uiToolset.GapSizeXl`), `ShadowSize` (`uiToolset.ShadowSizeNone` through `uiToolset.ShadowSizeXl`), and `RingColor` with `RingThickness` (`uiToolset.RingThicknessXs` through `uiToolset.RingThicknessXl`).
+- Arrow styling: `ArrowsPosition` (`CarouselArrowsPositionOutside`, the default, or `CarouselArrowsPositionInside` to overlay the track), `ArrowsShape` (`uiToolset.ShapeCircular`, the default, `uiToolset.ShapeRounded`, or `uiToolset.ShapeSquare`), `ArrowsSize` (`CarouselArrowsSizeSm/Md/Lg`; the arrow is a fixed-size square, 32 pixels on the default), `ArrowsBackgroundColor`, and `ArrowsIconColor`. A custom background still brightens on hover.
 - Dot styling: `DotsPosition` (`CarouselDotsPositionBottom`, the default, or `CarouselDotsPositionTop`), `DotsSize` (`CarouselDotsSizeSm/Md/Lg`), `DotsActiveColor`, and `DotsInactiveColor`.
-- Item styling: `ItemBackgroundColor`, `ItemBorderRadius` (`CarouselBorderRadiusNone` through `CarouselBorderRadiusXl`), `ItemPaddingSize`, `ItemRingColor`, `ItemRingThickness`, and `ItemShadowSize` paint the item wrapper, so a plain renderer still gets a card.
+- Item styling: `ItemBackgroundColor`, `ItemBorderRadius` (`uiToolset.BorderRadiusNone` through `uiToolset.BorderRadiusFull`), `ItemPaddingSize`, `ItemRingColor`, `ItemRingThickness`, and `ItemShadowSize` paint the item wrapper, so a plain renderer still gets a card.
 - `EmptyState` renders when the chunk holds no items. `RefreshOnEvents` lists window event names; dispatching one refreshes the carousel.
 - The refresh uses `htmx.ajax` when HTMX is present and falls back to `fetch` otherwise, and swaps two regions from one response: the carousel body (`data-ui-carousel`, holding the arrows, track, and dots) and the pagination (`data-ui-carousel-pagination`). The response must contain both. The pagination carries an `id` of the component id plus `-pagination`, and `hx-swap-oob` targets that id, so HTMX swaps it out of band into the component that refreshed while the body takes the selected swap, and the root carries `hx-sync` so a new refresh aborts the one in flight.
 - Client state lives in the component root: `pageNumber`, `itemsPerPage`, `searchQuery`, `filterValues`, `windowStart`, `itemsPerView`, and `itemsCount`. A failed refresh shows an inline error with a retry button.
@@ -74,7 +74,7 @@ templ CarouselItem(record Record) {
         // OptionalFields
         Position:      uiToolset.TooltipPositionBottom,
         RingColor:     "secondary-500/40",
-        RingThickness: uiStructural.CarouselRingThicknessXs,
+        RingThickness: uiToolset.RingThicknessXs,
     }) {
         <div class="flex h-full flex-col gap-2">
             <span class="font-bold">{ record.Name }</span>
@@ -87,7 +87,7 @@ templ CarouselItem(record Record) {
 - `Content` is the tooltip text. `ContentHtml` accepts a component instead. Without both, the wrapper renders the item with no tooltip.
 - `Position` accepts `uiToolset.TooltipPositionTop` (the default), `uiToolset.TooltipPositionBottom`, `uiToolset.TooltipPositionLeft`, or `uiToolset.TooltipPositionRight`.
 - `BackgroundColor` and `TextColor` take color tokens. The defaults render `bg-neutral-800/95` on `text-neutral-50`.
-- `RingColor` takes a color token and `RingThickness` takes the `CarouselRingThickness*` values. The tooltip ring uses the compact ring scale: `xs` renders `ring-0.5` through `xl` renders `ring-2.5`.
+- `RingColor` takes a color token and `RingThickness` takes the `uiToolset.RingThickness*` values. The tooltip ring uses the compact ring scale: `xs` renders `ring-0.5` through `xl` renders `ring-2.5`.
 - `MinWidthClass`, `MaxWidthClass`, `MinHeightClass`, and `MaxHeightClass` cap the tooltip size. A long content wraps at the default `max-w-96`.
 - The tooltip teleports to the document body with fixed coordinates, so the track viewport, a scroll container, or a modal cannot clip it. Alpine removes the teleported node when the item leaves the DOM, so a refresh does not leak tooltips.
 
@@ -119,7 +119,7 @@ Each column takes a `Label`, a `CellRenderer` function, and optional `SortKey`, 
 
 The `Initial*` fields seed the client state at render time: `InitialFilterValues`, `InitialSearchQuery`, `InitialSortKey`, and `InitialSortDirection`. The server renders the matching rows. `PageNumber` and `ItemsPerPage` also seed the client, but the component reads them to render the pagination readout. `PageNumber` is zero-based: the first page is 0, and the zero value is the first page. `ShouldUseOneBasedPageDisplay` changes only the labels, not the state.
 
-`HeaderClass` adds classes to the header row, `CellClass` adds classes to one column's cells, `RowClassResolver` returns classes for each row from its data, and `IsStriped` adds a zebra stripe. These classes append to elements that already carry base utilities, so when two utilities set the same property the generated stylesheet order decides the winner, not the field order. A cell component that sets its own color wins over the row color, so use `RowClassResolver` for cells that leave the color to the row. The header pins to the top of the scroll viewport by default and paints its own background, so a `HeaderClass` background does not show; set `IsHeaderStatic` to let it scroll with the body. `MinWidthClass` and `MaxWidthClass` cap the table surface width. `MinHeightClass` and `MaxHeightClass` cap the scroll viewport height; without them the default cap is `max-h-128`. `MaxVisibleRows` measures the header and the tallest data row at runtime and caps the viewport to that many rows, so the body scrolls under the header; it wins over both height classes. The table renders a default search box when the query URL template carries the search placeholder; it carries a magnifier icon and stretches to the available space. Pass `SearchBox` to replace it. `IsSearchBoxCompact` fixes the box to a narrow width so `SearchBoxAlignment` can place it left (the default), center, or right within the toolbar. `CheckboxShape` accepts `uiForm.CheckboxInputShapeSquare` (the default), `uiForm.CheckboxInputShapeRounded`, or `uiForm.CheckboxInputShapeCircular`; `CheckboxSize` accepts the `uiForm.CheckboxInputSize*` values and defaults to the medium size; `CheckboxCheckedColor` and `CheckboxUncheckedColor` take a color token and default to `secondary-500` and `neutral-50/20`.
+`HeaderClass` adds classes to the header row, `CellClass` adds classes to one column's cells, `RowClassResolver` returns classes for each row from its data, and `IsStriped` adds a zebra stripe. These classes append to elements that already carry base utilities, so when two utilities set the same property the generated stylesheet order decides the winner, not the field order. A cell component that sets its own color wins over the row color, so use `RowClassResolver` for cells that leave the color to the row. The header pins to the top of the scroll viewport by default and paints a blurred, translucent `bg-neutral-950/20` surface on every header cell, so the rows dim as they pass under it and a `HeaderClass` background stays behind it. Set `StickyHeaderBackgroundColor` to replace that surface and `IsHeaderStatic` to let the header scroll with the body. Set `ItemsPerPageDropdownBackgroundColor` to change the items-per-page menu background; the default is `bg-neutral-800/95`. A dropdown inside the table paints above the pinned header and is not clipped by the table surface. `MinWidthClass` and `MaxWidthClass` cap the table surface width. `MinHeightClass` and `MaxHeightClass` cap the scroll viewport height; without them the default cap is `max-h-128`. `MaxVisibleRows` measures the header and the tallest data row at runtime and caps the viewport to that many rows, so the body scrolls under the header; it wins over both height classes. The table renders a default search box when the query URL template carries the search placeholder; it carries a magnifier icon and stretches to the available space. Pass `SearchBox` to replace it. `IsSearchBoxCompact` fixes the box to a narrow width so `SearchBoxAlignment` can place it left (the default), center, or right within the toolbar. `CheckboxShape` accepts `uiToolset.ShapeSquare` (the default), `uiToolset.ShapeRounded`, or `uiToolset.ShapeCircular`; `CheckboxSize` accepts the `uiForm.CheckboxInputSize*` values and defaults to the medium size; `CheckboxCheckedColor` and `CheckboxUncheckedColor` take a color token and default to `secondary-500` and `neutral-50/20`.
 
 The query URL template uses fixed placeholders. Build it from the `DataTableUrlPlaceholder*` constants and name the query keys:
 
@@ -135,6 +135,8 @@ QueryUrlTemplate: "/records?page=" + uiStructural.DataTableUrlPlaceholderPageNum
 
 Filter values append to the URL as `key=value` pairs. Number and date ranges append as `keyMin` and `keyMax`. Empty values are omitted. Set `QueryParamName` on a filter to send a different query key.
 
+`FilterChipStyle` forwards to the shared FilterBar and repaints the active-filter chip; see FilterBar for the fields.
+
 The server response must contain one element with the `data-ui-data-table` attribute. The component swaps only that element, so the filter bar, search box, and selection stay in place.
 
 Client state lives in the component root: `pageNumber`, `itemsPerPage`, `sortKey`, `sortDirection`, `searchQuery`, `filterValues`, and `selectedRowIds`. The search box and the bulk action slot bind to those paths.
@@ -143,7 +145,7 @@ Client state lives in the component root: `pageNumber`, `itemsPerPage`, `sortKey
 
 A failed refresh shows an inline error row with a retry button. A refresh in flight dims the table and disables the controls.
 
-Pass filter keys, state paths, the query URL template, and `Id` from code, never from request data. The component embeds them into client-side expressions and the root id. `HeaderClass`, `CellClass`, `MinWidthClass`, `MaxWidthClass`, the `RowClassResolver` result, `FilterDropdownBackgroundColor`, `CheckboxCheckedColor`, and `CheckboxUncheckedColor` become HTML class attributes, so keep untrusted data out of them too.
+Pass filter keys, state paths, the query URL template, and `Id` from code, never from request data. The component embeds them into client-side expressions and the root id. `HeaderClass`, `CellClass`, `MinWidthClass`, `MaxWidthClass`, the `RowClassResolver` result, `FilterDropdownBackgroundColor`, `ItemsPerPageDropdownBackgroundColor`, `StickyHeaderBackgroundColor`, `CheckboxCheckedColor`, and `CheckboxUncheckedColor` become HTML class attributes, so keep untrusted data out of them too.
 
 ## FilterBar
 
@@ -168,6 +170,7 @@ Standalone filter bar. It renders one editor per declared filter and shows activ
 - Enum filters read `Options`. Multi-enum filters read `Options` and write an array of selected values under the filter key. Range filters write `{min, max}` objects under the filter key.
 - A chip appears when its filter holds a value. The chip remove button clears that filter.
 - The clear-all button appears when any filter is active.
+- `ChipStyle` repaints the active-filter chip. `OuterBackgroundColor`, `OuterRingColor`, `OuterTextColor`, `InnerBackgroundColor`, and `InnerTextColor` take color tokens. `TextCase` takes a `uiToolset.TextCase*` value and transforms both chip labels; the default is `uiToolset.TextCaseLower`. Every field falls back to the neutral default.
 - Set `EnumSelectRadioGroupNamePrefix` when a page holds more than one filter bar with the same enum keys. The prefix keeps each enum dropdown's radio group name unique. The DataTable prefixes it with the table id.
 
 ## PageHeading
@@ -216,6 +219,7 @@ Page controls with a readout, a page-number strip, and an items-per-page selecto
 - The component derives the page count from `ItemsTotal` and the bound `itemsPerPage`, so the strip and the controls react when the items-per-page value changes. `PagesTotal` is an optional fallback used only when `ItemsTotal` is zero.
 - The strip shows the first page, the last page, the pages around the current one, and ellipses for gaps. The current page carries `aria-current="page"`.
 - `ItemsPerPageSizeChoices` overrides the default items-per-page choices.
+- `DropdownBackgroundColor` paints the items-per-page menu; the default is `bg-neutral-800/95`. DataTable forwards it as `ItemsPerPageDropdownBackgroundColor`.
 - Set `ItemsPerPageInputName` when a page holds more than one pagination bound to the same state path, so the two items-per-page radio groups stay independent.
 - `IsDisabledOneWayStatePath` disables every control while the path is truthy.
 - `IsHiddenWhenSinglePage` hides the page-number controls while every record fits on one page. The readout and the items-per-page select stay visible. DataTable forwards it as `IsPaginationHiddenWhenSinglePage`.
@@ -273,9 +277,9 @@ Horizontal and vertical tab headers bound to one selected value. Each tab carrie
 - `IsUrlHashSynced` reads the URL hash on load and on every hash change, and writes the hash on click, so a link to `#security` opens the Security tab.
 - The component follows the ARIA tabs pattern: `role="tablist"`, `role="tab"`, `role="tabpanel"`, `aria-selected`, `aria-controls`, and `aria-labelledby`. Arrow keys move between tabs, Home and End jump to the ends. Horizontal tabs use Left and Right; vertical tabs use Up and Down.
 - `AriaLabel` names the tab list. Set a distinct label when a page holds more than one tab group.
-- `BackgroundColor` takes a color token, for example `"neutral-50/5"`, and paints the tab list. `BorderRadius` accepts `TabBorderRadiusNone` through `TabBorderRadiusXl` (the default is `TabBorderRadiusMd`) and rounds the tab edges. `TextColor` takes a color token and tints the unselected tab labels.
-- `PaddingSize` accepts `TabPaddingSizeNone` through `TabPaddingSizeXl` and insets the tab list; the default leaves the list flush. `GapSize` accepts `TabGapSizeNone` through `TabGapSizeXl` and sets the gap between the tabs; the default is `TabGapSizeXs`.
-- `RingColor` and `RingThickness` (`TabRingThicknessXs` through `TabRingThicknessXl`) frame the tab list when both are set. `ShadowSize` accepts `TabShadowSizeNone` through `TabShadowSizeXl`.
+- `BackgroundColor` takes a color token, for example `"neutral-50/5"`, and paints the tab list. `BorderRadius` accepts `uiToolset.BorderRadiusNone` through `uiToolset.BorderRadiusFull` (the default is `uiToolset.BorderRadiusMd`) and rounds the tab edges. `TextColor` takes a color token and tints the unselected tab labels.
+- `PaddingSize` accepts `uiToolset.PaddingSizeNone` through `uiToolset.PaddingSizeXl` and insets the tab list; the default leaves the list flush. `GapSize` accepts `uiToolset.GapSizeNone` through `uiToolset.GapSizeXl` and sets the gap between the tabs; the default is `uiToolset.GapSizeXs`.
+- `RingColor` and `RingThickness` (`uiToolset.RingThicknessXs` through `uiToolset.RingThicknessXl`) frame the tab list when both are set. `ShadowSize` accepts `uiToolset.ShadowSizeNone` through `uiToolset.ShadowSizeXl`.
 - The `Content*` fields style the panel area: `ContentBackgroundColor`, `ContentPaddingSize`, `ContentBorderRadius`, `ContentRingColor`, `ContentRingThickness`, `ContentShadowSize`, and `ContentTextColor`. They take the same tokens as the tab list settings. `ContentPaddingSize` replaces the default inset that separates the content from the tab list; the default leaves the content flush.
 - `TextCase` takes a `uiToolset.TextCase*` value and transforms the tab labels.
 - Pass state paths, tab values, and the class-attribute inputs (`Icon`, `BackgroundColor`, `TextColor`, and the `Badge*` color and ring inputs) from code, never from request data. The component embeds them into client-side expressions and class attributes.

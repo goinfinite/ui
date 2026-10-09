@@ -3,6 +3,7 @@ package main
 import (
 	uiControl "github.com/goinfinite/ui/src/control"
 	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
 templ AlertSizesExample() {
@@ -118,10 +119,10 @@ templ AlertCustomSurfaceExample() {
 	TextColor:                "cyan-100",
 	TextTitleColor:           "cyan-50",
 	TextDescriptionColor:     "cyan-200",
-	RingThickness:            uiDisplay.AlertRingThicknessLg,
+	RingThickness:            uiToolset.RingThicknessLg,
 	RingColor:                "cyan-400",
-	ShadowSize:               uiDisplay.AlertShadowSizeXl,
-	BorderRadius:             uiDisplay.AlertBorderRadiusLg,
+	ShadowSize:               uiToolset.ShadowSizeXl,
+	BorderRadius:             uiToolset.BorderRadiusLg,
 	CloseIconBackgroundColor: "cyan-500/30",
 	CloseIconTextColor:       "white",
 })`
@@ -140,10 +141,10 @@ templ AlertCustomSurfaceExample() {
 				TextColor:                "cyan-100",
 				TextTitleColor:           "cyan-50",
 				TextDescriptionColor:     "cyan-200",
-				RingThickness:            uiDisplay.AlertRingThicknessLg,
+				RingThickness:            uiToolset.RingThicknessLg,
 				RingColor:                "cyan-400",
-				ShadowSize:               uiDisplay.AlertShadowSizeXl,
-				BorderRadius:             uiDisplay.AlertBorderRadiusLg,
+				ShadowSize:               uiToolset.ShadowSizeXl,
+				BorderRadius:             uiToolset.BorderRadiusLg,
 				IsCloseable:              true,
 				CloseIconBackgroundColor: "cyan-500/30",
 				CloseIconTextColor:       "white",

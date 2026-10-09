@@ -4,13 +4,27 @@
 
 ## Text Input Field
 
-Single-line text input with configurable type (text, email, number, date, password, etc.), with support for labels, label text case, hints, required indicators, a size scale, and optional prefix/suffix affixes.
+Single-line text input with configurable type (text, email, number, date, password, etc.), with support for labels, label text case, hints, required indicators, a size scale, optional prefix/suffix affixes, an arbitrary right-edge component slot, and a runtime type expression.
 
 **Flow:**
 
-1. `src/form/inputField.templ` — Component definition with InputFieldSettings struct exposing InputType, Label, TextCase, TwoWayStatePath, Value, Size, optional affixes, and affix width percentages
+1. `src/form/inputField.templ` — Component definition with InputFieldSettings struct exposing InputType, Label, TextCase, TwoWayStatePath, Value, Size, optional affixes, affix width percentages, AffixRightComponent for an arbitrary right-edge component, and InputTypeExpression for a runtime type
 2. `src/form/inputHint.templ` — Shared hint renderer for the tooltip and description display modes
 3. `src/form/inputField_templ.go` — Compiled templ output rendering HTML input with Alpine.js binding and Tailwind styling
+
+---
+
+## Password Input
+
+Password field with a reveal toggle, an optional random password generator, and an optional strength meter. The meter shows a percentage bar plus a criteria checklist that updates as the user types.
+
+**Flow:**
+
+1. `src/form/passwordInput.templ` — PasswordInputSettings, the rules resolver (length range, generation length, character classes), the criteria-item resolver, the reveal and generate action buttons rendered as uiControl.Button with padding and min-width/min-height constraints and a boxed or plain style (ActionButtonStyle), the meter with its color settings, and the InputField composition
+2. `src/form/passwordInputState.js` — Alpine data component: reveal flag, strength percentage, per-criterion flags, the generator call, and the clipboard copy with a language-matched toast that ends with an exclamation mark
+3. `src/import/toolset/randomPassword.js` — `createRandomPassword(options)` with configurable length and character classes; guarantees one character from each selected class
+4. `src/form/passwordInput_test.go` — Table-driven tests for the rules and criteria resolvers plus the rendered actions and meter
+5. `src/form/passwordInput_templ.go` — Compiled output
 
 ---
 
@@ -28,31 +42,50 @@ Multi-line text input with five height steps (h-12/24/36/48/60), expand-to-3x to
 
 ## Select Dropdown
 
-Dropdown select component with support for flat string options or label-value pairs, with optional grouping and blank option.
+Dropdown select component with support for flat string options or label-value pairs, a blank option, and a multi-select mode. Single mode renders native radio rows; multi mode renders the shared styled checkbox rows, keeps the dropdown open after each toggle, and joins the selected labels in the trigger.
 
 **Flow:**
 
-1. `src/form/selectInput.templ` — Component definition with SelectInputSettings struct and SelectLabelValueOption data structure
-2. `src/form/selectInputState.js` — Alpine.js data component for the select dropdown: open toggle, close, and the open-direction decision that stops at the viewport bottom and at every clipping ancestor so the list never opens downward into an overflow-hidden container
-3. `src/form/inputHint.templ` — Shared hint renderer for the tooltip and description display modes
-4. `src/form/selectInput_templ.go` — Compiled output rendering select with native radio options, an embedded JSON script for label lookup, and Alpine.js state management
+1. `src/form/selectInput.templ` — Component definition with SelectInputSettings struct (including IsMultiSelect and InputId), SelectLabelValueOption data structure, the option checkbox renderer, and the dropdown height and MaxVisibleOptions settings
+2. `src/form/selectInputState.js` — Alpine.js data component for the select dropdown: open toggle, close, the multi-select summary formatter, and the open-direction decision
+3. `src/import/toolset/selectDropdown.js` — Shared open-upward decision that measures the space above and below the trigger, bounded by the viewport and every clipping ancestor, so the list never opens downward into an overflow-hidden container
+4. `src/form/selectDropdown.go` — Shared dropdown height classes resolver and the MaxVisibleOptions height style, with the row height of each dropdown family
+5. `src/form/inputHint.templ` — Shared hint renderer for the tooltip and description display modes
+6. `src/form/selectInput_templ.go` — Compiled output rendering select with native radio or checkbox options, an embedded JSON script for label lookup and the multi-select summary, and Alpine.js state management
 
 Supports optional hint text rendered either as a focusable info-icon tooltip inside the dropdown row or as a description line below the fieldset.
 
 ---
 
-## Multi-Select Dropdown
+## Searchable Select
 
-Dropdown component that lets the user select multiple options from a flat list or label-value pairs, binding an array via Alpine.js two-way state path. Each option renders the same styled checkbox as the Checkbox Input component.
+Dropdown with a filter box that narrows local options in place, a clear button, a No matches row, and a max-height scroll list. Single mode binds one value; multi mode binds an array and shows the joined labels or removable tags. With tags, a typed value becomes a tag when custom values are enabled; Enter adds, Backspace removes the last tag, and each tag carries a remove button.
 
 **Flow:**
 
-1. `src/form/multiSelectInput.templ` — Component definition with MultiSelectInputSettings struct, reusing SelectLabelValueOption for label-value options, plus the shared option checkbox renderer
-2. `src/form/multiSelectInputState.js` — Alpine.js data component providing the dropdown toggle state
-3. `src/form/inputHint.templ` — Shared hint renderer for the tooltip and description display modes
-4. `src/form/multiSelectInput_templ.go` — Compiled output rendering checkbox-based dropdown with embedded JSON script for label-value options and Alpine.js state management
+1. `src/form/searchableSelectInput.templ` — SearchableSelectInputSettings and the shared shell, trigger, filter input, action icons, selected labels, selected tags with tag color settings, local option rows, and local dropdown
+2. `src/form/searchableSelectInput.go` — The client config types and resolvers (normalized items, multi-select and custom-value flags, remote settings, the selection presentation), the dropdown class resolver, plus the selection, toggle, clear, custom-value, tag-remove, tag-backspace, and selected-state expression builders
+3. `src/form/searchableSelectInputState.js` — Shared Alpine data component: filter, visibility, No matches, selected-label lookup, and the remote fetch lifecycle
+4. `src/import/toolset/selectDropdown.js` — Shared open-upward decision that measures the space above and below the trigger, bounded by the viewport and every clipping ancestor
+5. `src/form/searchableSelectInput_test.go` — Tests for the item and presentation resolvers, the expression builders, and the rendered dropdown
+6. `src/form/searchableSelectInput_templ.go` — Compiled output
 
-Form submission uses multiple checkboxes sharing the same `name` so the browser sends an array of values. Supports optional hint text rendered either as a focusable info-icon tooltip inside the dropdown row or as a description line below the fieldset.
+Single mode writes one hidden input; multi mode writes one hidden input per selected value under `InputName`.
+
+---
+
+## Remote Searchable Select
+
+Searchable select whose options come from a URL as the user types, with debounce, minimum query length, stale-response discard, a loading indicator, and error and empty states.
+
+**Flow:**
+
+1. `src/form/remoteSearchableSelectInput.templ` — RemoteSearchableSelectInputSettings, the remote config resolver, the dropdown height and MaxVisibleOptions settings, the InitialOptions that label bound values until the user types, and the remote option rows and dropdown with the minimum-length prompt, sharing the searchable shell, trigger, and filter input
+2. `src/form/searchableSelectInputState.js` — Shared Alpine data component owning the remote fetch lifecycle: request id for stale discard, loading and error flags, and the debounced request
+3. `src/form/remoteSearchableSelectInput_test.go` — Tests for the remote config resolver
+4. `src/form/remoteSearchableSelectInput_templ.go` — Compiled output
+
+The endpoint receives `GET OptionsUrl?<query param>=<typed text>` and returns `{ "body": [{ "label": "...", "value": "..." }] }`; a bare array of strings or label-value objects also works.
 
 ---
 
@@ -95,12 +128,23 @@ Single radio button component for choice selection within a group, with label an
 
 ## Inline Radio Group
 
-Horizontal radio button group for presenting multiple mutually exclusive options in a single row.
+Radio button group for presenting multiple mutually exclusive options in a row or a column under one notched label.
 
 **Flow:**
 
-1. `src/form/inlineRadioGroup.templ` — Component definition with InlineRadioGroupSettings struct
-2. `src/form/inlineRadioGroup_templ.go` — Compiled output rendering multiple radio inputs horizontally
+1. `src/form/inlineRadioGroup.templ` — Component definition with InlineRadioGroupSettings struct and the orientation resolver
+2. `src/form/inlineRadioGroup_templ.go` — Compiled output rendering multiple radio inputs horizontally or vertically
+
+---
+
+## Inline Checkbox Group
+
+Checkbox group for presenting several choices in a row or a column under one notched label, bound to one array state path.
+
+**Flow:**
+
+1. `src/form/inlineCheckboxGroup.templ` — Component definition with InlineCheckboxGroupSettings struct and the orientation resolver, composing CheckboxInput per setting
+2. `src/form/inlineCheckboxGroup_templ.go` — Compiled output rendering the checkboxes horizontally or vertically
 
 ---
 
@@ -110,7 +154,7 @@ Interactive button component with customizable label, icons (left/right using Ph
 
 **Flow:**
 
-1. `src/control/button.templ` — Component definition with ButtonSettings struct supporting OnClickFunc handlers, icon binding, the type attribute, and the optional tooltip
+1. `src/control/button.templ` — Component definition with ButtonSettings struct supporting OnClickFunc handlers, icon binding, a padding override with min/max width and height constraints, a static or Alpine-bound aria label, the type attribute, and the optional tooltip
 2. `src/toolset/tooltipState.js` — Shared Alpine data component that teleports a tooltip to the document body, positions it with fixed coordinates on hover or focus, and flips it to stay inside the viewport
 3. `src/toolset/tooltip.go` — The once-handle that embeds the shared tooltip state, plus TooltipSurfaceClassesResolver for the shared fixed-layer tooltip classes and the shared TooltipPosition* placement values
 4. `src/control/button_templ.go` — Compiled output rendering the button with Alpine.js event binding and the teleported tooltip
@@ -197,7 +241,7 @@ Small label/badge component for categorization and tagging with customizable siz
 
 **Flow:**
 
-1. `src/display/tag.templ` — Component definition with TagSettings struct; `OnRemoveFunc` renders a named remove button
+1. `src/display/tag.templ` — Component definition with TagSettings struct; `OnRemoveFunc` renders a named remove button; `OuterRadius` and `InnerRadius` default to `rounded-md`
 2. `src/display/tag_templ.go` — Compiled output rendering small badge element with Tailwind styling
 
 ---
@@ -259,9 +303,9 @@ Standalone filter bar that renders one editor per declared filter (text contains
 
 **Flow:**
 
-1. `src/structural/filterBar.templ` — Component definition with FilterBarSettings and FilterSettings; renders editors and chips bound to a values object
+1. `src/structural/filterBar.templ` — Component definition with FilterBarSettings and FilterSettings; renders editors and chips bound to a values object; the FilterChipStyle struct carries each chip color token and the label text case (default lowercase)
 2. `src/structural/filterBarState.js` — Alpine component with chip visibility, chip label, single-filter reset, clear-all, and any-active helpers
-3. `src/form/multiSelectInput.templ` — Checkbox dropdown editor for the multi-enum kind
+3. `src/form/selectInput.templ` — Multi-select dropdown editor (IsMultiSelect) for the multi-enum kind
 4. `src/display/tag.templ` — Removable Tag variant used for the chips
 5. `src/structural/filterBar_templ.go` — Compiled output
 
@@ -273,11 +317,11 @@ Generic server-driven table taking column definitions and rows. Adds sortable he
 
 **Flow:**
 
-1. `src/structural/dataTable.templ` — Generic component (DataTable[T]) with DataTableSettings and DataTableColumnSettings; renders the filter bar, toolbar, table region, error row, and pagination; the settings script renders inside the component root; the scroll viewport carries `data-ui-data-table-scroll`
-2. `src/structural/dataTable.go` — DataTableSettings and DataTableColumnSettings types with their methods (client settings, id, page size, pagination label, density, text case, checkbox shape, checkbox size, row stripe, root class, sticky header class, scroll container class), the named density and sort-direction types, and the URL placeholder constants. The shared TextAlignment type serves the DataTable column alignment; the shared HorizontalAlignment type serves the search box. PageNumber is zero-based and ShouldUseOneBasedPageDisplay changes only the strip labels. The `Initial*` fields seed client state; `HeaderClass`, `CellClass`, `RowClassResolver`, and `IsStriped` carry styling; `MinWidthClass` and `MaxWidthClass` size the surface; `MinHeightClass`, `MaxHeightClass`, and `MaxVisibleRows` size the scroll viewport; `IsHeaderStatic` unpins the header; `CheckboxCheckedColor` and `CheckboxUncheckedColor` carry the selection color
+1. `src/structural/dataTable.templ` — Generic component (DataTable[T]) with DataTableSettings and DataTableColumnSettings; renders the filter bar, toolbar, table region, error row, and pagination; FilterChipStyle forwards to the shared filter bar; the settings script renders inside the component root; the scroll viewport carries `data-ui-data-table-scroll`
+2. `src/structural/dataTable.go` — DataTableSettings and DataTableColumnSettings types with their methods (client settings, id, page size, pagination label, density, text case, checkbox shape, checkbox size, row stripe, root class, sticky header class, scroll container class), the named density and sort-direction types, and the URL placeholder constants. The shared TextAlignment type serves the DataTable column alignment; the shared HorizontalAlignment type serves the search box. PageNumber is zero-based and ShouldUseOneBasedPageDisplay changes only the strip labels. The `Initial*` fields seed client state; `HeaderClass`, `CellClass`, `RowClassResolver`, and `IsStriped` carry styling; `StickyHeaderBackgroundColor` paints the pinned header and `ItemsPerPageDropdownBackgroundColor` paints the items-per-page menu; the root never clips a child dropdown, and the scroll container rounds its top corners when the table body touches the root's top edge; `MinWidthClass` and `MaxWidthClass` size the surface; `MinHeightClass`, `MaxHeightClass`, and `MaxVisibleRows` size the scroll viewport; `IsHeaderStatic` unpins the header; `CheckboxCheckedColor` and `CheckboxUncheckedColor` carry the selection color
 3. `src/structural/dataTableState.js` — Alpine data component: debounces refreshes, swaps the region carrying `data-ui-data-table`, owns selection and sort helpers, and measures the scroll viewport to show `MaxVisibleRows` rows; builds the refresh URL through `UiToolset.ServerFragmentRefreshComponent.refreshUrlBuilder`
 4. `src/structural/serverFragmentRefreshComponentState.js` — Shared refresh helpers, all under `UiToolset.ServerFragmentRefreshComponent`: the refresh URL builder, the fragment fetcher, and the lifecycle (settings resolver, event watcher, error handler attacher, handler detacher, request debouncer, failure handler, loading clearer)
-5. `src/structural/pagination.templ` — Table footer pagination
+5. `src/structural/pagination.templ` — Table footer pagination with the items-per-page selector and its configurable menu background
 6. `src/structural/filterBar.templ` — Table filter bar
 7. `src/structural/dataTable_templ.go` — Compiled output
 
@@ -289,7 +333,7 @@ Multi-item slider over a server page. The server returns a chunk of items; the c
 
 **Flow:**
 
-1. `src/structural/carousel.templ` — Generic component (Carousel[T]) with CarouselSettings; renders the search box, arrows, track, dots, error state, filter bar, and pagination; the track sits in `data-ui-carousel` and the footer in `data-ui-carousel-pagination`; the settings script renders inside the component root
+1. `src/structural/carousel.templ` — Generic component (Carousel[T]) with CarouselSettings; renders the search box, arrows, track, dots, error state, filter bar, and pagination; FilterChipStyle forwards to the shared filter bar; the track sits in `data-ui-carousel` and the footer in `data-ui-carousel-pagination`; the settings script renders inside the component root
 2. `src/structural/carousel.go` — CarouselSettings and the CarouselItemsPerViewSettings type, the surface/arrows/dots/item token constants and class resolvers, plus the id, items-per-view, items-per-page, search-box position, autoplay interval, aria-label, and color resolvers and the client-settings builder
 3. `src/structural/carouselItemTooltip.templ` — CarouselItemTooltip: wraps one item in a hover and focus trigger scope and renders a tooltip that teleports to the document body, with content, position, color, and compact-ring settings
 4. `src/structural/carouselItemTooltip_test.go` — Render tests for the teleport markup, the aria-describedby wiring, the plain wrapper without content, and the customization tokens
@@ -299,7 +343,7 @@ Multi-item slider over a server page. The server returns a chunk of items; the c
 8. `src/structural/carouselState.js` — Alpine data component: clamps the window, derives the responsive items-per-view from the named breakpoints against the window width, applies the track transform, handles prev/next/dot/swipe input, runs the autoplay timer with pause-on-hover, sets off-window items inert, and refreshes through `htmx.ajax` when HTMX is present and `fetch` otherwise, swapping both regions
 9. `src/structural/serverFragmentRefreshComponentState.js` — Shared refresh URL builder for the query template, the placeholders, and the filter values, plus the refresh lifecycle helpers under `UiToolset.ServerFragmentRefreshComponent`
 10. `src/structural/pagination.go` — The shared ItemsPerPage type and items-per-page resolvers
-11. `src/structural/pagination.templ` — Chunk footer pagination
+11. `src/structural/pagination.templ` — Chunk footer pagination with the items-per-page selector and its configurable menu background
 12. `src/structural/filterBar.templ` — Chunk filter bar
 13. `src/structural/carousel_templ.go` — Compiled output
 
@@ -311,8 +355,8 @@ Dismissible notification toast component with title, description, and Alpine.js 
 
 **Flow:**
 
-1. `src/display/toast.templ` — Component definition with ToastSettings struct exposing optional AutoDismissSeconds (defaults to 10s)
-2. `src/display/toastState.js` — Alpine toast state and HTMX response handling
+1. `src/display/toast.templ` — Component definition with ToastSettings struct exposing optional AutoDismissSeconds (defaults to 10s) and a type-tinted surface when BackgroundColor is unset
+2. `src/display/toastState.js` — Alpine toast state, the type-to-background resolver, and HTMX response handling
 3. `src/display/toast_templ.go` — Compiled output rendering toast element with Alpine.js binding and timer logic
 4. `src/import/toolset/apiResponse.js` — API response message and outcome resolution
 5. `src/import/toolset/jsonAjax.js` — JsonAjax response handling delegated to the toast store
@@ -365,11 +409,11 @@ Consolidated export of all third-party library dependencies (Alpine.js, UnoCSS r
 
 ## JavaScript Toolset
 
-Bundled utility functions for client-side operations: random password generation, loading overlay toggle, JSON AJAX requests, API response message resolution, and Alpine.js lifecycle hooks.
+Bundled utility functions for client-side operations: random password generation, the select-dropdown open-upward decision, loading overlay toggle, JSON AJAX requests, API response message resolution, and Alpine.js lifecycle hooks.
 
 **Flow:**
 
-1. `src/import/toolset/index.js` — UiToolset assembly; sibling files own one concern each: Alpine state registration, loading overlay, API response resolution, JsonAjax, and password generation
+1. `src/import/toolset/index.js` — UiToolset assembly; sibling files own one concern each: Alpine state registration, loading overlay, API response resolution, JsonAjax, password generation, and the select-dropdown open-upward resolver
 2. `src/import/import.templ` — HeadTagsToolset() component concatenating the toolset files and embedding the minified result in a script tag via MinifierTemplateJs()
 3. `src/toolset/minifier.go` — esbuild-based minifier called by MinifierTemplateJs() to minify JS before rendering
 
@@ -393,7 +437,7 @@ Shared token-to-class resolvers for components that expose a styling token. Each
 
 **Flow:**
 
-1. `src/toolset/styleTokens.go` — `BackgroundColorClassResolver()`, `TextColorClassResolver()`, `BorderColorClassResolver()`, `BorderRadiusClassResolver()`, `ShapeClassResolver()`, `ShadowClassResolver()`, `RingThicknessClassResolver()`, `RingClassResolver()`, `CompactRingClassResolver()`, `PaddingClassResolver()`, `CompactPaddingClassResolver()`, and `GapClassResolver()`
+1. `src/toolset/styleTokens.go` — the shared `BorderRadius*`, `Shape*`, `ShadowSize*`, `RingThickness*`, `PaddingSize*`, and `GapSize*` token constants, plus `BackgroundColorClassResolver()`, `TextColorClassResolver()`, `BorderColorClassResolver()`, `BorderRadiusTokenResolver()`, `BorderRadiusClassResolver()`, `ShapeClassResolver()`, `ShadowClassResolver()`, `RingThicknessClassResolver()`, `RingClassResolver()`, `CompactRingClassResolver()`, `PaddingClassResolver()`, `CompactPaddingClassResolver()`, and `GapClassResolver()`
 2. `src/structural/carousel.go`, `carousel.templ`, `tabs.go`, `tabs.templ`, `card.templ` — structural callers
 3. `src/display/modal.templ`, `alert.templ`, `headerIcon.templ`, `toast.templ`, `accordion.templ`, `tag.templ`, `confirmationDialog.templ` — display callers
 4. `src/control/button.templ`, `rangeSlider.templ`, `src/form/checkboxInput.templ` — control and form callers
@@ -420,7 +464,7 @@ Shared text-case values and a class resolver for components that expose a casing
 **Flow:**
 
 1. `src/toolset/textCase.go` — `TextCaseNone`, `TextCaseLower`, `TextCaseUpper`, `TextCaseCapitalize`, and `TextCaseClassResolver()`
-2. Form labels and placeholders — `InputField`, `CheckboxInput`, `RadioInput`, `InlineRadioGroup`, `SelectInput`, `MultiSelectInput`, `TextArea`, `ToggleSwitch`
+2. Form labels and placeholders — `InputField`, `CheckboxInput`, `RadioInput`, `InlineRadioGroup`, `SelectInput`, `TextArea`, `ToggleSwitch`
 3. `src/control/button.templ` — button label
 4. `src/display/tag.templ` — label segments; `src/display/accordion.templ` — item titles
 5. `src/display/headerBlock.templ` — title and sub-heading, forwarded by `Card`, `PageHeading`, and `ConfirmationDialog`

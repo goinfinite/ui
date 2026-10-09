@@ -1,6 +1,68 @@
 # Changelog
 
 ```log
+0.2.6 - 2026/10/09
+feat: add the FilterChipStyle to the FilterBar and forward it from the DataTable and Carousel
+feat: render the PasswordInput action buttons with the Button component and add tooltips
+feat: tint the Toast surface by its type
+fix: default the Tag radius to rounded-md
+fix: end the password clipboard toast with an exclamation mark
+refactor: join the class tokens with the shared NonEmptyClassJoiner instead of the concat loops
+feat: add the vertical orientation to the InlineRadioGroup
+feat: add the InlineCheckboxGroup with horizontal and vertical orientations
+feat: add the SearchableSelectInput with a local filter box, multi-select mode, clear button, No matches row, max-height list, and an optional tag display with typed custom values
+feat: add the RemoteSearchableSelectInput with debounce, minimum query length, stale-response discard, and loading, empty, and error states
+feat: add the PasswordInput with a reveal toggle, a configurable random password generator, and a strength meter
+feat: accept length and character-class options in the random password toolset
+feat: add an AffixRightComponent slot and an InputTypeExpression to the InputField
+refactor: share the select dropdown open-upward decision in the toolset
+feat: render the demo examples side by side with their usage, and keep an explicit stacked variant for wide examples
+fix: paint every form dropdown above the data table sticky header
+fix: keep the data table root from clipping a child dropdown, and round the scroll container top when the table body sits first
+fix: emit the dropdown background default as a literal class so a static stylesheet build keeps it
+feat: add StickyHeaderBackgroundColor and ItemsPerPageDropdownBackgroundColor to the DataTable and DropdownBackgroundColor to the Pagination
+feat: default the data table sticky header to a blurred translucent surface
+test: cover the new form components with unit and browser specs, and add a searchable filter performance budget
+docs: document the new form components in the form readme and the feature map
+chore(docs): regenerate the demo page
+fix: pick each random password character from an unused position
+feat: add a MaxVisibleOptions cap to the inline checkbox and radio groups
+fix: give the password input actions a transparent surface and split the strength criteria into columns
+fix: make the searchable select option row readable and match its tag chips to the Tag component
+fix: repair the searchable select label cache, clear control, and remote request state
+refactor: share the searchable select option row and dropdown between the local and remote variants
+fix: truncate the demo sidebar labels
+fix: show a valid tags icon in the demo
+fix: read the remote demo query parameter by name
+docs: document the inline group cap and the searchable fixes in the form readme and context
+feat: add dropdown height and max visible option controls to the select inputs and repair the searchable option and focus states
+feat: add clipboard copy, square actions, and strength color settings to the password input
+fix: stack the demo card header and let the usage code wrap
+fix: wrap the inline group examples in the standard demo card
+fix: render the filter chip as a label with a value bubble
+fix: lower the data table sticky header opacity
+BREAKING: unify the border radius tokens and the token resolver in the toolset
+docs: update the readmes, the contexts, the feature map, and the changelog
+chore(docs): regenerate the demo page
+BREAKING: move the fixed-value style tokens into the toolset
+docs: update the readmes, the feature map, and the changelog
+chore(docs): regenerate the demo page
+BREAKING: merge the MultiSelectInput into the SelectInput
+fix: render the filter bar chips with the small tag size and the 3xl radius
+feat: add a boxed action button style to the password input
+feat: add hover feedback to the checkbox box
+docs: update the readmes, the contexts, the feature map, and the changelog
+chore(docs): regenerate the demo page
+fix: give each select input option checkbox a unique id
+fix: open the select dropdown upward only when it fits above the field
+fix: list the full record count as a page size choice in the carousel tooltip demo
+fix: list all six planets in the inline checkbox group demo
+test: assert the exact filter chip value and the data table dropdown alpha
+feat: add InitialOptions to the RemoteSearchableSelectInput so a bound value shows its label before the first request
+docs: update the readmes, the contexts, the feature map, and the changelog
+chore(docs): regenerate the demo page
+fix: round the filter bar chips with the xl radius and widen the closable extra small tag padding
+
 0.2.5 - 2026/10/07
 BREAKING: move the refresh URL builder, the fragment fetcher, and the refresh lifecycle helpers under UiToolset.ServerFragmentRefreshComponent
 refactor: share the refresh settings, event wiring, error handling, and cleanup between the carousel and the data table

@@ -5,6 +5,8 @@ import (
 	"context"
 	"strings"
 	"testing"
+
+	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
 func TestThumbRendersUpperOnlyBubbleRingClasses(t *testing.T) {
@@ -12,7 +14,7 @@ func TestThumbRendersUpperOnlyBubbleRingClasses(t *testing.T) {
 	renderErr := Thumb(RangeSliderSettings{
 		ThumbUpperValueBubbleEnabled:       true,
 		ThumbUpperValueBubbleRingColor:     "red-700",
-		ThumbUpperValueBubbleRingThickness: RangeSliderThumbValueBubbleRingThicknessLg,
+		ThumbUpperValueBubbleRingThickness: uiToolset.RingThicknessLg,
 	}, true).Render(context.Background(), &buffer)
 	if renderErr != nil {
 		t.Fatalf("ThumbRenderFailed: %v", renderErr)

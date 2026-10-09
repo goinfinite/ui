@@ -145,11 +145,12 @@ func TestMinifierWithInvalidInput(t *testing.T) {
 				t.Errorf("EmptyResultForInvalidInput: %q", originalInput)
 			}
 
-			if testCase.contentType == MinifierContentTypeJavaScript {
+			switch testCase.contentType {
+			case MinifierContentTypeJavaScript:
 				if !strings.Contains(*result, "const x") {
 					t.Errorf("OriginalDeclarationNotPreserved, Got: %q", *result)
 				}
-			} else if testCase.contentType == MinifierContentTypeCss {
+			case MinifierContentTypeCss:
 				if !strings.Contains(*result, "body") || !strings.Contains(*result, "color") {
 					t.Errorf("OriginalCssElementsNotPreserved, Got: %q", *result)
 				}

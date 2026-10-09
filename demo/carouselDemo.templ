@@ -45,7 +45,7 @@ templ CarouselTooltipDemoItem(record DemoServerRecord) {
 		BackgroundColor: "primary-900/95",
 		Position:        uiToolset.TooltipPositionBottom,
 		RingColor:       "primary-500/40",
-		RingThickness:   uiStructural.CarouselRingThicknessXs,
+		RingThickness:   uiToolset.RingThicknessXs,
 		TextColor:       "primary-100",
 		MinWidthClass:   "min-w-64",
 		MaxWidthClass:   "max-w-72",
@@ -84,6 +84,12 @@ func buildDemoCarouselTooltipSettings(
 		"&search=" + uiStructural.CarouselUrlPlaceholderSearch +
 		"&componentId=" + id
 	tooltipSettings.ItemsPerPageSizeChoices = []uiStructural.ItemsPerPage{6}
+	if len(records) > carouselDemoItemsPerPage {
+		tooltipSettings.ItemsPerPageSizeChoices = append(
+			tooltipSettings.ItemsPerPageSizeChoices,
+			uiStructural.ItemsPerPage(len(records)),
+		)
+	}
 	tooltipSettings.ItemRenderer = func(record DemoServerRecord) templ.Component {
 		return CarouselTooltipDemoItem(record)
 	}
@@ -137,15 +143,15 @@ templ CarouselDemoStylingExample() {
 
 	// OptionalFields
 	BackgroundColor:       "neutral-800/50",
-	BorderRadius:          uiStructural.CarouselBorderRadiusXl,
-	PaddingSize:           uiStructural.CarouselPaddingSizeLg,
-	GapSize:               uiStructural.CarouselGapSizeLg,
+	BorderRadius:          uiToolset.BorderRadiusXl,
+	PaddingSize:           uiToolset.PaddingSizeLg,
+	GapSize:               uiToolset.GapSizeLg,
 	RingColor:             "secondary-500/30",
-	RingThickness:         uiStructural.CarouselRingThicknessMd,
-	ShadowSize:            uiStructural.CarouselShadowSizeLg,
+	RingThickness:         uiToolset.RingThicknessMd,
+	ShadowSize:            uiToolset.ShadowSizeLg,
 	TextColor:             "neutral-100",
 	ArrowsPosition:        uiStructural.CarouselArrowsPositionInside,
-	ArrowsShape:           uiStructural.CarouselArrowsShapeRounded,
+	ArrowsShape:           uiToolset.ShapeRounded,
 	ArrowsSize:            uiStructural.CarouselArrowsSizeLg,
 	ArrowsBackgroundColor: "secondary-500/20",
 	ArrowsIconColor:       "secondary-100",
@@ -154,14 +160,14 @@ templ CarouselDemoStylingExample() {
 	DotsInactiveColor:     "neutral-50/20",
 	DotsSize:              uiStructural.CarouselDotsSizeLg,
 	ItemBackgroundColor:   "neutral-50/5",
-	ItemBorderRadius:      uiStructural.CarouselBorderRadiusLg,
-	ItemPaddingSize:       uiStructural.CarouselPaddingSizeMd,
+	ItemBorderRadius:      uiToolset.BorderRadiusLg,
+	ItemPaddingSize:       uiToolset.PaddingSizeMd,
 	ItemRingColor:         "neutral-50/10",
-	ItemRingThickness:     uiStructural.CarouselRingThicknessXs,
-	ItemShadowSize:        uiStructural.CarouselShadowSizeMd,
+	ItemRingThickness:     uiToolset.RingThicknessXs,
+	ItemShadowSize:        uiToolset.ShadowSizeMd,
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Surface, Arrows, Dots, and Item Styling",
 		"The carousel paints its own surface (background, radius, padding, gap, ring, shadow, text color), its arrows (position, shape, size, colors), its dots (position, size, colors), and the item wrapper (background, radius, padding, ring, shadow). The plain item renderer here carries no card of its own, so the item styling comes from the carousel.",
 		"/structural/carousel.templ",
@@ -172,15 +178,15 @@ templ CarouselDemoStylingExample() {
 				stylingSettings := buildDemoCarouselSettings("carousel-demo-styling-carousel", dataTableDemoRecords[:6], 0, 6)
 			stylingSettings.ItemRenderer = func(record DemoServerRecord) templ.Component { return CarouselDemoPlainItem(record) }
 			stylingSettings.BackgroundColor = "neutral-800/50"
-			stylingSettings.BorderRadius = uiStructural.CarouselBorderRadiusXl
-			stylingSettings.PaddingSize = uiStructural.CarouselPaddingSizeLg
-			stylingSettings.GapSize = uiStructural.CarouselGapSizeLg
+			stylingSettings.BorderRadius = uiToolset.BorderRadiusXl
+			stylingSettings.PaddingSize = uiToolset.PaddingSizeLg
+			stylingSettings.GapSize = uiToolset.GapSizeLg
 			stylingSettings.RingColor = "secondary-500/30"
-			stylingSettings.RingThickness = uiStructural.CarouselRingThicknessMd
-			stylingSettings.ShadowSize = uiStructural.CarouselShadowSizeLg
+			stylingSettings.RingThickness = uiToolset.RingThicknessMd
+			stylingSettings.ShadowSize = uiToolset.ShadowSizeLg
 			stylingSettings.TextColor = "neutral-100"
 			stylingSettings.ArrowsPosition = uiStructural.CarouselArrowsPositionInside
-			stylingSettings.ArrowsShape = uiStructural.CarouselArrowsShapeRounded
+			stylingSettings.ArrowsShape = uiToolset.ShapeRounded
 			stylingSettings.ArrowsSize = uiStructural.CarouselArrowsSizeLg
 			stylingSettings.ArrowsBackgroundColor = "secondary-500/20"
 			stylingSettings.ArrowsIconColor = "secondary-100"
@@ -189,13 +195,54 @@ templ CarouselDemoStylingExample() {
 			stylingSettings.DotsInactiveColor = "neutral-50/20"
 			stylingSettings.DotsSize = uiStructural.CarouselDotsSizeLg
 			stylingSettings.ItemBackgroundColor = "neutral-50/5"
-			stylingSettings.ItemBorderRadius = uiStructural.CarouselBorderRadiusLg
-			stylingSettings.ItemPaddingSize = uiStructural.CarouselPaddingSizeMd
+			stylingSettings.ItemBorderRadius = uiToolset.BorderRadiusLg
+			stylingSettings.ItemPaddingSize = uiToolset.PaddingSizeMd
 			stylingSettings.ItemRingColor = "neutral-50/10"
-			stylingSettings.ItemRingThickness = uiStructural.CarouselRingThicknessXs
-			stylingSettings.ItemShadowSize = uiStructural.CarouselShadowSizeMd
+			stylingSettings.ItemRingThickness = uiToolset.RingThicknessXs
+			stylingSettings.ItemShadowSize = uiToolset.ShadowSizeMd
 			}}
 			@uiStructural.Carousel(stylingSettings)
+		</div>
+	}
+}
+
+templ CarouselDemoChipStylingExample() {
+	{{
+		chipStylingUsage := `@uiStructural.Carousel(uiStructural.CarouselSettings[Record]{
+	ItemRenderer: func(record Record) templ.Component { return CarouselDemoItem(record) },
+	Items:        records,
+	Filters:      filters,
+
+	// OptionalFields
+	FilterChipStyle: uiStructural.FilterChipStyle{
+		TextCase:             uiToolset.TextCaseUpper,
+		OuterBackgroundColor: "secondary-500/20",
+		OuterRingColor:       "secondary-500/40",
+		OuterTextColor:       "neutral-50",
+		InnerBackgroundColor: "secondary-500/40",
+		InnerTextColor:       "neutral-50",
+	},
+})`
+	}}
+	@DemoExampleCardStacked(
+		"Chip Styling",
+		"FilterChipStyle forwards to the shared FilterBar, so the active-filter chip matches the carousel palette. Every field falls back to the neutral default, and TextCase defaults to lowercase.",
+		"/structural/carousel.templ", chipStylingUsage,
+	) {
+		<div id="carousel-demo-chip-styling" x-data>
+			{{
+				chipStylingSettings := buildDemoCarouselSettings("carousel-demo-chip-styling-carousel", dataTableDemoRecords[:6], 0, 6)
+				chipStylingSettings.InitialFilterValues = map[string]any{"status": "running"}
+				chipStylingSettings.FilterChipStyle = uiStructural.FilterChipStyle{
+					TextCase:             uiToolset.TextCaseUpper,
+					OuterBackgroundColor: "secondary-500/20",
+					OuterRingColor:       "secondary-500/40",
+					OuterTextColor:       "neutral-50",
+					InnerBackgroundColor: "secondary-500/40",
+					InnerTextColor:       "neutral-50",
+				}
+			}}
+			@uiStructural.Carousel(chipStylingSettings)
 		</div>
 	}
 }
@@ -212,7 +259,7 @@ templ CarouselDemoAutoplayExample() {
 	AutoplayIntervalMs:      3000,
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Autoplay",
 		"IsAutoplay advances the window on a timer. IsAutoplayPausedOnHover stops the timer while the pointer is over the carousel and resumes it when the pointer leaves.",
 		"/structural/carousel.templ",
@@ -270,7 +317,7 @@ templ CarouselDemoTooltipsExample() {
 		BackgroundColor: "primary-900/95",
 		Position:        uiToolset.TooltipPositionBottom,
 		RingColor:       "primary-500/40",
-		RingThickness:   uiStructural.CarouselRingThicknessXs,
+		RingThickness:   uiToolset.RingThicknessXs,
 		TextColor:       "primary-100",
 		MinWidthClass:   "min-w-64",
 		MaxWidthClass:   "max-w-72",
@@ -282,7 +329,7 @@ templ CarouselDemoTooltipsExample() {
 	}
 }`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Item Tooltips",
 		"CarouselItemTooltip wraps one item and shows its tooltip on hover or on focus inside the item. Position places the tooltip, the colors and ring style its surface, and the width and height classes cap its size. The tooltip renders in a fixed layer on the document body, so the track viewport, a scroll container, and a modal cannot clip it. The card clamps its description to two lines; the tooltip carries the full text. The button opens the same carousel inside a modal.",
 		"/structural/carouselItemTooltip.templ",
@@ -338,6 +385,7 @@ templ CarouselDemo() {
 		}
 		@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
 			{Title: "Styling", Icon: "ph-paint-brush", Content: CarouselDemoStylingExample()},
+			{Title: "Chip Styling", Icon: "ph-tag", Content: CarouselDemoChipStylingExample()},
 			{Title: "Autoplay", Icon: "ph-play-circle", Content: CarouselDemoAutoplayExample()},
 			{Title: "Server Pagination", Icon: "ph-database", Content: CarouselDemoServerExample()},
 			{Title: "Item Tooltips", Icon: "ph-chats-circle", Content: CarouselDemoTooltipsExample()},

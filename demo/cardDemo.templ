@@ -42,16 +42,16 @@ templ CardSurfaceEdgesExample() {
 	// OptionalFields
 	BackgroundColor:  "primary-900/60",
 	TextColor:        "neutral-50",
-	PaddingSize:      uiStructural.CardPaddingSizeLg,
-	BorderRadius:     uiStructural.CardBorderRadiusNone,
-	ShadowSize:       uiStructural.CardShadowSizeLg,
+	PaddingSize:      uiToolset.PaddingSizeLg,
+	BorderRadius:     uiToolset.BorderRadiusNone,
+	ShadowSize:       uiToolset.ShadowSizeLg,
 	RingColor:        "primary-500",
-	RingThickness:    uiStructural.CardRingThicknessMd,
+	RingThickness:    uiToolset.RingThicknessMd,
 	HeaderSubHeading: "Custom background, text, and ring",
 	ActionsContent:   CardDemoActions(),
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Surface & Edges",
 		"Background, text, radius, shadow, ring, and padding accept Tailwind tokens.",
 		"/structural/card.templ", surfaceUsage,
@@ -63,16 +63,16 @@ templ CardSurfaceEdgesExample() {
 			HeaderIcon:       "ph-palette",
 			BackgroundColor:  "primary-900/60",
 			TextColor:        "neutral-50",
-			PaddingSize:      uiStructural.CardPaddingSizeLg,
+			PaddingSize:      uiToolset.PaddingSizeLg,
 			RingColor:        "primary-500",
-			RingThickness:    uiStructural.CardRingThicknessMd,
+			RingThickness:    uiToolset.RingThicknessMd,
 		})
 		@uiStructural.Card(uiStructural.CardSettings{
 			MiddleContent:  CardDemoBody(),
 			HeaderTitle:    "Square Card",
 			HeaderIcon:     "ph-square",
-			BorderRadius:   uiStructural.CardBorderRadiusNone,
-			ShadowSize:     uiStructural.CardShadowSizeLg,
+			BorderRadius:   uiToolset.BorderRadiusNone,
+			ShadowSize:     uiToolset.ShadowSizeLg,
 			ActionsContent: CardDemoActions(),
 		})
 	}
@@ -88,11 +88,11 @@ templ CardHeaderIconExample() {
 	HeaderIconPosition:        uiDisplay.HeaderIconPositionLeft,
 	HeaderIconColor:           "primary-100",
 	HeaderIconBackgroundColor: "primary-500/30",
-	HeaderIconBorderRadius:    uiDisplay.HeaderIconBorderRadiusLg,
-	HeaderIconPaddingSize:     uiDisplay.HeaderIconPaddingSizeMd,
+	HeaderIconBorderRadius:    uiToolset.BorderRadiusLg,
+	HeaderIconPaddingSize:     uiToolset.PaddingSizeMd,
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Header Icon Styles",
 		"HeaderIcon stamps a Phosphor icon in the header. Position, color, background, radius, and padding size style it.",
 		"/structural/card.templ", iconUsage,
@@ -105,8 +105,8 @@ templ CardHeaderIconExample() {
 				HeaderIconPosition:        uiDisplay.HeaderIconPositionTop,
 				HeaderIconColor:           "secondary-100",
 				HeaderIconBackgroundColor: "secondary-500/30",
-				HeaderIconBorderRadius:    uiDisplay.HeaderIconBorderRadiusLg,
-				HeaderIconPaddingSize:     uiDisplay.HeaderIconPaddingSizeMd,
+				HeaderIconBorderRadius:    uiToolset.BorderRadiusLg,
+				HeaderIconPaddingSize:     uiToolset.PaddingSizeMd,
 			})
 			@uiStructural.Card(uiStructural.CardSettings{
 				MiddleContent:             CardDemoBody(),
@@ -115,8 +115,8 @@ templ CardHeaderIconExample() {
 				HeaderIconPosition:        uiDisplay.HeaderIconPositionLeft,
 				HeaderIconColor:           "amber-300",
 				HeaderIconBackgroundColor: "amber-500/20",
-				HeaderIconBorderRadius:    uiDisplay.HeaderIconBorderRadiusXl,
-				HeaderIconPaddingSize:     uiDisplay.HeaderIconPaddingSizeSm,
+				HeaderIconBorderRadius:    uiToolset.BorderRadiusXl,
+				HeaderIconPaddingSize:     uiToolset.PaddingSizeSm,
 			})
 		</div>
 	}
@@ -128,15 +128,15 @@ templ CardContentOnlyExample() {
 	MiddleContent: CardDemoContentOnlyBody(),
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Content-Only Card",
 		"With no header settings the card is a bare surface around MiddleContent.",
 		"/structural/card.templ", contentUsage,
 	) {
 		@uiStructural.Card(uiStructural.CardSettings{
 			MiddleContent: CardDemoContentOnlyBody(),
-			BorderRadius:  uiStructural.CardBorderRadiusLg,
-			ShadowSize:    uiStructural.CardShadowSizeSm,
+			BorderRadius:  uiToolset.BorderRadiusLg,
+			ShadowSize:    uiToolset.ShadowSizeSm,
 		})
 	}
 }
@@ -152,7 +152,7 @@ templ CardStateBoundHeaderExample() {
 	HeaderSubHeadingOneWayStatePath:  "cardSubHeading",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"State-Bound Header",
 		"HeaderTitleOneWayStatePath and HeaderSubHeadingOneWayStatePath drive the header text from Alpine state.",
 		"/structural/card.templ", stateUsage,
@@ -194,7 +194,7 @@ templ CardCustomHeaderSlotExample() {
 	HeaderContent: CardDemoCustomHeader(),
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Custom Header Slot",
 		"HeaderContent replaces the standard header block with your own component.",
 		"/structural/card.templ", headerSlotUsage,
@@ -220,7 +220,7 @@ templ CardHeaderStylingExample() {
 	TextCase:              uiToolset.TextCaseUpper,
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Header Styling",
 		"HeaderSize scales the title and sub-heading. HeaderTitleColor and HeaderSubHeadingColor tint them. TextCase transforms both.",
 		"/structural/card.templ", stylingUsage,
@@ -245,12 +245,12 @@ templ CardContentGapExample() {
 
 	// OptionalFields
 	HeaderTitle: "Tight Gap",
-	GapSize:     uiStructural.CardGapSizeSm,
+	GapSize:     uiToolset.GapSizeSm,
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Content Gap",
-		"GapSize sets the space between the header, body, and footer. The default CardGapSizeMd renders gap-3.",
+		"GapSize sets the space between the header, body, and footer. The default uiToolset.GapSizeMd renders gap-3.",
 		"/structural/card.templ", gapUsage,
 	) {
 		<div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -258,13 +258,13 @@ templ CardContentGapExample() {
 				MiddleContent: CardDemoBody(),
 				FooterContent: CardDemoFooter(),
 				HeaderTitle:   "Tight Gap",
-				GapSize:       uiStructural.CardGapSizeSm,
+				GapSize:       uiToolset.GapSizeSm,
 			})
 			@uiStructural.Card(uiStructural.CardSettings{
 				MiddleContent: CardDemoBody(),
 				FooterContent: CardDemoFooter(),
 				HeaderTitle:   "Loose Gap",
-				GapSize:       uiStructural.CardGapSizeXl,
+				GapSize:       uiToolset.GapSizeXl,
 			})
 		</div>
 	}

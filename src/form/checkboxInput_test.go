@@ -7,6 +7,8 @@ import (
 	"slices"
 	"strings"
 	"testing"
+
+	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
 func TestCheckboxInputSizeClassesResolver(t *testing.T) {
@@ -54,9 +56,9 @@ func TestCheckboxInputRendersTheShapeClass(t *testing.T) {
 		shape             string
 		expectedClassName string
 	}{
-		{name: "square", shape: CheckboxInputShapeSquare, expectedClassName: "rounded-none"},
-		{name: "rounded", shape: CheckboxInputShapeRounded, expectedClassName: "rounded"},
-		{name: "circular", shape: CheckboxInputShapeCircular, expectedClassName: "rounded-full"},
+		{name: "square", shape: uiToolset.ShapeSquare, expectedClassName: "rounded-none"},
+		{name: "rounded", shape: uiToolset.ShapeRounded, expectedClassName: "rounded"},
+		{name: "circular", shape: uiToolset.ShapeCircular, expectedClassName: "rounded-full"},
 		{name: "default", shape: "", expectedClassName: "rounded"},
 	}
 
@@ -95,7 +97,7 @@ func TestCheckboxInputBoxBorderClassesResolver(t *testing.T) {
 			uncheckedColor: "neutral-50/20", checkedColor: "secondary-500",
 			errorColor:      "red-500",
 			isInvalid:       false,
-			expectedClasses: "border-neutral-50/20 peer-checked:border-secondary-500",
+			expectedClasses: "border-neutral-50/20 peer-enabled:peer-hover:border-secondary-500 peer-checked:border-secondary-500",
 		},
 		{
 			name:           "invalid uses the error color on both borders",

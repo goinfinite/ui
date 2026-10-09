@@ -4,20 +4,22 @@ Toolset of Infinite UI. It provides a JavaScript utility object, a Go minifier, 
 
 ## Style tokens
 
-Shared token-to-class resolvers. Components accept a token and apply the matching Tailwind class. Each resolver takes the fallback class the caller wants when the token is empty or unknown.
+Shared token-to-class resolvers. Components accept a token and apply the matching Tailwind class. Each resolver takes the fallback class the caller wants when the token is empty or unknown. The fixed-value constants (`BorderRadius*`, `Shape*`, `ShadowSize*`, `RingThickness*`, `PaddingSize*`, and `GapSize*`) live here; color tokens stay free-form strings.
 
 - `BackgroundColorClassResolver(backgroundColor, fallbackClass)`: returns `bg-` plus the token, or the fallback.
 - `TextColorClassResolver(textColor, fallbackClass)`: returns `text-` plus the token, or the fallback.
 - `BorderColorClassResolver(borderColor, fallbackClass)`: returns `border-` plus the token, or the fallback.
-- `BorderRadiusClassResolver(borderRadius, fallbackClass)`: maps `none` through `xl` plus `full` to the class that matches the token name, so `md` returns `rounded-md`, or the fallback.
-- `ShapeClassResolver(shape, fallbackClass)`: maps the shared shape tokens `circular`, `rounded`, and `square` to `rounded-full`, `rounded`, and `rounded-none`, or the fallback.
-- `ShadowClassResolver(shadowSize, fallbackClass)`: maps `none` through `xl` to the `shadow-*` class, or the fallback.
-- `RingThicknessClassResolver(ringThickness, fallbackClass)`: maps `xs` through `xl` to the `ring-*` thickness classes, or the fallback.
+- `BorderRadiusTokenResolver(borderRadius, fallbackToken)`: returns the token when it is one of the shared `BorderRadius*` values, or the fallback token.
+- `BorderRadiusClassResolver(borderRadius, fallbackClass)`: maps the shared `BorderRadius*` tokens to the class that matches the token name, so `md` returns `rounded-md`, or the fallback.
+- `ShapeClassResolver(shape, fallbackClass)`: maps the shared `ShapeCircular`, `ShapeRounded`, and `ShapeSquare` tokens to `rounded-full`, `rounded`, and `rounded-none`, or the fallback.
+- `ShadowClassResolver(shadowSize, fallbackClass)`: maps the shared `ShadowSize*` tokens `none` through `xl` to the `shadow-*` class, or the fallback.
+- `RingThicknessClassResolver(ringThickness, fallbackClass)`: maps the shared `RingThickness*` tokens `xs` through `xl` to the `ring-*` thickness classes, or the fallback.
 - `RingClassResolver(ringColor, ringThickness)`: returns the thickness and color classes, or an empty string when either is missing.
 - `CompactRingClassResolver(ringColor, ringThickness)`: the thinner ring scale that tooltips use; returns `ring-0.5` through `ring-2.5` plus the color, defaults to `ring-1` when the thickness is empty, and returns an empty string when the color is empty.
-- `PaddingClassResolver(paddingSize, fallbackClass)`: maps `none` through `xl` to the `p-*` class, or the fallback.
-- `CompactPaddingClassResolver(paddingSize, fallbackClass)`: the tighter padding scale for compact chips and list items; maps `none` through `xl` to the `p-*` class, or the fallback.
-- `GapClassResolver(gapSize, fallbackClass)`: maps `none` through `xl` to the `gap-*` class, or the fallback.
+- `PaddingClassResolver(paddingSize, fallbackClass)`: maps the shared `PaddingSize*` tokens `none` through `xl` to the `p-*` class, or the fallback.
+- `CompactPaddingClassResolver(paddingSize, fallbackClass)`: the tighter padding scale for compact chips and list items; maps the shared `PaddingSize*` tokens `none` through `xl` to the `p-*` class, or the fallback.
+- `GapClassResolver(gapSize, fallbackClass)`: maps the shared `GapSize*` tokens `none` through `xl` to the `gap-*` class, or the fallback.
+- `NonEmptyClassJoiner(classList)`: joins the non-empty entries with a single space. Use it to append optional class tokens without a `+=` loop.
 
 ## Component id
 
@@ -56,7 +58,7 @@ The JavaScript files live in `src/import/toolset/`. Include them with `@uiImport
 
 Call the utilities through the `UiToolset` object.
 
-- `UiToolset.CreateRandomPassword()`: Creates a random password of length 16 characters.
+- `UiToolset.CreateRandomPassword(options)`: creates a random password. `options` carries `length` (default 16), `minLength` (default 6), `maxLength` (default 64), and one `include*` flag per character class. With no arguments it keeps the 16-character behavior.
 - `UiToolset.ResolveApiResponseDisplay(apiResponse, httpStatusCode)`: Resolves the message and outcome (`success`, `partialSuccess`, or `error`) from an Infinite API response envelope.
 - `UiToolset.ToggleLoadingOverlay()`: Toggles the loading overlay element with the id `loading-overlay`.
 - `UiToolset.JsonAjax(method, url, payload, toast)`: Makes a JSON AJAX request. It shows the loading overlay and can display a toast from the response envelope.

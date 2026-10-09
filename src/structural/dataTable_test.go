@@ -108,8 +108,8 @@ func TestDataTableCheckboxShapeResolver(t *testing.T) {
 		providedShape string
 		expectedShape string
 	}{
-		{name: "default", providedShape: "", expectedShape: uiForm.CheckboxInputShapeSquare},
-		{name: "provided shape wins", providedShape: uiForm.CheckboxInputShapeCircular, expectedShape: uiForm.CheckboxInputShapeCircular},
+		{name: "default", providedShape: "", expectedShape: uiToolset.ShapeSquare},
+		{name: "provided shape wins", providedShape: uiToolset.ShapeCircular, expectedShape: uiToolset.ShapeCircular},
 	}
 
 	for _, testCase := range testCases {
@@ -178,6 +178,9 @@ func TestDataTableRootClassesResolver(t *testing.T) {
 	if !strings.Contains(defaultClasses, "rounded-md") {
 		t.Errorf("RootClassesMissingBase: %q", defaultClasses)
 	}
+	if strings.Contains(defaultClasses, "overflow-hidden") {
+		t.Errorf("RootClassesClipChildDropdowns: %q", defaultClasses)
+	}
 
 	sizedSettings := DataTableSettings[dataTableTestRecord]{
 		MinWidthClass: "min-w-96",
@@ -194,15 +197,85 @@ func TestDataTableRootClassesResolver(t *testing.T) {
 func TestDataTableStickyHeaderClassesResolver(t *testing.T) {
 	defaultSettings := DataTableSettings[dataTableTestRecord]{}
 	defaultClasses := defaultSettings.stickyHeaderClassesResolver()
-	for _, expectedClass := range []string{"sticky", "top-0", "z-10", "bg-neutral-900"} {
+	for _, expectedClass := range []string{"sticky", "top-0", "z-10", "backdrop-blur-md", "bg-neutral-950/20"} {
 		if !strings.Contains(defaultClasses, expectedClass) {
 			t.Errorf("StickyHeaderClassesMissing(%q): %q", expectedClass, defaultClasses)
 		}
 	}
 
+	coloredSettings := DataTableSettings[dataTableTestRecord]{
+		StickyHeaderBackgroundColor: "neutral-50/5",
+	}
+	coloredClasses := coloredSettings.stickyHeaderClassesResolver()
+	if !strings.Contains(coloredClasses, "bg-neutral-50/5") {
+		t.Errorf("StickyHeaderClassesMissingCustomBackground: %q", coloredClasses)
+	}
+	if strings.Contains(coloredClasses, "bg-neutral-950/20") {
+		t.Errorf("StickyHeaderClassesKeepDefaultBackground: %q", coloredClasses)
+	}
+
 	staticSettings := DataTableSettings[dataTableTestRecord]{IsHeaderStatic: true}
 	if actualClasses := staticSettings.stickyHeaderClassesResolver(); actualClasses != "" {
 		t.Errorf("StaticHeaderClassesNotEmpty: %q", actualClasses)
+	}
+}
+
+func TestDataTableRoundsScrollContainerTopWhenBodyIsFirstChild(t *testing.T) {
+	settings := DataTableSettings[dataTableTestRecord]{
+		Id:      "records-table",
+		Columns: []DataTableColumnSettings[dataTableTestRecord]{{Label: "Name"}},
+	}
+	scrollContainerClassPattern := regexp.MustCompile(`data-ui-data-table-scroll class="([^"]*)"`)
+	classFromRender := func(settings DataTableSettings[dataTableTestRecord]) string {
+		var buffer bytes.Buffer
+		renderErr := DataTable(settings).Render(context.Background(), &buffer)
+		if renderErr != nil {
+			t.Fatalf("DataTableRenderFailed: %v", renderErr)
+		}
+		matches := scrollContainerClassPattern.FindStringSubmatch(buffer.String())
+		if len(matches) < 2 {
+			t.Fatalf("RenderedHtmlMissingScrollContainer")
+		}
+		return matches[1]
+	}
+
+	if !strings.Contains(classFromRender(settings), "rounded-t-md") {
+		t.Errorf("ScrollContainerMissingTopRadiusOnFirstChildBody")
+	}
+
+	settings.Filters = []FilterSettings{{Key: "status", Label: "Status", Kind: FilterKindEnumSelect}}
+	if strings.Contains(classFromRender(settings), "rounded-t-md") {
+		t.Errorf("ScrollContainerKeepsTopRadiusWithFilterBar")
+	}
+}
+
+func TestDataTableRendersItemsPerPageDropdownBackground(t *testing.T) {
+	settings := DataTableSettings[dataTableTestRecord]{
+		Id:         "records-table",
+		Columns:    []DataTableColumnSettings[dataTableTestRecord]{{Label: "Name"}},
+		ItemsTotal: 240,
+	}
+	var buffer bytes.Buffer
+	renderErr := DataTable(settings).Render(context.Background(), &buffer)
+	if renderErr != nil {
+		t.Fatalf("DataTableRenderFailed: %v", renderErr)
+	}
+	if !strings.Contains(buffer.String(), "bg-neutral-800/95") {
+		t.Errorf("RenderedHtmlMissingDefaultItemsPerPageDropdownBackground")
+	}
+
+	settings.ItemsPerPageDropdownBackgroundColor = "emerald-900"
+	coloredBuffer := bytes.Buffer{}
+	renderErr = DataTable(settings).Render(context.Background(), &coloredBuffer)
+	if renderErr != nil {
+		t.Fatalf("DataTableRenderFailed: %v", renderErr)
+	}
+	coloredHtml := coloredBuffer.String()
+	if !strings.Contains(coloredHtml, "bg-emerald-900") {
+		t.Errorf("RenderedHtmlMissingCustomItemsPerPageDropdownBackground")
+	}
+	if !strings.Contains(coloredHtml, "bg-neutral-950/20") {
+		t.Errorf("RenderedHtmlMissingStickyHeaderBackground")
 	}
 }
 

@@ -143,9 +143,11 @@ test.describe("DataTable @structural", () => {
 
     await expect.poll(() => refreshUrls.length).toBe(1);
     expect(refreshUrls[0]).toContain("name=alpha");
-    await expect(
-      page.locator(`${tableRoot} span`).filter({ hasText: "Name: alpha" }),
-    ).toBeVisible();
+    const chip = page.locator(
+      `${tableRoot} span[x-show]:has(button[aria-label="Remove Name filter"])`,
+    );
+    await expect(chip).toBeVisible();
+    await expect(chip.locator("span[x-text]")).toHaveText("alpha");
   });
 
   test("search debounces into one request and resets the page", async ({
@@ -445,5 +447,56 @@ test.describe("DataTable @structural", () => {
     const viewportHeight = await page.evaluate(() => window.innerHeight);
     expect(dropdownBounds.top).toBeGreaterThanOrEqual(0);
     expect(dropdownBounds.bottom).toBeLessThanOrEqual(viewportHeight);
+  });
+
+  test("the filter dropdown paints above the pinned header", async ({
+    page,
+  }) => {
+    const table = page.locator(tableRoot);
+    await table.scrollIntoViewIfNeeded();
+    await table.locator("[data-ui-data-table-scroll]").evaluate((element) => {
+      element.scrollTop = element.scrollHeight;
+    });
+    await table.locator("fieldset [role=button]").first().click();
+
+    const dropdown = table.locator("fieldset ul").first();
+    await expect(dropdown).toBeVisible();
+    const stacking = await dropdown.evaluate((element) => {
+      element.style.height = "400px";
+      element.style.maxHeight = "400px";
+      const root = element.closest("[id]");
+      const headerRect = root.querySelector("thead th").getBoundingClientRect();
+      const dropdownRect = element.getBoundingClientRect();
+      const overlapTop = Math.max(headerRect.top, dropdownRect.top);
+      const overlapBottom = Math.min(headerRect.bottom, dropdownRect.bottom);
+      const overlapHeight = overlapBottom - overlapTop;
+      const hit = document.elementFromPoint(
+        dropdownRect.left + dropdownRect.width / 2,
+        overlapTop + overlapHeight / 2,
+      );
+      return {
+        overlaps: overlapHeight > 0,
+        dropdownWins: Boolean(hit?.closest("ul")),
+      };
+    });
+    expect(stacking.overlaps).toBe(true);
+    expect(stacking.dropdownWins).toBe(true);
+  });
+
+  test("the items per page menu renders the default surface opacity", async ({
+    page,
+  }) => {
+    const table = page.locator(tableRoot);
+    await table.scrollIntoViewIfNeeded();
+    await table.locator("nav [role=button]").click();
+
+    const dropdown = table.locator("nav ul");
+    await expect(dropdown).toBeVisible();
+    const backgroundColor = await dropdown.evaluate(
+      (element) => getComputedStyle(element).backgroundColor,
+    );
+    const colorChannels = (backgroundColor.match(/[\d.]+/g) ?? []).map(Number);
+    const backgroundAlpha = colorChannels.length === 4 ? colorChannels[3] : 1;
+    expect(backgroundAlpha).toBe(0.95);
   });
 });

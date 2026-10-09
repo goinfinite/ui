@@ -15,8 +15,11 @@ Button with optional label, icons, tooltip, ring, and shape variants.
 ```
 
 - `Size` accepts the `uiControl.ButtonSize*` constants.
-- `Shape` accepts `ButtonShapeCircular`, `ButtonShapeRounded`, or `ButtonShapeSquare`.
+- `PaddingSize` accepts the `uiToolset.PaddingSize*` constants and overrides the padding that `Size` sets. Use `uiToolset.PaddingSizeNone` with `MinWidthClass` and `MinHeightClass` to render a fixed square button, for example a field action.
+- `MinWidthClass`, `MaxWidthClass`, `MinHeightClass`, and `MaxHeightClass` take arbitrary Tailwind classes and bound the button box.
+- `Shape` accepts `uiToolset.ShapeCircular`, `uiToolset.ShapeRounded`, or `uiToolset.ShapeSquare`.
 - Icons use the `ph-bold` weight. Pass the icon name alone, for example `"ph-floppy-disk"`.
+- `AriaLabel` sets a static accessible name. `AriaLabelOneWayStatePath` binds the accessible name to Alpine state, so a button whose purpose changes can relabel itself.
 - `IsDisabled` sets a static disabled state. `IsDisabledOneWayStatePath` disables the button while the path is truthy and dims it.
 - `IsVisibleOneWayStatePath` hides the button while the path is falsy.
 - `IsSubmit` renders `type="submit"` so the button submits its form. Every button renders a `type`; the default is `button`, so a button inside a form does not submit it.

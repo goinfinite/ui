@@ -12,20 +12,6 @@ const (
 	ToastSizeMd string = "md"
 	ToastSizeLg string = "lg"
 
-	ToastRingThicknessXs string = "xs"
-	ToastRingThicknessSm string = "sm"
-	ToastRingThicknessMd string = "md"
-	ToastRingThicknessLg string = "lg"
-	ToastRingThicknessXl string = "xl"
-
-	ToastRadiusNone string = "none"
-	ToastRadiusXs   string = "xs"
-	ToastRadiusSm   string = "sm"
-	ToastRadiusMd   string = "md"
-	ToastRadiusLg   string = "lg"
-	ToastRadiusXl   string = "xl"
-	ToastRadiusFull string = "full"
-
 	ToastAutoDismissSecondsDefault int = 10
 )
 
@@ -82,12 +68,18 @@ templ Toast(componentSettings ToastSettings) {
 	}
 	{{ toastRadius := uiToolset.BorderRadiusClassResolver(componentSettings.Radius, "rounded") }}
 	{{ toastClasses += " " + toastRingThickness + toastRingColor + " " + toastRadius }}
-	{{ toastClasses += " " + uiToolset.BackgroundColorClassResolver(componentSettings.BackgroundColor, "bg-primary-300") }}
+	{{ toastHasExplicitBackground := componentSettings.BackgroundColor != "" }}
+	if toastHasExplicitBackground {
+		{{ toastClasses += " " + uiToolset.BackgroundColorClassResolver(componentSettings.BackgroundColor, "") }}
+	}
 	{{ toastTextColor := uiToolset.TextColorClassResolver(componentSettings.TextColor, "text-neutral-50") }}
 	{{ toastClasses += " " + toastTextColor }}
 	<div
 		id="toast"
 		class={ toastClasses }
+		if !toastHasExplicitBackground {
+			:class="$store.toast.toastTypeBackgroundClass"
+		}
 		x-data
 		x-show="$store.toast.toastVisible"
 		x-transition

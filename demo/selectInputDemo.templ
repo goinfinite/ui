@@ -378,6 +378,44 @@ templ SelectInputDropdownBackgroundExample() {
 	}
 }
 
+templ SelectInputDropdownHeightExample() {
+	{{
+		dropdownHeightUsage := `@uiForm.SelectInput(uiForm.SelectInputSettings{
+	InputName: "countryDropdownHeight",
+	Label:     "Country",
+
+	// OptionalFields
+	FlatOptions:            []string{"Argentina", "Australia", "Brazil", "Canada", "Chile", "China", "France", "Germany", "India", "Japan", "Mexico", "Portugal"},
+	TwoWayStatePath:        "countryDropdownHeight",
+	DropdownMinHeightClass: "min-h-24",
+	DropdownMaxHeightClass: "max-h-40",
+	MaxVisibleOptions:      3,
+})`
+	}}
+	@DemoExampleCard(
+		"Dropdown Height",
+		"DropdownMinHeightClass and DropdownMaxHeightClass cap the option list. MaxVisibleOptions caps it to a row count and wins over both.",
+		"/form/selectInput.templ", dropdownHeightUsage,
+	) {
+		<div class="flex flex-col gap-3 lg:*:max-w-50" x-data="{countryDropdownHeight: 'Brazil'}">
+			<p class="text-sm text-neutral-400">Open the dropdown to see the capped list scroll.</p>
+			@uiForm.SelectInput(uiForm.SelectInputSettings{
+				InputName: "countryDropdownHeight",
+				Label:     "Country",
+				FlatOptions: []string{
+					"Argentina", "Australia", "Brazil", "Canada",
+					"Chile", "China", "France", "Germany", "India",
+					"Japan", "Mexico", "Portugal",
+				},
+				TwoWayStatePath:        "countryDropdownHeight",
+				DropdownMinHeightClass: "min-h-24",
+				DropdownMaxHeightClass: "max-h-40",
+				MaxVisibleOptions:      3,
+			})
+		</div>
+	}
+}
+
 templ SelectInputRequiredExample() {
 	{{
 		requiredUsage := `@uiForm.SelectInput(uiForm.SelectInputSettings{
@@ -447,6 +485,86 @@ templ SelectInputDisabledBindingExample() {
 	}
 }
 
+templ SelectInputMultiSelectExample() {
+	{{
+		multiSelectUsage := `@uiForm.SelectInput(uiForm.SelectInputSettings{
+	InputName: "countries",
+	Label:     "Countries",
+
+	// OptionalFields
+	FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+	IsMultiSelect:   true,
+	TwoWayStatePath: "countries",
+})`
+	}}
+	@DemoExampleCard(
+		"Multi-Select",
+		"IsMultiSelect renders checkbox rows, keeps the dropdown open while you pick, and joins the selected labels in the trigger.",
+		"/form/selectInput.templ", multiSelectUsage,
+	) {
+		@DemoAlpineStateBlock(`<div x-data="{countries: ['Brazil']}"></div>`)
+		<div x-data="{countries: ['Brazil']}">
+			@uiForm.SelectInput(uiForm.SelectInputSettings{
+				InputName:       "countries",
+				Label:           "Countries",
+				FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
+				IsMultiSelect:   true,
+				TwoWayStatePath: "countries",
+			})
+			<p class={ DemoLiveStateClasses }>
+				Values: <span x-text="JSON.stringify(countries)"></span>
+			</p>
+		</div>
+	}
+}
+
+templ SelectInputMultiSelectLabelValueExample() {
+	{{
+		multiLabelValueUsage := `@uiForm.SelectInput(uiForm.SelectInputSettings{
+	InputName: "countriesLabelValue",
+	Label:     "Countries",
+
+	// OptionalFields
+	LabelValueOptions: []uiForm.SelectLabelValueOption{
+		{Label: "Argentina", Value: "AR"},
+		{Label: "Brazil", Value: "BR"},
+		{Label: "Chile", Value: "CL"},
+	},
+	IsMultiSelect:   true,
+	TwoWayStatePath: "countries",
+})`
+	}}
+	@DemoExampleCard(
+		"Multi-Select LabelValueOptions",
+		"With IsMultiSelect the bound state holds the selected Values while the trigger joins their Labels.",
+		"/form/selectInput.templ", multiLabelValueUsage,
+	) {
+		@DemoAlpineStateBlock(`<div x-data="{countries: ['BR']}"></div>`)
+		<div x-data="{countries: ['BR']}">
+			@uiForm.SelectInput(uiForm.SelectInputSettings{
+				InputName: "countriesLabelValue",
+				Label:     "Countries",
+				LabelValueOptions: []uiForm.SelectLabelValueOption{
+					{
+						Label: "Argentina",
+						Value: "AR",
+					},
+					{
+						Label: "Brazil",
+						Value: "BR",
+					},
+					{
+						Label: "Chile",
+						Value: "CL",
+					},
+				},
+				IsMultiSelect:   true,
+				TwoWayStatePath: "countries",
+			})
+		</div>
+	}
+}
+
 templ SelectInputDemo() {
 	{{
 		demoUsage := `@uiForm.SelectInput(uiForm.SelectInputSettings{
@@ -462,7 +580,7 @@ templ SelectInputDemo() {
 	<div class="flex flex-col gap-4" id="select-input-demo">
 		@DemoComponentSection(DemoComponentSectionSettings{
 			ComponentPath:          "/form/selectInput.templ",
-			Description:            "A select input allows users to select one option from a dropdown list.",
+			Description:            "A select input allows users to select one or more options from a dropdown list.",
 			LiveExampleDescription: "A select bound to Alpine state, with a blank option and flat option labels.",
 			Title:                  ".SelectInput",
 			UsageCode:              demoUsage,
@@ -483,6 +601,8 @@ templ SelectInputDemo() {
 		}
 		@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
 			{Title: "LabelValueOptions", Icon: "ph-tag", Content: SelectInputLabelValueExample()},
+			{Title: "Multi-Select", Icon: "ph-list-checks", Content: SelectInputMultiSelectExample()},
+			{Title: "Multi-Select LabelValueOptions", Icon: "ph-list-plus", Content: SelectInputMultiSelectLabelValueExample()},
 			{Title: "HTML Option Labels", Icon: "ph-code", Content: SelectInputHtmlOptionsExample()},
 			{Title: "Hints", Icon: "ph-info", Content: SelectInputHintsExample()},
 			{Title: "Hint Icon Styles", Icon: "ph-question", Content: SelectInputHintIconStyleExample()},
@@ -490,6 +610,7 @@ templ SelectInputDemo() {
 			{Title: "Sizes", Icon: "ph-ruler", Content: SelectInputSizesExample()},
 			{Title: "Text Case", Icon: "ph-text-t", Content: SelectInputTextCaseExample()},
 			{Title: "Dropdown Background", Icon: "ph-paint-brush", Content: SelectInputDropdownBackgroundExample()},
+			{Title: "Dropdown Height", Icon: "ph-arrows-out-line-vertical", Content: SelectInputDropdownHeightExample()},
 			{Title: "Required", Icon: "ph-asterisk", Content: SelectInputRequiredExample()},
 			{Title: "Disabled Binding", Icon: "ph-prohibit", Content: SelectInputDisabledBindingExample()},
 		})

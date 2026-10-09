@@ -9,20 +9,6 @@ const (
 	TagSizeMd   string = "md"
 	TagSizeLg   string = "lg"
 	TagSizeXl   string = "xl"
-
-	TagRingThicknessXs string = "xs"
-	TagRingThicknessSm string = "sm"
-	TagRingThicknessMd string = "md"
-	TagRingThicknessLg string = "lg"
-	TagRingThicknessXl string = "xl"
-
-	TagRadiusNone string = "none"
-	TagRadiusXs   string = "xs"
-	TagRadiusSm   string = "sm"
-	TagRadiusMd   string = "md"
-	TagRadiusLg   string = "lg"
-	TagRadiusXl   string = "xl"
-	TagRadiusFull string = "full"
 )
 
 type TagSettings struct {
@@ -71,18 +57,21 @@ templ Tag(componentSettings TagSettings) {
 		case TagSizeXl:
 			{{ initialOuterSizeClasses = "text-xl p-1.25 gap-1.25" }}
 	}
+	if componentSettings.Size == TagSizeXs && componentSettings.OnRemoveFunc != "" {
+		{{ initialOuterSizeClasses = "text-xs py-0.75 px-1.5 gap-0.75" }}
+	}
 	{{ initialOuterBorderWidthClass := "border-2" }}
 	if componentSettings.OuterRingThickness != "" {
 		switch componentSettings.OuterRingThickness {
-			case TagRingThicknessXs:
+			case uiToolset.RingThicknessXs:
 				{{ initialOuterBorderWidthClass = "border" }}
-			case TagRingThicknessSm:
+			case uiToolset.RingThicknessSm:
 				{{ initialOuterBorderWidthClass = "border-[1.5px]" }}
-			case TagRingThicknessMd:
+			case uiToolset.RingThicknessMd:
 				{{ initialOuterBorderWidthClass = "border-2" }}
-			case TagRingThicknessLg:
+			case uiToolset.RingThicknessLg:
 				{{ initialOuterBorderWidthClass = "border-[2.5px]" }}
-			case TagRingThicknessXl:
+			case uiToolset.RingThicknessXl:
 				{{ initialOuterBorderWidthClass = "border-[3px]" }}
 		}
 	} else {
@@ -117,7 +106,7 @@ templ Tag(componentSettings TagSettings) {
 	if componentSettings.OuterTextColor != "" {
 		{{ initialOuterTextColor = componentSettings.OuterTextColor }}
 	}
-	{{ initialOuterRadius := uiToolset.BorderRadiusClassResolver(componentSettings.OuterRadius, "rounded") }}
+	{{ initialOuterRadius := uiToolset.BorderRadiusClassResolver(componentSettings.OuterRadius, "rounded-md") }}
 	{{
 		initialOuterClasses := initialOuterSizeClasses + " " +
 			" border-" + initialOuterRingColor + " bg-" + initialOuterBackgroundColor +
@@ -141,7 +130,7 @@ templ Tag(componentSettings TagSettings) {
 	}
 	{{ initialInnerBackgroundColorClass := uiToolset.BackgroundColorClassResolver(componentSettings.InnerBackgroundColor, "bg-neutral-50/10") }}
 	{{ initialInnerTextColorClass := uiToolset.TextColorClassResolver(componentSettings.InnerTextColor, "text-neutral-50") }}
-	{{ initialInnerRadius := uiToolset.BorderRadiusClassResolver(componentSettings.InnerRadius, "rounded") }}
+	{{ initialInnerRadius := uiToolset.BorderRadiusClassResolver(componentSettings.InnerRadius, "rounded-md") }}
 	{{
 		initialInnerClasses := initialInnerSizeClasses + " " +
 			initialInnerBackgroundColorClass +

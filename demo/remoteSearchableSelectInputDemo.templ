@@ -1,0 +1,284 @@
+package main
+
+import (
+	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiForm "github.com/goinfinite/ui/src/form"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+templ RemoteSearchableSelectInputMultiSelectExample() {
+	{{
+		multiSelectUsage := `@uiForm.RemoteSearchableSelectInput(uiForm.RemoteSearchableSelectInputSettings{
+	InputName:  "countries",
+	Label:      "Countries",
+	OptionsUrl: "/api/countries/search",
+
+	// OptionalFields
+	TwoWayStatePath: "countries",
+	IsMultiSelect:   true,
+})`
+	}}
+	@DemoExampleCard(
+		"Multi-Select",
+		"IsMultiSelect binds an array. The trigger keeps the selected labels while the query and the options change.",
+		"/form/remoteSearchableSelectInput.templ", multiSelectUsage,
+	) {
+		<div x-data="{countries: []}" class="flex flex-col gap-3">
+			@uiForm.RemoteSearchableSelectInput(uiForm.RemoteSearchableSelectInputSettings{
+				InputName:       "countries",
+				Label:           "Countries",
+				OptionsUrl:      "remote-searchable-select-demo",
+				TwoWayStatePath: "countries",
+				IsMultiSelect:   true,
+			})
+			<p class={ DemoLiveStateClasses }>
+				Values: <span x-text="JSON.stringify(countries)"></span>
+			</p>
+		</div>
+	}
+}
+
+templ RemoteSearchableSelectInputPresetValueExample() {
+	{{
+		presetValueUsage := `@uiForm.RemoteSearchableSelectInput(uiForm.RemoteSearchableSelectInputSettings{
+	InputName:       "country",
+	Label:           "Country",
+	OptionsUrl:      "/api/countries/search",
+	TwoWayStatePath: "country",
+
+	// OptionalFields
+	InitialOptions: []uiForm.SelectLabelValueOption{
+		{Label: "Brazil", Value: "Brazil"},
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Preset Value",
+		"InitialOptions labels a value that is already bound, so the trigger shows the label and the dropdown lists it before any request. A fetched option wins for the same value.",
+		"/form/remoteSearchableSelectInput.templ", presetValueUsage,
+	) {
+		<div x-data="{country: 'Brazil'}" class="flex flex-col gap-3">
+			@uiForm.RemoteSearchableSelectInput(uiForm.RemoteSearchableSelectInputSettings{
+				InputName:       "countryPresetValue",
+				Label:           "Country",
+				OptionsUrl:      "remote-searchable-select-demo",
+				TwoWayStatePath: "country",
+				InitialOptions: []uiForm.SelectLabelValueOption{
+					{Label: "Brazil", Value: "Brazil"},
+				},
+			})
+			<p class={ DemoLiveStateClasses }>
+				Value: <span x-text="country"></span>
+			</p>
+		</div>
+	}
+}
+
+templ RemoteSearchableSelectInputQuerySettingsExample() {
+	{{
+		querySettingsUsage := `@uiForm.RemoteSearchableSelectInput(uiForm.RemoteSearchableSelectInputSettings{
+	InputName:  "country",
+	Label:      "Country",
+	OptionsUrl: "/api/countries/search",
+
+	// OptionalFields
+	OptionsQueryParam: "countryName",
+	MinQueryLength:    1,
+	DebounceMs:        800,
+	TwoWayStatePath:   "country",
+})`
+	}}
+	@DemoExampleCard(
+		"Query Settings",
+		"OptionsQueryParam names the query parameter, MinQueryLength gates the first request, and DebounceMs waits before each request.",
+		"/form/remoteSearchableSelectInput.templ", querySettingsUsage,
+	) {
+		<div x-data="{country: ''}" class="flex flex-col gap-3">
+			@uiForm.RemoteSearchableSelectInput(uiForm.RemoteSearchableSelectInputSettings{
+				InputName:         "countryQuerySettings",
+				Label:             "Country",
+				OptionsUrl:        "remote-searchable-select-demo",
+				OptionsQueryParam: "countryName",
+				MinQueryLength:    1,
+				DebounceMs:        800,
+				TwoWayStatePath:   "country",
+			})
+			<p class={ DemoLiveStateClasses }>
+				Value: <span x-text="country"></span>
+			</p>
+		</div>
+	}
+}
+
+templ RemoteSearchableSelectInputErrorExample() {
+	{{
+		errorUsage := `@uiForm.RemoteSearchableSelectInput(uiForm.RemoteSearchableSelectInputSettings{
+	InputName:       "country",
+	Label:           "Country",
+	OptionsUrl:      "/api/countries/search",
+	TwoWayStatePath: "country",
+})`
+	}}
+	@DemoExampleCard(
+		"Error State",
+		"When the request fails, the dropdown shows the error row instead of options. The demo endpoint fails on purpose.",
+		"/form/remoteSearchableSelectInput.templ", errorUsage,
+	) {
+		<div x-data="{country: ''}" class="flex flex-col gap-3">
+			<p class="text-sm text-neutral-400">Type three or more characters to trigger the failing request.</p>
+			@uiForm.RemoteSearchableSelectInput(uiForm.RemoteSearchableSelectInputSettings{
+				InputName:       "countryError",
+				Label:           "Country (failing endpoint)",
+				OptionsUrl:      "remote-searchable-select-demo-error",
+				TwoWayStatePath: "country",
+			})
+		</div>
+	}
+}
+
+templ RemoteSearchableSelectInputHintsExample() {
+	{{
+		hintsUsage := `@uiForm.RemoteSearchableSelectInput(uiForm.RemoteSearchableSelectInputSettings{
+	InputName:       "country",
+	Label:           "Country",
+	OptionsUrl:      "/api/countries/search",
+	TwoWayStatePath: "country",
+	HintValue:       "Type at least three characters.",
+	HintDisplay:     uiForm.InputHintDisplayTooltip,
+})`
+	}}
+	@DemoExampleCard(
+		"Hints",
+		"HintDisplay shows the hint as a description below the field or as a tooltip inside the trigger.",
+		"/form/remoteSearchableSelectInput.templ", hintsUsage,
+	) {
+		<div class="flex flex-col gap-6" x-data="{country: ''}">
+			@uiForm.RemoteSearchableSelectInput(uiForm.RemoteSearchableSelectInputSettings{
+				InputName:       "countryHintDescription",
+				Label:           "Country",
+				OptionsUrl:      "remote-searchable-select-demo",
+				TwoWayStatePath: "country",
+				HintValue:       "Type at least three characters to search.",
+				HintDisplay:     uiForm.InputHintDisplayDescription,
+			})
+			@uiForm.RemoteSearchableSelectInput(uiForm.RemoteSearchableSelectInputSettings{
+				InputName:       "countryHintTooltip",
+				Label:           "Country",
+				OptionsUrl:      "remote-searchable-select-demo",
+				TwoWayStatePath: "country",
+				HintValue:       "Type at least three characters to search.",
+				HintDisplay:     uiForm.InputHintDisplayTooltip,
+			})
+		</div>
+	}
+}
+
+templ RemoteSearchableSelectInputHintIconStyleExample() {
+	{{
+		hintIconUsage := `@uiForm.RemoteSearchableSelectInput(uiForm.RemoteSearchableSelectInputSettings{
+	InputName:       "country",
+	Label:           "Country",
+	OptionsUrl:      "/api/countries/search",
+	TwoWayStatePath: "country",
+	HintValue:       "Type at least three characters.",
+	HintDisplay:     uiForm.InputHintDisplayTooltip,
+	HintIconStyle:   uiForm.InputHintIconStyleBoxed,
+})`
+	}}
+	@DemoExampleCard(
+		"Hint Icon Styles",
+		"HintIconStyle renders the hint trigger as an icon or as a boxed tooltip.",
+		"/form/remoteSearchableSelectInput.templ", hintIconUsage,
+	) {
+		<div x-data="{country: ''}" class="flex flex-col gap-6">
+			@uiForm.RemoteSearchableSelectInput(uiForm.RemoteSearchableSelectInputSettings{
+				InputName:       "countryHintBoxed",
+				Label:           "Country",
+				OptionsUrl:      "remote-searchable-select-demo",
+				TwoWayStatePath: "country",
+				HintValue:       "This is a helpful hint displayed as a boxed tooltip.",
+				HintDisplay:     uiForm.InputHintDisplayTooltip,
+				HintIconStyle:   uiForm.InputHintIconStyleBoxed,
+			})
+		</div>
+	}
+}
+
+templ RemoteSearchableSelectInputDropdownHeightExample() {
+	{{
+		dropdownHeightUsage := `@uiForm.RemoteSearchableSelectInput(uiForm.RemoteSearchableSelectInputSettings{
+	InputName:       "country",
+	Label:           "Country",
+	OptionsUrl:      "/api/countries/search",
+	TwoWayStatePath: "country",
+
+	// OptionalFields
+	MinQueryLength:        1,
+	DropdownMinHeightClass: "min-h-24",
+	DropdownMaxHeightClass: "max-h-40",
+	MaxVisibleOptions:      3,
+})`
+	}}
+	@DemoExampleCard(
+		"Dropdown Height",
+		"DropdownMinHeightClass and DropdownMaxHeightClass cap the option list. MaxVisibleOptions caps it to a row count and wins over both. Type one letter to load enough options to see the cap.",
+		"/form/remoteSearchableSelectInput.templ", dropdownHeightUsage,
+	) {
+		<div x-data="{country: ''}" class="flex flex-col gap-3">
+			@uiForm.RemoteSearchableSelectInput(uiForm.RemoteSearchableSelectInputSettings{
+				InputName:              "countryDropdownHeight",
+				Label:                  "Country",
+				OptionsUrl:             "remote-searchable-select-demo",
+				TwoWayStatePath:        "country",
+				MinQueryLength:         1,
+				DropdownMinHeightClass: "min-h-24",
+				DropdownMaxHeightClass: "max-h-40",
+				MaxVisibleOptions:      3,
+			})
+		</div>
+	}
+}
+
+templ RemoteSearchableSelectInputDemo() {
+	{{
+		demoUsage := `@uiForm.RemoteSearchableSelectInput(uiForm.RemoteSearchableSelectInputSettings{
+	InputName:       "country",
+	Label:           "Country",
+	OptionsUrl:      "/api/countries/search",
+	TwoWayStatePath: "country",
+})`
+	}}
+	<div class="flex flex-col gap-4" id="remote-searchable-select-input-demo">
+		@DemoComponentSection(DemoComponentSectionSettings{
+			ComponentPath:          "/form/remoteSearchableSelectInput.templ",
+			Description:            "A remote searchable select fetches its options from a URL as the user types. It debounces the requests, waits for the minimum query length, discards stale responses, and shows loading, empty, and error states. The endpoint receives the query in the parameter named by OptionsQueryParam and returns { body: [{ label, value }] }.",
+			LiveExampleDescription: "A single select over a demo endpoint that answers after a short delay, so the loading state is visible.",
+			Title:                  ".RemoteSearchableSelectInput",
+			UsageCode:              demoUsage,
+			AlpineStateCode:        `<div x-data="{country: ''}"></div>`,
+		}) {
+			<div x-data="{country: ''}" class="flex flex-col gap-3">
+				<p class="text-sm text-neutral-400">Type at least three characters, for example "bra", and wait for the loading spinner.</p>
+				@uiToolset.MinifierTemplateJs(&remoteSearchableSelectDemoRoutingScript)
+				@uiForm.RemoteSearchableSelectInput(uiForm.RemoteSearchableSelectInputSettings{
+					InputName:       "country",
+					Label:           "Country",
+					OptionsUrl:      "remote-searchable-select-demo",
+					TwoWayStatePath: "country",
+				})
+				<p class={ DemoLiveStateClasses }>
+					Value: <span x-text="country"></span>
+				</p>
+			</div>
+		}
+		@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
+			{Title: "Multi-Select", Icon: "ph-list-checks", Content: RemoteSearchableSelectInputMultiSelectExample()},
+			{Title: "Preset Value", Icon: "ph-push-pin", Content: RemoteSearchableSelectInputPresetValueExample()},
+			{Title: "Query Settings", Icon: "ph-sliders", Content: RemoteSearchableSelectInputQuerySettingsExample()},
+			{Title: "Error State", Icon: "ph-warning-circle", Content: RemoteSearchableSelectInputErrorExample()},
+			{Title: "Hints", Icon: "ph-info", Content: RemoteSearchableSelectInputHintsExample()},
+			{Title: "Hint Icon Styles", Icon: "ph-question", Content: RemoteSearchableSelectInputHintIconStyleExample()},
+			{Title: "Dropdown Height", Icon: "ph-arrows-out-line-vertical", Content: RemoteSearchableSelectInputDropdownHeightExample()},
+		})
+	</div>
+}

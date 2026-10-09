@@ -15,7 +15,7 @@ templ CloakLoadingCustomTextExample() {
 	TextSize:        uiDisplay.CloakLoadingTextSizeLg,
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Custom Text",
 		"TextMessage replaces the default loading label. TextColor and TextSize style it. Set colors as rgb(a), hex, or hsl(a) values: they are used in an inline style.",
 		"/display/cloakLoading.templ",
@@ -65,7 +65,7 @@ templ CloakLoadingIconAnimationExample() {
 	IconAnimationDurationSeconds: "2",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Icon & Animation",
 		"Icon replaces the spinner. IconSize scales it. IconAnimationName spins or pulses it over IconAnimationDurationSeconds.",
 		"/display/cloakLoading.templ", iconUsage,
@@ -110,7 +110,7 @@ templ CloakLoadingHideDelayExample() {
 	HideDelaySeconds: "3",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Hide Delay",
 		"HideDelaySeconds keeps the cloak on screen for a moment after the libraries load, so the hand-off does not flash. It defaults to 1 second.",
 		"/display/cloakLoading.templ", hideDelayUsage,

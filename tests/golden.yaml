@@ -15,3 +15,9 @@ form.select-dropdown-open:
   info_ms: 60
   warn_ms: 150
   relative_warn_percent: 50
+
+form.searchable-select-filter:
+  baseline_p50_ms: 50
+  info_ms: 60
+  warn_ms: 150
+  relative_warn_percent: 50

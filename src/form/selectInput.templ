@@ -43,10 +43,15 @@ type SelectInputSettings struct {
 	FlatOptions                       []string
 	LabelValueOptions                 []SelectLabelValueOption
 	TwoWayStatePath                   string
+	InputId                           string
+	IsMultiSelect                     bool
 	OnChangeFunc                      string
 	Size                              string
 	TextCase                          string
 	DropdownBackgroundColor           string
+	DropdownMinHeightClass            string
+	DropdownMaxHeightClass            string
+	MaxVisibleOptions                 uint
 	IsDisabledOneWayStatePath         string
 	IsRequired                        bool
 	ShouldIncludeBlankOption          bool
@@ -77,9 +82,48 @@ func selectInputSizeClassesResolver(size string) (
 	return "text-xs", "px-1.5 pb-1.5 text-sm", "pt-1.5"
 }
 
+func selectInputEmptyStateClassExpressionBuilder(
+	statePath string, isMultiSelect bool, classBody string,
+) string {
+	emptyCheck := "!(" + statePath + ")"
+	if isMultiSelect {
+		emptyCheck = "!(" + statePath + ".length)"
+	}
+	return emptyCheck + " && '" + classBody + "'"
+}
+
+templ selectInputOptionCheckbox(
+	inputIdPrefix, inputName, optionValue, selectedItemsStatePath, onChangeFunc string,
+	optionIndex int,
+) {
+	<span class="relative ml-auto inline-flex h-4 w-4 shrink-0 items-center justify-center">
+		<input
+			type="checkbox"
+			if inputIdPrefix != "" {
+				id={ fmt.Sprintf("%s-%d", inputIdPrefix, optionIndex) }
+			}
+			if inputName != "" {
+				name={ inputName }
+			}
+			value={ optionValue }
+			x-model={ selectedItemsStatePath }
+			if onChangeFunc != "" {
+				@change={ onChangeFunc }
+			}
+			class="peer absolute inset-0 h-full w-full cursor-pointer opacity-0"
+		/>
+		<span class="flex h-4 w-4 items-center justify-center rounded border-2 border-neutral-50/20 text-transparent transition-colors peer-enabled:peer-hover:border-secondary-500 peer-checked:border-secondary-500 peer-checked:text-secondary-500 peer-focus-visible:ring-2 peer-focus-visible:ring-secondary-500">
+			<i class="ph-bold ph-check text-[0.625rem]"></i>
+		</span>
+	</span>
+}
+
 templ SelectInput(componentSettings SelectInputSettings) {
 	@selectInputAlpineStateOnce.Once()
 	{{ selectValueStatePath := "selectedValue" }}
+	if componentSettings.IsMultiSelect {
+		{{ selectValueStatePath = "selectedItems" }}
+	}
 	if componentSettings.TwoWayStatePath != "" {
 		{{ selectValueStatePath = componentSettings.TwoWayStatePath }}
 	}
@@ -95,30 +139,46 @@ templ SelectInput(componentSettings SelectInputSettings) {
 	}
 	{{ legendSizeClasses, triggerSizeClasses, emptyPaddingClass := selectInputSizeClassesResolver(componentSettings.Size) }}
 	{{ textCaseClass := uiToolset.TextCaseClassResolver(componentSettings.TextCase) }}
+	{{ labelValueOptionsScriptId := generateLabelValueOptionsScriptId() }}
+	{{ fieldsetEmptyStateExpression := "" }}
+	{{ legendEmptyStateExpression := "" }}
+	{{ triggerEmptyStateExpression := "" }}
+	if componentSettings.TwoWayStatePath != "" {
+		{{ fieldsetEmptyStateExpression = selectInputEmptyStateClassExpressionBuilder(componentSettings.TwoWayStatePath, componentSettings.IsMultiSelect, "mt-0") }}
+		{{ legendEmptyStateExpression = selectInputEmptyStateClassExpressionBuilder(componentSettings.TwoWayStatePath, componentSettings.IsMultiSelect, "opacity-0 !p-0 w-0 h-0") }}
+		{{ triggerEmptyStateExpression = selectInputEmptyStateClassExpressionBuilder(componentSettings.TwoWayStatePath, componentSettings.IsMultiSelect, emptyPaddingClass) }}
+	}
+	{{ selectedDisplayExpression := selectValueStatePath }}
+	if componentSettings.IsMultiSelect {
+		{{ selectedDisplayExpression = "selectedItemsDisplayFormatter(" + selectValueStatePath + ")" }}
+	}
+	if !componentSettings.IsMultiSelect && len(componentSettings.LabelValueOptions) > 0 {
+		{{ selectedDisplayExpression = `JSON.parse(document.getElementById('` + labelValueOptionsScriptId + `').textContent).find(option => option.value == ` + selectValueStatePath + `)?.label` }}
+	}
 	<!-- SelectInput -->
 	<div
-		x-data="selectInput"
+		x-data={ templ.JSFuncCall("selectInput", labelValueOptionsScriptId) }
 		class="relative w-full"
+		@click.away="closeDropdown()"
 		@keydown.escape.window="closeDropdown()"
 		if isDisabledPath != "" {
 			:class={ isDisabledPath + " && 'pointer-events-none opacity-50'" }
 		}
 	>
-		{{ labelValueOptionsScriptId := generateLabelValueOptionsScriptId() }}
 		if len(componentSettings.LabelValueOptions) > 0 {
 			@templ.JSONScript(labelValueOptionsScriptId, componentSettings.LabelValueOptions)
 		}
 		<div class="flex w-full flex-col">
 			<fieldset
 				class="bg-neutral-50/7.5 relative -mt-1.5 w-full rounded border border-neutral-50/5 transition-colors autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30"
-				if componentSettings.TwoWayStatePath != "" {
-					:class={ `!` + componentSettings.TwoWayStatePath + ` && 'mt-0'` }
+				if fieldsetEmptyStateExpression != "" {
+					:class={ fieldsetEmptyStateExpression }
 				}
 			>
 				<legend
 					class={ "ml-1 select-none px-1 font-bold leading-none text-neutral-50/80 " + legendSizeClasses + " " + textCaseClass }
-					if componentSettings.TwoWayStatePath != "" {
-						:class={ `!` + componentSettings.TwoWayStatePath + ` && 'opacity-0 !p-0 w-0 h-0'` }
+					if legendEmptyStateExpression != "" {
+						:class={ legendEmptyStateExpression }
 					}
 				>
 					{ componentSettings.Label }
@@ -135,26 +195,30 @@ templ SelectInput(componentSettings SelectInputSettings) {
 					:aria-expanded="isOpen"
 					@keydown.enter.prevent={ toggleExpression }
 					@keydown.space.prevent={ toggleExpression }
-					if componentSettings.TwoWayStatePath != "" {
-						:class={ `!` + componentSettings.TwoWayStatePath + ` && '` + emptyPaddingClass + `'` }
+					if triggerEmptyStateExpression != "" {
+						:class={ triggerEmptyStateExpression }
 					}
 					if isDisabledPath != "" {
 						:aria-disabled={ isDisabledPath }
 					}
 					@click={ toggleExpression }
 				>
-					{{ selectedLabelText := selectValueStatePath }}
-					if len(componentSettings.LabelValueOptions) > 0 {
-						{{ selectedLabelText = `JSON.parse(document.getElementById('` + labelValueOptionsScriptId + `').textContent).find(option => option.value == ` + selectValueStatePath + `)?.label` }}
-					}
 					<div class="w-full overflow-hidden text-ellipsis">
-						<span x-show={ selectedLabelText } x-text={ selectedLabelText }></span>
-						<span class={ textCaseClass } x-show={ "!(" + selectedLabelText + ")" }>{ componentSettings.Label }</span>
+						<span x-show={ selectedDisplayExpression } x-text={ selectedDisplayExpression }></span>
+						<span class={ textCaseClass } x-show={ "!(" + selectedDisplayExpression + ")" }>{ componentSettings.Label }</span>
 					</div>
 					<div class="flex items-center gap-2.5 text-neutral-100/60">
 						<!-- SelectDropdownIcon -->
 						<i class="ph-bold ph-caret-down pt-0.5 text-sm transition-transform hover:text-neutral-300 group-focus-within:text-neutral-300 group-hover:text-neutral-300" :class="isOpen ? 'rotate-180' : ''"></i>
-						if componentSettings.ShouldIncludeBlankOption {
+						if componentSettings.IsMultiSelect {
+							<!-- SelectClearIcon -->
+							<i
+								x-show={ selectValueStatePath + ".length > 0" }
+								@click.stop.prevent={ selectValueStatePath + " = []" + onChangeFuncSuffix }
+								class="ph-bold ph-x-circle text-lg hover:text-neutral-300"
+							></i>
+						}
+						if !componentSettings.IsMultiSelect && componentSettings.ShouldIncludeBlankOption {
 							<!-- SelectClearIcon -->
 							<i
 								x-show={ selectValueStatePath + " !== ''" }
@@ -178,24 +242,36 @@ templ SelectInput(componentSettings SelectInputSettings) {
 					</div>
 				</div>
 				<!-- SelectDropdown -->
-				{{ initialDropdownBackgroundColor := "neutral-800/95" }}
+				{{ dropdownBackgroundClass := "bg-neutral-800/95" }}
 				if componentSettings.DropdownBackgroundColor != "" {
-					{{ initialDropdownBackgroundColor = componentSettings.DropdownBackgroundColor }}
+					{{ dropdownBackgroundClass = "bg-" + componentSettings.DropdownBackgroundColor }}
 				}
+				{{ dropdownHeightClasses := selectDropdownHeightClassesResolver(componentSettings.DropdownMinHeightClass, componentSettings.DropdownMaxHeightClass) }}
+				{{ dropdownMaxVisibleOptionsStyle := selectDropdownMaxVisibleOptionsStyle(componentSettings.MaxVisibleOptions, selectInputOptionRowHeightRem) }}
 				<ul
 					x-ref="selectDropdown"
-					class={ "absolute left-0 z-10 max-h-60 w-full overflow-auto rounded-md border border-neutral-50/5 bg-" + initialDropdownBackgroundColor + " shadow-lg hover:border-neutral-50/30" }
+					class={ "absolute left-0 z-20 w-full overflow-auto rounded-md border border-neutral-50/5 " + dropdownHeightClasses + " " + dropdownBackgroundClass + " shadow-lg hover:border-neutral-50/30" }
+					if dropdownMaxVisibleOptionsStyle != "" {
+						style={ dropdownMaxVisibleOptionsStyle }
+					}
 					:class={ "openUpward ? 'bottom-full mb-1' : 'mt-1'" }
 					x-show="isOpen"
-					@click.away="closeDropdown()"
-					@click="closeDropdown()"
-					@change={ selectValueStatePath + " = $event.target.value" + onChangeFuncSuffix }
+					if !componentSettings.IsMultiSelect {
+						@click="closeDropdown()"
+						@change={ selectValueStatePath + " = $event.target.value" + onChangeFuncSuffix }
+					}
 					x-transition
 				>
 					{{ dropdownClasses := "transition-colors hover:bg-neutral-50/5 border-neutral-50/5 border-t first:border-t-0" }}
-					{{ dropdownSelectedClasses := "has-checked:bg-neutral-50/10 has-checked:border-y has-checked:!border-neutral-50/10" }}
+					{{ dropdownSelectedClasses := "" }}
+					if !componentSettings.IsMultiSelect {
+						{{ dropdownSelectedClasses = "has-checked:bg-neutral-50/10 has-checked:border-y has-checked:!border-neutral-50/10" }}
+					}
 					{{ optionLabelClasses := "flex w-full cursor-pointer items-center px-3 py-2" }}
-					if componentSettings.ShouldIncludeBlankOption {
+					if componentSettings.IsMultiSelect {
+						{{ optionLabelClasses += " gap-2" }}
+					}
+					if componentSettings.ShouldIncludeBlankOption && !componentSettings.IsMultiSelect {
 						<li class={ dropdownClasses + " " + dropdownSelectedClasses }>
 							<label class={ optionLabelClasses }>
 								<input
@@ -213,42 +289,72 @@ templ SelectInput(componentSettings SelectInputSettings) {
 							</label>
 						</li>
 					}
-					for _, option := range componentSettings.FlatOptions {
+					for optionIndex, option := range componentSettings.FlatOptions {
 						<li class={ dropdownClasses + " " + dropdownSelectedClasses }>
 							<label class={ optionLabelClasses }>
-								<input
-									type="radio"
-									name={ componentSettings.InputName }
-									value={ option }
-									:checked={ selectedCheckExpression }
-									if isDisabledPath != "" {
-										:disabled={ isDisabledPath }
-									}
-									@click.stop
-									class="sr-only"
-								/>
-								<span>{ option }</span>
+								if componentSettings.IsMultiSelect {
+									<span>{ option }</span>
+									@selectInputOptionCheckbox(
+										componentSettings.InputId,
+										componentSettings.InputName, option,
+										selectValueStatePath,
+										componentSettings.OnChangeFunc,
+										optionIndex,
+									)
+								}
+								if !componentSettings.IsMultiSelect {
+									<input
+										type="radio"
+										name={ componentSettings.InputName }
+										value={ option }
+										:checked={ selectedCheckExpression }
+										if isDisabledPath != "" {
+											:disabled={ isDisabledPath }
+										}
+										@click.stop
+										class="sr-only"
+									/>
+									<span>{ option }</span>
+								}
 							</label>
 						</li>
 					}
-					for _, option := range componentSettings.LabelValueOptions {
+					for optionIndex, option := range componentSettings.LabelValueOptions {
 						<li class={ dropdownClasses + " " + dropdownSelectedClasses }>
 							<label class={ optionLabelClasses }>
-								<input
-									type="radio"
-									name={ componentSettings.InputName }
-									value={ option.Value }
-									:checked={ selectedCheckExpression }
-									if isDisabledPath != "" {
-										:disabled={ isDisabledPath }
+								if componentSettings.IsMultiSelect {
+									if option.LabelHtml != nil {
+										@option.LabelHtml
 									}
-									@click.stop
-									class="sr-only"
-								/>
-								if option.LabelHtml != nil {
-									@option.LabelHtml
-								} else {
-									<span>{ option.Label }</span>
+									if option.LabelHtml == nil {
+										<span>{ option.Label }</span>
+									}
+									@selectInputOptionCheckbox(
+										componentSettings.InputId,
+										componentSettings.InputName, option.Value,
+										selectValueStatePath,
+										componentSettings.OnChangeFunc,
+										optionIndex+len(componentSettings.FlatOptions),
+									)
+								}
+								if !componentSettings.IsMultiSelect {
+									<input
+										type="radio"
+										name={ componentSettings.InputName }
+										value={ option.Value }
+										:checked={ selectedCheckExpression }
+										if isDisabledPath != "" {
+											:disabled={ isDisabledPath }
+										}
+										@click.stop
+										class="sr-only"
+									/>
+									if option.LabelHtml != nil {
+										@option.LabelHtml
+									}
+									if option.LabelHtml == nil {
+										<span>{ option.Label }</span>
+									}
 								}
 							</label>
 						</li>

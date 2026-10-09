@@ -52,6 +52,9 @@ var toolsetJsonAjaxJs string
 //go:embed toolset/randomPassword.js
 var toolsetRandomPasswordJs string
 
+//go:embed toolset/selectDropdown.js
+var toolsetSelectDropdownJs string
+
 //go:embed toolset/index.js
 var toolsetIndexJs string
 
@@ -60,6 +63,7 @@ var unminifiedToolsetJs = toolsetAlpineStateJs + "\n" +
 	toolsetApiResponseJs + "\n" +
 	toolsetJsonAjaxJs + "\n" +
 	toolsetRandomPasswordJs + "\n" +
+	toolsetSelectDropdownJs + "\n" +
 	toolsetIndexJs
 
 templ HeadTagsToolset() {

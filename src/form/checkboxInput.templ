@@ -3,10 +3,6 @@ package uiForm
 import uiToolset "github.com/goinfinite/ui/src/toolset"
 
 const (
-	CheckboxInputShapeSquare   string = "square"
-	CheckboxInputShapeRounded  string = "rounded"
-	CheckboxInputShapeCircular string = "circular"
-
 	CheckboxInputSizeXs string = "xs"
 	CheckboxInputSizeSm string = "sm"
 	CheckboxInputSizeMd string = "md"
@@ -69,7 +65,8 @@ func checkboxInputBoxBorderClassesResolver(
 	if isInvalid {
 		return "border-" + errorColor + " peer-checked:border-" + errorColor
 	}
-	return "border-" + uncheckedColor + " peer-checked:border-" + checkedColor
+	return "border-" + uncheckedColor + " peer-enabled:peer-hover:border-" +
+		checkedColor + " peer-checked:border-" + checkedColor
 }
 
 templ CheckboxInput(componentSettings CheckboxInputSettings) {

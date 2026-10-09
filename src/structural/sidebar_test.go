@@ -40,13 +40,11 @@ func TestSidebarDynamicClassesBuilder(t *testing.T) {
 	tests := []struct {
 		name              string
 		componentSettings SidebarSettings
-		attachmentMode    string
 		expected          string
 	}{
 		{
 			name:              "NoStatePathsBuildsEmptyObject",
 			componentSettings: SidebarSettings{},
-			attachmentMode:    SidebarAttachmentModeInline,
 			expected:          "{}",
 		},
 		{
@@ -55,39 +53,35 @@ func TestSidebarDynamicClassesBuilder(t *testing.T) {
 				IsVisibleTwoWayStatePath:   "isVisible",
 				IsCollapsedTwoWayStatePath: "isCollapsed",
 			},
-			attachmentMode: SidebarAttachmentModeInline,
-			expected:       "{'invisible': !isVisible,'!w-16': isCollapsed,}",
+			expected: "{'invisible': !isVisible,'!w-16': isCollapsed,}",
 		},
 		{
 			name: "AttachmentPathAddsTheFixedToggle",
 			componentSettings: SidebarSettings{
 				AttachmentModeTwoWayStatePath: "attachmentMode",
 			},
-			attachmentMode: SidebarAttachmentModeInline,
-			expected:       "{'!fixed top-0': attachmentMode === 'fixed',}",
+			expected: "{'!fixed top-0': attachmentMode === 'fixed',}",
 		},
 		{
 			name: "OffCanvasPathAddsTheAbsoluteToggle",
 			componentSettings: SidebarSettings{
 				IsOffCanvasTwoWayStatePath: "isOffCanvas",
 			},
-			attachmentMode: SidebarAttachmentModeInline,
-			expected:       "{'!absolute top-0 z-50': isOffCanvas,}",
+			expected: "{'!absolute top-0 z-50': isOffCanvas,}",
 		},
 		{
 			name: "SidePathAddsOnlyPositionAnchors",
 			componentSettings: SidebarSettings{
 				SideTwoWayStatePath: "side",
 			},
-			attachmentMode: SidebarAttachmentModeInline,
-			expected:       "{'left-0': side === 'left','right-0': side === 'right',}",
+			expected: "{'left-0': side === 'left','right-0': side === 'right',}",
 		},
 	}
 
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
 			actualExpression := sidebarDynamicClassesBuilder(
-				testCase.componentSettings, testCase.attachmentMode,
+				testCase.componentSettings,
 			)
 
 			if actualExpression != testCase.expected {

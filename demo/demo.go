@@ -16,6 +16,9 @@ import (
 //go:embed dataTableDemoRouting.js
 var dataTableDemoRoutingScript string
 
+//go:embed remoteSearchableSelectDemoRouting.js
+var remoteSearchableSelectDemoRoutingScript string
+
 const (
 	dataTableDemoFragmentsAssetPath       = "docs/assets/dataTableDemoRefreshFragments.json"
 	carouselDemoFragmentsAssetPath        = "docs/assets/carouselDemoRefreshFragments.json"

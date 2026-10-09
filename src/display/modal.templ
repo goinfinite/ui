@@ -13,26 +13,6 @@ const (
 	ModalSizeXl   string = "xl"
 	ModalSizeXxl  string = "xxl"
 	ModalSizeFull string = "full"
-
-	ModalBorderRadiusNone string = "none"
-	ModalBorderRadiusXs   string = "xs"
-	ModalBorderRadiusSm   string = "sm"
-	ModalBorderRadiusMd   string = "md"
-	ModalBorderRadiusLg   string = "lg"
-	ModalBorderRadiusXl   string = "xl"
-
-	ModalShadowSizeNone string = "none"
-	ModalShadowSizeXs   string = "xs"
-	ModalShadowSizeSm   string = "sm"
-	ModalShadowSizeMd   string = "md"
-	ModalShadowSizeLg   string = "lg"
-	ModalShadowSizeXl   string = "xl"
-
-	ModalRingThicknessXs string = "xs"
-	ModalRingThicknessSm string = "sm"
-	ModalRingThicknessMd string = "md"
-	ModalRingThicknessLg string = "lg"
-	ModalRingThicknessXl string = "xl"
 )
 
 type ModalSettings struct {
@@ -85,7 +65,7 @@ templ modalHeaderActionButtons(settings modalHeaderActionSettings) {
 					IconLeft:                 "ph-arrows-in",
 					IsVisibleOneWayStatePath: settings.CanReduceExpression,
 					OnClickFunc:              settings.ReduceOnClickFunc,
-					Shape:                    uiControl.ButtonShapeCircular,
+					Shape:                    uiToolset.ShapeCircular,
 					Size:                     settings.IconSize,
 				})
 			}
@@ -94,7 +74,7 @@ templ modalHeaderActionButtons(settings modalHeaderActionSettings) {
 					IconLeft:                 "ph-arrows-out",
 					IsVisibleOneWayStatePath: settings.CanEnlargeExpression,
 					OnClickFunc:              settings.EnlargeOnClickFunc,
-					Shape:                    uiControl.ButtonShapeCircular,
+					Shape:                    uiToolset.ShapeCircular,
 					Size:                     settings.IconSize,
 				})
 			}
@@ -103,7 +83,7 @@ templ modalHeaderActionButtons(settings modalHeaderActionSettings) {
 					IconLeft:    "ph-x",
 					OnClickFunc: settings.CloseOnClickFunc,
 					Size:        settings.IconSize,
-					Shape:       uiControl.ButtonShapeCircular,
+					Shape:       uiToolset.ShapeCircular,
 				})
 			}
 		</div>

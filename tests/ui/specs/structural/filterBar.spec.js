@@ -4,6 +4,13 @@ import { openExamplePanel } from "../../examplePanel.js";
 const filterBarSection = "#filter-bar-demo-main";
 const stateReadout = "#filter-bar-demo-state span";
 
+const chipOf = (page, section, filterLabel) =>
+  page.locator(
+    `${section} span[x-show]:has(button[aria-label="Remove ${filterLabel} filter"])`,
+  );
+
+const chipValueOf = (chip) => chip.locator("span[x-text]");
+
 test.describe("FilterBar @structural", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/index.html#filter-bar-demo");
@@ -11,8 +18,10 @@ test.describe("FilterBar @structural", () => {
   });
 
   test("@smoke active value renders as a removable chip", async ({ page }) => {
-    const chip = page.locator(filterBarSection).getByText("Status: running");
+    const chip = chipOf(page, filterBarSection, "Status");
     await expect(chip).toBeVisible();
+    await expect(chip).toContainText("Status");
+    await expect(chipValueOf(chip)).toHaveText("running");
     await expect(page.locator(stateReadout).first()).toContainText(
       '"status":"running"',
     );
@@ -31,9 +40,9 @@ test.describe("FilterBar @structural", () => {
   }) => {
     await page.locator(`${filterBarSection} input[name=name]`).fill("alpha");
 
-    await expect(
-      page.locator(filterBarSection).getByText("Name: alpha"),
-    ).toBeVisible();
+    const chip = chipOf(page, filterBarSection, "Name");
+    await expect(chip).toBeVisible();
+    await expect(chipValueOf(chip)).toHaveText("alpha");
     await expect(page.locator(stateReadout).first()).toContainText(
       '"name":"alpha"',
     );
@@ -43,21 +52,19 @@ test.describe("FilterBar @structural", () => {
     page,
   }) => {
     await page.locator(`${filterBarSection} input[name=cpuMin]`).fill("2");
-    await expect(
-      page.locator(filterBarSection).getByText("CPU: ≥ 2"),
-    ).toBeVisible();
+    const chip = chipOf(page, filterBarSection, "CPU");
+    await expect(chip).toBeVisible();
+    await expect(chipValueOf(chip)).toHaveText("≥ 2");
 
     await page.locator(`${filterBarSection} input[name=cpuMax]`).fill("8");
-    await expect(
-      page.locator(filterBarSection).getByText("CPU: 2–8"),
-    ).toBeVisible();
+    await expect(chipValueOf(chip)).toHaveText("2–8");
   });
 
   test("@smoke number range chip shows the maximum alone", async ({ page }) => {
     await page.locator(`${filterBarSection} input[name=cpuMax]`).fill("8");
-    await expect(
-      page.locator(filterBarSection).getByText("CPU: ≤ 8"),
-    ).toBeVisible();
+    const chip = chipOf(page, filterBarSection, "CPU");
+    await expect(chip).toBeVisible();
+    await expect(chipValueOf(chip)).toHaveText("≤ 8");
   });
 
   test("@smoke enum select updates the chip", async ({ page }) => {
@@ -67,9 +74,9 @@ test.describe("FilterBar @structural", () => {
       .filter({ hasText: "stopped" })
       .click();
 
-    await expect(
-      page.locator(filterBarSection).getByText("Status: stopped"),
-    ).toBeVisible();
+    const chip = chipOf(page, filterBarSection, "Status");
+    await expect(chip).toBeVisible();
+    await expect(chipValueOf(chip)).toHaveText("stopped");
     await expect(page.locator(stateReadout).first()).toContainText(
       '"status":"stopped"',
     );
@@ -80,9 +87,7 @@ test.describe("FilterBar @structural", () => {
   }) => {
     await page.locator(`${filterBarSection} .ph-x-circle`).first().click();
 
-    await expect(
-      page.locator(filterBarSection).getByText("Status: running"),
-    ).toBeHidden();
+    await expect(chipOf(page, filterBarSection, "Status")).toBeHidden();
     await expect(page.locator(stateReadout).first()).toContainText(
       '"status":""',
     );
@@ -95,12 +100,8 @@ test.describe("FilterBar @structural", () => {
       .filter({ hasText: "Clear filters" })
       .click();
 
-    await expect(
-      page.locator(filterBarSection).getByText("Name: alpha"),
-    ).toBeHidden();
-    await expect(
-      page.locator(filterBarSection).getByText("Status: running"),
-    ).toBeHidden();
+    await expect(chipOf(page, filterBarSection, "Name")).toBeHidden();
+    await expect(chipOf(page, filterBarSection, "Status")).toBeHidden();
     await expect(page.locator(stateReadout).first()).toContainText('"name":""');
     await expect(page.locator(stateReadout).first()).toContainText(
       '"status":""',
@@ -124,10 +125,11 @@ test.describe("FilterBar @structural", () => {
       .locator(`${multiSection} ul li label`)
       .filter({ hasText: "stopped" })
       .click();
+    await page.keyboard.press("Escape");
 
-    await expect(
-      page.locator(multiSection).getByText("Status: running, stopped"),
-    ).toBeVisible();
+    const chip = chipOf(page, multiSection, "Status");
+    await expect(chip).toBeVisible();
+    await expect(chipValueOf(chip)).toHaveText("running, stopped");
     await expect(page.locator("#filter-bar-demo-multi-state")).toContainText(
       '"status":["running","stopped"]',
     );
@@ -135,9 +137,7 @@ test.describe("FilterBar @structural", () => {
     await page
       .locator(`${multiSection} button[aria-label="Remove Status filter"]`)
       .click();
-    await expect(
-      page.locator(multiSection).getByText("Status: running, stopped"),
-    ).toBeHidden();
+    await expect(chip).toBeHidden();
     await expect(page.locator("#filter-bar-demo-multi-state")).toContainText(
       '"status":[]',
     );

@@ -1,0 +1,378 @@
+package uiForm
+
+import (
+	"strconv"
+
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+type SearchableSelectInputSettings struct {
+	InputName string
+	Label     string
+
+	// OptionalFields
+	FlatOptions                       []string
+	LabelValueOptions                 []SelectLabelValueOption
+	TwoWayStatePath                   string
+	InputId                           string
+	IsMultiSelect                     bool
+	SelectionDisplay                  string
+	ShouldAllowCustomValues           bool
+	TagOuterBackgroundColor           string
+	TagOuterTextColor                 string
+	TagInnerBackgroundColor           string
+	OnChangeFunc                      string
+	Size                              string
+	TextCase                          string
+	DropdownBackgroundColor           string
+	DropdownMinHeightClass            string
+	DropdownMaxHeightClass            string
+	MaxVisibleOptions                 uint
+	IsDisabledOneWayStatePath         string
+	HintValue                         string
+	HintStatePath                     string
+	HintDisplay                       string
+	HintDisplayTooltipBackgroundColor string
+	HintDisplayTooltipMinWidthClass   string
+	HintDisplayTooltipMaxWidthClass   string
+	HintDisplayTooltipMinHeightClass  string
+	HintDisplayTooltipMaxHeightClass  string
+	HintIconStyle                     string
+}
+
+type searchableSelectInputShellSettings struct {
+	Label                             string
+	TwoWayStatePath                   string
+	InputId                           string
+	ClientConfig                      searchableSelectInputClientConfig
+	Size                              string
+	TextCase                          string
+	DropdownBackgroundColor           string
+	DropdownMinHeightClass            string
+	DropdownMaxHeightClass            string
+	MaxVisibleOptions                 uint
+	TagOuterBackgroundColor           string
+	TagOuterTextColor                 string
+	TagInnerBackgroundColor           string
+	OnChangeSuffix                    string
+	InitExpression                    string
+	IsDisabledOneWayStatePath         string
+	HintValue                         string
+	HintStatePath                     string
+	HintDisplay                       string
+	HintDisplayTooltipBackgroundColor string
+	HintDisplayTooltipMinWidthClass   string
+	HintDisplayTooltipMaxWidthClass   string
+	HintDisplayTooltipMinHeightClass  string
+	HintDisplayTooltipMaxHeightClass  string
+	HintIconStyle                     string
+}
+
+templ searchableSelectInputShell(settings searchableSelectInputShellSettings) {
+	@searchableSelectInputAlpineStateOnce.Once()
+	{{ legendSizeClasses, _, _ := selectInputSizeClassesResolver(settings.Size) }}
+	{{ textCaseClass := uiToolset.TextCaseClassResolver(settings.TextCase) }}
+	{{ hasSelectionExpression := searchableSelectInputHasSelectionExpressionBuilder(settings.TwoWayStatePath) }}
+	{{ configScriptId := generateSearchableSelectInputConfigScriptId() }}
+	<div
+		x-data={ templ.JSFuncCall("searchableSelectInput", configScriptId) }
+		class="relative w-full"
+		@click.away="closeDropdown()"
+		@keydown.escape.window="closeDropdown()"
+		if settings.InitExpression != "" {
+			x-init={ settings.InitExpression }
+		}
+		if settings.IsDisabledOneWayStatePath != "" {
+			:class={ settings.IsDisabledOneWayStatePath + " && 'pointer-events-none opacity-50'" }
+		}
+	>
+		@templ.JSONScript(configScriptId, settings.ClientConfig)
+		<div class="flex w-full flex-col">
+			<fieldset
+				class="bg-neutral-50/7.5 relative -mt-1.5 w-full rounded border border-neutral-50/5 transition-colors autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30"
+				:class={ "!(" + hasSelectionExpression + ") && 'mt-0'" }
+			>
+				<legend
+					class={ "ml-1 select-none px-1 font-bold leading-none text-neutral-50/80 " + legendSizeClasses + " " + textCaseClass }
+					:class={ "!(" + hasSelectionExpression + ") && 'opacity-0 !p-0 w-0 h-0'" }
+				>
+					{ settings.Label }
+				</legend>
+				{ children... }
+			</fieldset>
+			if shouldRenderInputHintDescription(settings.HintDisplay) {
+				@InputHintDescription(InputHintSettings{
+					Value:     settings.HintValue,
+					StatePath: settings.HintStatePath,
+				})
+			}
+		</div>
+	</div>
+}
+
+templ searchableSelectInputTriggerRow(settings searchableSelectInputShellSettings) {
+	{{ _, triggerSizeClasses, emptyPaddingClass := selectInputSizeClassesResolver(settings.Size) }}
+	{{ hasSelectionExpression := searchableSelectInputHasSelectionExpressionBuilder(settings.TwoWayStatePath) }}
+	<div
+		x-ref="searchableSelectTrigger"
+		class={ "group flex w-full cursor-text flex-wrap items-center gap-1 text-neutral-100 " + triggerSizeClasses }
+		:class={ "!(" + hasSelectionExpression + ") && '" + emptyPaddingClass + "'" }
+		@click="openDropdown()"
+	>
+		{ children... }
+	</div>
+}
+
+templ searchableSelectInputFilterInput(
+	settings searchableSelectInputShellSettings, enterExpression, backspaceExpression string,
+) {
+	{{ hasSelectionExpression := searchableSelectInputHasSelectionExpressionBuilder(settings.TwoWayStatePath) }}
+	{{ emptyPlaceholderExpression := hasSelectionExpression + " ? '' : " + strconv.Quote(settings.Label) }}
+	<input
+		type="text"
+		if settings.InputId != "" {
+			id={ settings.InputId }
+		}
+		x-model="userInput"
+		@focus="openDropdown()"
+		@click="openDropdown()"
+		@input="onInputChanged()"
+		if enterExpression != "" {
+			@keydown.enter.prevent={ enterExpression }
+		}
+		if backspaceExpression != "" {
+			@keydown.backspace={ backspaceExpression }
+		}
+		placeholder={ settings.Label }
+		:placeholder={ emptyPlaceholderExpression }
+		aria-label={ settings.Label }
+		role="combobox"
+		aria-autocomplete="list"
+		:aria-expanded="isOpen"
+		autocomplete="off"
+		class="w-full min-w-0 flex-1 bg-transparent text-neutral-100 placeholder-text-neutral-50/60 outline-none focus:outline-none"
+	/>
+}
+
+templ searchableSelectInputTriggerEndIcons(settings searchableSelectInputShellSettings) {
+	{{ hasSelectionExpression := searchableSelectInputHasSelectionExpressionBuilder(settings.TwoWayStatePath) }}
+	<div class="flex shrink-0 items-center gap-2.5 text-neutral-100/60">
+		<!-- SearchableSelectDropdownIcon -->
+		<i class="ph-bold ph-caret-down pt-0.5 text-sm transition-transform hover:text-neutral-300 group-focus-within:text-neutral-300 group-hover:text-neutral-300" :class="isOpen ? 'rotate-180' : ''"></i>
+		<!-- SearchableSelectClearButton -->
+		<button
+			type="button"
+			x-show={ hasSelectionExpression }
+			aria-label="Clear selection"
+			@click.stop.prevent={ searchableSelectInputClearExpressionBuilder(settings.TwoWayStatePath, settings.ClientConfig.IsMultiSelect, settings.OnChangeSuffix) }
+			class="cursor-pointer rounded bg-transparent leading-none transition-colors hover:text-neutral-300"
+		>
+			<i class="ph-bold ph-x-circle text-lg"></i>
+		</button>
+		if shouldRenderInputHintTooltip(settings.HintDisplay, settings.HintValue, settings.HintStatePath) {
+			@InputHintTooltip(InputHintSettings{
+				Value:                  settings.HintValue,
+				StatePath:              settings.HintStatePath,
+				TooltipBackgroundColor: settings.HintDisplayTooltipBackgroundColor,
+				TooltipMinWidthClass:   settings.HintDisplayTooltipMinWidthClass,
+				TooltipMaxWidthClass:   settings.HintDisplayTooltipMaxWidthClass,
+				TooltipMinHeightClass:  settings.HintDisplayTooltipMinHeightClass,
+				TooltipMaxHeightClass:  settings.HintDisplayTooltipMaxHeightClass,
+				Size:                   InputHintSizeLg,
+				IconStyle:              settings.HintIconStyle,
+			})
+		}
+	</div>
+}
+
+templ searchableSelectInputOptionRow(
+	settings searchableSelectInputShellSettings,
+	visibilityExpression, valueExpression, labelExpression, labelText string,
+	optionContent templ.Component,
+) {
+	{{ selectedExpression := searchableSelectInputSelectedExpressionBuilder(settings.TwoWayStatePath, valueExpression, settings.ClientConfig.IsMultiSelect) }}
+	{{ clickExpression := searchableSelectInputSingleSelectExpressionBuilder(settings.TwoWayStatePath, valueExpression, labelExpression, settings.OnChangeSuffix) }}
+	if settings.ClientConfig.IsMultiSelect {
+		{{ clickExpression = searchableSelectInputMultiToggleExpressionBuilder(settings.TwoWayStatePath, valueExpression, labelExpression, settings.OnChangeSuffix) }}
+	}
+	<li
+		if visibilityExpression != "" {
+			x-show={ visibilityExpression }
+		}
+		class="border-t border-neutral-50/5 first:border-t-0"
+	>
+		<button
+			type="button"
+			role="option"
+			:aria-selected={ selectedExpression }
+			@click={ clickExpression }
+			class="flex w-full cursor-pointer items-center gap-2 bg-transparent px-3 py-2 text-left outline-none transition-colors hover:bg-neutral-50/5 focus-visible:bg-neutral-50/10 focus-visible:outline-none"
+		>
+			<span
+				class="flex h-4 w-4 shrink-0 items-center justify-center rounded border-2 transition-colors"
+				:class={ selectedExpression + " ? 'border-secondary-500 text-secondary-500' : 'border-neutral-50/20 text-transparent'" }
+			>
+				<i class="ph-bold ph-check text-[0.625rem]"></i>
+			</span>
+			if optionContent != nil {
+				@optionContent
+			} else if labelText != "" {
+				<span class="text-sm text-neutral-50">{ labelText }</span>
+			} else {
+				<span class="text-sm text-neutral-50" x-text={ labelExpression }></span>
+			}
+		</button>
+	</li>
+}
+
+templ searchableSelectInputSelectedLabels(settings searchableSelectInputShellSettings) {
+	<span
+		class="max-w-full truncate text-sm text-neutral-100"
+		x-show={ searchableSelectInputHasSelectionExpressionBuilder(settings.TwoWayStatePath) }
+		x-text={ "optionLabelsTextResolver(" + settings.TwoWayStatePath + ")" }
+	></span>
+}
+
+templ searchableSelectInputSelectedTags(settings searchableSelectInputShellSettings) {
+	{{ tagOuterBackgroundColor := "secondary-500" }}
+	if settings.TagOuterBackgroundColor != "" {
+		{{ tagOuterBackgroundColor = settings.TagOuterBackgroundColor }}
+	}
+	{{ tagOuterTextColor := "neutral-50" }}
+	if settings.TagOuterTextColor != "" {
+		{{ tagOuterTextColor = settings.TagOuterTextColor }}
+	}
+	{{ tagInnerBackgroundColor := "neutral-50/10" }}
+	if settings.TagInnerBackgroundColor != "" {
+		{{ tagInnerBackgroundColor = settings.TagInnerBackgroundColor }}
+	}
+	<template x-for={ "selectedValue in " + settings.TwoWayStatePath } :key="selectedValue">
+		<span class={ "inline-flex w-fit max-w-full items-center rounded border bg-" + tagOuterBackgroundColor + " border-" + tagOuterBackgroundColor + " text-" + tagOuterTextColor }>
+			<span class={ "max-w-full truncate rounded px-1.5 py-0.5 text-xs bg-" + tagInnerBackgroundColor } x-text="optionLabelResolver(selectedValue)"></span>
+			<button
+				type="button"
+				class="flex cursor-pointer items-center rounded bg-transparent p-0.5 transition-opacity hover:opacity-80"
+				:aria-label="'Remove ' + optionLabelResolver(selectedValue)"
+				@click.stop={ searchableSelectInputTagRemoveExpressionBuilder(settings.TwoWayStatePath, "selectedValue", settings.OnChangeSuffix) }
+			>
+				<i class="ph-bold ph-x text-[0.625rem] leading-none"></i>
+			</button>
+		</span>
+	</template>
+}
+
+templ searchableSelectInputHiddenInputs(
+	inputName, statePath string, isMultiSelect bool,
+) {
+	if inputName != "" {
+		if isMultiSelect {
+			<template x-for={ "selectedValue in " + statePath } :key="selectedValue">
+				<input type="hidden" name={ inputName } :value="selectedValue"/>
+			</template>
+		} else {
+			<input type="hidden" name={ inputName } :value={ statePath }/>
+		}
+	}
+}
+
+templ searchableSelectInputDropdown(settings searchableSelectInputShellSettings) {
+	{{ dropdownMaxVisibleOptionsStyle := selectDropdownMaxVisibleOptionsStyle(settings.MaxVisibleOptions, searchableSelectInputOptionRowHeightRem) }}
+	<ul
+		x-ref="searchableSelectDropdown"
+		class={ searchableSelectInputDropdownClassesResolver(settings) }
+		if dropdownMaxVisibleOptionsStyle != "" {
+			style={ dropdownMaxVisibleOptionsStyle }
+		}
+		:class="openUpward ? 'bottom-full mb-1' : 'mt-1'"
+		x-show="isOpen"
+		role="listbox"
+		x-transition
+	>
+		{ children... }
+	</ul>
+}
+
+templ SearchableSelectInput(componentSettings SearchableSelectInputSettings) {
+	<!-- SearchableSelectInput -->
+	{{ onChangeSuffix := "" }}
+	if componentSettings.OnChangeFunc != "" {
+		{{ onChangeSuffix = "; " + componentSettings.OnChangeFunc }}
+	}
+	{{ presentation := searchableSelectInputSelectionPresentationResolver(componentSettings.IsMultiSelect, componentSettings.SelectionDisplay, componentSettings.ShouldAllowCustomValues) }}
+	{{ isTagDisplay := presentation.Display == SearchableSelectInputSelectionDisplayTags }}
+	{{ clientConfig := searchableSelectInputClientConfigResolver(componentSettings.IsMultiSelect, componentSettings.FlatOptions, componentSettings.LabelValueOptions, nil, nil) }}
+	{{ enterExpression := "" }}
+	if presentation.AllowCustomValues {
+		{{ enterExpression = searchableSelectInputCustomValueAddExpressionBuilder(componentSettings.TwoWayStatePath, onChangeSuffix) }}
+	}
+	{{ backspaceExpression := "" }}
+	if isTagDisplay {
+		{{ backspaceExpression = searchableSelectInputTagBackspaceExpressionBuilder(componentSettings.TwoWayStatePath, onChangeSuffix) }}
+	}
+	{{ initExpression := "" }}
+	if !componentSettings.IsMultiSelect {
+		{{ initExpression = "$watch('" + componentSettings.TwoWayStatePath + "', (value) => { userInput = optionLabelResolver(value) }); userInput = optionLabelResolver(" + componentSettings.TwoWayStatePath + " ?? '')" }}
+	}
+	{{ shellSettings := searchableSelectInputShellSettings{
+		Label:                             componentSettings.Label,
+		TwoWayStatePath:                   componentSettings.TwoWayStatePath,
+		InputId:                           componentSettings.InputId,
+		ClientConfig:                      clientConfig,
+		Size:                              componentSettings.Size,
+		TextCase:                          componentSettings.TextCase,
+		DropdownBackgroundColor:           componentSettings.DropdownBackgroundColor,
+		DropdownMinHeightClass:            componentSettings.DropdownMinHeightClass,
+		DropdownMaxHeightClass:            componentSettings.DropdownMaxHeightClass,
+		MaxVisibleOptions:                 componentSettings.MaxVisibleOptions,
+		TagOuterBackgroundColor:           componentSettings.TagOuterBackgroundColor,
+		TagOuterTextColor:                 componentSettings.TagOuterTextColor,
+		TagInnerBackgroundColor:           componentSettings.TagInnerBackgroundColor,
+		OnChangeSuffix:                    onChangeSuffix,
+		InitExpression:                    initExpression,
+		IsDisabledOneWayStatePath:         componentSettings.IsDisabledOneWayStatePath,
+		HintValue:                         componentSettings.HintValue,
+		HintStatePath:                     componentSettings.HintStatePath,
+		HintDisplay:                       componentSettings.HintDisplay,
+		HintDisplayTooltipBackgroundColor: componentSettings.HintDisplayTooltipBackgroundColor,
+		HintDisplayTooltipMinWidthClass:   componentSettings.HintDisplayTooltipMinWidthClass,
+		HintDisplayTooltipMaxWidthClass:   componentSettings.HintDisplayTooltipMaxWidthClass,
+		HintDisplayTooltipMinHeightClass:  componentSettings.HintDisplayTooltipMinHeightClass,
+		HintDisplayTooltipMaxHeightClass:  componentSettings.HintDisplayTooltipMaxHeightClass,
+		HintIconStyle:                     componentSettings.HintIconStyle,
+	} }}
+	@searchableSelectInputShell(shellSettings) {
+		@searchableSelectInputTriggerRow(shellSettings) {
+			if isTagDisplay {
+				@searchableSelectInputSelectedTags(shellSettings)
+			}
+			if componentSettings.IsMultiSelect && !isTagDisplay {
+				@searchableSelectInputSelectedLabels(shellSettings)
+			}
+			@searchableSelectInputFilterInput(shellSettings, enterExpression, backspaceExpression)
+			@searchableSelectInputTriggerEndIcons(shellSettings)
+		}
+		@searchableSelectInputDropdown(shellSettings) {
+			for _, option := range componentSettings.FlatOptions {
+				@searchableSelectInputOptionRow(
+					shellSettings,
+					"isItemVisible("+strconv.Quote(option)+")",
+					strconv.Quote(option), strconv.Quote(option), option, nil,
+				)
+			}
+			for _, option := range componentSettings.LabelValueOptions {
+				@searchableSelectInputOptionRow(
+					shellSettings,
+					"isItemVisible("+strconv.Quote(option.Value)+")",
+					strconv.Quote(option.Value), strconv.Quote(option.Label),
+					option.Label, option.LabelHtml,
+				)
+			}
+			<li x-show="hasNoMatches" class="px-3 py-2 text-sm text-neutral-400">No matches</li>
+		}
+		@searchableSelectInputHiddenInputs(
+			componentSettings.InputName,
+			componentSettings.TwoWayStatePath,
+			componentSettings.IsMultiSelect,
+		)
+	}
+}

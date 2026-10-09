@@ -29,7 +29,7 @@ templ ConfirmationDialogTypeToConfirmExample() {
 	TargetIdStatePath:   "demoTargetId",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Type-to-Confirm",
 		"IsTypeToConfirmEnabled gates the confirm button behind a typed match. The first dialog matches the TypeToConfirmExpectedValue phrase; the second matches the bound TargetNameStatePath and TargetIdStatePath. TypeToConfirmValueTwoWayStatePath binds the typed value to your own Alpine state. The delete and critical presets enable this by default.",
 		"/display/confirmationDialog.templ", typeToConfirmUsage,
@@ -89,7 +89,7 @@ templ ConfirmationDialogUncloseableExample() {
 	CancelFunc:    "isUncloseableVisible = false",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Uncloseable",
 		"IsUncloseable hides the close button and ignores backdrop clicks. CancelFunc still closes the dialog from its cancel button.",
 		"/display/confirmationDialog.templ", uncloseableUsage,
@@ -129,7 +129,7 @@ templ ConfirmationDialogButtonLabelsExample() {
 	CancelButtonLabel:  "Keep It",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Button Labels & Icons",
 		"ConfirmButtonLabel, ConfirmButtonIcon, and CancelButtonLabel override the preset copy. CancelFunc runs when the cancel button is pressed.",
 		"/display/confirmationDialog.templ", labelsUsage,
@@ -189,7 +189,7 @@ templ ConfirmationDialogCustomSlotsExample() {
 	Size:           uiDisplay.ConfirmationDialogSizeLg,
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Custom Message & Header",
 		"Message sets the note under the question. MessageContent replaces the whole question block, so it wins when both are set. HeaderContent replaces the icon and title block. Size sets the dialog width.",
 		"/display/confirmationDialog.templ", slotsUsage,
@@ -231,12 +231,12 @@ templ ConfirmationDialogIconPositionExample() {
 	HeaderIconPosition:        uiDisplay.HeaderIconPositionLeft,
 	HeaderIconColor:           "sky-300",
 	HeaderIconBackgroundColor: "sky-500/20",
-	HeaderIconBorderRadius:    uiDisplay.HeaderIconBorderRadiusSm,
-	HeaderIconPaddingSize:     uiDisplay.HeaderIconPaddingSizeSm,
+	HeaderIconBorderRadius:    uiToolset.BorderRadiusSm,
+	HeaderIconPaddingSize:     uiToolset.PaddingSizeSm,
 	HeaderSize:                uiDisplay.HeaderSizeMd,
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Icon On Left",
 		"HeaderIconPosition defaults to Top, which centers the icon above the title. HeaderIconPositionLeft places it beside the title. HeaderIcon swaps the preset icon. HeaderIconColor, HeaderIconBackgroundColor, HeaderIconBorderRadius, and HeaderIconPaddingSize shape it. HeaderSize scales the title and icon.",
 		"/display/confirmationDialog.templ", iconPositionUsage,
@@ -260,8 +260,8 @@ templ ConfirmationDialogIconPositionExample() {
 				HeaderIconPosition:        uiDisplay.HeaderIconPositionLeft,
 				HeaderIconColor:           "sky-300",
 				HeaderIconBackgroundColor: "sky-500/20",
-				HeaderIconBorderRadius:    uiDisplay.HeaderIconBorderRadiusSm,
-				HeaderIconPaddingSize:     uiDisplay.HeaderIconPaddingSizeSm,
+				HeaderIconBorderRadius:    uiToolset.BorderRadiusSm,
+				HeaderIconPaddingSize:     uiToolset.PaddingSizeSm,
 				HeaderSize:                uiDisplay.HeaderSizeMd,
 			})
 		</div>
@@ -285,7 +285,7 @@ templ ConfirmationDialogHeaderTextExample() {
 	TextColor:                       "neutral-200",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Header Text Styling",
 		"HeaderSubHeading adds a line under the title. HeaderTitleColor, HeaderSubHeadingColor, and TextColor color the title, the sub-heading, and the block text. HeaderTitleOneWayStatePath and HeaderSubHeadingOneWayStatePath bind both lines to Alpine state. TextCase transforms the text.",
 		"/display/confirmationDialog.templ", headerTextUsage,
@@ -338,7 +338,7 @@ templ ConfirmationDialogSizingBoundsExample() {
 	MaxHeightPercent: 40,
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Sizing Bounds",
 		"HeightPercent fixes the dialog height instead of matching the content. MinWidthPercent and MaxWidthPercent clamp the width. MaxHeightPercent caps the height.",
 		"/display/confirmationDialog.templ", sizingUsage,
@@ -383,7 +383,7 @@ templ ConfirmationDialogHeaderActionsExample() {
 	ActionsContent: ConfirmationDialogDemoHeaderActions(),
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Header Actions",
 		"ActionsContent renders custom controls at the end of the dialog header. The close button stays at the top right.",
 		"/display/confirmationDialog.templ", actionsUsage,

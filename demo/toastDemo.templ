@@ -3,6 +3,7 @@ package main
 import (
 	uiControl "github.com/goinfinite/ui/src/control"
 	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
 templ ToastApiResponseExample() {
@@ -49,9 +50,9 @@ templ ToastMountSettingsExample() {
 	BackgroundColor:    "neutral-800",
 	TextColor:          "neutral-50",
 	Size:               uiDisplay.ToastSizeMd,
-	RingThickness:      uiDisplay.ToastRingThicknessMd,
+	RingThickness:      uiToolset.RingThicknessMd,
 	RingColor:          "neutral-500",
-	Radius:             uiDisplay.ToastRadiusMd,
+	Radius:             uiToolset.BorderRadiusMd,
 })`
 	}}
 	@DemoExampleCard(
@@ -70,12 +71,11 @@ templ ToastDemo() {
 		demoUsage := `@uiDisplay.Toast(uiDisplay.ToastSettings{
 	// OptionalFields
 	AutoDismissSeconds: 6,
-	BackgroundColor:    "neutral-800",
 	TextColor:          "neutral-50",
 	Size:               uiDisplay.ToastSizeMd,
-	RingThickness:      uiDisplay.ToastRingThicknessMd,
+	RingThickness:      uiToolset.RingThicknessMd,
 	RingColor:          "neutral-500",
-	Radius:             uiDisplay.ToastRadiusMd,
+	Radius:             uiToolset.BorderRadiusMd,
 })
 @uiControl.Button(uiControl.ButtonSettings{
 	OnClickFunc: "$store.toast.displayToast('Saved!', 'success')",
@@ -85,18 +85,17 @@ templ ToastDemo() {
 		@DemoComponentSection(DemoComponentSectionSettings{
 			ComponentPath:          "/display/toast.templ",
 			Description:            "A toast is a temporary notification displayed to provide feedback to users.",
-			LiveExampleDescription: "One toast mount serves every message. Trigger the success, warning, and error tones below.",
+			LiveExampleDescription: "One toast mount serves every message. Trigger the success, warning, and error tones below; each tone tints the surface.",
 			Title:                  ".Toast",
 			UsageCode:              demoUsage,
 		}) {
 			@uiDisplay.Toast(uiDisplay.ToastSettings{
 				AutoDismissSeconds: 6,
-				BackgroundColor:    "neutral-800",
 				TextColor:          "neutral-50",
 				Size:               uiDisplay.ToastSizeMd,
-				RingThickness:      uiDisplay.ToastRingThicknessMd,
+				RingThickness:      uiToolset.RingThicknessMd,
 				RingColor:          "neutral-500",
-				Radius:             uiDisplay.ToastRadiusMd,
+				Radius:             uiToolset.BorderRadiusMd,
 			})
 			<div class="flex flex-wrap gap-2" x-data>
 				@uiControl.Button(uiControl.ButtonSettings{

@@ -41,9 +41,7 @@ test.describe("InlineRadioGroup", () => {
     const geometry = await fieldset.evaluate((el) => {
       const content = el.querySelector("div.flex-row");
       const contentRect = content.getBoundingClientRect();
-      const radioRect = content
-        .querySelector("label")
-        .getBoundingClientRect();
+      const radioRect = content.querySelector("label").getBoundingClientRect();
       return {
         paddingBottom: getComputedStyle(content).paddingBottom,
         contentBottom: contentRect.bottom,
@@ -52,8 +50,22 @@ test.describe("InlineRadioGroup", () => {
     });
 
     expect(geometry.paddingBottom).toBe("6px");
-    expect(geometry.contentBottom - geometry.radioBottom).toBeGreaterThanOrEqual(
-      6,
+    expect(
+      geometry.contentBottom - geometry.radioBottom,
+    ).toBeGreaterThanOrEqual(6);
+  });
+
+  test("vertical orientation stacks the radios", async ({ page }) => {
+    await page.goto("/index.html", { waitUntil: "domcontentloaded" });
+    const panel = await openExamplePanel(
+      page,
+      radioGroupSection,
+      "Vertical Orientation",
     );
+    const content = panel.locator("fieldset > div").first();
+    const flexDirection = await content.evaluate(
+      (element) => getComputedStyle(element).flexDirection,
+    );
+    expect(flexDirection).toBe("column");
   });
 });

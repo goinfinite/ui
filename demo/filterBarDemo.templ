@@ -3,6 +3,7 @@ package main
 import (
 	uiDisplay "github.com/goinfinite/ui/src/display"
 	uiStructural "github.com/goinfinite/ui/src/structural"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
 templ FilterBarQueryParamExample() {
@@ -20,7 +21,7 @@ templ FilterBarQueryParamExample() {
 	ValuesTwoWayStatePath: "filterValues",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Query Param Names",
 		"QueryParamName renames the filter in the DataTable URL template. Without it the filter Key is the parameter name.",
 		"/structural/filterBar.templ", queryParamUsage,
@@ -54,7 +55,7 @@ templ FilterBarEnumPrefixExample() {
 	EnumSelectRadioGroupNamePrefix: "myForm",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Enum Radio Group Prefix",
 		"EnumSelectRadioGroupNamePrefix namespaces the generated radio inputs of enum selects, so two filter bars on one page do not collide.",
 		"/structural/filterBar.templ", prefixUsage,
@@ -88,7 +89,7 @@ templ FilterBarDropdownBackgroundExample() {
 	DropdownBackgroundColor: "primary-500/95",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Dropdown Background",
 		"DropdownBackgroundColor paints the enum select dropdown with a Tailwind background token. DataTable forwards it as FilterDropdownBackgroundColor.",
 		"/structural/filterBar.templ", dropdownBackgroundUsage,
@@ -119,7 +120,7 @@ templ FilterBarMultiValueExample() {
 	ValuesTwoWayStatePath: "filterValues",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Multi-Value Filter",
 		"FilterKindMultiEnumSelect holds an array of selected values under one key. The chip lists every value, and the DataTable URL repeats the parameter once per value.",
 		"/structural/filterBar.templ", multiValueUsage,
@@ -158,7 +159,7 @@ templ FilterBarDateRangeExample() {
 	ValuesTwoWayStatePath: "filterValues",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Date Range Filter",
 		"FilterKindDateRange renders a min and a max date input. The active chip shows the selected span, and clearing the chip resets both dates.",
 		"/structural/filterBar.templ", dateRangeUsage,
@@ -182,6 +183,54 @@ templ FilterBarDateRangeExample() {
 	}
 }
 
+templ FilterBarChipStylingExample() {
+	{{
+		chipStylingUsage := `@uiStructural.FilterBar(uiStructural.FilterBarSettings{
+	Filters: []uiStructural.FilterSettings{
+		{Key: "status", Label: "Status", Kind: uiStructural.FilterKindEnumSelect, Options: statusOptions},
+	},
+	ValuesTwoWayStatePath: "filterValues",
+
+	// OptionalFields
+	ChipStyle: uiStructural.FilterChipStyle{
+		TextCase:             uiToolset.TextCaseUpper,
+		OuterBackgroundColor: "secondary-500/20",
+		OuterRingColor:       "secondary-500/40",
+		OuterTextColor:       "neutral-50",
+		InnerBackgroundColor: "secondary-500/40",
+		InnerTextColor:       "neutral-50",
+	},
+})`
+	}}
+	@DemoExampleCardStacked(
+		"Chip Styling",
+		"ChipStyle repaints the active-filter chip and transforms its labels. Each field falls back to the neutral default, and TextCase defaults to lowercase.",
+		"/structural/filterBar.templ", chipStylingUsage,
+	) {
+		<div class="rounded-md border border-neutral-800 p-4" x-data="{chipFilterValues: {status: 'running'}}">
+			@uiStructural.FilterBar(uiStructural.FilterBarSettings{
+				Filters: []uiStructural.FilterSettings{
+					{
+						Key:     "status",
+						Label:   "Status",
+						Kind:    uiStructural.FilterKindEnumSelect,
+						Options: buildDemoEnvironmentOptions(),
+					},
+				},
+				ValuesTwoWayStatePath: "chipFilterValues",
+				ChipStyle: uiStructural.FilterChipStyle{
+					TextCase:             uiToolset.TextCaseUpper,
+					OuterBackgroundColor: "secondary-500/20",
+					OuterRingColor:       "secondary-500/40",
+					OuterTextColor:       "neutral-50",
+					InnerBackgroundColor: "secondary-500/40",
+					InnerTextColor:       "neutral-50",
+				},
+			})
+		</div>
+	}
+}
+
 templ FilterBarChangeCallbackExample() {
 	{{
 		changeCallbackUsage := `@uiStructural.FilterBar(uiStructural.FilterBarSettings{
@@ -194,7 +243,7 @@ templ FilterBarChangeCallbackExample() {
 	OnChangeFunc: "changeCount = changeCount + 1",
 })`
 	}}
-	@DemoExampleCard(
+	@DemoExampleCardStacked(
 		"Change Callback",
 		"OnChangeFunc runs on every filter edit and on chip removal. It can drive a fetch or update local state.",
 		"/structural/filterBar.templ", changeCallbackUsage,
@@ -261,6 +310,7 @@ templ FilterBarDemo() {
 			{Title: "Multi-Value Filter", Icon: "ph-list-checks", Content: FilterBarMultiValueExample()},
 			{Title: "Date Range Filter", Icon: "ph-calendar-blank", Content: FilterBarDateRangeExample()},
 			{Title: "Change Callback", Icon: "ph-arrows-clockwise", Content: FilterBarChangeCallbackExample()},
+			{Title: "Chip Styling", Icon: "ph-tag", Content: FilterBarChipStylingExample()},
 		})
 	</div>
 }

@@ -13,7 +13,7 @@ templ CheckboxInputShapesExample() {
 	TwoWayStatePath: "hasAcceptedTerms",
 
 	// OptionalFields
-	Shape: uiForm.CheckboxInputShapeRounded,
+	Shape: uiToolset.ShapeRounded,
 })`
 	}}
 	@DemoExampleCard(
@@ -21,7 +21,7 @@ templ CheckboxInputShapesExample() {
 		"/form/checkboxInput.templ", shapesUsage,
 	) {
 		<div class="flex flex-col gap-3" x-data="{isCheckboxExampleEnabled: false}">
-			for _, checkboxShape := range []string{uiForm.CheckboxInputShapeSquare, uiForm.CheckboxInputShapeRounded, uiForm.CheckboxInputShapeCircular} {
+			for _, checkboxShape := range []string{uiToolset.ShapeSquare, uiToolset.ShapeRounded, uiToolset.ShapeCircular} {
 				@uiForm.CheckboxInput(uiForm.CheckboxInputSettings{
 					Label:           checkboxShape,
 					TwoWayStatePath: "isCheckboxExampleEnabled",

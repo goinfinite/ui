@@ -1,44 +1,10 @@
 UiToolset.RegisterAlpineState(() => {
-  const selectOpenUpwardSlackPx = 8;
-
-  function selectClipperBottomResolver(triggerElement) {
-    let availableBottom = window.innerHeight;
-    for (
-      let ancestor = triggerElement.parentElement;
-      ancestor !== null;
-      ancestor = ancestor.parentElement
-    ) {
-      const ancestorStyle = getComputedStyle(ancestor);
-      if (
-        ancestorStyle.overflowX === "visible" &&
-        ancestorStyle.overflowY === "visible"
-      ) {
-        continue;
-      }
-      availableBottom = Math.min(
-        availableBottom,
-        ancestor.getBoundingClientRect().bottom,
-      );
-    }
-    return availableBottom;
-  }
-
-  function selectOpenUpwardResolver(trigger, dropdown) {
-    if (!trigger || !dropdown) {
-      return false;
-    }
-    const triggerBottom = trigger.getBoundingClientRect().bottom;
-    const availableBottom = selectClipperBottomResolver(trigger);
-    return (
-      availableBottom - triggerBottom <
-      dropdown.offsetHeight + selectOpenUpwardSlackPx
-    );
-  }
-
-  Alpine.data("selectInput", () => ({
+  Alpine.data("selectInput", (labelValueOptionsScriptId) => ({
+    labelValueOptionsScriptId: labelValueOptionsScriptId || "",
     isOpen: false,
     openUpward: false,
     selectedValue: "",
+    selectedItems: [],
 
     toggleDropdown() {
       this.isOpen = !this.isOpen;
@@ -46,7 +12,7 @@ UiToolset.RegisterAlpineState(() => {
         return;
       }
       this.$nextTick(() => {
-        this.openUpward = selectOpenUpwardResolver(
+        this.openUpward = UiToolset.SelectDropdown.openUpwardResolver(
           this.$refs.selectTrigger,
           this.$refs.selectDropdown,
         );
@@ -55,6 +21,39 @@ UiToolset.RegisterAlpineState(() => {
 
     closeDropdown() {
       this.isOpen = false;
+    },
+
+    selectedItemsDisplayFormatter(items) {
+      if (!items || items.length === 0) {
+        return null;
+      }
+
+      let labelValueOptions = [];
+      if (this.labelValueOptionsScriptId) {
+        try {
+          labelValueOptions = JSON.parse(
+            document.getElementById(this.labelValueOptionsScriptId)
+              ?.textContent || "[]",
+          );
+        } catch (parseError) {
+          console.error(
+            `SelectInputInvalidLabelValueOptionsJson: ${parseError.message}`,
+          );
+        }
+      }
+
+      if (labelValueOptions.length === 0) {
+        return items.join(", ");
+      }
+
+      const valueToLabelLookup = labelValueOptions.reduce((lookup, option) => {
+        lookup[option.value] = option.label;
+        return lookup;
+      }, {});
+
+      return items
+        .map((value) => valueToLabelLookup[value] ?? value)
+        .join(", ");
     },
   }));
 });

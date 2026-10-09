@@ -1,10 +1,20 @@
 UiToolset.RegisterAlpineState(() => {
+  const toastTypeBackgroundClasses = {
+    success: "bg-green-500/15",
+    partialSuccess: "bg-yellow-500/15",
+    danger: "bg-red-500/15",
+  };
+
   Alpine.store("toast", {
     toastVisible: false,
     toastMessage: "",
     toastType: "danger",
     displayDurationMs: 10000,
     dismissTimeoutId: null,
+
+    get toastTypeBackgroundClass() {
+      return toastTypeBackgroundClasses[this.toastType] ?? "bg-primary-300";
+    },
 
     displayToast(message, toastType) {
       clearTimeout(this.dismissTimeoutId);

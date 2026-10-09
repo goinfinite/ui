@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	UiVersion string = "0.2.5"
+	UiVersion string = "0.2.6"
 )
 
 templ DemoNavSection(label string) {
@@ -37,7 +37,7 @@ templ DemoNavItem(label, targetId, icon string) {
 				></i>
 			</div>
 			<span
-				class="group-hover:text-secondary-500 select-none text-sm"
+				class="group-hover:text-secondary-500 min-w-0 truncate select-none text-sm"
 				:class="{'hidden' : isDemoSidebarCollapsed}"
 			>
 				{ label }
@@ -70,9 +70,12 @@ templ DemoNavigationContent() {
 	>
 		@DemoNavSection("@uiForm")
 		@DemoNavItem("CheckboxInput", "checkbox-input-demo", "ph-check-square")
+		@DemoNavItem("InlineCheckboxGroup", "inline-checkbox-group-demo", "ph-checks")
 		@DemoNavItem("InlineRadioGroup", "inline-radio-group-demo", "ph-selection")
 		@DemoNavItem("InputField", "input-field-demo", "ph-text-aa")
-		@DemoNavItem("MultiSelectInput", "multi-select-input-demo", "ph-list-checks")
+		@DemoNavItem("PasswordInput", "password-input-demo", "ph-password")
+		@DemoNavItem("SearchableSelectInput", "searchable-select-input-demo", "ph-magnifying-glass")
+		@DemoNavItem("RemoteSearchableSelectInput", "remote-searchable-select-input-demo", "ph-cloud-arrow-down")
 		@DemoNavItem("RadioInput", "radio-input-demo", "ph-radio-button")
 		@DemoNavItem("SelectInput", "select-input-demo", "ph-caret-down")
 		@DemoNavItem("TextArea", "text-area-demo", "ph-text-align-left")
@@ -169,9 +172,12 @@ templ DemoIndex() {
 						</div>
 						<div class="*:border-t *:border-neutral-800 *:py-20 flex flex-col">
 							@CheckboxInputDemo()
+							@InlineCheckboxGroupDemo()
 							@InlineRadioGroupDemo()
 							@InputFieldDemo()
-							@MultiSelectInputDemo()
+							@PasswordInputDemo()
+							@SearchableSelectInputDemo()
+							@RemoteSearchableSelectInputDemo()
 							@RadioInputDemo()
 							@SelectInputDemo()
 							@TextAreaDemo()

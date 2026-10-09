@@ -32,10 +32,12 @@ test.describe("DataTable advanced examples @structural", () => {
 
   test("filters panel starts with its chip", async ({ page }) => {
     const target = await openExamplePanel(page, demoSection, "Filters");
+    const chip = target.locator(
+      'span[x-show]:has(button[aria-label="Remove Status filter"])',
+    );
 
-    await expect(
-      target.locator("span").filter({ hasText: "Status: running" }),
-    ).toBeVisible();
+    await expect(chip).toBeVisible();
+    await expect(chip.locator("span[x-text]")).toHaveText("running");
   });
 
   test("search box panel binds the starting query", async ({ page }) => {
@@ -97,8 +99,11 @@ test.describe("DataTable advanced examples @structural", () => {
 
     const headerRow = target.locator("thead tr");
     expect(
-      await headerRow.evaluate((row) => getComputedStyle(row).backgroundColor),
-    ).not.toBe("rgba(0, 0, 0, 0)");
+      await headerRow
+        .locator("th")
+        .first()
+        .evaluate((cell) => getComputedStyle(cell).backgroundColor),
+    ).toBe("rgba(250, 250, 250, 0.05)");
 
     const bodyRows = target.locator("tbody tr");
     const oddRow = bodyRows.first();
@@ -130,6 +135,61 @@ test.describe("DataTable advanced examples @structural", () => {
         oddRow.evaluate((row) => getComputedStyle(row).backgroundColor),
       )
       .not.toBe(stripeBackground);
+  });
+
+  test("the items per page menu follows the configured background", async ({
+    page,
+  }) => {
+    const target = await openExamplePanel(
+      page,
+      demoSection,
+      "Row and Column Styling",
+    );
+    const table = target.locator("#data-table-demo-styling");
+    await table.scrollIntoViewIfNeeded();
+    await table.locator("nav [role=button]").click();
+
+    const dropdown = table.locator("nav ul");
+    await expect(dropdown).toBeVisible();
+    expect(
+      await dropdown.evaluate(
+        (element) => getComputedStyle(element).backgroundColor,
+      ),
+    ).toBe("rgb(6, 78, 59)");
+  });
+
+  test("the filter dropdown escapes the table surface when the body is squeezed", async ({
+    page,
+  }) => {
+    const target = await openExamplePanel(page, demoSection, "Filters");
+    const table = target.locator("#data-table-demo-filters");
+    await table.locator("[data-ui-data-table-scroll]").evaluate((element) => {
+      element.style.maxHeight = "10px";
+    });
+    await table.evaluate((element) =>
+      element.scrollIntoView({ block: "start" }),
+    );
+    await table.locator("fieldset [role=button]").first().click();
+
+    const dropdown = table.locator("fieldset ul").first();
+    await expect(dropdown).toBeVisible();
+    const visibility = await dropdown.evaluate((element) => {
+      const root = document.getElementById("data-table-demo-filters");
+      const lastOption = element.querySelector("li:last-of-type");
+      const lastOptionRect = lastOption.getBoundingClientRect();
+      const hit = document.elementFromPoint(
+        lastOptionRect.left + lastOptionRect.width / 2,
+        lastOptionRect.top + lastOptionRect.height / 2,
+      );
+      return {
+        escapesRoot:
+          element.getBoundingClientRect().bottom >
+          root.getBoundingClientRect().bottom,
+        lastOptionHittable: Boolean(hit?.closest("ul")),
+      };
+    });
+    expect(visibility.escapesRoot).toBe(true);
+    expect(visibility.lastOptionHittable).toBe(true);
   });
 
   test("a dense table tooltip does not add a scrollbar to the table", async ({
@@ -192,8 +252,7 @@ test.describe("DataTable advanced examples @structural", () => {
         const rowHeight = firstRow.getBoundingClientRect().height;
         return {
           visibleRows: Math.round(
-            (element.clientHeight -
-              headerCell.getBoundingClientRect().height) /
+            (element.clientHeight - headerCell.getBoundingClientRect().height) /
               rowHeight,
           ),
           scrolls: element.scrollHeight > element.clientHeight,

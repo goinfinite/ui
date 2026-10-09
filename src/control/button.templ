@@ -19,22 +19,13 @@ const (
 	ButtonSizeMd string = "md"
 	ButtonSizeLg string = "lg"
 	ButtonSizeXl string = "xl"
-
-	ButtonShapeCircular string = "circular"
-	ButtonShapeRounded  string = "rounded"
-	ButtonShapeSquare   string = "square"
-
-	ButtonRingThicknessXs string = "xs"
-	ButtonRingThicknessSm string = "sm"
-	ButtonRingThicknessMd string = "md"
-	ButtonRingThicknessLg string = "lg"
-	ButtonRingThicknessXl string = "xl"
 )
 
 type ButtonSettings struct {
 	// OptionalFields
 	Label                         string
 	AriaLabel                     string
+	AriaLabelOneWayStatePath      string
 	BackgroundColor               string
 	BackgroundColorHover          string
 	IconLeft                      string
@@ -47,8 +38,13 @@ type ButtonSettings struct {
 	IsVisibleOneWayStatePath      string
 	IsFullWidth                   bool
 	IsSubmit                      bool
+	MaxHeightClass                string
+	MaxWidthClass                 string
+	MinHeightClass                string
+	MinWidthClass                 string
 	OnClickFunc                   string
 	OnClickPreventDefault         bool
+	PaddingSize                   string
 	Shape                         string
 	Size                          string
 	TextCase                      string
@@ -101,36 +97,59 @@ templ Button(componentSettings ButtonSettings) {
 		if componentSettings.BackgroundColorHover != "" {
 			{{ backgroundHoverColor = "hover:bg-" + componentSettings.BackgroundColorHover }}
 		}
-		{{ backgroundSize := "p-2 text-base gap-1" }}
+		{{ buttonPadding := "p-2" }}
+		{{ buttonTextSize := "text-base" }}
+		{{ buttonGap := "gap-1" }}
 		switch componentSettings.Size {
 			case ButtonSizeXs:
-				{{ backgroundSize = "p-1 text-xs gap-0.5" }}
+				{{ buttonPadding = "p-1" }}
+				{{ buttonTextSize = "text-xs" }}
+				{{ buttonGap = "gap-0.5" }}
 			case ButtonSizeSm:
-				{{ backgroundSize = "p-1.5 text-sm gap-0.75" }}
+				{{ buttonPadding = "p-1.5" }}
+				{{ buttonTextSize = "text-sm" }}
+				{{ buttonGap = "gap-0.75" }}
 			case ButtonSizeMd:
-				{{ backgroundSize = "p-2 text-base gap-1" }}
+				{{ buttonPadding = "p-2" }}
+				{{ buttonTextSize = "text-base" }}
+				{{ buttonGap = "gap-1" }}
 			case ButtonSizeLg:
-				{{ backgroundSize = "p-2.5 text-lg gap-1.25" }}
+				{{ buttonPadding = "p-2.5" }}
+				{{ buttonTextSize = "text-lg" }}
+				{{ buttonGap = "gap-1.25" }}
 			case ButtonSizeXl:
-				{{ backgroundSize = "p-3 text-xl gap-1.5" }}
+				{{ buttonPadding = "p-3" }}
+				{{ buttonTextSize = "text-xl" }}
+				{{ buttonGap = "gap-1.5" }}
 		}
 		if componentSettings.Label != "" {
 			switch componentSettings.Size {
 				case ButtonSizeXs:
-					{{ backgroundSize += " py-1.5" }}
+					{{ buttonPadding += " py-1.5" }}
 				case ButtonSizeSm:
-					{{ backgroundSize += " py-2" }}
+					{{ buttonPadding += " py-2" }}
 				case ButtonSizeMd:
-					{{ backgroundSize += " py-2.5" }}
+					{{ buttonPadding += " py-2.5" }}
 				case ButtonSizeLg:
-					{{ backgroundSize += " py-3" }}
+					{{ buttonPadding += " py-3" }}
 				case ButtonSizeXl:
-					{{ backgroundSize += " py-3.5" }}
+					{{ buttonPadding += " py-3.5" }}
 				default:
-					{{ backgroundSize += " py-2.5" }}
+					{{ buttonPadding += " py-2.5" }}
 			}
 		}
+		if componentSettings.PaddingSize != "" {
+			{{ buttonPadding = uiToolset.CompactPaddingClassResolver(componentSettings.PaddingSize, buttonPadding) }}
+		}
+		{{ backgroundSize := buttonPadding + " " + buttonTextSize + " " + buttonGap }}
 		{{ backgroundClasses := backgroundColor + " " + backgroundHoverColor + " " + backgroundSize }}
+		{{ sizeConstraintClasses := uiToolset.NonEmptyClassJoiner([]string{
+			componentSettings.MinWidthClass, componentSettings.MaxWidthClass,
+			componentSettings.MinHeightClass, componentSettings.MaxHeightClass,
+		}) }}
+		if sizeConstraintClasses != "" {
+			{{ sizeConstraintClasses = " " + sizeConstraintClasses }}
+		}
 		{{ textColor := "text-neutral-50" }}
 		if componentSettings.TextColor != "" {
 			{{ textColor = "text-" + componentSettings.TextColor }}
@@ -162,7 +181,7 @@ templ Button(componentSettings ButtonSettings) {
 			case ButtonSizeXl:
 				{{ iconSize = "text-2xl" }}
 		}
-		{{ buttonClasses := buttonWidth + " " + backgroundClasses + " " + textColor + " " + textColorHover + " " + radiusRoundness + " " + ringClasses + " justify-center items-center text-center font-bold flex flex-row leading-none transition-all" }}
+		{{ buttonClasses := buttonWidth + " " + backgroundClasses + " " + textColor + " " + textColorHover + " " + radiusRoundness + " " + ringClasses + sizeConstraintClasses + " justify-center items-center text-center font-bold flex flex-row leading-none transition-all" }}
 		if textCaseClass != "" {
 			{{ buttonClasses += " " + textCaseClass }}
 		}
@@ -185,6 +204,9 @@ templ Button(componentSettings ButtonSettings) {
 			}
 			if componentSettings.AriaLabel != "" {
 				aria-label={ componentSettings.AriaLabel }
+			}
+			if componentSettings.AriaLabelOneWayStatePath != "" {
+				:aria-label={ componentSettings.AriaLabelOneWayStatePath }
 			}
 			if componentSettings.OnClickFunc != "" && !componentSettings.IsDisabled {
 				if componentSettings.OnClickPreventDefault {

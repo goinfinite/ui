@@ -42,12 +42,10 @@ func TooltipSurfaceClassesResolver(settings TooltipSurfaceSettings) string {
 	surfaceClasses += " " + TextColorClassResolver(settings.TextColor, "text-neutral-50")
 	surfaceClasses += " " + CompactRingClassResolver(settings.RingColor, settings.RingThickness)
 	surfaceClasses += " " + tooltipSizeClassResolver(settings.MaxWidthClass, "max-w-96")
-	for _, sizeClass := range []string{
+	if sizeConstraintClasses := NonEmptyClassJoiner([]string{
 		settings.MinWidthClass, settings.MinHeightClass, settings.MaxHeightClass,
-	} {
-		if sizeClass != "" {
-			surfaceClasses += " " + sizeClass
-		}
+	}); sizeConstraintClasses != "" {
+		surfaceClasses += " " + sizeConstraintClasses
 	}
 	return surfaceClasses
 }

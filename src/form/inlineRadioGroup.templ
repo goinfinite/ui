@@ -2,20 +2,29 @@ package uiForm
 
 import uiToolset "github.com/goinfinite/ui/src/toolset"
 
+const (
+	InlineRadioGroupOrientationHorizontal string = inlineGroupOrientationHorizontal
+	InlineRadioGroupOrientationVertical   string = inlineGroupOrientationVertical
+)
+
 type InlineRadioGroupSettings struct {
 	Label         string
 	InputSettings []RadioInputSettings
 
 	// OptionalFields
-	TwoWayStatePath string
-	InputId         string
-	InputName       string
-	TextCase        string
+	Orientation       string
+	MaxVisibleOptions uint
+	TwoWayStatePath   string
+	InputId           string
+	InputName         string
+	TextCase          string
 }
 
 templ InlineRadioGroup(componentSettings InlineRadioGroupSettings) {
 	<!-- InlineRadioGroup -->
 	{{ legendClasses := "ml-1 select-none px-1 text-xs font-bold leading-none text-neutral-50/80 " + uiToolset.TextCaseClassResolver(componentSettings.TextCase) }}
+	{{ contentClasses := inlineGroupContentClassesResolver(componentSettings.Orientation, componentSettings.MaxVisibleOptions) }}
+	{{ maxVisibleOptionsStyle := inlineGroupMaxVisibleOptionsStyle(componentSettings.MaxVisibleOptions) }}
 	<div class="flex w-full flex-col">
 		<fieldset class="bg-neutral-50/7.5 relative -mt-1.5 w-full rounded border border-neutral-50/5 transition-colors focus-within:border-neutral-50/30 hover:border-neutral-50/30">
 			<legend class={ legendClasses }>
@@ -35,7 +44,7 @@ templ InlineRadioGroup(componentSettings InlineRadioGroupSettings) {
 					}
 				/>
 			}
-			<div class="flex min-h-8 flex-row items-center gap-2 p-1.5">
+			<div class={ contentClasses } if maxVisibleOptionsStyle != "" { style={ maxVisibleOptionsStyle } }>
 				for _, inputSettings := range componentSettings.InputSettings {
 					@RadioInput(inputSettings)
 				}

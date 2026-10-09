@@ -1,6 +1,8 @@
 package uiDisplay
 
 import (
+	"fmt"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -56,10 +58,8 @@ func modalInitialSizeResolver(initialSize string, possibleSizes []string) string
 	if initialSize == "" {
 		initialSize = ModalSizeMd
 	}
-	for _, possibleSize := range possibleSizes {
-		if possibleSize == initialSize {
-			return initialSize
-		}
+	if slices.Contains(possibleSizes, initialSize) {
+		return initialSize
 	}
 	return possibleSizes[0]
 }
@@ -133,16 +133,20 @@ func modalSizeConstraintClassesResolver(
 func modalSizeClassMapExpressionBuilder(
 	sizePath string, widthPercent, heightPercent int, shouldHeightMatchContent bool,
 ) string {
-	mapExpression := "{"
+	var mapExpression strings.Builder
+	mapExpression.WriteString("{")
 	for index, size := range modalSizeOrder {
 		if index > 0 {
-			mapExpression += ","
+			mapExpression.WriteString(",")
 		}
-		mapExpression += " '" + modalSizeClassesResolver(
-			size, widthPercent, heightPercent, shouldHeightMatchContent,
-		) + "': " + sizePath + " === '" + size + "'"
+		fmt.Fprintf(
+			&mapExpression, " '%s': %s === '%s'",
+			modalSizeClassesResolver(size, widthPercent, heightPercent, shouldHeightMatchContent),
+			sizePath, size,
+		)
 	}
-	return mapExpression + " }"
+	mapExpression.WriteString(" }")
+	return mapExpression.String()
 }
 
 func modalIsResizableResolver(
@@ -175,20 +179,28 @@ func modalCanReduceExpressionBuilder(sizePath string, reachableSizes []string) s
 
 func modalEnlargeExpressionBuilder(sizePath string, reachableSizes []string) string {
 	largestSize := reachableSizes[len(reachableSizes)-1]
-	expression := sizePath + " = "
+	var expression strings.Builder
+	fmt.Fprintf(&expression, "%s = ", sizePath)
 	for index := 0; index < len(reachableSizes)-1; index++ {
-		expression += sizePath + " === '" + reachableSizes[index] + "' ? '" +
-			reachableSizes[index+1] + "' : "
+		fmt.Fprintf(
+			&expression, "%s === '%s' ? '%s' : ",
+			sizePath, reachableSizes[index], reachableSizes[index+1],
+		)
 	}
-	return expression + "'" + largestSize + "'"
+	fmt.Fprintf(&expression, "'%s'", largestSize)
+	return expression.String()
 }
 
 func modalReduceExpressionBuilder(sizePath string, reachableSizes []string) string {
 	smallestSize := reachableSizes[0]
-	expression := sizePath + " = "
+	var expression strings.Builder
+	fmt.Fprintf(&expression, "%s = ", sizePath)
 	for index := len(reachableSizes) - 1; index > 0; index-- {
-		expression += sizePath + " === '" + reachableSizes[index] + "' ? '" +
-			reachableSizes[index-1] + "' : "
+		fmt.Fprintf(
+			&expression, "%s === '%s' ? '%s' : ",
+			sizePath, reachableSizes[index], reachableSizes[index-1],
+		)
 	}
-	return expression + "'" + smallestSize + "'"
+	fmt.Fprintf(&expression, "'%s'", smallestSize)
+	return expression.String()
 }

@@ -55,7 +55,7 @@ templ ButtonShapesExample() {
 	Label: "Button",
 
 	// OptionalFields
-	Shape: uiControl.ButtonShapeRounded,
+	Shape: uiToolset.ShapeRounded,
 })`
 	}}
 	@DemoExampleCard(
@@ -65,15 +65,15 @@ templ ButtonShapesExample() {
 		<div class="flex flex-col gap-2">
 			@uiControl.Button(uiControl.ButtonSettings{
 				Label: "Square",
-				Shape: uiControl.ButtonShapeSquare,
+				Shape: uiToolset.ShapeSquare,
 			})
 			@uiControl.Button(uiControl.ButtonSettings{
 				Label: "Rounded",
-				Shape: uiControl.ButtonShapeRounded,
+				Shape: uiToolset.ShapeRounded,
 			})
 			@uiControl.Button(uiControl.ButtonSettings{
 				Label: "Circular",
-				Shape: uiControl.ButtonShapeCircular,
+				Shape: uiToolset.ShapeCircular,
 			})
 		</div>
 	}
@@ -176,7 +176,7 @@ templ ButtonRingsExample() {
 	BackgroundColorHover: "red-500/20",
 	RingColor:            "red-500",
 	RingColorHover:       "red-400",
-	RingThickness:        uiControl.ButtonRingThicknessMd,
+	RingThickness:        uiToolset.RingThicknessMd,
 })`
 	}}
 	@DemoExampleCard(
@@ -189,7 +189,7 @@ templ ButtonRingsExample() {
 				Label:           "Red Ring",
 				BackgroundColor: "red-500/10",
 				RingColor:       "red-500",
-				RingThickness:   uiControl.ButtonRingThicknessMd,
+				RingThickness:   uiToolset.RingThicknessMd,
 			})
 			@uiControl.Button(uiControl.ButtonSettings{
 				Label:                "Green Hover",
@@ -197,17 +197,17 @@ templ ButtonRingsExample() {
 				BackgroundColorHover: "green-500/10",
 				RingColor:            "yellow-500",
 				RingColorHover:       "green-500",
-				RingThickness:        uiControl.ButtonRingThicknessMd,
+				RingThickness:        uiToolset.RingThicknessMd,
 			})
 			@uiControl.Button(uiControl.ButtonSettings{
 				Label:         "ThicknessXs",
 				RingColor:     "blue-500",
-				RingThickness: uiControl.ButtonRingThicknessXs,
+				RingThickness: uiToolset.RingThicknessXs,
 			})
 			@uiControl.Button(uiControl.ButtonSettings{
 				Label:         "ThicknessXl",
 				RingColor:     "violet-500",
-				RingThickness: uiControl.ButtonRingThicknessXl,
+				RingThickness: uiToolset.RingThicknessXl,
 			})
 		</div>
 	}
@@ -231,7 +231,7 @@ templ ButtonTooltipsExample() {
 	TooltipBackgroundColor: "violet-950/95",
 	TooltipTextColor:       "violet-100",
 	TooltipRingColor:       "violet-500",
-	TooltipRingThickness:   uiControl.ButtonRingThicknessMd,
+	TooltipRingThickness:   uiToolset.RingThicknessMd,
 	TooltipMinWidthClass:   "min-w-48",
 	TooltipMaxWidthClass:   "max-w-72",
 	TooltipMinHeightClass:  "min-h-12",
@@ -276,7 +276,7 @@ templ ButtonTooltipsExample() {
 				TooltipBackgroundColor:   "violet-950/95",
 				TooltipTextColor:         "violet-100",
 				TooltipRingColor:         "violet-500",
-				TooltipRingThickness:     uiControl.ButtonRingThicknessMd,
+				TooltipRingThickness:     uiToolset.RingThicknessMd,
 				TooltipMinWidthClass:     "min-w-48",
 				TooltipMaxWidthClass:     "max-w-72",
 				TooltipMinHeightClass:    "min-h-12",
@@ -342,7 +342,7 @@ templ ButtonDisabledBindingExample() {
 						IconLeft:    "ph-arrow-counter-clockwise",
 						OnClickFunc: "clickCount = 0",
 						Size:        uiControl.ButtonSizeSm,
-						Shape:       uiControl.ButtonShapeCircular,
+						Shape:       uiToolset.ShapeCircular,
 					})
 					@uiControl.Button(uiControl.ButtonSettings{
 						Label:           "Toggle Visibility",

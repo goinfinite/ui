@@ -1,44 +1,79 @@
 function randomNumberGenerator(rangeSize) {
-  const randomValues = crypto.getRandomValues(new Uint32Array(1));
-  const rawRandomInteger = randomValues[0];
-  const numberWithinRange = rawRandomInteger % rangeSize;
-  return numberWithinRange;
+  const maxUnbiasedValue = Math.floor(0x100000000 / rangeSize) * rangeSize;
+  const randomValues = new Uint32Array(1);
+  let rawRandomInteger;
+  do {
+    crypto.getRandomValues(randomValues);
+    rawRandomInteger = randomValues[0];
+  } while (rawRandomInteger >= maxUnbiasedValue);
+  return rawRandomInteger % rangeSize;
 }
 
-function createRandomPassword() {
-  const passwordLength = 16;
-  const letterChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  const numberChars = "0123456789";
-  const specialChars = "!@#$%^&*()_+";
-  const allChars = letterChars + numberChars + specialChars;
+const randomPasswordDefaultOptions = {
+  length: 16,
+  minLength: 6,
+  maxLength: 64,
+  includeLowercase: true,
+  includeUppercase: true,
+  includeNumbers: true,
+  includeSpecialChars: true,
+};
 
+function randomPasswordCharsetsResolver(options) {
+  const charsets = [];
+  if (options.includeLowercase) {
+    charsets.push("abcdefghijklmnopqrstuvwxyz");
+  }
+  if (options.includeUppercase) {
+    charsets.push("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+  }
+  if (options.includeNumbers) {
+    charsets.push("0123456789");
+  }
+  if (options.includeSpecialChars) {
+    charsets.push("!@#$%^&*()_+-=.");
+  }
+  return charsets;
+}
+
+function createRandomPassword(options = {}) {
+  const resolvedOptions = { ...randomPasswordDefaultOptions, ...options };
+  const charsets = randomPasswordCharsetsResolver(resolvedOptions);
+  if (charsets.length === 0) {
+    throw new Error("RandomPasswordCharsetsEmpty");
+  }
+
+  const minLength = Math.max(
+    Number(resolvedOptions.minLength) || charsets.length,
+    charsets.length,
+  );
+  const maxLength = Math.max(
+    Number(resolvedOptions.maxLength) || minLength,
+    minLength,
+  );
+  const passwordLength = Math.min(
+    Math.max(Number(resolvedOptions.length) || 16, minLength),
+    maxLength,
+  );
+
+  const allChars = charsets.join("");
   const passwordChars = [];
   for (let charIndex = 0; charIndex < passwordLength; charIndex++) {
-    const randomPosition = randomNumberGenerator(allChars.length);
-    passwordChars.push(allChars[randomPosition]);
+    passwordChars.push(allChars[randomNumberGenerator(allChars.length)]);
   }
 
-  const letterPosition = randomNumberGenerator(passwordLength);
-
-  let numberPosition = randomNumberGenerator(passwordLength);
-  while (numberPosition === letterPosition) {
-    numberPosition = randomNumberGenerator(passwordLength);
+  const availablePositions = [];
+  for (let position = 0; position < passwordLength; position++) {
+    availablePositions.push(position);
   }
 
-  let specialPosition = randomNumberGenerator(passwordLength);
-  while (
-    specialPosition === letterPosition ||
-    specialPosition === numberPosition
-  ) {
-    specialPosition = randomNumberGenerator(passwordLength);
-  }
-
-  passwordChars[letterPosition] =
-    letterChars[randomNumberGenerator(letterChars.length)];
-  passwordChars[numberPosition] =
-    numberChars[randomNumberGenerator(numberChars.length)];
-  passwordChars[specialPosition] =
-    specialChars[randomNumberGenerator(specialChars.length)];
+  charsets.forEach((charset) => {
+    const availableIndex = randomNumberGenerator(availablePositions.length);
+    const targetPosition = availablePositions[availableIndex];
+    availablePositions.splice(availableIndex, 1);
+    passwordChars[targetPosition] =
+      charset[randomNumberGenerator(charset.length)];
+  });
 
   return passwordChars.join("");
 }

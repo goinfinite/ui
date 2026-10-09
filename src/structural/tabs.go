@@ -23,19 +23,12 @@ func tabSideResolver(side string) string {
 	return TabSideLeft
 }
 
-func tabBorderRadiusTokenResolver(borderRadius string) string {
-	switch borderRadius {
-	case TabBorderRadiusNone, TabBorderRadiusXs, TabBorderRadiusSm,
-		TabBorderRadiusMd, TabBorderRadiusLg, TabBorderRadiusXl:
-		return borderRadius
-	}
-	return TabBorderRadiusMd
-}
-
 func tabEdgeClassResolver(
 	borderRadius string, isVertical, isRight bool,
 ) string {
-	radius := tabBorderRadiusTokenResolver(borderRadius)
+	radius := uiToolset.BorderRadiusTokenResolver(
+		borderRadius, uiToolset.BorderRadiusMd,
+	)
 	if isVertical {
 		if isRight {
 			return "rounded-r-" + radius +
@@ -59,7 +52,7 @@ func tabPercentClassResolver(classPrefix string, percent uint) string {
 }
 
 func tabConstraintClassesResolver(componentSettings TabSettings) string {
-	constraintClasses := []string{
+	return uiToolset.NonEmptyClassJoiner([]string{
 		tabPercentClassResolver("min-w", componentSettings.MinWidthPercent),
 		tabPercentClassResolver("max-w", componentSettings.MaxWidthPercent),
 		tabPercentClassResolver("min-h", componentSettings.MinHeightPercent),
@@ -68,14 +61,7 @@ func tabConstraintClassesResolver(componentSettings TabSettings) string {
 		componentSettings.MaxWidthClass,
 		componentSettings.MinHeightClass,
 		componentSettings.MaxHeightClass,
-	}
-	nonEmptyClasses := []string{}
-	for _, constraintClass := range constraintClasses {
-		if constraintClass != "" {
-			nonEmptyClasses = append(nonEmptyClasses, constraintClass)
-		}
-	}
-	return strings.Join(nonEmptyClasses, " ")
+	})
 }
 
 func tabAlignmentClassResolver(alignment string) string {
@@ -90,7 +76,9 @@ func tabAlignmentClassResolver(alignment string) string {
 
 func tabBadgeClassesResolver(item TabItemSettings) string {
 	badgeClasses := "px-1.5 py-0.5 text-xs font-bold"
-	badgeClasses += " rounded-" + tabBorderRadiusTokenResolver(item.BadgeBorderRadius)
+	badgeClasses += " rounded-" + uiToolset.BorderRadiusTokenResolver(
+		item.BadgeBorderRadius, uiToolset.BorderRadiusMd,
+	)
 	badgeClasses += " " + uiToolset.BackgroundColorClassResolver(item.BadgeBackgroundColor, "bg-neutral-50/10")
 	badgeClasses += " " + uiToolset.TextColorClassResolver(item.BadgeTextColor, "text-neutral-50/80")
 	badgeRingClasses := uiToolset.RingClassResolver(item.BadgeRingColor, item.BadgeRingThickness)

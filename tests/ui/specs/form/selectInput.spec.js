@@ -137,4 +137,58 @@ test.describe("SelectInput", () => {
     await trigger.locator(".ph-x-circle").click();
     await expect(changeCount).toHaveText("2");
   });
+
+  test("@smoke multi-select keeps the dropdown open and joins the summary", async ({
+    page,
+  }) => {
+    const panel = await openExamplePanel(page, selectSection, "Multi-Select");
+    const trigger = panel.locator(".group.flex").first();
+    const dropdown = panel.locator("ul").first();
+
+    await trigger.click();
+    await expect(dropdown).toBeVisible();
+
+    await dropdown.getByText("Argentina", { exact: true }).click();
+    await expect(dropdown).toBeVisible();
+    await expect(trigger).toContainText("Brazil, Argentina");
+
+    await dropdown.getByText("Chile", { exact: true }).click();
+    await expect(trigger).toContainText("Brazil, Argentina, Chile");
+
+    await page.keyboard.press("Escape");
+    await expect(dropdown).toBeHidden();
+  });
+
+  test("@smoke multi-select clear button empties the selection", async ({
+    page,
+  }) => {
+    const panel = await openExamplePanel(page, selectSection, "Multi-Select");
+    const trigger = panel.locator(".group.flex").first();
+
+    await trigger.locator(".ph-x-circle").click();
+
+    await expect(panel.locator("input[type=checkbox]:checked")).toHaveCount(0);
+    await expect(trigger).toContainText("Countries");
+  });
+
+  test("@smoke multi-select form submission carries one entry per selected value", async ({
+    page,
+  }) => {
+    await openExamplePanel(page, selectSection, "Multi-Select");
+    const formEntries = await page.evaluate(() => {
+      const checkedCheckbox = document.querySelector(
+        "#select-input-demo input[type=checkbox][name=countries]:checked",
+      );
+      const selectRoot = checkedCheckbox.closest("[x-data]");
+      const form = document.createElement("form");
+      selectRoot.parentNode.insertBefore(form, selectRoot);
+      form.appendChild(selectRoot);
+      const entries = [...new FormData(form).entries()];
+      form.parentNode.insertBefore(selectRoot, form);
+      form.remove();
+      return entries;
+    });
+
+    expect(formEntries).toEqual([["countries", "Brazil"]]);
+  });
 });
