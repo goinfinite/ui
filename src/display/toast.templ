@@ -61,24 +61,22 @@ templ Toast(componentSettings ToastSettings) {
 			{{ toastClasses += " p-2.5 text-lg gap-3" }}
 			{{ toastIconSizeClasses = "text-3xl" }}
 	}
-	{{ toastRingThickness := uiToolset.RingThicknessClassResolver(componentSettings.RingThickness, "ring-0") }}
+	{{ toastRingThickness := uiToolset.RingThicknessClassResolver(componentSettings.RingThickness, "ring-2") }}
+	{{ toastHasExplicitRingColor := componentSettings.RingColor != "" }}
 	{{ toastRingColor := "" }}
-	if componentSettings.RingColor != "" {
+	if toastHasExplicitRingColor {
 		{{ toastRingColor = " ring-" + componentSettings.RingColor }}
 	}
 	{{ toastRadius := uiToolset.BorderRadiusClassResolver(componentSettings.Radius, "rounded") }}
 	{{ toastClasses += " " + toastRingThickness + toastRingColor + " " + toastRadius }}
-	{{ toastHasExplicitBackground := componentSettings.BackgroundColor != "" }}
-	if toastHasExplicitBackground {
-		{{ toastClasses += " " + uiToolset.BackgroundColorClassResolver(componentSettings.BackgroundColor, "") }}
-	}
+	{{ toastClasses += " " + uiToolset.BackgroundColorClassResolver(componentSettings.BackgroundColor, "bg-neutral-800") }}
 	{{ toastTextColor := uiToolset.TextColorClassResolver(componentSettings.TextColor, "text-neutral-50") }}
 	{{ toastClasses += " " + toastTextColor }}
 	<div
 		id="toast"
 		class={ toastClasses }
-		if !toastHasExplicitBackground {
-			:class="$store.toast.toastTypeBackgroundClass"
+		if !toastHasExplicitRingColor {
+			:class="$store.toast.toastTypeRingClass"
 		}
 		x-data
 		x-show="$store.toast.toastVisible"
