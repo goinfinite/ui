@@ -138,6 +138,44 @@ templ AccordionSingleOpenExample() {
 	}
 }
 
+templ AccordionFirstItemOpenExample() {
+	{{
+		firstItemOpenUsage := `@uiDisplay.Accordion(uiDisplay.AccordionSettings{
+	Items: []uiDisplay.AccordionItemSettings{
+		{Title: "Section 1", Content: AccordionDemoSection1()},
+		{Title: "Section 2", Content: AccordionDemoSection2()},
+		{Title: "Section 3", Content: AccordionDemoSection3()},
+	},
+
+	// OptionalFields
+	IsFirstItemOpen: true,
+})`
+	}}
+	@DemoExampleCardStacked(
+		"First Item Open",
+		"IsFirstItemOpen renders the first item expanded and leaves the rest collapsed.",
+		"/display/accordion.templ", firstItemOpenUsage,
+	) {
+		@uiDisplay.Accordion(uiDisplay.AccordionSettings{
+			Items: []uiDisplay.AccordionItemSettings{
+				{
+					Title:   "Section 1",
+					Content: AccordionDemoSection1(),
+				},
+				{
+					Title:   "Section 2",
+					Content: AccordionDemoSection2(),
+				},
+				{
+					Title:   "Section 3",
+					Content: AccordionDemoSection3(),
+				},
+			},
+			IsFirstItemOpen: true,
+		})
+	}
+}
+
 templ AccordionTextCaseExample() {
 	{{
 		textCaseUsage := `@uiDisplay.Accordion(uiDisplay.AccordionSettings{
@@ -211,6 +249,7 @@ templ AccordionDemo() {
 			{Title: "Item Icons", Icon: "ph-star", Content: AccordionItemIconsExample()},
 			{Title: "Surface & Padding", Icon: "ph-palette", Content: AccordionSurfacePaddingExample()},
 			{Title: "Single Open", Icon: "ph-rows", Content: AccordionSingleOpenExample()},
+			{Title: "First Item Open", Icon: "ph-caret-down", Content: AccordionFirstItemOpenExample()},
 			{Title: "Text Case", Icon: "ph-text-t", Content: AccordionTextCaseExample()},
 		})
 	</div>

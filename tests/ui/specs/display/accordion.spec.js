@@ -67,4 +67,19 @@ test.describe("Accordion", () => {
     await expect(sectionItems.nth(0)).not.toHaveAttribute("open", "");
     await expect(sectionItems.nth(1)).toHaveAttribute("open", "");
   });
+
+  test("@smoke first item open renders the first section expanded", async ({
+    page,
+  }) => {
+    const firstItemPanel = page
+      .locator(`${accordionSection} details`)
+      .filter({ hasText: "First Item Open" })
+      .first();
+    await firstItemPanel.locator("summary").first().click();
+
+    const sectionItems = firstItemPanel.locator("details");
+    await expect(sectionItems.nth(0)).toHaveAttribute("open", "");
+    await expect(sectionItems.nth(1)).not.toHaveAttribute("open", "");
+    await expect(sectionItems.nth(2)).not.toHaveAttribute("open", "");
+  });
 });
