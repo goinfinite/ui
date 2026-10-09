@@ -149,7 +149,7 @@ func TestPasswordInputRendersActionsAndStrengthMeter(t *testing.T) {
 	for _, expectedText := range []string{
 		"Show password", "Generate random password",
 		"passwordStrengthPercentage", "Between 6 and 64 characters",
-		"Show or hide the password", "Generate a random password and copy it",
+		"show/hide the password", "generate random password",
 		`role="tooltip"`,
 	} {
 		if !strings.Contains(renderedHtml, expectedText) {

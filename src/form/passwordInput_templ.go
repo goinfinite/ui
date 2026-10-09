@@ -251,7 +251,7 @@ func passwordInputActions(shouldShowGenerateButton bool, passwordStatePath, size
 		ctx = templ.ClearChildren(ctx)
 		revealButtonSettings := passwordInputActionButtonSettingsResolver(
 			size, actionButtonStyle, "", "", "isPasswordVisible = !isPasswordVisible",
-			"Show or hide the password",
+			"show/hide the password",
 		)
 		revealButtonSettings.AriaLabelOneWayStatePath = "isPasswordVisible ? 'Hide password' : 'Show password'"
 		revealButtonSettings.IconLeftOneWayStatePath = "isPasswordVisible ? 'ph-eye-slash' : 'ph-eye'"
@@ -267,7 +267,7 @@ func passwordInputActions(shouldShowGenerateButton bool, passwordStatePath, size
 			templ_7745c5c3_Err = uiControl.Button(passwordInputActionButtonSettingsResolver(
 				size, actionButtonStyle, "Generate random password", "ph-binary",
 				passwordStatePath+" = generateRandomPassword(); copyPasswordToClipboard("+passwordStatePath+")",
-				"Generate a random password and copy it",
+				"generate random password",
 			)).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err

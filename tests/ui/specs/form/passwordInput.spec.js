@@ -41,10 +41,8 @@ test.describe("PasswordInput", () => {
     );
 
     await expect(revealTooltip).toHaveAttribute("role", "tooltip");
-    await expect(revealTooltip).toHaveText("Show or hide the password");
-    await expect(generateTooltip).toHaveText(
-      "Generate a random password and copy it",
-    );
+    await expect(revealTooltip).toHaveText("show/hide the password");
+    await expect(generateTooltip).toHaveText("generate random password");
   });
 
   test("@smoke generate fills the field and completes the meter", async ({
