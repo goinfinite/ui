@@ -1,7 +1,13 @@
 # Changelog
 
 ```log
-0.2.6 - 2026/10/08
+0.2.6 - 2026/10/09
+feat: add the FilterChipStyle to the FilterBar and forward it from the DataTable and Carousel
+feat: render the PasswordInput action buttons with the Button component and add tooltips
+feat: tint the Toast surface by its type
+fix: default the Tag radius to rounded-md
+fix: end the password clipboard toast with an exclamation mark
+refactor: join the class tokens with the shared NonEmptyClassJoiner instead of the concat loops
 feat: add the vertical orientation to the InlineRadioGroup
 feat: add the InlineCheckboxGroup with horizontal and vertical orientations
 feat: add the SearchableSelectInput with a local filter box, multi-select mode, clear button, No matches row, max-height list, and an optional tag display with typed custom values
