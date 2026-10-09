@@ -47,7 +47,7 @@ Surface container with an optional header block and content slots.
 - The visible count follows Tailwind's named breakpoints, mobile-first. `ItemsPerView` is a `CarouselItemsPerViewSettings` value: `Base` is the base (one when unset), and `Sm` (≥640px), `Md` (≥768px), `Lg` (≥1024px), `Xl` (≥1280px), and `TwoXl` (≥1536px) each raise the count from their width up. A breakpoint you leave unset inherits the lower one, exactly like a missing `md:` class. The count is measured against the browser window, the same basis the rest of the library uses.
 - `ItemsPerPage` and `ItemsPerPageSizeChoices` page the server chunk. `ItemsTotal` and `PagesTotal` feed the footer readout and page count, exactly like DataTable.
 - `QueryUrlTemplate` uses the same placeholders as DataTable: `CarouselUrlPlaceholderPageNumber`, `CarouselUrlPlaceholderItemsPerPage`, and `CarouselUrlPlaceholderSearch`.
-- `Filters` renders the shared `FilterBar` below the track, before the pagination. Filter values append to the URL as `key=value` pairs; number and date ranges append as `keyMin` and `keyMax`. The filter bar stays outside the swapped region, so a refresh cannot steal focus from a field you are typing in.
+- `Filters` renders the shared `FilterBar` below the track, before the pagination. Filter values append to the URL as `key=value` pairs; number and date ranges append as `keyMin` and `keyMax`. The filter bar stays outside the swapped region, so a refresh cannot steal focus from a field you are typing in. `FilterChipStyle` forwards to the shared FilterBar and repaints the active-filter chip; see FilterBar for the fields.
 - A search box renders centered above the track when the query URL template carries the search placeholder. It carries a magnifier icon and stretches to the available space. Pass `SearchBox` to replace it. `IsSearchBoxCompact` fixes the box to a narrow width so `SearchBoxAlignment` can place it left, center (the default), or right. `SearchBoxPosition` takes `CarouselSearchBoxPositionTop` (the default) or `CarouselSearchBoxPositionBottom` and places the bar above or below the track.
 - `IsAutoplay` advances the window on a timer. `AutoplayIntervalMs` sets the interval, 4000 when unset. `IsAutoplayPausedOnHover` stops the timer while the pointer is over the carousel.
 - `IsSwipeEnabled` moves the window on a horizontal drag or swipe. The threshold is 40 pixels.
@@ -135,6 +135,8 @@ QueryUrlTemplate: "/records?page=" + uiStructural.DataTableUrlPlaceholderPageNum
 
 Filter values append to the URL as `key=value` pairs. Number and date ranges append as `keyMin` and `keyMax`. Empty values are omitted. Set `QueryParamName` on a filter to send a different query key.
 
+`FilterChipStyle` forwards to the shared FilterBar and repaints the active-filter chip; see FilterBar for the fields.
+
 The server response must contain one element with the `data-ui-data-table` attribute. The component swaps only that element, so the filter bar, search box, and selection stay in place.
 
 Client state lives in the component root: `pageNumber`, `itemsPerPage`, `sortKey`, `sortDirection`, `searchQuery`, `filterValues`, and `selectedRowIds`. The search box and the bulk action slot bind to those paths.
@@ -168,6 +170,7 @@ Standalone filter bar. It renders one editor per declared filter and shows activ
 - Enum filters read `Options`. Multi-enum filters read `Options` and write an array of selected values under the filter key. Range filters write `{min, max}` objects under the filter key.
 - A chip appears when its filter holds a value. The chip remove button clears that filter.
 - The clear-all button appears when any filter is active.
+- `ChipStyle` repaints the active-filter chip. `OuterBackgroundColor`, `OuterRingColor`, `OuterTextColor`, `InnerBackgroundColor`, and `InnerTextColor` take color tokens. `TextCase` takes a `uiToolset.TextCase*` value and transforms both chip labels; the default is `uiToolset.TextCaseLower`. Every field falls back to the neutral default.
 - Set `EnumSelectRadioGroupNamePrefix` when a page holds more than one filter bar with the same enum keys. The prefix keeps each enum dropdown's radio group name unique. The DataTable prefixes it with the table id.
 
 ## PageHeading

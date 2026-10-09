@@ -35,6 +35,16 @@ type FilterSettings struct {
 	QueryParamName string
 }
 
+type FilterChipStyle struct {
+	// OptionalFields
+	TextCase             string
+	OuterBackgroundColor string
+	OuterRingColor       string
+	OuterTextColor       string
+	InnerBackgroundColor string
+	InnerTextColor       string
+}
+
 type FilterBarSettings struct {
 	Filters               []FilterSettings
 	ValuesTwoWayStatePath string
@@ -43,6 +53,46 @@ type FilterBarSettings struct {
 	DropdownBackgroundColor        string
 	EnumSelectRadioGroupNamePrefix string
 	OnChangeFunc                   string
+	ChipStyle                      FilterChipStyle
+}
+
+type resolvedFilterChipStyle struct {
+	InnerBackgroundColor string
+	InnerTextColor       string
+	OuterBackgroundColor string
+	OuterRingColor       string
+	OuterTextColor       string
+	TextCase             string
+}
+
+func filterChipStyleResolver(chipStyle FilterChipStyle) resolvedFilterChipStyle {
+	style := resolvedFilterChipStyle{
+		TextCase:             uiToolset.TextCaseLower,
+		OuterBackgroundColor: "neutral-50/10",
+		OuterRingColor:       "neutral-50/20",
+		OuterTextColor:       "neutral-50",
+		InnerBackgroundColor: "neutral-50/20",
+		InnerTextColor:       "neutral-50",
+	}
+	if chipStyle.TextCase != "" {
+		style.TextCase = chipStyle.TextCase
+	}
+	if chipStyle.OuterBackgroundColor != "" {
+		style.OuterBackgroundColor = chipStyle.OuterBackgroundColor
+	}
+	if chipStyle.OuterRingColor != "" {
+		style.OuterRingColor = chipStyle.OuterRingColor
+	}
+	if chipStyle.OuterTextColor != "" {
+		style.OuterTextColor = chipStyle.OuterTextColor
+	}
+	if chipStyle.InnerBackgroundColor != "" {
+		style.InnerBackgroundColor = chipStyle.InnerBackgroundColor
+	}
+	if chipStyle.InnerTextColor != "" {
+		style.InnerTextColor = chipStyle.InnerTextColor
+	}
+	return style
 }
 
 templ FilterBar(componentSettings FilterBarSettings) {
@@ -138,17 +188,20 @@ templ FilterBar(componentSettings FilterBarSettings) {
 			</div>
 		</div>
 		<div class="flex flex-wrap items-center gap-1.5">
+			{{ chipStyle := filterChipStyleResolver(componentSettings.ChipStyle) }}
 			for _, filter := range componentSettings.Filters {
 				{{ filterKey := strconv.Quote(filter.Key) }}
 				<span x-show={ "isFilterActive(" + filterKey + ")" }>
 					@uiDisplay.Tag(uiDisplay.TagSettings{
 						Size:                          uiDisplay.TagSizeXs,
-						OuterBackgroundColor:          "neutral-50/10",
-						OuterRingColor:                "neutral-50/20",
-						OuterTextColor:                "neutral-50",
+						TextCase:                      chipStyle.TextCase,
+						OuterBackgroundColor:          chipStyle.OuterBackgroundColor,
+						OuterRingColor:                chipStyle.OuterRingColor,
+						OuterTextColor:                chipStyle.OuterTextColor,
 						OuterLeftLabel:                filter.Label,
 						OuterRadius:                   uiToolset.BorderRadiusXl,
-						InnerBackgroundColor:          "neutral-50/20",
+						InnerBackgroundColor:          chipStyle.InnerBackgroundColor,
+						InnerTextColor:                chipStyle.InnerTextColor,
 						InnerLabelOneWayStatePath:     "resolveFilterChipLabel(" + filterKey + ")",
 						InnerRadius:                   uiToolset.BorderRadiusXl,
 						OnRemoveFunc:                  "resetFilter(" + filterKey + ")" + onChangeSuffix,

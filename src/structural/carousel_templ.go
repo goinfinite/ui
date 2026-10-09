@@ -669,6 +669,7 @@ func Carousel[Item any](componentSettings CarouselSettings[Item]) templ.Componen
 				EnumSelectRadioGroupNamePrefix: carouselId + "-",
 				OnChangeFunc:                   "refreshFromFirstPage()",
 				DropdownBackgroundColor:        componentSettings.FilterDropdownBackgroundColor,
+				ChipStyle:                      componentSettings.FilterChipStyle,
 			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -685,7 +686,7 @@ func Carousel[Item any](componentSettings CarouselSettings[Item]) templ.Componen
 		var templ_7745c5c3_Var34 string
 		templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.ResolveAttributeValue(paginationId)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/carousel.templ`, Line: 199, Col: 90}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/carousel.templ`, Line: 200, Col: 90}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var34)
 		if templ_7745c5c3_Err != nil {
@@ -698,7 +699,7 @@ func Carousel[Item any](componentSettings CarouselSettings[Item]) templ.Componen
 		var templ_7745c5c3_Var35 string
 		templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.ResolveAttributeValue("outerHTML:#" + paginationId)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/carousel.templ`, Line: 199, Col: 135}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/carousel.templ`, Line: 200, Col: 135}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var35)
 		if templ_7745c5c3_Err != nil {

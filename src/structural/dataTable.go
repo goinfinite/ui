@@ -57,6 +57,7 @@ type DataTableSettings[Row any] struct {
 	CheckboxUncheckedColor              string
 	Density                             DataTableDensity
 	EmptyState                          templ.Component
+	FilterChipStyle                     FilterChipStyle
 	FilterDropdownBackgroundColor       string
 	Filters                             []FilterSettings
 	HeaderActions                       templ.Component

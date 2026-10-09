@@ -63,6 +63,7 @@ type CarouselSettings[Item any] struct {
 	DotsPosition                     string
 	DotsSize                         string
 	EmptyState                       templ.Component
+	FilterChipStyle                  FilterChipStyle
 	FilterDropdownBackgroundColor    string
 	Filters                          []FilterSettings
 	GapSize                          string

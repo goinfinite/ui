@@ -141,6 +141,52 @@ templ DataTableFiltersExample() {
 	}
 }
 
+templ DataTableChipStylingExample() {
+	{{
+		chipSettings := buildDemoStaticTableSettings(
+			"data-table-demo-chip-styling", "Chip styling table pagination",
+			buildDemoPlainTableColumns(),
+			dataTableDemoRecords[:5],
+		)
+	}}
+	{{
+		chipSettings.Filters = buildDemoRecordFilters()
+		chipSettings.FilterDropdownBackgroundColor = "neutral-800"
+		chipSettings.InitialFilterValues = map[string]any{"status": "running"}
+		chipSettings.FilterChipStyle = uiStructural.FilterChipStyle{
+			TextCase:             uiToolset.TextCaseUpper,
+			OuterBackgroundColor: "secondary-500/20",
+			OuterRingColor:       "secondary-500/40",
+			OuterTextColor:       "neutral-50",
+			InnerBackgroundColor: "secondary-500/40",
+			InnerTextColor:       "neutral-50",
+		}
+	}}
+	{{
+		chipStylingUsage := `@uiStructural.DataTable(uiStructural.DataTableSettings[Record]{
+	Columns: columns,
+	Rows:    records,
+	Filters: filters,
+	FilterChipStyle: uiStructural.FilterChipStyle{
+		TextCase:             uiToolset.TextCaseUpper,
+		OuterBackgroundColor: "secondary-500/20",
+		OuterRingColor:       "secondary-500/40",
+		OuterTextColor:       "neutral-50",
+		InnerBackgroundColor: "secondary-500/40",
+		InnerTextColor:       "neutral-50",
+	},
+	InitialFilterValues: map[string]any{"status": "running"},
+})`
+	}}
+	@DemoExampleCardStacked(
+		"Chip Styling",
+		"FilterChipStyle forwards to the shared FilterBar, so the active-filter chip matches the page palette. Every field falls back to the neutral default, and TextCase defaults to lowercase.",
+		"/structural/dataTable.templ", chipStylingUsage,
+	) {
+		@uiStructural.DataTable(chipSettings)
+	}
+}
+
 templ DataTableCustomSearchBox() {
 	@uiForm.InputField(uiForm.InputFieldSettings{
 		InputType:       uiForm.InputTypeText,
@@ -604,6 +650,7 @@ templ DataTableDemo() {
 					{Title: "Column Configuration", Icon: "ph-columns", Content: DataTableColumnConfigExample()},
 					{Title: "Rows Configuration", Icon: "ph-list-numbers", Content: DataTableRowsConfigExample()},
 					{Title: "Filters", Icon: "ph-funnel", Content: DataTableFiltersExample()},
+					{Title: "Chip Styling", Icon: "ph-tag", Content: DataTableChipStylingExample()},
 					{Title: "Search Box", Icon: "ph-magnifying-glass", Content: DataTableSearchBoxExample()},
 					{Title: "Header Actions", Icon: "ph-wrench", Content: DataTableHeaderActionsExample()},
 					{Title: "Bulk Actions", Icon: "ph-checks", Content: DataTableBulkActionsExample()},

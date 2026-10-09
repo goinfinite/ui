@@ -86,6 +86,7 @@ templ DataTable[Row any](componentSettings DataTableSettings[Row]) {
 					EnumSelectRadioGroupNamePrefix: tableId + "-",
 					OnChangeFunc:                   "refreshFromFirstPage()",
 					DropdownBackgroundColor:        componentSettings.FilterDropdownBackgroundColor,
+					ChipStyle:                      componentSettings.FilterChipStyle,
 				})
 			</div>
 		}

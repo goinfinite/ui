@@ -206,6 +206,47 @@ templ CarouselDemoStylingExample() {
 	}
 }
 
+templ CarouselDemoChipStylingExample() {
+	{{
+		chipStylingUsage := `@uiStructural.Carousel(uiStructural.CarouselSettings[Record]{
+	ItemRenderer: func(record Record) templ.Component { return CarouselDemoItem(record) },
+	Items:        records,
+	Filters:      filters,
+
+	// OptionalFields
+	FilterChipStyle: uiStructural.FilterChipStyle{
+		TextCase:             uiToolset.TextCaseUpper,
+		OuterBackgroundColor: "secondary-500/20",
+		OuterRingColor:       "secondary-500/40",
+		OuterTextColor:       "neutral-50",
+		InnerBackgroundColor: "secondary-500/40",
+		InnerTextColor:       "neutral-50",
+	},
+})`
+	}}
+	@DemoExampleCardStacked(
+		"Chip Styling",
+		"FilterChipStyle forwards to the shared FilterBar, so the active-filter chip matches the carousel palette. Every field falls back to the neutral default, and TextCase defaults to lowercase.",
+		"/structural/carousel.templ", chipStylingUsage,
+	) {
+		<div id="carousel-demo-chip-styling" x-data>
+			{{
+				chipStylingSettings := buildDemoCarouselSettings("carousel-demo-chip-styling-carousel", dataTableDemoRecords[:6], 0, 6)
+				chipStylingSettings.InitialFilterValues = map[string]any{"status": "running"}
+				chipStylingSettings.FilterChipStyle = uiStructural.FilterChipStyle{
+					TextCase:             uiToolset.TextCaseUpper,
+					OuterBackgroundColor: "secondary-500/20",
+					OuterRingColor:       "secondary-500/40",
+					OuterTextColor:       "neutral-50",
+					InnerBackgroundColor: "secondary-500/40",
+					InnerTextColor:       "neutral-50",
+				}
+			}}
+			@uiStructural.Carousel(chipStylingSettings)
+		</div>
+	}
+}
+
 templ CarouselDemoAutoplayExample() {
 	{{
 		autoplayUsage := `@uiStructural.Carousel(uiStructural.CarouselSettings[Record]{
@@ -344,6 +385,7 @@ templ CarouselDemo() {
 		}
 		@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
 			{Title: "Styling", Icon: "ph-paint-brush", Content: CarouselDemoStylingExample()},
+			{Title: "Chip Styling", Icon: "ph-tag", Content: CarouselDemoChipStylingExample()},
 			{Title: "Autoplay", Icon: "ph-play-circle", Content: CarouselDemoAutoplayExample()},
 			{Title: "Server Pagination", Icon: "ph-database", Content: CarouselDemoServerExample()},
 			{Title: "Item Tooltips", Icon: "ph-chats-circle", Content: CarouselDemoTooltipsExample()},

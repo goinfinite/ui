@@ -218,6 +218,7 @@ func DataTable[Row any](componentSettings DataTableSettings[Row]) templ.Componen
 				EnumSelectRadioGroupNamePrefix: tableId + "-",
 				OnChangeFunc:                   "refreshFromFirstPage()",
 				DropdownBackgroundColor:        componentSettings.FilterDropdownBackgroundColor,
+				ChipStyle:                      componentSettings.FilterChipStyle,
 			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -437,7 +438,7 @@ func DataTable[Row any](componentSettings DataTableSettings[Row]) templ.Componen
 				var templ_7745c5c3_Var20 string
 				templ_7745c5c3_Var20, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues("width:" + strconv.Itoa(int(column.WidthPercent)) + "%")
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/dataTable.templ`, Line: 152, Col: 74}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/dataTable.templ`, Line: 153, Col: 74}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 				if templ_7745c5c3_Err != nil {
@@ -456,7 +457,7 @@ func DataTable[Row any](componentSettings DataTableSettings[Row]) templ.Componen
 				var templ_7745c5c3_Var21 string
 				templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.ResolveAttributeValue("ariaSortFor(" + strconv.Quote(column.SortKey) + ")")
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/dataTable.templ`, Line: 155, Col: 76}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/dataTable.templ`, Line: 156, Col: 76}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var21)
 				if templ_7745c5c3_Err != nil {
@@ -479,7 +480,7 @@ func DataTable[Row any](componentSettings DataTableSettings[Row]) templ.Componen
 				var templ_7745c5c3_Var22 string
 				templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(column.Label)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/dataTable.templ`, Line: 159, Col: 31}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/dataTable.templ`, Line: 160, Col: 31}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 				if templ_7745c5c3_Err != nil {
@@ -517,7 +518,7 @@ func DataTable[Row any](componentSettings DataTableSettings[Row]) templ.Componen
 				var templ_7745c5c3_Var25 string
 				templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.ResolveAttributeValue("toggleSort(" + strconv.Quote(column.SortKey) + ")")
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/dataTable.templ`, Line: 166, Col: 72}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/dataTable.templ`, Line: 167, Col: 72}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var25)
 				if templ_7745c5c3_Err != nil {
@@ -530,7 +531,7 @@ func DataTable[Row any](componentSettings DataTableSettings[Row]) templ.Componen
 				var templ_7745c5c3_Var26 string
 				templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(column.Label)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/dataTable.templ`, Line: 169, Col: 26}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/dataTable.templ`, Line: 170, Col: 26}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 				if templ_7745c5c3_Err != nil {
@@ -543,7 +544,7 @@ func DataTable[Row any](componentSettings DataTableSettings[Row]) templ.Componen
 				var templ_7745c5c3_Var27 string
 				templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.ResolveAttributeValue("sortIconClassFor(" + strconv.Quote(column.SortKey) + ")")
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/dataTable.templ`, Line: 170, Col: 146}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/dataTable.templ`, Line: 171, Col: 146}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var27)
 				if templ_7745c5c3_Err != nil {
@@ -575,7 +576,7 @@ func DataTable[Row any](componentSettings DataTableSettings[Row]) templ.Componen
 			var templ_7745c5c3_Var28 string
 			templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.ResolveAttributeValue(strconv.Itoa(columnCount))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/dataTable.templ`, Line: 184, Col: 48}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/dataTable.templ`, Line: 185, Col: 48}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var28)
 			if templ_7745c5c3_Err != nil {
@@ -714,7 +715,7 @@ func DataTable[Row any](componentSettings DataTableSettings[Row]) templ.Componen
 					var templ_7745c5c3_Var35 string
 					templ_7745c5c3_Var35, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues("width:" + strconv.Itoa(int(column.WidthPercent)) + "%")
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/dataTable.templ`, Line: 222, Col: 75}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/dataTable.templ`, Line: 223, Col: 75}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var35))
 					if templ_7745c5c3_Err != nil {

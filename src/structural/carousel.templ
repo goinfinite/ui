@@ -193,6 +193,7 @@ templ Carousel[Item any](componentSettings CarouselSettings[Item]) {
 					EnumSelectRadioGroupNamePrefix: carouselId + "-",
 					OnChangeFunc:                   "refreshFromFirstPage()",
 					DropdownBackgroundColor:        componentSettings.FilterDropdownBackgroundColor,
+					ChipStyle:                      componentSettings.FilterChipStyle,
 				})
 			</div>
 		}
