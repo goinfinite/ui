@@ -94,12 +94,13 @@ func selectInputEmptyStateClassExpressionBuilder(
 
 templ selectInputOptionCheckbox(
 	inputIdPrefix, inputName, optionValue, selectedItemsStatePath, onChangeFunc string,
+	optionIndex int,
 ) {
 	<span class="relative ml-auto inline-flex h-4 w-4 shrink-0 items-center justify-center">
 		<input
 			type="checkbox"
 			if inputIdPrefix != "" {
-				id={ inputIdPrefix + "-" + optionValue }
+				id={ fmt.Sprintf("%s-%d", inputIdPrefix, optionIndex) }
 			}
 			if inputName != "" {
 				name={ inputName }
@@ -288,7 +289,7 @@ templ SelectInput(componentSettings SelectInputSettings) {
 							</label>
 						</li>
 					}
-					for _, option := range componentSettings.FlatOptions {
+					for optionIndex, option := range componentSettings.FlatOptions {
 						<li class={ dropdownClasses + " " + dropdownSelectedClasses }>
 							<label class={ optionLabelClasses }>
 								if componentSettings.IsMultiSelect {
@@ -298,6 +299,7 @@ templ SelectInput(componentSettings SelectInputSettings) {
 										componentSettings.InputName, option,
 										selectValueStatePath,
 										componentSettings.OnChangeFunc,
+										optionIndex,
 									)
 								}
 								if !componentSettings.IsMultiSelect {
@@ -317,7 +319,7 @@ templ SelectInput(componentSettings SelectInputSettings) {
 							</label>
 						</li>
 					}
-					for _, option := range componentSettings.LabelValueOptions {
+					for optionIndex, option := range componentSettings.LabelValueOptions {
 						<li class={ dropdownClasses + " " + dropdownSelectedClasses }>
 							<label class={ optionLabelClasses }>
 								if componentSettings.IsMultiSelect {
@@ -332,6 +334,7 @@ templ SelectInput(componentSettings SelectInputSettings) {
 										componentSettings.InputName, option.Value,
 										selectValueStatePath,
 										componentSettings.OnChangeFunc,
+										optionIndex+len(componentSettings.FlatOptions),
 									)
 								}
 								if !componentSettings.IsMultiSelect {
