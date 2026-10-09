@@ -9,6 +9,8 @@ const chipOf = (page, section, filterLabel) =>
     `${section} span[x-show]:has(button[aria-label="Remove ${filterLabel} filter"])`,
   );
 
+const chipValueOf = (chip) => chip.locator("span[x-text]");
+
 test.describe("FilterBar @structural", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/index.html#filter-bar-demo");
@@ -19,7 +21,7 @@ test.describe("FilterBar @structural", () => {
     const chip = chipOf(page, filterBarSection, "Status");
     await expect(chip).toBeVisible();
     await expect(chip).toContainText("Status");
-    await expect(chip).toContainText("running");
+    await expect(chipValueOf(chip)).toHaveText("running");
     await expect(page.locator(stateReadout).first()).toContainText(
       '"status":"running"',
     );
@@ -40,7 +42,7 @@ test.describe("FilterBar @structural", () => {
 
     const chip = chipOf(page, filterBarSection, "Name");
     await expect(chip).toBeVisible();
-    await expect(chip).toContainText("alpha");
+    await expect(chipValueOf(chip)).toHaveText("alpha");
     await expect(page.locator(stateReadout).first()).toContainText(
       '"name":"alpha"',
     );
@@ -52,17 +54,17 @@ test.describe("FilterBar @structural", () => {
     await page.locator(`${filterBarSection} input[name=cpuMin]`).fill("2");
     const chip = chipOf(page, filterBarSection, "CPU");
     await expect(chip).toBeVisible();
-    await expect(chip).toContainText("≥ 2");
+    await expect(chipValueOf(chip)).toHaveText("≥ 2");
 
     await page.locator(`${filterBarSection} input[name=cpuMax]`).fill("8");
-    await expect(chip).toContainText("2–8");
+    await expect(chipValueOf(chip)).toHaveText("2–8");
   });
 
   test("@smoke number range chip shows the maximum alone", async ({ page }) => {
     await page.locator(`${filterBarSection} input[name=cpuMax]`).fill("8");
     const chip = chipOf(page, filterBarSection, "CPU");
     await expect(chip).toBeVisible();
-    await expect(chip).toContainText("≤ 8");
+    await expect(chipValueOf(chip)).toHaveText("≤ 8");
   });
 
   test("@smoke enum select updates the chip", async ({ page }) => {
@@ -74,7 +76,7 @@ test.describe("FilterBar @structural", () => {
 
     const chip = chipOf(page, filterBarSection, "Status");
     await expect(chip).toBeVisible();
-    await expect(chip).toContainText("stopped");
+    await expect(chipValueOf(chip)).toHaveText("stopped");
     await expect(page.locator(stateReadout).first()).toContainText(
       '"status":"stopped"',
     );
@@ -127,7 +129,7 @@ test.describe("FilterBar @structural", () => {
 
     const chip = chipOf(page, multiSection, "Status");
     await expect(chip).toBeVisible();
-    await expect(chip).toContainText("running, stopped");
+    await expect(chipValueOf(chip)).toHaveText("running, stopped");
     await expect(page.locator("#filter-bar-demo-multi-state")).toContainText(
       '"status":["running","stopped"]',
     );

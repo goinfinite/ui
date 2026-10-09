@@ -490,10 +490,11 @@ test.describe("DataTable @structural", () => {
 
     const dropdown = table.locator("nav ul");
     await expect(dropdown).toBeVisible();
-    expect(
-      await dropdown.evaluate(
-        (element) => getComputedStyle(element).backgroundColor,
-      ),
-    ).not.toBe("rgba(0, 0, 0, 0)");
+    const backgroundColor = await dropdown.evaluate(
+      (element) => getComputedStyle(element).backgroundColor,
+    );
+    const colorChannels = (backgroundColor.match(/[\d.]+/g) ?? []).map(Number);
+    const backgroundAlpha = colorChannels.length === 4 ? colorChannels[3] : 1;
+    expect(backgroundAlpha).toBe(1);
   });
 });
