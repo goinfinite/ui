@@ -25,6 +25,28 @@ test.describe("PasswordInput", () => {
     await expect(mainPasswordInput(page)).toHaveAttribute("type", "password");
   });
 
+  test("@smoke action buttons expose a tooltip", async ({ page }) => {
+    const revealButton = page
+      .getByRole("button", { name: "Show password" })
+      .first();
+    const generateButton = page
+      .getByRole("button", { name: "Generate random password" })
+      .first();
+
+    const revealTooltip = page.locator(
+      `#${await revealButton.getAttribute("aria-describedby")}`,
+    );
+    const generateTooltip = page.locator(
+      `#${await generateButton.getAttribute("aria-describedby")}`,
+    );
+
+    await expect(revealTooltip).toHaveAttribute("role", "tooltip");
+    await expect(revealTooltip).toHaveText("Show or hide the password");
+    await expect(generateTooltip).toHaveText(
+      "Generate a random password and copy it",
+    );
+  });
+
   test("@smoke generate fills the field and completes the meter", async ({
     page,
   }) => {
