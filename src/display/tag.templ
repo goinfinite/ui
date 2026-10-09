@@ -57,6 +57,9 @@ templ Tag(componentSettings TagSettings) {
 		case TagSizeXl:
 			{{ initialOuterSizeClasses = "text-xl p-1.25 gap-1.25" }}
 	}
+	if componentSettings.Size == TagSizeXs && componentSettings.OnRemoveFunc != "" {
+		{{ initialOuterSizeClasses = "text-xs py-0.75 px-1.5 gap-0.75" }}
+	}
 	{{ initialOuterBorderWidthClass := "border-2" }}
 	if componentSettings.OuterRingThickness != "" {
 		switch componentSettings.OuterRingThickness {

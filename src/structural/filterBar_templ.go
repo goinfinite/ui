@@ -335,10 +335,10 @@ func FilterBar(componentSettings FilterBarSettings) templ.Component {
 				OuterRingColor:            "neutral-50/20",
 				OuterTextColor:            "neutral-50",
 				OuterLeftLabel:            filter.Label,
-				OuterRadius:               uiToolset.BorderRadius3xl,
+				OuterRadius:               uiToolset.BorderRadiusXl,
 				InnerBackgroundColor:      "neutral-50/20",
 				InnerLabelOneWayStatePath: "resolveFilterChipLabel(" + filterKey + ")",
-				InnerRadius:               uiToolset.BorderRadius3xl,
+				InnerRadius:               uiToolset.BorderRadiusXl,
 				OnRemoveFunc:              "resetFilter(" + filterKey + ")" + onChangeSuffix,
 				RemoveButtonLabel:         "Remove " + filter.Label + " filter",
 			}).Render(ctx, templ_7745c5c3_Buffer)
