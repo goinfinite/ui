@@ -84,6 +84,12 @@ func buildDemoCarouselTooltipSettings(
 		"&search=" + uiStructural.CarouselUrlPlaceholderSearch +
 		"&componentId=" + id
 	tooltipSettings.ItemsPerPageSizeChoices = []uiStructural.ItemsPerPage{6}
+	if len(records) > carouselDemoItemsPerPage {
+		tooltipSettings.ItemsPerPageSizeChoices = append(
+			tooltipSettings.ItemsPerPageSizeChoices,
+			uiStructural.ItemsPerPage(len(records)),
+		)
+	}
 	tooltipSettings.ItemRenderer = func(record DemoServerRecord) templ.Component {
 		return CarouselTooltipDemoItem(record)
 	}
