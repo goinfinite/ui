@@ -64,7 +64,7 @@ templ Sidebar(componentSettings SidebarSettings) {
 	if componentSettings.IsCollapsed {
 		{{ sidebarClasses += " !w-16" }}
 	}
-	{{ sidebarDynamicClasses := sidebarDynamicClassesBuilder(componentSettings, sidebarAttachmentMode) }}
+	{{ sidebarDynamicClasses := sidebarDynamicClassesBuilder(componentSettings) }}
 	// SidebarWrapperCssClasses
 	{{ sidebarWrapperClasses := "h-full flex" }}
 	// - SidebarWrapperWidth

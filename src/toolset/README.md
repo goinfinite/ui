@@ -19,6 +19,7 @@ Shared token-to-class resolvers. Components accept a token and apply the matchin
 - `PaddingClassResolver(paddingSize, fallbackClass)`: maps the shared `PaddingSize*` tokens `none` through `xl` to the `p-*` class, or the fallback.
 - `CompactPaddingClassResolver(paddingSize, fallbackClass)`: the tighter padding scale for compact chips and list items; maps the shared `PaddingSize*` tokens `none` through `xl` to the `p-*` class, or the fallback.
 - `GapClassResolver(gapSize, fallbackClass)`: maps the shared `GapSize*` tokens `none` through `xl` to the `gap-*` class, or the fallback.
+- `NonEmptyClassJoiner(classList)`: joins the non-empty entries with a single space. Use it to append optional class tokens without a `+=` loop.
 
 ## Component id
 

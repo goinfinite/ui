@@ -1,5 +1,7 @@
 package uiToolset
 
+import "strings"
+
 const (
 	BorderRadiusNone string = "none"
 	BorderRadiusXs   string = "xs"
@@ -207,4 +209,14 @@ func GapClassResolver(gapSize, fallbackClass string) string {
 		return "gap-8"
 	}
 	return fallbackClass
+}
+
+func NonEmptyClassJoiner(classList []string) string {
+	nonEmptyClasses := make([]string, 0, len(classList))
+	for _, class := range classList {
+		if class != "" {
+			nonEmptyClasses = append(nonEmptyClasses, class)
+		}
+	}
+	return strings.Join(nonEmptyClasses, " ")
 }

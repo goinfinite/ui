@@ -294,3 +294,25 @@ func TestGapClassResolver(t *testing.T) {
 		})
 	}
 }
+
+func TestNonEmptyClassJoiner(t *testing.T) {
+	testCases := []struct {
+		name      string
+		classList []string
+		want      string
+	}{
+		{name: "empty list", classList: []string{}, want: ""},
+		{name: "all empty", classList: []string{"", "", ""}, want: ""},
+		{name: "single class", classList: []string{"min-w-7"}, want: "min-w-7"},
+		{name: "drops the empty entries", classList: []string{"min-w-7", "", "min-h-7"}, want: "min-w-7 min-h-7"},
+		{name: "keeps every class", classList: []string{"a", "b", "c"}, want: "a b c"},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			got := NonEmptyClassJoiner(testCase.classList)
+			if got != testCase.want {
+				t.Errorf("NonEmptyClassJoiner() = %q, want %q", got, testCase.want)
+			}
+		})
+	}
+}

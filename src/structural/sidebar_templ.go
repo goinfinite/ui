@@ -86,7 +86,7 @@ func Sidebar(componentSettings SidebarSettings) templ.Component {
 		if componentSettings.IsCollapsed {
 			sidebarClasses += " !w-16"
 		}
-		sidebarDynamicClasses := sidebarDynamicClassesBuilder(componentSettings, sidebarAttachmentMode)
+		sidebarDynamicClasses := sidebarDynamicClassesBuilder(componentSettings)
 		sidebarWrapperClasses := "h-full flex"
 		sidebarWrapperWidthClass := "w-64"
 		if componentSettings.Width != "" {
