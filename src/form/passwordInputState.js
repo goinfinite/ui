@@ -10,10 +10,10 @@ UiToolset.RegisterAlpineState(() => {
   };
 
   const passwordCopiedToastMessages = {
-    en: "Password copied to the clipboard",
-    pt: "Senha copiada para a área de transferência",
-    es: "Contraseña copiada al portapapeles",
-    zh: "密码已复制到剪贴板",
+    en: "Password copied to the clipboard!",
+    pt: "Senha copiada para a área de transferência!",
+    es: "Contraseña copiada al portapapeles!",
+    zh: "密码已复制到剪贴板！",
   };
 
   Alpine.data("passwordInput", (rulesScriptId) => ({
