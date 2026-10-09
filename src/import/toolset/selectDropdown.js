@@ -1,6 +1,7 @@
 const selectDropdownOpenUpwardSlackPx = 8;
 
-function selectDropdownClipperBottomResolver(triggerElement) {
+function selectDropdownClipperBoundsResolver(triggerElement) {
+  let availableTop = 0;
   let availableBottom = window.innerHeight;
   for (
     let ancestor = triggerElement.parentElement;
@@ -14,22 +15,29 @@ function selectDropdownClipperBottomResolver(triggerElement) {
     ) {
       continue;
     }
-    availableBottom = Math.min(
-      availableBottom,
-      ancestor.getBoundingClientRect().bottom,
-    );
+    const ancestorRect = ancestor.getBoundingClientRect();
+    availableTop = Math.max(availableTop, ancestorRect.top);
+    availableBottom = Math.min(availableBottom, ancestorRect.bottom);
   }
-  return availableBottom;
+  return { availableTop, availableBottom };
 }
 
 function selectDropdownOpenUpwardResolver(trigger, dropdown) {
   if (!trigger || !dropdown) {
     return false;
   }
-  const triggerBottom = trigger.getBoundingClientRect().bottom;
-  const availableBottom = selectDropdownClipperBottomResolver(trigger);
-  return (
-    availableBottom - triggerBottom <
-    dropdown.offsetHeight + selectDropdownOpenUpwardSlackPx
-  );
+  const triggerRect = trigger.getBoundingClientRect();
+  const { availableTop, availableBottom } =
+    selectDropdownClipperBoundsResolver(trigger);
+  const requiredHeight =
+    dropdown.offsetHeight + selectDropdownOpenUpwardSlackPx;
+  const spaceBelow = availableBottom - triggerRect.bottom;
+  if (spaceBelow >= requiredHeight) {
+    return false;
+  }
+  const spaceAbove = triggerRect.top - availableTop;
+  if (spaceAbove >= requiredHeight) {
+    return true;
+  }
+  return spaceAbove > spaceBelow;
 }
