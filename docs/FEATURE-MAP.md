@@ -299,7 +299,7 @@ Horizontal and vertical tab headers bound to one selected value, with per-tab la
 
 ## Filter Bar
 
-Standalone filter bar that renders one editor per declared filter (text contains, enum select, multi-enum select, number range, date range), shows active filters as removable chips, and resets everything with clear-all. A multi-enum filter holds an array and the refresh URL repeats its parameter once per selected value.
+Standalone filter bar that renders one editor per declared filter (text contains, enum select, multi-enum select, number range, date range), shows active filters as removable chips while at least one filter is active, and resets everything with clear-all. A multi-enum filter holds an array and the refresh URL repeats its parameter once per selected value.
 
 **Flow:**
 
@@ -355,8 +355,8 @@ Dismissible notification toast component with title, description, and Alpine.js 
 
 **Flow:**
 
-1. `src/display/toast.templ` — Component definition with ToastSettings struct exposing optional AutoDismissSeconds (defaults to 10s) and a type-tinted surface when BackgroundColor is unset
-2. `src/display/toastState.js` — Alpine toast state, the type-to-background resolver, and HTMX response handling
+1. `src/display/toast.templ` — Component definition with ToastSettings struct exposing optional AutoDismissSeconds (defaults to 10s), a `neutral-800` background default, and a tone-colored ring default when RingColor is unset
+2. `src/display/toastState.js` — Alpine toast state, the type-to-ring-color resolver, and HTMX response handling
 3. `src/display/toast_templ.go` — Compiled output rendering toast element with Alpine.js binding and timer logic
 4. `src/import/toolset/apiResponse.js` — API response message and outcome resolution
 5. `src/import/toolset/jsonAjax.js` — JsonAjax response handling delegated to the toast store
@@ -387,7 +387,7 @@ Overlay to hide/obscure content during loading. It renders a fixed full-viewport
 
 ## Accordion
 
-Collapsible section component for grouping content into expandable panels. The configured radius rounds only the first item's top corners and the last item's bottom corners; middle items stay square. `IsSingleOpen` groups the items so one stays open at a time.
+Collapsible section component for grouping content into expandable panels. The configured radius rounds only the first item's top corners and the last item's bottom corners; middle items stay square. `IsSingleOpen` groups the items so one stays open at a time. `IsFirstItemOpen` renders the first item expanded and leaves the rest collapsed.
 
 **Flow:**
 

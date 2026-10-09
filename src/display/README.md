@@ -23,6 +23,8 @@ Each item takes a `Title`, a `Content` component, and an optional `Icon`.
 
 Set `IsSingleOpen` to keep one item open at a time. The component groups the items under a shared name, so opening one closes the rest.
 
+Set `IsFirstItemOpen` to render the first item expanded and leave the rest collapsed.
+
 `TextCase` accepts a `uiToolset.TextCase*` value and transforms the item titles. The default, `TextCaseNone`, leaves them as typed.
 
 ## Alert
@@ -196,7 +198,6 @@ Notification popup driven by an Alpine global store.
 
 ```go
 @uiDisplay.Toast(uiDisplay.ToastSettings{
-    BackgroundColor:    "neutral-800",
     TextColor:          "neutral-50",
     Size:               uiDisplay.ToastSizeMd,
     AutoDismissSeconds: 10,
@@ -205,6 +206,6 @@ Notification popup driven by an Alpine global store.
 
 Render one Toast per page. Then call `$store.toast.displayToast(message, type)` or `$store.toast.displayToastWithApiResponse(apiResponse, httpStatusCode)`. Call `$store.toast.clearToast()` to hide it early.
 
-The toast surface takes a translucent tint from its type: `success` is green, `partialSuccess` is yellow, and `danger` is red. Set `BackgroundColor` to replace that tint with a fixed color.
+The background defaults to `neutral-800`. The ring defaults to `ring-2` in the tone color: `success` is green, `partialSuccess` is yellow, and `danger` is red. Set `BackgroundColor` or `RingColor` to replace either default, and `RingThickness` to change the ring width.
 
 When HTMX is present, the Toast listens to `htmx:afterRequest`. A JSON response with a `readableMessage`, a `humanReadableMessage` outcome, or a string `body` displays a toast automatically. The styling follows the HTTP status: 2xx success, 207 partial success, 4xx and above danger. Auto-dismiss defaults to 10 seconds.

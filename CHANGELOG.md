@@ -1,6 +1,11 @@
 # Changelog
 
 ```log
+0.2.7 - 2026/10/09
+feat: add the IsFirstItemOpen option to the Accordion
+fix: hide the FilterBar chip row while no filter is active
+fix: default the Toast surface to neutral and ring the tone color
+
 0.2.6 - 2026/10/09
 feat: add the FilterChipStyle to the FilterBar and forward it from the DataTable and Carousel
 feat: render the PasswordInput action buttons with the Button component and add tooltips
