@@ -1,0 +1,14 @@
+reviews:
+  path_filters:
+    - "!**/*_templ.go"
+    - "!**/docs/docs.go"
+    - "!**/docs/swagger.json"
+    - "!**/docs/swagger.yaml"
+    - "!**/wire_gen.go"
+    - "!**/vendor/**"
+    - "!**/build/**"
+    - "!**/target/**"
+    - "!**/*.gen.*"
+    - "!**/*_pb*.*"
+    - "!**/_version.py"
+    - "!**/storybook-static/**"
