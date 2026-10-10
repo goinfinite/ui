@@ -1,8 +1,9 @@
 package uiForm
 
 import (
+	"encoding/json"
+	"log/slog"
 	"strconv"
-	"strings"
 )
 
 const (
@@ -47,9 +48,17 @@ func inlineCheckboxGroupValuesArrayLiteralBuilder(inputSettings []CheckboxInputS
 		if value == "" {
 			value = checkboxInputDefaultValue
 		}
-		values = append(values, strconv.Quote(value))
+		values = append(values, value)
 	}
-	return "[" + strings.Join(values, ",") + "]"
+	encodedValues, marshalErr := json.Marshal(values)
+	if marshalErr != nil {
+		slog.Debug(
+			"InlineCheckboxGroupValuesMarshalFailure",
+			slog.String("err", marshalErr.Error()),
+		)
+		return "[]"
+	}
+	return string(encodedValues)
 }
 
 func inlineCheckboxGroupOptionRowClassesResolver(

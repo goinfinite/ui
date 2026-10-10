@@ -55,6 +55,44 @@ func TestInlineGroupMaxVisibleOptionsStyle(t *testing.T) {
 	}
 }
 
+func TestInlineCheckboxGroupValuesArrayLiteralBuilder(t *testing.T) {
+	testCases := []struct {
+		name          string
+		inputSettings []CheckboxInputSettings
+		expected      string
+	}{
+		{
+			name: "values become a json array literal",
+			inputSettings: []CheckboxInputSettings{
+				{Value: "apple"},
+				{Value: "banana"},
+			},
+			expected: `["apple","banana"]`,
+		},
+		{
+			name:          "an empty value falls back to the default",
+			inputSettings: []CheckboxInputSettings{{}},
+			expected:      `["on"]`,
+		},
+		{
+			name:          "quotes and control characters stay valid json",
+			inputSettings: []CheckboxInputSettings{{Value: "say \"hi\"\n"}},
+			expected:      "[\"say \\\"hi\\\"\\n\"]",
+		},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			actualLiteral := inlineCheckboxGroupValuesArrayLiteralBuilder(testCase.inputSettings)
+			if actualLiteral != testCase.expected {
+				t.Errorf(
+					"ValuesArrayLiteralMismatch: got %q, want %q",
+					actualLiteral, testCase.expected,
+				)
+			}
+		})
+	}
+}
+
 func TestInlineRadioGroupRendersOrientationAndMaxVisibleOptions(t *testing.T) {
 	var buffer bytes.Buffer
 	renderErr := InlineRadioGroup(InlineRadioGroupSettings{
