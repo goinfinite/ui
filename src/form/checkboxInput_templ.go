@@ -21,6 +21,8 @@ const (
 	CheckboxInputLabelPositionRight string = "right"
 )
 
+const checkboxInputDefaultValue string = "on"
+
 type CheckboxInputSettings struct {
 	// OptionalFields
 	AriaLabel                    string
@@ -36,6 +38,7 @@ type CheckboxInputSettings struct {
 	IsCheckedOneWayStatePath     string
 	IsDisabled                   bool
 	IsDisabledOneWayStatePath    string
+	IsFullWidth                  bool
 	IsInvalid                    bool
 	IsInvalidOneWayStatePath     string
 	IsRequired                   bool
@@ -134,6 +137,10 @@ func CheckboxInput(componentSettings CheckboxInputSettings) templ.Component {
 		if componentSettings.IsDisabled {
 			labelStateClasses = "cursor-not-allowed opacity-50"
 		}
+		labelWidthClass := "w-fit"
+		if componentSettings.IsFullWidth {
+			labelWidthClass = "w-full"
+		}
 		borderClasses := checkboxInputBoxBorderClassesResolver(
 			uncheckedColor, checkedColor, errorColor, componentSettings.IsInvalid,
 		)
@@ -174,7 +181,7 @@ func CheckboxInput(componentSettings CheckboxInputSettings) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var2 = []any{"relative inline-flex w-fit select-none items-center gap-2 " + labelPositionClasses + " " + labelStateClasses}
+		var templ_7745c5c3_Var2 = []any{"relative inline-flex " + labelWidthClass + " select-none items-center gap-2 " + labelPositionClasses + " " + labelStateClasses}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var2...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -204,7 +211,7 @@ func CheckboxInput(componentSettings CheckboxInputSettings) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue(isDisabledPath + " && 'cursor-not-allowed opacity-50'")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 148, Col: 67}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 155, Col: 67}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
 			if templ_7745c5c3_Err != nil {
@@ -227,7 +234,7 @@ func CheckboxInput(componentSettings CheckboxInputSettings) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.InputId)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 154, Col: 35}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 161, Col: 35}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5)
 			if templ_7745c5c3_Err != nil {
@@ -246,7 +253,7 @@ func CheckboxInput(componentSettings CheckboxInputSettings) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.InputName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 157, Col: 39}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 164, Col: 39}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
 			if templ_7745c5c3_Err != nil {
@@ -265,7 +272,7 @@ func CheckboxInput(componentSettings CheckboxInputSettings) templ.Component {
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.Value)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 160, Col: 36}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 167, Col: 36}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
 			if templ_7745c5c3_Err != nil {
@@ -284,7 +291,7 @@ func CheckboxInput(componentSettings CheckboxInputSettings) templ.Component {
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.AriaLabel)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 163, Col: 45}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 170, Col: 45}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var8)
 			if templ_7745c5c3_Err != nil {
@@ -303,7 +310,7 @@ func CheckboxInput(componentSettings CheckboxInputSettings) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.InputId + "-error")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 166, Col: 60}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 173, Col: 60}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var9)
 			if templ_7745c5c3_Err != nil {
@@ -334,7 +341,7 @@ func CheckboxInput(componentSettings CheckboxInputSettings) templ.Component {
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.ResolveAttributeValue(isDisabledPath)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 175, Col: 31}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 182, Col: 31}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var10)
 			if templ_7745c5c3_Err != nil {
@@ -365,7 +372,7 @@ func CheckboxInput(componentSettings CheckboxInputSettings) templ.Component {
 			var templ_7745c5c3_Var11 string
 			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.ResolveAttributeValue(invalidPath)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 184, Col: 32}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 191, Col: 32}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var11)
 			if templ_7745c5c3_Err != nil {
@@ -388,7 +395,7 @@ func CheckboxInput(componentSettings CheckboxInputSettings) templ.Component {
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.TwoWayStatePath)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 188, Col: 48}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 195, Col: 48}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var12)
 			if templ_7745c5c3_Err != nil {
@@ -407,7 +414,7 @@ func CheckboxInput(componentSettings CheckboxInputSettings) templ.Component {
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.ResolveAttributeValue(checkedEffect)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 191, Col: 29}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 198, Col: 29}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var13)
 			if templ_7745c5c3_Err != nil {
@@ -426,7 +433,7 @@ func CheckboxInput(componentSettings CheckboxInputSettings) templ.Component {
 			var templ_7745c5c3_Var14 string
 			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.OnChangeFunc)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 194, Col: 45}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 201, Col: 45}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var14)
 			if templ_7745c5c3_Err != nil {
@@ -471,7 +478,7 @@ func CheckboxInput(componentSettings CheckboxInputSettings) templ.Component {
 			var templ_7745c5c3_Var17 string
 			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.ResolveAttributeValue(dynamicClassExpr)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 200, Col: 30}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 207, Col: 30}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var17)
 			if templ_7745c5c3_Err != nil {
@@ -512,7 +519,7 @@ func CheckboxInput(componentSettings CheckboxInputSettings) templ.Component {
 			var templ_7745c5c3_Var20 string
 			templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.ResolveAttributeValue("!(" + indeterminatePath + ")")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 204, Col: 95}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 211, Col: 95}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var20)
 			if templ_7745c5c3_Err != nil {
@@ -547,7 +554,7 @@ func CheckboxInput(componentSettings CheckboxInputSettings) templ.Component {
 			var templ_7745c5c3_Var23 string
 			templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.ResolveAttributeValue(indeterminatePath)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 205, Col: 82}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 212, Col: 82}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var23)
 			if templ_7745c5c3_Err != nil {
@@ -612,7 +619,7 @@ func CheckboxInput(componentSettings CheckboxInputSettings) templ.Component {
 			var templ_7745c5c3_Var28 string
 			templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.Label)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 213, Col: 30}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 220, Col: 30}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 			if templ_7745c5c3_Err != nil {
@@ -655,7 +662,7 @@ func CheckboxInput(componentSettings CheckboxInputSettings) templ.Component {
 				var templ_7745c5c3_Var30 string
 				templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.InputId + "-error")
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 223, Col: 46}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 230, Col: 46}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var30)
 				if templ_7745c5c3_Err != nil {
@@ -691,7 +698,7 @@ func CheckboxInput(componentSettings CheckboxInputSettings) templ.Component {
 				var templ_7745c5c3_Var32 string
 				templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.ResolveAttributeValue(invalidPath)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 227, Col: 25}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 234, Col: 25}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var32)
 				if templ_7745c5c3_Err != nil {
@@ -710,7 +717,7 @@ func CheckboxInput(componentSettings CheckboxInputSettings) templ.Component {
 				var templ_7745c5c3_Var33 string
 				templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.ErrorMessageOneWayStatePath)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 230, Col: 59}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 237, Col: 59}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var33)
 				if templ_7745c5c3_Err != nil {
@@ -729,7 +736,7 @@ func CheckboxInput(componentSettings CheckboxInputSettings) templ.Component {
 				var templ_7745c5c3_Var34 string
 				templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.ErrorMessage)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 234, Col: 37}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/checkboxInput.templ`, Line: 241, Col: 37}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var34))
 				if templ_7745c5c3_Err != nil {

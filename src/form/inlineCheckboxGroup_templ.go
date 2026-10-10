@@ -20,9 +20,11 @@ type InlineCheckboxGroupSettings struct {
 	InputSettings []CheckboxInputSettings
 
 	// OptionalFields
-	Orientation       string
-	MaxVisibleOptions uint
-	TextCase          string
+	Orientation               string
+	MaxVisibleOptions         uint
+	TextCase                  string
+	FloatingButtonStyle       FloatingButtonStyle
+	ShouldHideFloatingButtons bool
 }
 
 func InlineCheckboxGroup(componentSettings InlineCheckboxGroupSettings) templ.Component {
@@ -53,7 +55,17 @@ func InlineCheckboxGroup(componentSettings InlineCheckboxGroupSettings) templ.Co
 		legendClasses := "ml-1 select-none px-1 text-xs font-bold leading-none text-neutral-50/80 " + uiToolset.TextCaseClassResolver(componentSettings.TextCase)
 		contentClasses := inlineGroupContentClassesResolver(componentSettings.Orientation, componentSettings.MaxVisibleOptions)
 		maxVisibleOptionsStyle := inlineGroupMaxVisibleOptionsStyle(componentSettings.MaxVisibleOptions)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"flex w-full flex-col\"><fieldset class=\"bg-neutral-50/7.5 relative -mt-1.5 w-full rounded border border-neutral-50/5 transition-colors focus-within:border-neutral-50/30 hover:border-neutral-50/30\">")
+		groupStatePath := inlineCheckboxGroupStatePathResolver(componentSettings.InputSettings)
+		groupValuesArrayLiteral := inlineCheckboxGroupValuesArrayLiteralBuilder(componentSettings.InputSettings)
+		shouldRenderFloatingButtons := groupStatePath != "" && !componentSettings.ShouldHideFloatingButtons
+		optionRowClasses := inlineCheckboxGroupOptionRowClassesResolver(componentSettings.Orientation, shouldRenderFloatingButtons)
+		floatingButtonsClasses := "absolute right-2 hidden gap-1 group-hover/checkboxGroup:flex group-focus-within/checkboxGroup:flex"
+		if componentSettings.Orientation == InlineCheckboxGroupOrientationVertical {
+			floatingButtonsClasses += " top-0 flex-col"
+		} else {
+			floatingButtonsClasses += " top-0.5 flex-row"
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"flex w-full flex-col\"><fieldset class=\"group/checkboxGroup bg-neutral-50/7.5 relative -mt-1.5 w-full rounded border border-neutral-50/5 transition-colors focus-within:border-neutral-50/30 hover:border-neutral-50/30\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -82,7 +94,7 @@ func InlineCheckboxGroup(componentSettings InlineCheckboxGroupSettings) templ.Co
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.Label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inlineCheckboxGroup.templ`, Line: 28, Col: 29}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inlineCheckboxGroup.templ`, Line: 40, Col: 29}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -122,7 +134,7 @@ func InlineCheckboxGroup(componentSettings InlineCheckboxGroupSettings) templ.Co
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(maxVisibleOptionsStyle)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inlineCheckboxGroup.templ`, Line: 30, Col: 97}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inlineCheckboxGroup.templ`, Line: 45, Col: 35}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -138,7 +150,32 @@ func InlineCheckboxGroup(componentSettings InlineCheckboxGroupSettings) templ.Co
 			return templ_7745c5c3_Err
 		}
 		for _, inputSettings := range componentSettings.InputSettings {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<div class=\"w-fit\">")
+			if componentSettings.Orientation == InlineCheckboxGroupOrientationVertical {
+				inputSettings.IsFullWidth = true
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, " ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var8 = []any{optionRowClasses}
+			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var8...)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<div class=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var9 string
+			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.ResolveAttributeValue(templ.CSSClasses(templ_7745c5c3_Var8).String())
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inlineCheckboxGroup.templ`, Line: 1, Col: 0}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var9)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -146,12 +183,62 @@ func InlineCheckboxGroup(componentSettings InlineCheckboxGroupSettings) templ.Co
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</div></fieldset></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if shouldRenderFloatingButtons {
+			var templ_7745c5c3_Var10 = []any{floatingButtonsClasses}
+			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var10...)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<div class=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var11 string
+			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.ResolveAttributeValue(templ.CSSClasses(templ_7745c5c3_Var10).String())
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inlineCheckboxGroup.templ`, Line: 1, Col: 0}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var11)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = FloatingButton(FloatingButtonSettings{
+				AriaLabel:   "Select all options",
+				Icon:        "ph-list-checks",
+				OnClickFunc: groupStatePath + " = " + groupValuesArrayLiteral,
+				Style:       componentSettings.FloatingButtonStyle,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = FloatingButton(FloatingButtonSettings{
+				AriaLabel:   "Deselect all options",
+				Icon:        "ph-square",
+				OnClickFunc: groupStatePath + " = []",
+				Style:       componentSettings.FloatingButtonStyle,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</fieldset></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

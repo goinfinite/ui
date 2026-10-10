@@ -12,9 +12,11 @@ type InlineCheckboxGroupSettings struct {
 	InputSettings []CheckboxInputSettings
 
 	// OptionalFields
-	Orientation       string
-	MaxVisibleOptions uint
-	TextCase          string
+	Orientation               string
+	MaxVisibleOptions         uint
+	TextCase                  string
+	FloatingButtonStyle       FloatingButtonStyle
+	ShouldHideFloatingButtons bool
 }
 
 templ InlineCheckboxGroup(componentSettings InlineCheckboxGroupSettings) {
@@ -22,18 +24,52 @@ templ InlineCheckboxGroup(componentSettings InlineCheckboxGroupSettings) {
 	{{ legendClasses := "ml-1 select-none px-1 text-xs font-bold leading-none text-neutral-50/80 " + uiToolset.TextCaseClassResolver(componentSettings.TextCase) }}
 	{{ contentClasses := inlineGroupContentClassesResolver(componentSettings.Orientation, componentSettings.MaxVisibleOptions) }}
 	{{ maxVisibleOptionsStyle := inlineGroupMaxVisibleOptionsStyle(componentSettings.MaxVisibleOptions) }}
+	{{ groupStatePath := inlineCheckboxGroupStatePathResolver(componentSettings.InputSettings) }}
+	{{ groupValuesArrayLiteral := inlineCheckboxGroupValuesArrayLiteralBuilder(componentSettings.InputSettings) }}
+	{{ shouldRenderFloatingButtons := groupStatePath != "" && !componentSettings.ShouldHideFloatingButtons }}
+	{{ optionRowClasses := inlineCheckboxGroupOptionRowClassesResolver(componentSettings.Orientation, shouldRenderFloatingButtons) }}
+	{{ floatingButtonsClasses := "absolute right-2 hidden gap-1 group-hover/checkboxGroup:flex group-focus-within/checkboxGroup:flex" }}
+	if componentSettings.Orientation == InlineCheckboxGroupOrientationVertical {
+		{{ floatingButtonsClasses += " top-0 flex-col" }}
+	} else {
+		{{ floatingButtonsClasses += " top-0.5 flex-row" }}
+	}
 	<div class="flex w-full flex-col">
-		<fieldset class="bg-neutral-50/7.5 relative -mt-1.5 w-full rounded border border-neutral-50/5 transition-colors focus-within:border-neutral-50/30 hover:border-neutral-50/30">
+		<fieldset class="group/checkboxGroup bg-neutral-50/7.5 relative -mt-1.5 w-full rounded border border-neutral-50/5 transition-colors focus-within:border-neutral-50/30 hover:border-neutral-50/30">
 			<legend class={ legendClasses }>
 				{ componentSettings.Label }
 			</legend>
-			<div class={ contentClasses } if maxVisibleOptionsStyle != "" { style={ maxVisibleOptionsStyle } }>
+			<div
+				class={ contentClasses }
+				if maxVisibleOptionsStyle != "" {
+					style={ maxVisibleOptionsStyle }
+				}
+			>
 				for _, inputSettings := range componentSettings.InputSettings {
-					<div class="w-fit">
+					if componentSettings.Orientation == InlineCheckboxGroupOrientationVertical {
+						{{ inputSettings.IsFullWidth = true }}
+					}
+					<div class={ optionRowClasses }>
 						@CheckboxInput(inputSettings)
 					</div>
 				}
 			</div>
+			if shouldRenderFloatingButtons {
+				<div class={ floatingButtonsClasses }>
+					@FloatingButton(FloatingButtonSettings{
+						AriaLabel:   "Select all options",
+						Icon:        "ph-list-checks",
+						OnClickFunc: groupStatePath + " = " + groupValuesArrayLiteral,
+						Style:       componentSettings.FloatingButtonStyle,
+					})
+					@FloatingButton(FloatingButtonSettings{
+						AriaLabel:   "Deselect all options",
+						Icon:        "ph-square",
+						OnClickFunc: groupStatePath + " = []",
+						Style:       componentSettings.FloatingButtonStyle,
+					})
+				</div>
+			}
 		</fieldset>
 	</div>
 }

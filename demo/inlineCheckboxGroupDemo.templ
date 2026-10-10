@@ -1,6 +1,7 @@
 package main
 
 import (
+	uiControl "github.com/goinfinite/ui/src/control"
 	uiDisplay "github.com/goinfinite/ui/src/display"
 	uiForm "github.com/goinfinite/ui/src/form"
 	uiToolset "github.com/goinfinite/ui/src/toolset"
@@ -220,6 +221,82 @@ templ InlineCheckboxGroupMaxVisibleOptionsExample() {
 	}
 }
 
+templ InlineCheckboxGroupFloatingButtonStyleExample() {
+	{{
+		floatingButtonStyleUsage := `@uiForm.InlineCheckboxGroup(uiForm.InlineCheckboxGroupSettings{
+	Label: "Fruits",
+	InputSettings: []uiForm.CheckboxInputSettings{
+		{Label: "Apple", Value: "apple", TwoWayStatePath: "selectedFruits"},
+		{Label: "Banana", Value: "banana", TwoWayStatePath: "selectedFruits"},
+		{Label: "Orange", Value: "orange", TwoWayStatePath: "selectedFruits"},
+	},
+
+	// OptionalFields
+	FloatingButtonStyle: uiForm.FloatingButtonStyle{
+		BackgroundColor: "secondary-500/20",
+		RingColor:       "secondary-500/40",
+		Size:            uiControl.ButtonSizeSm,
+		Shape:           uiToolset.ShapeCircular,
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Floating Button Style",
+		"FloatingButtonStyle repaints the select-all and deselect-all actions and changes their size and shape.",
+		"/form/inlineCheckboxGroup.templ", floatingButtonStyleUsage,
+	) {
+		<div x-data="{selectedFruits: []}" class="flex w-full max-w-80 flex-col gap-3">
+			@uiForm.InlineCheckboxGroup(uiForm.InlineCheckboxGroupSettings{
+				Label: "Fruits",
+				InputSettings: []uiForm.CheckboxInputSettings{
+					{Label: "Apple", Value: "apple", TwoWayStatePath: "selectedFruits"},
+					{Label: "Banana", Value: "banana", TwoWayStatePath: "selectedFruits"},
+					{Label: "Orange", Value: "orange", TwoWayStatePath: "selectedFruits"},
+				},
+				FloatingButtonStyle: uiForm.FloatingButtonStyle{
+					BackgroundColor: "secondary-500/20",
+					RingColor:       "secondary-500/40",
+					Size:            uiControl.ButtonSizeSm,
+					Shape:           uiToolset.ShapeCircular,
+				},
+			})
+		</div>
+	}
+}
+
+templ InlineCheckboxGroupHiddenFloatingButtonsExample() {
+	{{
+		hiddenFloatingButtonsUsage := `@uiForm.InlineCheckboxGroup(uiForm.InlineCheckboxGroupSettings{
+	Label: "Fruits",
+	InputSettings: []uiForm.CheckboxInputSettings{
+		{Label: "Apple", Value: "apple", TwoWayStatePath: "selectedFruits"},
+		{Label: "Banana", Value: "banana", TwoWayStatePath: "selectedFruits"},
+		{Label: "Orange", Value: "orange", TwoWayStatePath: "selectedFruits"},
+	},
+
+	// OptionalFields
+	ShouldHideFloatingButtons: true,
+})`
+	}}
+	@DemoExampleCard(
+		"Hidden Floating Buttons",
+		"ShouldHideFloatingButtons removes the select-all and deselect-all actions from the group.",
+		"/form/inlineCheckboxGroup.templ", hiddenFloatingButtonsUsage,
+	) {
+		<div x-data="{selectedFruits: []}" class="flex w-full max-w-50 flex-col gap-3">
+			@uiForm.InlineCheckboxGroup(uiForm.InlineCheckboxGroupSettings{
+				Label: "Fruits",
+				InputSettings: []uiForm.CheckboxInputSettings{
+					{Label: "Apple", Value: "apple", TwoWayStatePath: "selectedFruits"},
+					{Label: "Banana", Value: "banana", TwoWayStatePath: "selectedFruits"},
+					{Label: "Orange", Value: "orange", TwoWayStatePath: "selectedFruits"},
+				},
+				ShouldHideFloatingButtons: true,
+			})
+		</div>
+	}
+}
+
 templ InlineCheckboxGroupDemo() {
 	{{
 		demoUsage := `@uiForm.InlineCheckboxGroup(uiForm.InlineCheckboxGroupSettings{
@@ -274,6 +351,8 @@ templ InlineCheckboxGroupDemo() {
 			{Title: "Max Visible Options", Icon: "ph-arrows-out-line-vertical", Content: InlineCheckboxGroupMaxVisibleOptionsExample()},
 			{Title: "Sizes and Shapes", Icon: "ph-ruler", Content: InlineCheckboxGroupSizesExample()},
 			{Title: "Colors", Icon: "ph-palette", Content: InlineCheckboxGroupColorsExample()},
+			{Title: "Floating Button Style", Icon: "ph-cursor-click", Content: InlineCheckboxGroupFloatingButtonStyleExample()},
+			{Title: "Hidden Floating Buttons", Icon: "ph-eye-slash", Content: InlineCheckboxGroupHiddenFloatingButtonsExample()},
 		})
 	</div>
 }
