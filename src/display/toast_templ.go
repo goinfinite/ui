@@ -106,7 +106,7 @@ func Toast(componentSettings ToastSettings) templ.Component {
 		}
 		toastRadius := uiToolset.BorderRadiusClassResolver(componentSettings.Radius, "rounded")
 		toastClasses += " " + toastRingThickness + toastRingColor + " " + toastRadius
-		toastClasses += " " + uiToolset.BackgroundColorClassResolver(componentSettings.BackgroundColor, "bg-neutral-800")
+		toastClasses += " " + uiToolset.BackgroundColorClassResolver(componentSettings.BackgroundColor, "bg-neutral-800/90")
 		toastTextColor := uiToolset.TextColorClassResolver(componentSettings.TextColor, "text-neutral-50")
 		toastClasses += " " + toastTextColor
 		var templ_7745c5c3_Var2 = []any{toastClasses}

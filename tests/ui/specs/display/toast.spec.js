@@ -25,7 +25,7 @@ test.describe("Toast", () => {
       Alpine.store("toast").displayToast("Saved!", "success"),
     );
     await expect(page.locator("#toast")).toBeVisible();
-    expect(await toastBackgroundOf(page)).toBe("rgb(38, 38, 38)");
+    expect(await toastBackgroundOf(page)).toBe("rgba(38, 38, 38, 0.9)");
     expect(await toastShadowOf(page)).toContain("rgb(34, 197, 94)");
   });
 
@@ -36,7 +36,7 @@ test.describe("Toast", () => {
       Alpine.store("toast").displayToast("Two of three.", "partialSuccess"),
     );
     await expect(page.locator("#toast")).toBeVisible();
-    expect(await toastBackgroundOf(page)).toBe("rgb(38, 38, 38)");
+    expect(await toastBackgroundOf(page)).toBe("rgba(38, 38, 38, 0.9)");
     expect(await toastShadowOf(page)).toContain("rgb(234, 179, 8)");
   });
 
@@ -47,7 +47,7 @@ test.describe("Toast", () => {
       Alpine.store("toast").displayToast("Failed.", "danger"),
     );
     await expect(page.locator("#toast")).toBeVisible();
-    expect(await toastBackgroundOf(page)).toBe("rgb(38, 38, 38)");
+    expect(await toastBackgroundOf(page)).toBe("rgba(38, 38, 38, 0.9)");
     expect(await toastShadowOf(page)).toContain("rgb(239, 68, 68)");
   });
 });
