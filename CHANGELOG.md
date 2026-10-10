@@ -5,6 +5,13 @@
 feat: add the IsFirstItemOpen option to the Accordion
 fix: hide the FilterBar chip row while no filter is active
 fix: default the Toast surface to neutral and ring the tone color
+fix: soften the Toast background to neutral-800/90
+feat: add a Radius option to the FilterBar chip style
+fix: default the Button radius to rounded-md
+feat: add the FloatingButton and render the TextArea actions with it
+feat: add select-all and deselect-all floating actions to the InlineCheckboxGroup
+docs: update the readmes, the contexts, the feature map, and the changelog
+chore(docs): regenerate the demo page
 
 0.2.6 - 2026/10/09
 feat: add the FilterChipStyle to the FilterBar and forward it from the DataTable and Carousel

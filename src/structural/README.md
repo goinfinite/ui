@@ -170,7 +170,7 @@ Standalone filter bar. It renders one editor per declared filter and shows activ
 - Enum filters read `Options`. Multi-enum filters read `Options` and write an array of selected values under the filter key. Range filters write `{min, max}` objects under the filter key.
 - A chip appears when its filter holds a value. The chip remove button clears that filter. The chip row renders only while at least one filter is active, so an idle filter bar keeps its padding symmetric.
 - The clear-all button appears when any filter is active.
-- `ChipStyle` repaints the active-filter chip. `OuterBackgroundColor`, `OuterRingColor`, `OuterTextColor`, `InnerBackgroundColor`, and `InnerTextColor` take color tokens. `TextCase` takes a `uiToolset.TextCase*` value and transforms both chip labels; the default is `uiToolset.TextCaseLower`. Every field falls back to the neutral default.
+- `ChipStyle` repaints the active-filter chip. `OuterBackgroundColor`, `OuterRingColor`, `OuterTextColor`, `InnerBackgroundColor`, and `InnerTextColor` take color tokens. `Radius` takes a `uiToolset.BorderRadius*` value and rounds both chip layers; the default is `uiToolset.BorderRadiusMd`. `TextCase` takes a `uiToolset.TextCase*` value and transforms both chip labels; the default is `uiToolset.TextCaseLower`. Every field falls back to the neutral default.
 - Set `EnumSelectRadioGroupNamePrefix` when a page holds more than one filter bar with the same enum keys. The prefix keeps each enum dropdown's radio group name unique. The DataTable prefixes it with the table id.
 
 ## PageHeading

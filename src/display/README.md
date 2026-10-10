@@ -206,6 +206,6 @@ Notification popup driven by an Alpine global store.
 
 Render one Toast per page. Then call `$store.toast.displayToast(message, type)` or `$store.toast.displayToastWithApiResponse(apiResponse, httpStatusCode)`. Call `$store.toast.clearToast()` to hide it early.
 
-The background defaults to `neutral-800`. The ring defaults to `ring-2` in the tone color: `success` is green, `partialSuccess` is yellow, and `danger` is red. Set `BackgroundColor` or `RingColor` to replace either default, and `RingThickness` to change the ring width.
+The background defaults to `neutral-800/90`. The ring defaults to `ring-2` in the tone color: `success` is green, `partialSuccess` is yellow, and `danger` is red. Set `BackgroundColor` or `RingColor` to replace either default, and `RingThickness` to change the ring width.
 
 When HTMX is present, the Toast listens to `htmx:afterRequest`. A JSON response with a `readableMessage`, a `humanReadableMessage` outcome, or a string `body` displays a toast automatically. The styling follows the HTTP status: 2xx success, 207 partial success, 4xx and above danger. Auto-dismiss defaults to 10 seconds.

@@ -17,14 +17,14 @@ Button with optional label, icons, tooltip, ring, and shape variants.
 - `Size` accepts the `uiControl.ButtonSize*` constants.
 - `PaddingSize` accepts the `uiToolset.PaddingSize*` constants and overrides the padding that `Size` sets. Use `uiToolset.PaddingSizeNone` with `MinWidthClass` and `MinHeightClass` to render a fixed square button, for example a field action.
 - `MinWidthClass`, `MaxWidthClass`, `MinHeightClass`, and `MaxHeightClass` take arbitrary Tailwind classes and bound the button box.
-- `Shape` accepts `uiToolset.ShapeCircular`, `uiToolset.ShapeRounded`, or `uiToolset.ShapeSquare`.
+- `Shape` accepts `uiToolset.ShapeCircular`, `uiToolset.ShapeRounded`, or `uiToolset.ShapeSquare`. The default is `rounded-md`.
 - Icons use the `ph-bold` weight. Pass the icon name alone, for example `"ph-floppy-disk"`.
 - `AriaLabel` sets a static accessible name. `AriaLabelOneWayStatePath` binds the accessible name to Alpine state, so a button whose purpose changes can relabel itself.
 - `IsDisabled` sets a static disabled state. `IsDisabledOneWayStatePath` disables the button while the path is truthy and dims it.
 - `IsVisibleOneWayStatePath` hides the button while the path is falsy.
 - `IsSubmit` renders `type="submit"` so the button submits its form. Every button renders a `type`; the default is `button`, so a button inside a form does not submit it.
 - `TooltipContent` renders a text tooltip. `TooltipContentHtml` accepts a component, and `TooltipContentOneWayStatePath` binds live text. `TooltipPosition` accepts the `uiToolset.TooltipPosition*` constants. `TooltipMinWidthClass`, `TooltipMaxWidthClass`, `TooltipMinHeightClass`, and `TooltipMaxHeightClass` cap the tooltip size. The tooltip renders in a fixed layer on the document body. A scroll container cannot clip it or gain a scrollbar from it.
-- `BackgroundColor`, `TextColor`, and `RingColor` accept Tailwind color tokens, for example `"red-500/20"`. The `*Hover` fields set the hover state.
+- `BackgroundColor`, `TextColor`, and `RingColor` accept Tailwind color tokens, for example `"red-500/20"`. The `*Hover` fields set the hover state, and `BackgroundColorActive` sets the pressed state.
 - `TextCase` accepts a `uiToolset.TextCase*` value and transforms the label. The default, `TextCaseNone`, leaves it as typed.
 
 ## RangeSlider
