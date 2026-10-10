@@ -12,6 +12,7 @@ feat: add the FloatingButton and render the TextArea actions with it
 feat: add select-all and deselect-all floating actions to the InlineCheckboxGroup
 docs: update the readmes, the contexts, the feature map, and the changelog
 chore(docs): regenerate the demo page
+fix: build the inline checkbox group values literal with encoding/json
 
 0.2.6 - 2026/10/09
 feat: add the FilterChipStyle to the FilterBar and forward it from the DataTable and Carousel
