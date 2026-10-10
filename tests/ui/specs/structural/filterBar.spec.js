@@ -108,6 +108,24 @@ test.describe("FilterBar @structural", () => {
     );
   });
 
+  test("@smoke chip row renders only while a filter is active", async ({
+    page,
+  }) => {
+    const chipRow = page.locator(
+      `${filterBarSection} div[x-show="hasActiveFilters()"]`,
+    );
+    await expect(chipRow).toBeVisible();
+
+    await page
+      .locator(`${filterBarSection} button`)
+      .filter({ hasText: "Clear filters" })
+      .click();
+    await expect(chipRow).toBeHidden();
+
+    await page.locator(`${filterBarSection} input[name=name]`).fill("alpha");
+    await expect(chipRow).toBeVisible();
+  });
+
   test("@smoke multi-value filter holds an array and joins the chip", async ({
     page,
   }) => {

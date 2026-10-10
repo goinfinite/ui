@@ -21,6 +21,7 @@ type AccordionSettings struct {
 	BorderRadius           string
 	ContentBackgroundColor string
 	ContentPaddingSize     string
+	IsFirstItemOpen        bool
 	IsSingleOpen           bool
 	OpenBackgroundColor    string
 	PaddingSize            string
@@ -60,12 +61,15 @@ templ Accordion(componentSettings AccordionSettings) {
 	{{ textCaseClass := uiToolset.TextCaseClassResolver(componentSettings.TextCase) }}
 	<!-- Accordion -->
 	<section class="w-full">
-		for _, item := range componentSettings.Items {
+		for itemIndex, item := range componentSettings.Items {
 			<!-- AccordionItem -->
 			<details
 				class={ "border-b-1 group/accordion transition-all duration-300 last:border-b-0 " + itemPaddingClass + " " + itemEdgeRadiusClasses + " " + backgroundColorClass + " " + openBackgroundColorClass + " " + borderColorClass }
 				if groupName != "" {
 					name={ groupName }
+				}
+				if componentSettings.IsFirstItemOpen && itemIndex == 0 {
+					open
 				}
 			>
 				<summary class={ "relative flex cursor-pointer list-none items-center gap-1.5 pr-8 focus-visible:outline-none [&::-webkit-details-marker]:hidden " + titleColorClass }>

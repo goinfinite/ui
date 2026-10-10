@@ -27,6 +27,7 @@ type ButtonSettings struct {
 	AriaLabel                     string
 	AriaLabelOneWayStatePath      string
 	BackgroundColor               string
+	BackgroundColorActive         string
 	BackgroundColorHover          string
 	IconLeft                      string
 	IconLeftOneWayStatePath       string
@@ -97,6 +98,10 @@ templ Button(componentSettings ButtonSettings) {
 		if componentSettings.BackgroundColorHover != "" {
 			{{ backgroundHoverColor = "hover:bg-" + componentSettings.BackgroundColorHover }}
 		}
+		{{ backgroundActiveColor := "" }}
+		if componentSettings.BackgroundColorActive != "" {
+			{{ backgroundActiveColor = "active:bg-" + componentSettings.BackgroundColorActive }}
+		}
 		{{ buttonPadding := "p-2" }}
 		{{ buttonTextSize := "text-base" }}
 		{{ buttonGap := "gap-1" }}
@@ -142,7 +147,7 @@ templ Button(componentSettings ButtonSettings) {
 			{{ buttonPadding = uiToolset.CompactPaddingClassResolver(componentSettings.PaddingSize, buttonPadding) }}
 		}
 		{{ backgroundSize := buttonPadding + " " + buttonTextSize + " " + buttonGap }}
-		{{ backgroundClasses := backgroundColor + " " + backgroundHoverColor + " " + backgroundSize }}
+		{{ backgroundClasses := backgroundColor + " " + backgroundHoverColor + " " + backgroundActiveColor + " " + backgroundSize }}
 		{{ sizeConstraintClasses := uiToolset.NonEmptyClassJoiner([]string{
 			componentSettings.MinWidthClass, componentSettings.MaxWidthClass,
 			componentSettings.MinHeightClass, componentSettings.MaxHeightClass,
@@ -167,7 +172,7 @@ templ Button(componentSettings ButtonSettings) {
 		if componentSettings.RingColorHover != "" {
 			{{ ringClasses += " hover:ring-" + componentSettings.RingColorHover }}
 		}
-		{{ radiusRoundness := uiToolset.ShapeClassResolver(componentSettings.Shape, "rounded") }}
+		{{ radiusRoundness := uiToolset.ShapeClassResolver(componentSettings.Shape, "rounded-md") }}
 		{{ iconSize := "text-base" }}
 		switch componentSettings.Size {
 			case ButtonSizeXs:

@@ -71,7 +71,21 @@ A row or column of checkboxes under one shared label. The label notches into the
 })
 ```
 
-Each `CheckboxInputSettings` carries its own size, shape, colors, and errors. When the shared state path holds an array, Alpine adds and removes the checked values. `Orientation` accepts `InlineCheckboxGroupOrientationHorizontal` (the default) and `InlineCheckboxGroupOrientationVertical`. `MaxVisibleOptions` caps the visible option rows and scrolls the rest. `TextCase` transforms only the shared label.
+Each `CheckboxInputSettings` carries its own size, shape, colors, and errors. When the shared state path holds an array, Alpine adds and removes the checked values. All inputs must share the same array `TwoWayStatePath`; the select-all and deselect-all actions write it, and select-all skips statically disabled options. `Orientation` accepts `InlineCheckboxGroupOrientationHorizontal` (the default) and `InlineCheckboxGroupOrientationVertical`. `MaxVisibleOptions` caps the visible option rows and scrolls the rest. `TextCase` transforms only the shared label. The group reveals select-all and deselect-all `FloatingButton` actions on hover or focus. `FloatingButtonStyle` repaints them and changes their size and shape; `ShouldHideFloatingButtons` removes them.
+
+## FloatingButton
+
+Small icon button that floats over a field and reveals on hover or focus. `InlineCheckboxGroup` and `TextArea` render their actions with it.
+
+```go
+@uiForm.FloatingButton(uiForm.FloatingButtonSettings{
+    AriaLabel:   "Clear text area content",
+    Icon:        "ph-x-circle",
+    OnClickFunc: "description = ''",
+})
+```
+
+`Icon` renders a static icon; `IconOneWayStatePath` binds the icon to Alpine state. `Style` accepts a `FloatingButtonStyle` with `BackgroundColor`, `BackgroundColorActive`, `BackgroundColorHover`, `RingColor`, `RingColorHover`, `TextColor`, `TextColorHover`, `Size`, and `Shape`. Every field falls back to the neutral default.
 
 ## TextArea
 
@@ -84,7 +98,7 @@ Multiline input with expand, copy, and clear actions.
 })
 ```
 
-Set `IsCode` for monospace text. `IsReadOnly` sets the native `readonly` attribute. `IsRequired` adds the required marker to the label.
+Set `IsCode` for monospace text. `IsReadOnly` sets the native `readonly` attribute. `IsRequired` adds the required marker to the label. The field reveals expand, copy, and clear `FloatingButton` actions on hover or focus. `FloatingButtonStyle` repaints them and changes their size and shape; `ShouldHideFloatingButtons` removes them and lets the text use the full width.
 
 ## SelectInput
 

@@ -1,8 +1,8 @@
 UiToolset.RegisterAlpineState(() => {
-  const toastTypeBackgroundClasses = {
-    success: "bg-green-500/15",
-    partialSuccess: "bg-yellow-500/15",
-    danger: "bg-red-500/15",
+  const toastTypeRingClasses = {
+    success: "ring-green-500",
+    partialSuccess: "ring-yellow-500",
+    danger: "ring-red-500",
   };
 
   Alpine.store("toast", {
@@ -12,8 +12,8 @@ UiToolset.RegisterAlpineState(() => {
     displayDurationMs: 10000,
     dismissTimeoutId: null,
 
-    get toastTypeBackgroundClass() {
-      return toastTypeBackgroundClasses[this.toastType] ?? "bg-primary-300";
+    get toastTypeRingClass() {
+      return toastTypeRingClasses[this.toastType] ?? "ring-primary-300";
     },
 
     displayToast(message, toastType) {

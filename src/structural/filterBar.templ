@@ -38,6 +38,7 @@ type FilterSettings struct {
 type FilterChipStyle struct {
 	// OptionalFields
 	TextCase             string
+	Radius               string
 	OuterBackgroundColor string
 	OuterRingColor       string
 	OuterTextColor       string
@@ -62,12 +63,14 @@ type resolvedFilterChipStyle struct {
 	OuterBackgroundColor string
 	OuterRingColor       string
 	OuterTextColor       string
+	Radius               string
 	TextCase             string
 }
 
 func filterChipStyleResolver(chipStyle FilterChipStyle) resolvedFilterChipStyle {
 	style := resolvedFilterChipStyle{
 		TextCase:             uiToolset.TextCaseLower,
+		Radius:               uiToolset.BorderRadiusMd,
 		OuterBackgroundColor: "neutral-50/10",
 		OuterRingColor:       "neutral-50/20",
 		OuterTextColor:       "neutral-50",
@@ -76,6 +79,9 @@ func filterChipStyleResolver(chipStyle FilterChipStyle) resolvedFilterChipStyle 
 	}
 	if chipStyle.TextCase != "" {
 		style.TextCase = chipStyle.TextCase
+	}
+	if chipStyle.Radius != "" {
+		style.Radius = chipStyle.Radius
 	}
 	if chipStyle.OuterBackgroundColor != "" {
 		style.OuterBackgroundColor = chipStyle.OuterBackgroundColor
@@ -187,7 +193,7 @@ templ FilterBar(componentSettings FilterBarSettings) {
 				})
 			</div>
 		</div>
-		<div class="flex flex-wrap items-center gap-1.5">
+		<div class="flex flex-wrap items-center gap-1.5" x-show="hasActiveFilters()">
 			{{ chipStyle := filterChipStyleResolver(componentSettings.ChipStyle) }}
 			for _, filter := range componentSettings.Filters {
 				{{ filterKey := strconv.Quote(filter.Key) }}
@@ -199,11 +205,11 @@ templ FilterBar(componentSettings FilterBarSettings) {
 						OuterRingColor:                chipStyle.OuterRingColor,
 						OuterTextColor:                chipStyle.OuterTextColor,
 						OuterLeftLabel:                filter.Label,
-						OuterRadius:                   uiToolset.BorderRadiusXl,
+						OuterRadius:                   chipStyle.Radius,
 						InnerBackgroundColor:          chipStyle.InnerBackgroundColor,
 						InnerTextColor:                chipStyle.InnerTextColor,
 						InnerLabelOneWayStatePath:     "resolveFilterChipLabel(" + filterKey + ")",
-						InnerRadius:                   uiToolset.BorderRadiusXl,
+						InnerRadius:                   chipStyle.Radius,
 						OnRemoveFunc:                  "resetFilter(" + filterKey + ")" + onChangeSuffix,
 						RemoveButtonLabel:             "Remove " + filter.Label + " filter",
 					})

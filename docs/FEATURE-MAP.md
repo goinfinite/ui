@@ -30,13 +30,14 @@ Password field with a reveal toggle, an optional random password generator, and 
 
 ## Multi-line Text Area
 
-Multi-line text input with five height steps (h-12/24/36/48/60), expand-to-3x toggle, floating action icons (expand, copy, clear) anchored to the text line, and optional hints rendered as a focusable tooltip or a description line.
+Multi-line text input with five height steps (h-12/24/36/48/60), expand-to-3x toggle, floating action icons (expand, copy, clear) anchored to the text line, and optional hints rendered as a focusable tooltip or a description line. `FloatingButtonStyle` repaints the action icons and changes their size and shape; `ShouldHideFloatingButtons` removes them and drops the reserved right padding.
 
 **Flow:**
 
 1. `src/form/textArea.templ` — Component definition with TextAreaSettings struct; heights and icon positions supplied mutually exclusively via Alpine `:class`
-2. `src/form/inputHint.templ` — Shared hint renderer for the tooltip and description display modes
-3. `src/form/textArea_templ.go` — Compiled output rendering textarea element with styling and Alpine.js integration
+2. `src/form/floatingButton.templ` — Shared floating icon button that resolves the style defaults and renders a Button
+3. `src/form/inputHint.templ` — Shared hint renderer for the tooltip and description display modes
+4. `src/form/textArea_templ.go` — Compiled output rendering textarea element with styling and Alpine.js integration
 
 ---
 
@@ -139,12 +140,24 @@ Radio button group for presenting multiple mutually exclusive options in a row o
 
 ## Inline Checkbox Group
 
-Checkbox group for presenting several choices in a row or a column under one notched label, bound to one array state path.
+Checkbox group for presenting several choices in a row or a column under one notched label, bound to one array state path. The group reveals select-all and deselect-all floating actions on hover or focus; `FloatingButtonStyle` repaints them and changes their size and shape, and `ShouldHideFloatingButtons` removes them.
 
 **Flow:**
 
-1. `src/form/inlineCheckboxGroup.templ` — Component definition with InlineCheckboxGroupSettings struct and the orientation resolver, composing CheckboxInput per setting
-2. `src/form/inlineCheckboxGroup_templ.go` — Compiled output rendering the checkboxes horizontally or vertically
+1. `src/form/inlineCheckboxGroup.templ` — Component definition with InlineCheckboxGroupSettings struct and the orientation resolver, composing CheckboxInput per setting and FloatingButton for the select-all actions
+2. `src/form/floatingButton.templ` — Shared floating icon button that resolves the style defaults and renders a Button
+3. `src/form/inlineCheckboxGroup_templ.go` — Compiled output rendering the checkboxes horizontally or vertically
+
+---
+
+## Floating Button
+
+Small icon button that floats over a field and reveals on hover or focus. `InlineCheckboxGroup` and `TextArea` render their actions with it. `FloatingButtonStyle` overrides the background, ring, and text colors, the size, and the shape; every field falls back to the neutral default.
+
+**Flow:**
+
+1. `src/form/floatingButton.templ` — Component definition with FloatingButtonSettings and FloatingButtonStyle structs; resolves each style default and renders a Button
+2. `src/form/floatingButton_templ.go` — Compiled output rendering the Button with the resolved style
 
 ---
 
@@ -299,11 +312,11 @@ Horizontal and vertical tab headers bound to one selected value, with per-tab la
 
 ## Filter Bar
 
-Standalone filter bar that renders one editor per declared filter (text contains, enum select, multi-enum select, number range, date range), shows active filters as removable chips, and resets everything with clear-all. A multi-enum filter holds an array and the refresh URL repeats its parameter once per selected value.
+Standalone filter bar that renders one editor per declared filter (text contains, enum select, multi-enum select, number range, date range), shows active filters as removable chips while at least one filter is active, and resets everything with clear-all. A multi-enum filter holds an array and the refresh URL repeats its parameter once per selected value.
 
 **Flow:**
 
-1. `src/structural/filterBar.templ` — Component definition with FilterBarSettings and FilterSettings; renders editors and chips bound to a values object; the FilterChipStyle struct carries each chip color token and the label text case (default lowercase)
+1. `src/structural/filterBar.templ` — Component definition with FilterBarSettings and FilterSettings; renders editors and chips bound to a values object; the FilterChipStyle struct carries each chip color token, the chip radius (default `md`), and the label text case (default lowercase)
 2. `src/structural/filterBarState.js` — Alpine component with chip visibility, chip label, single-filter reset, clear-all, and any-active helpers
 3. `src/form/selectInput.templ` — Multi-select dropdown editor (IsMultiSelect) for the multi-enum kind
 4. `src/display/tag.templ` — Removable Tag variant used for the chips
@@ -355,8 +368,8 @@ Dismissible notification toast component with title, description, and Alpine.js 
 
 **Flow:**
 
-1. `src/display/toast.templ` — Component definition with ToastSettings struct exposing optional AutoDismissSeconds (defaults to 10s) and a type-tinted surface when BackgroundColor is unset
-2. `src/display/toastState.js` — Alpine toast state, the type-to-background resolver, and HTMX response handling
+1. `src/display/toast.templ` — Component definition with ToastSettings struct exposing optional AutoDismissSeconds (defaults to 10s), a `neutral-800/90` background default, and a tone-colored ring default when RingColor is unset
+2. `src/display/toastState.js` — Alpine toast state, the type-to-ring-color resolver, and HTMX response handling
 3. `src/display/toast_templ.go` — Compiled output rendering toast element with Alpine.js binding and timer logic
 4. `src/import/toolset/apiResponse.js` — API response message and outcome resolution
 5. `src/import/toolset/jsonAjax.js` — JsonAjax response handling delegated to the toast store
@@ -387,7 +400,7 @@ Overlay to hide/obscure content during loading. It renders a fixed full-viewport
 
 ## Accordion
 
-Collapsible section component for grouping content into expandable panels. The configured radius rounds only the first item's top corners and the last item's bottom corners; middle items stay square. `IsSingleOpen` groups the items so one stays open at a time.
+Collapsible section component for grouping content into expandable panels. The configured radius rounds only the first item's top corners and the last item's bottom corners; middle items stay square. `IsSingleOpen` groups the items so one stays open at a time. `IsFirstItemOpen` renders the first item expanded and leaves the rest collapsed.
 
 **Flow:**
 

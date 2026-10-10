@@ -1,0 +1,85 @@
+package uiForm
+
+import (
+	uiControl "github.com/goinfinite/ui/src/control"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+type FloatingButtonSettings struct {
+	AriaLabel   string
+	OnClickFunc string
+
+	// OptionalFields
+	Icon                string
+	IconOneWayStatePath string
+	Style               FloatingButtonStyle
+}
+
+type FloatingButtonStyle struct {
+	// OptionalFields
+	BackgroundColor       string
+	BackgroundColorActive string
+	BackgroundColorHover  string
+	RingColor             string
+	RingColorHover        string
+	TextColor             string
+	TextColorHover        string
+	Size                  string
+	Shape                 string
+}
+
+templ FloatingButton(componentSettings FloatingButtonSettings) {
+	{{ style := componentSettings.Style }}
+	{{ backgroundColor := "neutral-50/5" }}
+	if style.BackgroundColor != "" {
+		{{ backgroundColor = style.BackgroundColor }}
+	}
+	{{ backgroundColorActive := "secondary-500" }}
+	if style.BackgroundColorActive != "" {
+		{{ backgroundColorActive = style.BackgroundColorActive }}
+	}
+	{{ backgroundColorHover := "neutral-50/20" }}
+	if style.BackgroundColorHover != "" {
+		{{ backgroundColorHover = style.BackgroundColorHover }}
+	}
+	{{ ringColor := "neutral-50/5" }}
+	if style.RingColor != "" {
+		{{ ringColor = style.RingColor }}
+	}
+	{{ ringColorHover := "neutral-50/30" }}
+	if style.RingColorHover != "" {
+		{{ ringColorHover = style.RingColorHover }}
+	}
+	{{ textColor := "neutral-100" }}
+	if style.TextColor != "" {
+		{{ textColor = style.TextColor }}
+	}
+	{{ textColorHover := "neutral-100" }}
+	if style.TextColorHover != "" {
+		{{ textColorHover = style.TextColorHover }}
+	}
+	{{ size := uiControl.ButtonSizeXs }}
+	if style.Size != "" {
+		{{ size = style.Size }}
+	}
+	{{ shape := uiToolset.ShapeRounded }}
+	if style.Shape != "" {
+		{{ shape = style.Shape }}
+	}
+	@uiControl.Button(uiControl.ButtonSettings{
+		AriaLabel:               componentSettings.AriaLabel,
+		BackgroundColor:         backgroundColor,
+		BackgroundColorActive:   backgroundColorActive,
+		BackgroundColorHover:    backgroundColorHover,
+		IconLeft:                componentSettings.Icon,
+		IconLeftOneWayStatePath: componentSettings.IconOneWayStatePath,
+		OnClickFunc:             componentSettings.OnClickFunc,
+		RingColor:               ringColor,
+		RingColorHover:          ringColorHover,
+		RingThickness:           uiToolset.RingThicknessXs,
+		Shape:                   shape,
+		Size:                    size,
+		TextColor:               textColor,
+		TextColorHover:          textColorHover,
+	})
+}

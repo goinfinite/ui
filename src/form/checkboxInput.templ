@@ -13,6 +13,8 @@ const (
 	CheckboxInputLabelPositionRight string = "right"
 )
 
+const checkboxInputDefaultValue string = "on"
+
 type CheckboxInputSettings struct {
 	// OptionalFields
 	AriaLabel                    string
@@ -28,6 +30,7 @@ type CheckboxInputSettings struct {
 	IsCheckedOneWayStatePath     string
 	IsDisabled                   bool
 	IsDisabledOneWayStatePath    string
+	IsFullWidth                  bool
 	IsInvalid                    bool
 	IsInvalidOneWayStatePath     string
 	IsRequired                   bool
@@ -106,6 +109,10 @@ templ CheckboxInput(componentSettings CheckboxInputSettings) {
 	if componentSettings.IsDisabled {
 		{{ labelStateClasses = "cursor-not-allowed opacity-50" }}
 	}
+	{{ labelWidthClass := "w-fit" }}
+	if componentSettings.IsFullWidth {
+		{{ labelWidthClass = "w-full" }}
+	}
 	{{
 		borderClasses := checkboxInputBoxBorderClassesResolver(
 			uncheckedColor, checkedColor, errorColor, componentSettings.IsInvalid,
@@ -143,7 +150,7 @@ templ CheckboxInput(componentSettings CheckboxInputSettings) {
 	<!-- CheckboxInput -->
 	<div class="flex w-full flex-col gap-1">
 		<label
-			class={ "relative inline-flex w-fit select-none items-center gap-2 " + labelPositionClasses + " " + labelStateClasses }
+			class={ "relative inline-flex " + labelWidthClass + " select-none items-center gap-2 " + labelPositionClasses + " " + labelStateClasses }
 			if isDisabledPath != "" {
 				:class={ isDisabledPath + " && 'cursor-not-allowed opacity-50'" }
 			}

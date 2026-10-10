@@ -194,6 +194,7 @@ templ FilterBarChipStylingExample() {
 	// OptionalFields
 	ChipStyle: uiStructural.FilterChipStyle{
 		TextCase:             uiToolset.TextCaseUpper,
+		Radius:               uiToolset.BorderRadiusFull,
 		OuterBackgroundColor: "secondary-500/20",
 		OuterRingColor:       "secondary-500/40",
 		OuterTextColor:       "neutral-50",
@@ -204,7 +205,7 @@ templ FilterBarChipStylingExample() {
 	}}
 	@DemoExampleCardStacked(
 		"Chip Styling",
-		"ChipStyle repaints the active-filter chip and transforms its labels. Each field falls back to the neutral default, and TextCase defaults to lowercase.",
+		"ChipStyle repaints the active-filter chip and transforms its labels. Radius rounds both chip layers and defaults to md. Each field falls back to the neutral default, and TextCase defaults to lowercase.",
 		"/structural/filterBar.templ", chipStylingUsage,
 	) {
 		<div class="rounded-md border border-neutral-800 p-4" x-data="{chipFilterValues: {status: 'running'}}">
@@ -220,6 +221,7 @@ templ FilterBarChipStylingExample() {
 				ValuesTwoWayStatePath: "chipFilterValues",
 				ChipStyle: uiStructural.FilterChipStyle{
 					TextCase:             uiToolset.TextCaseUpper,
+					Radius:               uiToolset.BorderRadiusFull,
 					OuterBackgroundColor: "secondary-500/20",
 					OuterRingColor:       "secondary-500/40",
 					OuterTextColor:       "neutral-50",

@@ -47,17 +47,15 @@ templ ToastMountSettingsExample() {
 		mountUsage := `@uiDisplay.Toast(uiDisplay.ToastSettings{
 	// OptionalFields
 	AutoDismissSeconds: 6,
-	BackgroundColor:    "neutral-800",
 	TextColor:          "neutral-50",
 	Size:               uiDisplay.ToastSizeMd,
 	RingThickness:      uiToolset.RingThicknessMd,
-	RingColor:          "neutral-500",
 	Radius:             uiToolset.BorderRadiusMd,
 })`
 	}}
 	@DemoExampleCard(
 		"Mount Settings",
-		"AutoDismissSeconds sets how long each toast stays up; it defaults to 10 seconds. Background, text, ring, and radius accept Tailwind tokens. Mount one Toast per page: the mount configures the shared toast store.",
+		"AutoDismissSeconds sets how long each toast stays up; it defaults to 10 seconds. The background defaults to neutral-800/90. The ring defaults to the tone color: green for success, yellow for partial success, red for danger. BackgroundColor, TextColor, RingThickness, RingColor, and Radius accept Tailwind tokens. Mount one Toast per page: the mount configures the shared toast store.",
 		"/display/toast.templ", mountUsage,
 	) {
 		<p class="text-sm text-neutral-400">
@@ -74,7 +72,6 @@ templ ToastDemo() {
 	TextColor:          "neutral-50",
 	Size:               uiDisplay.ToastSizeMd,
 	RingThickness:      uiToolset.RingThicknessMd,
-	RingColor:          "neutral-500",
 	Radius:             uiToolset.BorderRadiusMd,
 })
 @uiControl.Button(uiControl.ButtonSettings{
@@ -85,7 +82,7 @@ templ ToastDemo() {
 		@DemoComponentSection(DemoComponentSectionSettings{
 			ComponentPath:          "/display/toast.templ",
 			Description:            "A toast is a temporary notification displayed to provide feedback to users.",
-			LiveExampleDescription: "One toast mount serves every message. Trigger the success, warning, and error tones below; each tone tints the surface.",
+			LiveExampleDescription: "One toast mount serves every message. Trigger the success, warning, and error tones below; each tone colors the ring.",
 			Title:                  ".Toast",
 			UsageCode:              demoUsage,
 		}) {
@@ -94,7 +91,6 @@ templ ToastDemo() {
 				TextColor:          "neutral-50",
 				Size:               uiDisplay.ToastSizeMd,
 				RingThickness:      uiToolset.RingThicknessMd,
-				RingColor:          "neutral-500",
 				Radius:             uiToolset.BorderRadiusMd,
 			})
 			<div class="flex flex-wrap gap-2" x-data>

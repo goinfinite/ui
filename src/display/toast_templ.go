@@ -98,17 +98,15 @@ func Toast(componentSettings ToastSettings) templ.Component {
 			toastClasses += " p-2.5 text-lg gap-3"
 			toastIconSizeClasses = "text-3xl"
 		}
-		toastRingThickness := uiToolset.RingThicknessClassResolver(componentSettings.RingThickness, "ring-0")
+		toastRingThickness := uiToolset.RingThicknessClassResolver(componentSettings.RingThickness, "ring-2")
+		toastHasExplicitRingColor := componentSettings.RingColor != ""
 		toastRingColor := ""
-		if componentSettings.RingColor != "" {
+		if toastHasExplicitRingColor {
 			toastRingColor = " ring-" + componentSettings.RingColor
 		}
 		toastRadius := uiToolset.BorderRadiusClassResolver(componentSettings.Radius, "rounded")
 		toastClasses += " " + toastRingThickness + toastRingColor + " " + toastRadius
-		toastHasExplicitBackground := componentSettings.BackgroundColor != ""
-		if toastHasExplicitBackground {
-			toastClasses += " " + uiToolset.BackgroundColorClassResolver(componentSettings.BackgroundColor, "")
-		}
+		toastClasses += " " + uiToolset.BackgroundColorClassResolver(componentSettings.BackgroundColor, "bg-neutral-800/90")
 		toastTextColor := uiToolset.TextColorClassResolver(componentSettings.TextColor, "text-neutral-50")
 		toastClasses += " " + toastTextColor
 		var templ_7745c5c3_Var2 = []any{toastClasses}
@@ -133,8 +131,8 @@ func Toast(componentSettings ToastSettings) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if !toastHasExplicitBackground {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, " :class=\"$store.toast.toastTypeBackgroundClass\"")
+		if !toastHasExplicitRingColor {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, " :class=\"$store.toast.toastTypeRingClass\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -146,7 +144,7 @@ func Toast(componentSettings ToastSettings) templ.Component {
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue("$store.toast.displayDurationMs = " + autoDismissMilliseconds)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/toast.templ`, Line: 88, Col: 72}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/display/toast.templ`, Line: 86, Col: 72}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
 		if templ_7745c5c3_Err != nil {

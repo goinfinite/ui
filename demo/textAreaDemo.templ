@@ -236,6 +236,33 @@ templ TextAreaRequiredExample() {
 	}
 }
 
+templ TextAreaHiddenFloatingButtonsExample() {
+	{{
+		hiddenFloatingButtonsUsage := `@uiForm.TextArea(uiForm.TextAreaSettings{
+	InputName: "description",
+	Label:     "Description",
+
+	// OptionalFields
+	TwoWayStatePath:           "description",
+	ShouldHideFloatingButtons: true,
+})`
+	}}
+	@DemoExampleCard(
+		"Hidden Floating Buttons",
+		"ShouldHideFloatingButtons removes the expand, copy, and clear actions and lets the text use the full width.",
+		"/form/textArea.templ", hiddenFloatingButtonsUsage,
+	) {
+		<div x-data="{description: ''}">
+			@uiForm.TextArea(uiForm.TextAreaSettings{
+				InputName:                 "description",
+				Label:                     "Description",
+				TwoWayStatePath:           "description",
+				ShouldHideFloatingButtons: true,
+			})
+		</div>
+	}
+}
+
 templ TextAreaDemo() {
 	{{
 		demoUsage := `@uiForm.TextArea(uiForm.TextAreaSettings{
@@ -274,6 +301,7 @@ templ TextAreaDemo() {
 			{Title: "Sizes", Icon: "ph-ruler", Content: TextAreaSizesExample()},
 			{Title: "Text Case", Icon: "ph-text-t", Content: TextAreaTextCaseExample()},
 			{Title: "Required", Icon: "ph-asterisk", Content: TextAreaRequiredExample()},
+			{Title: "Hidden Floating Buttons", Icon: "ph-eye-slash", Content: TextAreaHiddenFloatingButtonsExample()},
 		})
 	</div>
 }
