@@ -13,6 +13,7 @@ feat: add select-all and deselect-all floating actions to the InlineCheckboxGrou
 docs: update the readmes, the contexts, the feature map, and the changelog
 chore(docs): regenerate the demo page
 fix: build the inline checkbox group values literal with encoding/json
+fix: skip disabled and repeated values in the inline checkbox group select-all
 
 0.2.6 - 2026/10/09
 feat: add the FilterChipStyle to the FilterBar and forward it from the DataTable and Carousel
