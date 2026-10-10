@@ -46,6 +46,7 @@ type FilterSettings struct {
 type FilterChipStyle struct {
 	// OptionalFields
 	TextCase             string
+	Radius               string
 	OuterBackgroundColor string
 	OuterRingColor       string
 	OuterTextColor       string
@@ -70,12 +71,14 @@ type resolvedFilterChipStyle struct {
 	OuterBackgroundColor string
 	OuterRingColor       string
 	OuterTextColor       string
+	Radius               string
 	TextCase             string
 }
 
 func filterChipStyleResolver(chipStyle FilterChipStyle) resolvedFilterChipStyle {
 	style := resolvedFilterChipStyle{
 		TextCase:             uiToolset.TextCaseLower,
+		Radius:               uiToolset.BorderRadiusMd,
 		OuterBackgroundColor: "neutral-50/10",
 		OuterRingColor:       "neutral-50/20",
 		OuterTextColor:       "neutral-50",
@@ -84,6 +87,9 @@ func filterChipStyleResolver(chipStyle FilterChipStyle) resolvedFilterChipStyle 
 	}
 	if chipStyle.TextCase != "" {
 		style.TextCase = chipStyle.TextCase
+	}
+	if chipStyle.Radius != "" {
+		style.Radius = chipStyle.Radius
 	}
 	if chipStyle.OuterBackgroundColor != "" {
 		style.OuterBackgroundColor = chipStyle.OuterBackgroundColor
@@ -140,7 +146,7 @@ func FilterBar(componentSettings FilterBarSettings) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.ResolveAttributeValue(templ.JSFuncCall("filterBar", valuesPath))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/filterBar.templ`, Line: 105, Col: 84}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/filterBar.templ`, Line: 111, Col: 84}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var2)
 		if templ_7745c5c3_Err != nil {
@@ -165,7 +171,7 @@ func FilterBar(componentSettings FilterBarSettings) templ.Component {
 					var templ_7745c5c3_Var3 string
 					templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.OnChangeFunc)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/filterBar.templ`, Line: 113, Col: 47}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/filterBar.templ`, Line: 119, Col: 47}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
 					if templ_7745c5c3_Err != nil {
@@ -254,7 +260,7 @@ func FilterBar(componentSettings FilterBarSettings) templ.Component {
 					var templ_7745c5c3_Var4 string
 					templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.OnChangeFunc)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/filterBar.templ`, Line: 157, Col: 47}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/filterBar.templ`, Line: 163, Col: 47}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
 					if templ_7745c5c3_Err != nil {
@@ -370,7 +376,7 @@ func FilterBar(componentSettings FilterBarSettings) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.ResolveAttributeValue("isFilterActive(" + filterKey + ")")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/filterBar.templ`, Line: 194, Col: 54}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/structural/filterBar.templ`, Line: 200, Col: 54}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var9)
 			if templ_7745c5c3_Err != nil {
@@ -387,11 +393,11 @@ func FilterBar(componentSettings FilterBarSettings) templ.Component {
 				OuterRingColor:            chipStyle.OuterRingColor,
 				OuterTextColor:            chipStyle.OuterTextColor,
 				OuterLeftLabel:            filter.Label,
-				OuterRadius:               uiToolset.BorderRadiusXl,
+				OuterRadius:               chipStyle.Radius,
 				InnerBackgroundColor:      chipStyle.InnerBackgroundColor,
 				InnerTextColor:            chipStyle.InnerTextColor,
 				InnerLabelOneWayStatePath: "resolveFilterChipLabel(" + filterKey + ")",
-				InnerRadius:               uiToolset.BorderRadiusXl,
+				InnerRadius:               chipStyle.Radius,
 				OnRemoveFunc:              "resetFilter(" + filterKey + ")" + onChangeSuffix,
 				RemoveButtonLabel:         "Remove " + filter.Label + " filter",
 			}).Render(ctx, templ_7745c5c3_Buffer)

@@ -14,6 +14,9 @@ func TestFilterBarChipStyleResolverDefaults(t *testing.T) {
 	if style.TextCase != uiToolset.TextCaseLower {
 		t.Errorf("ChipStyleTextCaseDefault = %q, want %q", style.TextCase, uiToolset.TextCaseLower)
 	}
+	if style.Radius != uiToolset.BorderRadiusMd {
+		t.Errorf("ChipStyleRadiusDefault = %q, want %q", style.Radius, uiToolset.BorderRadiusMd)
+	}
 	if style.OuterBackgroundColor != "neutral-50/10" {
 		t.Errorf("OuterBackgroundColorDefault = %q", style.OuterBackgroundColor)
 	}
@@ -34,6 +37,7 @@ func TestFilterBarChipStyleResolverDefaults(t *testing.T) {
 func TestFilterBarChipStyleResolverOverrides(t *testing.T) {
 	style := filterChipStyleResolver(FilterChipStyle{
 		TextCase:             uiToolset.TextCaseUpper,
+		Radius:               uiToolset.BorderRadiusFull,
 		OuterBackgroundColor: "secondary-500/20",
 		OuterRingColor:       "secondary-500/40",
 		OuterTextColor:       "neutral-50",
@@ -42,6 +46,9 @@ func TestFilterBarChipStyleResolverOverrides(t *testing.T) {
 	})
 	if style.TextCase != uiToolset.TextCaseUpper {
 		t.Errorf("ChipStyleTextCase = %q, want %q", style.TextCase, uiToolset.TextCaseUpper)
+	}
+	if style.Radius != uiToolset.BorderRadiusFull {
+		t.Errorf("ChipStyleRadius = %q, want %q", style.Radius, uiToolset.BorderRadiusFull)
 	}
 	if style.OuterBackgroundColor != "secondary-500/20" {
 		t.Errorf("OuterBackgroundColor = %q", style.OuterBackgroundColor)
