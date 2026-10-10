@@ -12,42 +12,43 @@ const toastShadowOf = (page) =>
     .locator("#toast")
     .evaluate((element) => getComputedStyle(element).boxShadow);
 
+const toneCases = [
+  {
+    name: "success tone keeps the neutral surface and rings green",
+    message: "Saved!",
+    type: "success",
+    ringColor: "rgb(34, 197, 94)",
+  },
+  {
+    name: "partial success tone keeps the neutral surface and rings yellow",
+    message: "Two of three.",
+    type: "partialSuccess",
+    ringColor: "rgb(234, 179, 8)",
+  },
+  {
+    name: "danger tone keeps the neutral surface and rings red",
+    message: "Failed.",
+    type: "danger",
+    ringColor: "rgb(239, 68, 68)",
+  },
+];
+
 test.describe("Toast", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(`/index.html#${toastSection.slice(1)}`);
     await expect(page.locator("#toast")).toBeAttached();
   });
 
-  test("@smoke success tone keeps the neutral surface and rings green", async ({
-    page,
-  }) => {
-    await page.evaluate(() =>
-      Alpine.store("toast").displayToast("Saved!", "success"),
-    );
-    await expect(page.locator("#toast")).toBeVisible();
-    expect(await toastBackgroundOf(page)).toBe("rgba(38, 38, 38, 0.9)");
-    expect(await toastShadowOf(page)).toContain("rgb(34, 197, 94)");
-  });
-
-  test("@smoke partial success tone keeps the neutral surface and rings yellow", async ({
-    page,
-  }) => {
-    await page.evaluate(() =>
-      Alpine.store("toast").displayToast("Two of three.", "partialSuccess"),
-    );
-    await expect(page.locator("#toast")).toBeVisible();
-    expect(await toastBackgroundOf(page)).toBe("rgba(38, 38, 38, 0.9)");
-    expect(await toastShadowOf(page)).toContain("rgb(234, 179, 8)");
-  });
-
-  test("@smoke danger tone keeps the neutral surface and rings red", async ({
-    page,
-  }) => {
-    await page.evaluate(() =>
-      Alpine.store("toast").displayToast("Failed.", "danger"),
-    );
-    await expect(page.locator("#toast")).toBeVisible();
-    expect(await toastBackgroundOf(page)).toBe("rgba(38, 38, 38, 0.9)");
-    expect(await toastShadowOf(page)).toContain("rgb(239, 68, 68)");
-  });
+  for (const toneCase of toneCases) {
+    test(`@smoke ${toneCase.name}`, async ({ page }) => {
+      await page.evaluate(
+        ({ message, type }) =>
+          Alpine.store("toast").displayToast(message, type),
+        { message: toneCase.message, type: toneCase.type },
+      );
+      await expect(page.locator("#toast")).toBeVisible();
+      expect(await toastBackgroundOf(page)).toBe("rgba(38, 38, 38, 0.9)");
+      expect(await toastShadowOf(page)).toContain(toneCase.ringColor);
+    });
+  }
 });
