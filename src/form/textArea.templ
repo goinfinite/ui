@@ -23,6 +23,8 @@ type TextAreaSettings struct {
 	IsCode                            bool
 	IsReadOnly                        bool
 	IsRequired                        bool
+	FloatingButtonStyle               FloatingButtonStyle
+	ShouldHideFloatingButtons         bool
 	HintValue                         string
 	HintStatePath                     string
 	HintDisplay                       string
@@ -89,7 +91,11 @@ templ TextArea(componentSettings TextAreaSettings) {
 				{{ textAreaExpandedHeightClasses = "h-180" }}
 				{{ textAreaFontClasses = "text-xl" }}
 		}
-		{{ textAreaClasses += " " + textAreaFontClasses + " placeholder-text-neutral-50 peer w-full resize-none overflow-y-scroll bg-transparent pl-2 pr-11 outline-none focus:outline-none transition-all" }}
+		{{ textAreaRightPaddingClass := "pr-11" }}
+		if componentSettings.ShouldHideFloatingButtons && !textAreaHasHintTooltip {
+			{{ textAreaRightPaddingClass = "pr-2" }}
+		}
+		{{ textAreaClasses += " " + textAreaFontClasses + " placeholder-text-neutral-50 peer w-full resize-none overflow-y-scroll bg-transparent pl-2 " + textAreaRightPaddingClass + " outline-none focus:outline-none transition-all" }}
 		if textCaseClass != "" {
 			{{ textAreaClasses += " placeholder:" + textCaseClass }}
 		}
@@ -156,36 +162,36 @@ templ TextArea(componentSettings TextAreaSettings) {
 						IconStyle:              InputHintIconStyleBoxed,
 					})
 				}
-				<div class="hidden flex-col gap-1 group-hover/textarea:flex group-focus-within/textarea:flex">
-					{{ floatingIconsClasses := "ph-bold border-1 active:bg-secondary-500 cursor-pointer rounded border-neutral-50/5 bg-neutral-50/5 p-1 text-neutral-100 hover:border-neutral-50/30 hover:bg-neutral-50/20" }}
-					<button
-						type="button"
-						aria-label="Toggle text area height"
-						class={ floatingIconsClasses + " ph-arrows-out" }
-						:class="isTextAreaExpanded ? 'ph-arrows-in' : 'ph-arrows-out'"
-						@click.prevent="isTextAreaExpanded = !isTextAreaExpanded"
-					></button>
-					if componentSettings.IsReadOnly || componentSettings.TwoWayStatePath != "" {
-						<button
-							type="button"
-							aria-label="Copy text area content"
-							class={ floatingIconsClasses + " ph-clipboard-text" }
+				if !componentSettings.ShouldHideFloatingButtons {
+					<div class="hidden flex-col gap-1 group-hover/textarea:flex group-focus-within/textarea:flex">
+						@FloatingButton(FloatingButtonSettings{
+							AriaLabel:           "Toggle text area height",
+							IconOneWayStatePath: "isTextAreaExpanded ? 'ph-arrows-in' : 'ph-arrows-out'",
+							OnClickFunc:         "isTextAreaExpanded = !isTextAreaExpanded",
+							Style:               componentSettings.FloatingButtonStyle,
+						})
+						if componentSettings.IsReadOnly || componentSettings.TwoWayStatePath != "" {
+							{{ copyButtonOnClickFunc := "$refs." + textAreaRef + ".select(); document.execCommand('copy')" }}
 							if componentSettings.TwoWayStatePath != "" {
-								@click.prevent={ "navigator.clipboard.writeText(" + componentSettings.TwoWayStatePath + ")" }
-							} else {
-								@click.prevent={ "$refs." + textAreaRef + ".select(); document.execCommand('copy')" }
+								{{ copyButtonOnClickFunc = "navigator.clipboard.writeText(" + componentSettings.TwoWayStatePath + ")" }}
 							}
-						></button>
-					}
-					if componentSettings.TwoWayStatePath != "" {
-						<button
-							type="button"
-							aria-label="Clear text area content"
-							class={ floatingIconsClasses + " ph-x-circle" }
-							@click.prevent={ componentSettings.TwoWayStatePath + " = ''" }
-						></button>
-					}
-				</div>
+							@FloatingButton(FloatingButtonSettings{
+								AriaLabel:   "Copy text area content",
+								Icon:        "ph-clipboard-text",
+								OnClickFunc: copyButtonOnClickFunc,
+								Style:       componentSettings.FloatingButtonStyle,
+							})
+						}
+						if componentSettings.TwoWayStatePath != "" {
+							@FloatingButton(FloatingButtonSettings{
+								AriaLabel:   "Clear text area content",
+								Icon:        "ph-x-circle",
+								OnClickFunc: componentSettings.TwoWayStatePath + " = ''",
+								Style:       componentSettings.FloatingButtonStyle,
+							})
+						}
+					</div>
+				}
 			</div>
 		</div>
 	</fieldset>
