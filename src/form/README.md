@@ -71,7 +71,7 @@ A row or column of checkboxes under one shared label. The label notches into the
 })
 ```
 
-Each `CheckboxInputSettings` carries its own size, shape, colors, and errors. When the shared state path holds an array, Alpine adds and removes the checked values. All inputs must share the same array `TwoWayStatePath`; the select-all and deselect-all actions write it. `Orientation` accepts `InlineCheckboxGroupOrientationHorizontal` (the default) and `InlineCheckboxGroupOrientationVertical`. `MaxVisibleOptions` caps the visible option rows and scrolls the rest. `TextCase` transforms only the shared label. The group reveals select-all and deselect-all `FloatingButton` actions on hover or focus. `FloatingButtonStyle` repaints them and changes their size and shape; `ShouldHideFloatingButtons` removes them.
+Each `CheckboxInputSettings` carries its own size, shape, colors, and errors. When the shared state path holds an array, Alpine adds and removes the checked values. All inputs must share the same array `TwoWayStatePath`; the select-all and deselect-all actions write it, and select-all skips statically disabled options. `Orientation` accepts `InlineCheckboxGroupOrientationHorizontal` (the default) and `InlineCheckboxGroupOrientationVertical`. `MaxVisibleOptions` caps the visible option rows and scrolls the rest. `TextCase` transforms only the shared label. The group reveals select-all and deselect-all `FloatingButton` actions on hover or focus. `FloatingButtonStyle` repaints them and changes their size and shape; `ShouldHideFloatingButtons` removes them.
 
 ## FloatingButton
 

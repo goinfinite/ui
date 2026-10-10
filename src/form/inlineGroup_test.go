@@ -75,6 +75,25 @@ func TestInlineCheckboxGroupValuesArrayLiteralBuilder(t *testing.T) {
 			expected:      `["on"]`,
 		},
 		{
+			name: "statically disabled options are skipped",
+			inputSettings: []CheckboxInputSettings{
+				{Value: "apple"},
+				{Value: "locked", IsDisabled: true},
+				{Value: "banana"},
+			},
+			expected: `["apple","banana"]`,
+		},
+		{
+			name: "repeated values appear once",
+			inputSettings: []CheckboxInputSettings{
+				{Value: "apple"},
+				{Value: "apple"},
+				{},
+				{},
+			},
+			expected: `["apple","on"]`,
+		},
+		{
 			name:          "quotes and control characters stay valid json",
 			inputSettings: []CheckboxInputSettings{{Value: "say \"hi\"\n"}},
 			expected:      "[\"say \\\"hi\\\"\\n\"]",

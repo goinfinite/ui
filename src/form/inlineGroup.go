@@ -43,11 +43,19 @@ func inlineCheckboxGroupStatePathResolver(inputSettings []CheckboxInputSettings)
 
 func inlineCheckboxGroupValuesArrayLiteralBuilder(inputSettings []CheckboxInputSettings) string {
 	values := make([]string, 0, len(inputSettings))
+	seenValues := make(map[string]bool, len(inputSettings))
 	for _, settings := range inputSettings {
+		if settings.IsDisabled {
+			continue
+		}
 		value := settings.Value
 		if value == "" {
 			value = checkboxInputDefaultValue
 		}
+		if seenValues[value] {
+			continue
+		}
+		seenValues[value] = true
 		values = append(values, value)
 	}
 	encodedValues, marshalErr := json.Marshal(values)
