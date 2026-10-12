@@ -74,13 +74,7 @@ templ carouselSearchBoxBar(
 	</div>
 }
 
-templ Carousel[Item any](componentSettings CarouselSettings[Item]) {
-	@serverFragmentRefreshComponentAlpineStateOnce.Once()
-	@carouselAlpineStateOnce.Once()
-	{{ carouselId := componentSettings.idResolver() }}
-	{{ settingsScriptId := carouselId + "-settings" }}
-	{{ paginationId := carouselId + "-pagination" }}
-	{{ surfaceClasses := componentSettings.surfaceClassesResolver() }}
+templ carouselBodyRegion[Item any](componentSettings CarouselSettings[Item]) {
 	{{ stagePaddingClasses := uiToolset.PaddingClassResolver(componentSettings.PaddingSize, "p-5") }}
 	{{ trackGapClasses := uiToolset.GapClassResolver(componentSettings.GapSize, "gap-3") }}
 	{{ isArrowsInside := componentSettings.ArrowsPosition == CarouselArrowsPositionInside }}
@@ -92,6 +86,106 @@ templ Carousel[Item any](componentSettings CarouselSettings[Item]) {
 	{{ dotCurrentExpression := "dotIndex === windowStart ? 'true' : 'false'" }}
 	{{ areDotsOnTop := componentSettings.DotsPosition == CarouselDotsPositionTop }}
 	{{ itemClasses := carouselItemClassesResolver(componentSettings.ItemBackgroundColor, componentSettings.ItemBorderRadius, componentSettings.ItemPaddingSize, componentSettings.ItemRingColor, componentSettings.ItemRingThickness, componentSettings.ItemShadowSize) }}
+	<div data-ui-carousel>
+		<div x-show="!hasRefreshError" class={ "flex flex-col gap-3 " + stagePaddingClasses }>
+			if areDotsOnTop {
+				@carouselDots(dotsHeightClass, dotClassesExpression, dotCurrentExpression)
+			}
+			<div
+				class="flex items-stretch gap-2"
+				@mouseenter="enterPointerRegion()"
+				@mouseleave="leavePointerRegion()"
+			>
+				if !isArrowsInside {
+					@carouselArrowButton("Previous items", arrowsClasses, carouselArrowPositionClassesResolver(isArrowsInside, ""), "!canSlidePrevious", "slidePrevious()", "ph-caret-left")
+				}
+				<div
+					class="relative min-w-0 flex-1 select-none overflow-hidden [contain:inline-size] [touch-action:pan-y]"
+					x-ref="viewport"
+					:class="{ 'pointer-events-none opacity-50': isLoading }"
+					@pointerdown="startSwipe($event)"
+					@pointerup="finishSwipe($event)"
+					@pointercancel="cancelSwipe()"
+				>
+					if isArrowsInside {
+						@carouselArrowButton("Previous items", arrowsClasses, carouselArrowPositionClassesResolver(isArrowsInside, "left-2"), "!canSlidePrevious", "slidePrevious()", "ph-caret-left")
+					}
+					if len(componentSettings.Items) == 0 {
+						{{ emptyStateComponent := componentSettings.EmptyState }}
+						if emptyStateComponent == nil {
+							{{ emptyStateComponent = CarouselDefaultEmptyState() }}
+						}
+						<div class="w-full p-8 text-center text-neutral-400">
+							@emptyStateComponent
+						</div>
+					}
+					if len(componentSettings.Items) > 0 {
+						<div data-ui-carousel-track class={ "flex transition-transform duration-300 ease-out " + trackGapClasses }>
+							for _, item := range componentSettings.Items {
+								<div class={ "min-w-0 shrink-0 overflow-hidden " + itemClasses }>
+									@componentSettings.ItemRenderer(item)
+								</div>
+							}
+						</div>
+					}
+					if isArrowsInside {
+						@carouselArrowButton("Next items", arrowsClasses, carouselArrowPositionClassesResolver(isArrowsInside, "right-2"), "!canSlideNext", "slideNext()", "ph-caret-right")
+					}
+				</div>
+				if !isArrowsInside {
+					@carouselArrowButton("Next items", arrowsClasses, carouselArrowPositionClassesResolver(isArrowsInside, ""), "!canSlideNext", "slideNext()", "ph-caret-right")
+				}
+			</div>
+			if !areDotsOnTop {
+				@carouselDots(dotsHeightClass, dotClassesExpression, dotCurrentExpression)
+			}
+		</div>
+		<div x-show="hasRefreshError" style="display: none" class="flex flex-col items-center gap-3 p-8 text-center">
+			<i class="ph-bold ph-warning-circle text-2xl text-red-400"></i>
+			<p class="text-sm text-neutral-400">Could not refresh the carousel.</p>
+			<button
+				type="button"
+				class="rounded bg-neutral-50/7.5 px-3 py-1.5 text-sm font-bold text-neutral-50 transition-all hover:bg-neutral-50/12.5"
+				@click="refresh()"
+			>
+				Retry
+			</button>
+		</div>
+	</div>
+}
+
+templ carouselPaginationRegion[Item any](componentSettings CarouselSettings[Item]) {
+	{{ carouselId := componentSettings.idResolver() }}
+	{{ paginationId := carouselId + "-pagination" }}
+	{{ itemsPerPageSizeChoices := itemsPerPageSizeChoicesResolver(componentSettings.ItemsPerPageSizeChoices) }}
+	<div data-ui-carousel-pagination class="border-t border-neutral-50/10" id={ paginationId } hx-swap-oob={ "outerHTML:#" + paginationId }>
+		@Pagination(PaginationSettings{
+			PageNumberTwoWayStatePath:    "pageNumber",
+			ItemsPerPageTwoWayStatePath:  "itemsPerPage",
+			ItemsTotal:                   componentSettings.ItemsTotal,
+			PagesTotal:                   componentSettings.PagesTotal,
+			AriaLabel:                    componentSettings.paginationAriaLabelResolver(),
+			IsDisabledOneWayStatePath:    "isLoading",
+			IsHiddenWhenSinglePage:       componentSettings.IsPaginationHiddenWhenSinglePage,
+			ItemsPerPageInputName:        carouselId + "-itemsPerPage",
+			ItemsPerPageSizeChoices:      itemsPerPageSizeChoices,
+			OnChangeFunc:                 "requestRefresh()",
+			ShouldUseOneBasedPageDisplay: componentSettings.ShouldUseOneBasedPageDisplay,
+		})
+	</div>
+}
+
+templ CarouselRefreshRegions[Item any](componentSettings CarouselSettings[Item]) {
+	@carouselBodyRegion(componentSettings)
+	@carouselPaginationRegion(componentSettings)
+}
+
+templ Carousel[Item any](componentSettings CarouselSettings[Item]) {
+	@serverFragmentRefreshComponentAlpineStateOnce.Once()
+	@carouselAlpineStateOnce.Once()
+	{{ carouselId := componentSettings.idResolver() }}
+	{{ settingsScriptId := carouselId + "-settings" }}
+	{{ surfaceClasses := componentSettings.surfaceClassesResolver() }}
 	{{ searchBoxJustifyClass := componentSettings.searchBoxAlignmentResolver().justifyClassResolver() }}
 	{{ searchBoxWidthClass := "w-full" }}
 	if componentSettings.IsSearchBoxCompact {
@@ -116,72 +210,7 @@ templ Carousel[Item any](componentSettings CarouselSettings[Item]) {
 			@carouselSearchBoxBar(searchBoxComponent, searchBoxJustifyClass, searchBoxWidthClass, "border-b")
 		}
 		<p class="sr-only" aria-live="polite" x-text="liveMessage"></p>
-		<div data-ui-carousel>
-			<div x-show="!hasRefreshError" class={ "flex flex-col gap-3 " + stagePaddingClasses }>
-				if areDotsOnTop {
-					@carouselDots(dotsHeightClass, dotClassesExpression, dotCurrentExpression)
-				}
-				<div
-					class="flex items-stretch gap-2"
-					@mouseenter="enterPointerRegion()"
-					@mouseleave="leavePointerRegion()"
-				>
-					if !isArrowsInside {
-						@carouselArrowButton("Previous items", arrowsClasses, carouselArrowPositionClassesResolver(isArrowsInside, ""), "!canSlidePrevious", "slidePrevious()", "ph-caret-left")
-					}
-					<div
-						class="relative min-w-0 flex-1 select-none overflow-hidden [contain:inline-size] [touch-action:pan-y]"
-						x-ref="viewport"
-						:class="{ 'pointer-events-none opacity-50': isLoading }"
-						@pointerdown="startSwipe($event)"
-						@pointerup="finishSwipe($event)"
-						@pointercancel="cancelSwipe()"
-					>
-						if isArrowsInside {
-							@carouselArrowButton("Previous items", arrowsClasses, carouselArrowPositionClassesResolver(isArrowsInside, "left-2"), "!canSlidePrevious", "slidePrevious()", "ph-caret-left")
-						}
-						if len(componentSettings.Items) == 0 {
-							{{ emptyStateComponent := componentSettings.EmptyState }}
-							if emptyStateComponent == nil {
-								{{ emptyStateComponent = CarouselDefaultEmptyState() }}
-							}
-							<div class="w-full p-8 text-center text-neutral-400">
-								@emptyStateComponent
-							</div>
-						}
-						if len(componentSettings.Items) > 0 {
-							<div data-ui-carousel-track class={ "flex transition-transform duration-300 ease-out " + trackGapClasses }>
-								for _, item := range componentSettings.Items {
-									<div class={ "min-w-0 shrink-0 overflow-hidden " + itemClasses }>
-										@componentSettings.ItemRenderer(item)
-									</div>
-								}
-							</div>
-						}
-						if isArrowsInside {
-							@carouselArrowButton("Next items", arrowsClasses, carouselArrowPositionClassesResolver(isArrowsInside, "right-2"), "!canSlideNext", "slideNext()", "ph-caret-right")
-						}
-					</div>
-					if !isArrowsInside {
-						@carouselArrowButton("Next items", arrowsClasses, carouselArrowPositionClassesResolver(isArrowsInside, ""), "!canSlideNext", "slideNext()", "ph-caret-right")
-					}
-				</div>
-				if !areDotsOnTop {
-					@carouselDots(dotsHeightClass, dotClassesExpression, dotCurrentExpression)
-				}
-			</div>
-			<div x-show="hasRefreshError" style="display: none" class="flex flex-col items-center gap-3 p-8 text-center">
-				<i class="ph-bold ph-warning-circle text-2xl text-red-400"></i>
-				<p class="text-sm text-neutral-400">Could not refresh the carousel.</p>
-				<button
-					type="button"
-					class="rounded bg-neutral-50/7.5 px-3 py-1.5 text-sm font-bold text-neutral-50 transition-all hover:bg-neutral-50/12.5"
-					@click="refresh()"
-				>
-					Retry
-				</button>
-			</div>
-		</div>
+		@carouselBodyRegion(componentSettings)
 		if searchBoxComponent != nil && !isSearchBoxOnTop {
 			@carouselSearchBoxBar(searchBoxComponent, searchBoxJustifyClass, searchBoxWidthClass, "border-t")
 		}
@@ -197,20 +226,6 @@ templ Carousel[Item any](componentSettings CarouselSettings[Item]) {
 				})
 			</div>
 		}
-		<div data-ui-carousel-pagination class="border-t border-neutral-50/10" id={ paginationId } hx-swap-oob={ "outerHTML:#" + paginationId }>
-			@Pagination(PaginationSettings{
-				PageNumberTwoWayStatePath:    "pageNumber",
-				ItemsPerPageTwoWayStatePath:  "itemsPerPage",
-				ItemsTotal:                   componentSettings.ItemsTotal,
-				PagesTotal:                   componentSettings.PagesTotal,
-				AriaLabel:                    componentSettings.paginationAriaLabelResolver(),
-				IsDisabledOneWayStatePath:    "isLoading",
-				IsHiddenWhenSinglePage:       componentSettings.IsPaginationHiddenWhenSinglePage,
-				ItemsPerPageInputName:        carouselId + "-itemsPerPage",
-				ItemsPerPageSizeChoices:      itemsPerPageSizeChoices,
-				OnChangeFunc:                 "requestRefresh()",
-				ShouldUseOneBasedPageDisplay: componentSettings.ShouldUseOneBasedPageDisplay,
-			})
-		</div>
+		@carouselPaginationRegion(componentSettings)
 	</div>
 }

@@ -553,3 +553,43 @@ func TestCarouselRendersItsSettingsScriptInsideItsRoot(t *testing.T) {
 		)
 	}
 }
+
+func TestCarouselRefreshRegionsRendersOnlyTheSwappedRegions(t *testing.T) {
+	settings := CarouselSettings[carouselTestItem]{
+		Id:           "records-carousel",
+		ItemRenderer: carouselTestRenderer,
+		Items:        []carouselTestItem{{Id: "one", Name: "alpha"}},
+		Filters: []FilterSettings{
+			{Key: "status", Label: "Status", Kind: FilterKindEnumSelect},
+		},
+		QueryUrlTemplate: "/records?page={pageNumber}&search={searchQuery}",
+	}
+	var buffer bytes.Buffer
+	renderErr := CarouselRefreshRegions(settings).Render(context.Background(), &buffer)
+	if renderErr != nil {
+		t.Fatalf("CarouselRefreshRegionsRenderFailed: %v", renderErr)
+	}
+	renderedHtml := buffer.String()
+
+	if !strings.HasPrefix(renderedHtml, `<div data-ui-carousel>`) {
+		t.Errorf("RefreshRegionsDoNotStartWithTheBodyRegion: %.60q", renderedHtml)
+	}
+	if !strings.Contains(renderedHtml, `id="records-carousel-pagination"`) {
+		t.Errorf("RefreshRegionsMissingThePaginationRegion")
+	}
+	if !strings.Contains(renderedHtml, "alpha") {
+		t.Errorf("RefreshRegionsMissingTheItems")
+	}
+	unexpectedMarkers := []string{
+		`id="records-carousel"`,
+		`id="records-carousel-settings"`,
+		`Alpine.data("carousel"`,
+		`name="search"`,
+		`name="records-carousel-status"`,
+	}
+	for _, unexpectedMarker := range unexpectedMarkers {
+		if strings.Contains(renderedHtml, unexpectedMarker) {
+			t.Errorf("RefreshRegionsRenderOutsideMarkup: %s", unexpectedMarker)
+		}
+	}
+}

@@ -515,3 +515,39 @@ func TestDataTableRendersItsSettingsScriptInsideItsRoot(t *testing.T) {
 		)
 	}
 }
+
+func TestDataTableRefreshRegionRendersOnlyTheSwappedRegion(t *testing.T) {
+	settings := DataTableSettings[dataTableTestRecord]{
+		Id:      "records-table",
+		Columns: []DataTableColumnSettings[dataTableTestRecord]{{Label: "Name"}},
+		Filters: []FilterSettings{
+			{Key: "status", Label: "Status", Kind: FilterKindEnumSelect},
+		},
+		QueryUrlTemplate: "/records?page={pageNumber}&search={searchQuery}",
+	}
+	var buffer bytes.Buffer
+	renderErr := DataTableRefreshRegion(settings).Render(context.Background(), &buffer)
+	if renderErr != nil {
+		t.Fatalf("DataTableRefreshRegionRenderFailed: %v", renderErr)
+	}
+	renderedHtml := buffer.String()
+
+	if !strings.HasPrefix(renderedHtml, `<div data-ui-data-table>`) {
+		t.Errorf("RefreshRegionDoesNotStartWithTheSwappedRegion: %.60q", renderedHtml)
+	}
+	if !strings.Contains(renderedHtml, `name="records-table-itemsPerPage"`) {
+		t.Errorf("RefreshRegionMissingPagination")
+	}
+	unexpectedMarkers := []string{
+		`id="records-table"`,
+		`id="records-table-settings"`,
+		`Alpine.data("dataTable"`,
+		`name="search"`,
+		`name="records-table-status"`,
+	}
+	for _, unexpectedMarker := range unexpectedMarkers {
+		if strings.Contains(renderedHtml, unexpectedMarker) {
+			t.Errorf("RefreshRegionRendersOutsideMarkup: %s", unexpectedMarker)
+		}
+	}
+}

@@ -2,6 +2,7 @@ package uiStructural
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/a-h/templ"
 	uiForm "github.com/goinfinite/ui/src/form"
@@ -225,6 +226,22 @@ func (settings DataTableSettings[Row]) stickyHeaderClassesResolver() string {
 	return " sticky top-0 z-10 backdrop-blur-md " + settings.stickyHeaderBackgroundClassResolver()
 }
 
+func (settings DataTableSettings[Row]) searchBoxResolver() templ.Component {
+	if settings.SearchBox != nil {
+		return settings.SearchBox
+	}
+	if strings.Contains(settings.QueryUrlTemplate, DataTableUrlPlaceholderSearch) {
+		return DataTableDefaultSearchBox()
+	}
+	return nil
+}
+
+func (settings DataTableSettings[Row]) hasToolbarResolver() bool {
+	return settings.searchBoxResolver() != nil ||
+		settings.HeaderActions != nil ||
+		settings.BulkActions != nil
+}
+
 func (settings DataTableSettings[Row]) scrollContainerClassesResolver() string {
 	containerClasses := "overflow-x-auto"
 	if !settings.IsHeaderStatic {
@@ -238,6 +255,10 @@ func (settings DataTableSettings[Row]) scrollContainerClassesResolver() string {
 	}
 	if settings.MaxHeightClass != "" {
 		containerClasses += " " + settings.MaxHeightClass
+	}
+	isTopEdgeExposed := len(settings.Filters) == 0 && !settings.hasToolbarResolver()
+	if isTopEdgeExposed {
+		containerClasses += " rounded-t-md"
 	}
 	return containerClasses
 }
