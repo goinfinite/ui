@@ -3,7 +3,7 @@
 # @usage        demo/serveDemo.sh <start|stop|status> [port]
 # @output       The demo URL on start, the server state on status, nothing on stop.
 # @requires     bash v4+, node v24+, curl
-# @version      0.1.0
+# @version      0.1.1
 # @updated      2026-10-12
 # @see          tests/lib/serveDemo.mjs
 set -euo pipefail
@@ -55,21 +55,22 @@ demoServerUrlBuilder() {
 isDemoServerAnswering() {
 	local port="$1"
 	local statusCode
-	statusCode="$(curl -s -o /dev/null -w '%{http_code}' "$(demoServerUrlBuilder "$port")" || true)"
+	statusCode="$(curl -s --max-time 2 -o /dev/null -w '%{http_code}' "$(demoServerUrlBuilder "$port")" || true)"
 	[[ "$statusCode" == "200" ]]
 }
 
 waitForDemoServer() {
-	local port="$1"
-	local attemptsLeft=20
-	while ((attemptsLeft > 0)); do
-		if isDemoServerAnswering "$port"; then
+	local port="$1" serverPid="$2" logFile="$3"
+	local readyDeadline=$((SECONDS + 10))
+	while [[ "$SECONDS" -lt "$readyDeadline" ]]; do
+		if kill -0 "$serverPid" 2>/dev/null &&
+			grep -qF "serveDemoListening $port" "$logFile" 2>/dev/null &&
+			isDemoServerAnswering "$port"; then
 			return 0
 		fi
-		attemptsLeft=$((attemptsLeft - 1))
 		sleep 0.5
 	done
-	echo "DemoServerNotReady: port $port did not answer 200 within 10 seconds" >&2
+	echo "DemoServerNotReady: port $port did not serve the demo within 10 seconds" >&2
 	exit 1
 }
 
@@ -78,15 +79,18 @@ waitForDemoServer() {
 #
 startDemoServer() {
 	local port="$1"
-	local projectRoot logFile
+	local projectRoot logFile demoServerPid
 	if [[ -n "$(demoServerPidFinder "$port")" ]]; then
 		demoServerUrlBuilder "$port"
 		return 0
 	fi
 	projectRoot="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 	logFile="${TMPDIR:-/tmp}/serveDemo-${port}.log"
-	(node "$projectRoot/tests/lib/serveDemo.mjs" "$port" >"$logFile" 2>&1 &)
-	waitForDemoServer "$port"
+	demoServerPid="$(
+		node "$projectRoot/tests/lib/serveDemo.mjs" "$port" >"$logFile" 2>&1 &
+		echo "$!"
+	)"
+	waitForDemoServer "$port" "$demoServerPid" "$logFile"
 	demoServerUrlBuilder "$port"
 }
 
