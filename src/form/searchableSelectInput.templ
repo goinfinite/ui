@@ -133,6 +133,9 @@ templ searchableSelectInputFilterInput(
 		if settings.InputId != "" {
 			id={ settings.InputId }
 		}
+		if settings.IsDisabledOneWayStatePath != "" {
+			:disabled={ settings.IsDisabledOneWayStatePath }
+		}
 		x-model="userInput"
 		@focus="openDropdown()"
 		@click="openDropdown()"
@@ -162,6 +165,9 @@ templ searchableSelectInputTriggerEndIcons(settings searchableSelectInputShellSe
 		<!-- SearchableSelectClearButton -->
 		<button
 			type="button"
+			if settings.IsDisabledOneWayStatePath != "" {
+				:disabled={ settings.IsDisabledOneWayStatePath }
+			}
 			x-show={ hasSelectionExpression }
 			aria-label="Clear selection"
 			@click.stop.prevent={ searchableSelectInputClearExpressionBuilder(settings.TwoWayStatePath, settings.ClientConfig.IsMultiSelect, settings.OnChangeSuffix) }
