@@ -3,7 +3,7 @@
 # @usage        tests/ui/run.sh <smoke|standard|toolset|control|structural-smoke|structural|structural-a11y|a11y|performance|cross-browser|toolset-cross-browser|control-cross-browser|structural-cross-browser>
 # @output       Playwright test report, exit code forwarded from the run.
 # @requires     bash v4+, node v24+, DEMO_URL pointing at the demo page, UI_TEST_LIGHTPANDA_CDP_URL for the Lightpanda modes
-# @version      0.5.0
+# @version      0.5.1
 # @updated      2026-10-12
 set -euo pipefail
 
@@ -23,6 +23,10 @@ isModeListed() {
 		fi
 	done
 	return 1
+}
+
+modeRequiresLightpanda() {
+	isModeListed "$1" "${lightpandaModes[@]}"
 }
 
 validateInvocation() {
@@ -90,7 +94,7 @@ validateInvocation "${1:-}"
 requireDemoUrl
 cd "$(dirname "$0")"
 specRunner=runRealEngineSpecs
-if isModeListed "$1" "${lightpandaModes[@]}"; then
+if modeRequiresLightpanda "$1"; then
 	specRunner=runLightpandaSpecs
 fi
 "$specRunner" "$1"

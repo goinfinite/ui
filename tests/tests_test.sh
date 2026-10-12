@@ -3,7 +3,7 @@
 # @usage        bash tests/tests_test.sh
 # @output       PASS lines per assertion; exits 1 if any assertion fails.
 # @requires     bash v4+, node v24+, go, lightpanda
-# @version      0.4.0
+# @version      0.4.1
 # @updated      2026-10-12
 set -uo pipefail
 
@@ -54,12 +54,20 @@ lightpandaStartOutput="$(env "UI_TEST_PORT=$freeDemoPortNumber" "UI_TEST_LIGHTPA
 assertContains "starts lightpanda before a demo-requiring node" \
 	"could not start lightpanda on port $unusablePortNumber" "$lightpandaStartOutput"
 
-# Mise also exposes lightpanda through its shims directory, so the run keeps
-# only the node directory and the system binaries.
-pathWithoutLightpanda="$(dirname "$(command -v node)"):/usr/bin:/bin"
+# Mise also exposes lightpanda through its shims directory, so the run keeps a
+# directory holding only node, plus the system binaries.
+nodeOnlyPathDirectory="$(mktemp -d)"
+trap 'rm -rf "$nodeOnlyPathDirectory"' EXIT
+ln -s "$(command -v node)" "$nodeOnlyPathDirectory/node"
+pathWithoutLightpanda="$nodeOnlyPathDirectory:/usr/bin:/bin"
 missingLightpandaOutput="$(env "PATH=$pathWithoutLightpanda" "UI_TEST_PORT=$freeDemoPortNumber" \
 	bash tests/tests.sh --feature=form --scope=ui --level=fast 2>&1)"
 assertContains "names the missing lightpanda binary" \
 	"MissingRequiredTool: lightpanda" "$missingLightpandaOutput"
+
+realEngineOnlyOutput="$(env "PATH=$pathWithoutLightpanda" "UI_TEST_PORT=$unusablePortNumber" \
+	bash tests/tests.sh --feature=form --scope=accessibility --level=exhaustive 2>&1)"
+assertContains "does not require lightpanda for a real-engine-only node" \
+	"could not serve docs" "$realEngineOnlyOutput"
 
 exitWithAssertionStatus
