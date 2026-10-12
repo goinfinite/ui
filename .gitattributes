@@ -1,0 +1,4 @@
+# demo/demo.go generates the demo page and its JSON assets. GitHub collapses
+# generated files in pull request diffs, so a review shows the source changes.
+docs/index.html linguist-generated=true
+docs/assets/**/*.json linguist-generated=true
