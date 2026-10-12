@@ -1,5 +1,5 @@
-import { expect, test } from "@playwright/test";
 import { openExamplePanel } from "../../examplePanel.js";
+import { expect, test } from "../../fixture.js";
 
 const section = "#searchable-select-input-demo";
 
@@ -52,7 +52,7 @@ test.describe("SearchableSelectInput", () => {
     await expect(listbox.getByRole("option", { name: "Brazil" })).toBeHidden();
   });
 
-  test("Escape closes the dropdown", async ({ page }) => {
+  test("@browser Escape closes the dropdown", async ({ page }) => {
     const combobox = mainCombobox(page);
     await combobox.click();
     await expect(mainListbox(page)).toBeVisible();
@@ -137,7 +137,7 @@ test.describe("SearchableSelectInput", () => {
     ).toBeVisible();
   });
 
-  test("tags: Backspace on an empty input removes the last tag", async ({
+  test("@browser tags: Backspace on an empty input removes the last tag", async ({
     page,
   }) => {
     const panel = await openExamplePanel(page, section, "Selected as Tags");

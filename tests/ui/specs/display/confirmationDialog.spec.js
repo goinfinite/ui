@@ -1,5 +1,5 @@
-import { expect, test } from "@playwright/test";
 import { openExamplePanel } from "../../examplePanel.js";
+import { expect, test } from "../../fixture.js";
 
 const confirmationSection = "#confirmation-dialog-demo";
 const labelAlignmentTolerancePx = 12;
@@ -97,7 +97,7 @@ test.describe("ConfirmationDialog", () => {
     await expect(confirmButton).toBeEnabled();
   });
 
-  test("type-to-confirm label aligns with the field left edge", async ({
+  test("@browser type-to-confirm label aligns with the field left edge", async ({
     page,
   }) => {
     await page
@@ -138,7 +138,7 @@ test.describe("ConfirmationDialog", () => {
     await expect(
       confirmModal.getByRole("textbox", { name: "Type the name to confirm" }),
     ).toHaveCount(0);
-    await confirmModal.click({ position: { x: 5, y: 5 } });
+    await confirmModal.dispatchEvent("mousedown");
 
     await page
       .locator(confirmationSection)
@@ -182,7 +182,7 @@ test.describe("ConfirmationDialog", () => {
     await expect(
       modal.getByRole("button", { name: "Yes, Delete!" }),
     ).toBeEnabled();
-    await modal.click({ position: { x: 5, y: 5 } });
+    await modal.dispatchEvent("mousedown");
     await expect(modal).toBeHidden();
 
     await page
@@ -226,7 +226,9 @@ test.describe("ConfirmationDialog", () => {
     ).toBeVisible();
   });
 
-  test("typed prompt dialog hugs its content height", async ({ page }) => {
+  test("@browser typed prompt dialog hugs its content height", async ({
+    page,
+  }) => {
     await openExamplePanel(page, confirmationSection, "Type-to-Confirm");
     await page
       .locator(confirmationSection)
@@ -241,7 +243,7 @@ test.describe("ConfirmationDialog", () => {
     expect(panelBox.height / viewportSize.height).toBeLessThan(0.5);
   });
 
-  test("@smoke left icon position places the icon beside the title", async ({
+  test("@browser @smoke left icon position places the icon beside the title", async ({
     page,
   }) => {
     await openExamplePanel(page, confirmationSection, "Icon On Left");

@@ -1,4 +1,5 @@
-import { expect, test } from "@playwright/test";
+import { openEveryExamplePanel, openExamplePanel } from "../../examplePanel.js";
+import { expect, test } from "../../fixture.js";
 
 const buttonSection = "#button-demo";
 
@@ -8,6 +9,8 @@ test.describe("Button", () => {
   });
 
   test("@control every button carries a type attribute", async ({ page }) => {
+    await openEveryExamplePanel(page, buttonSection);
+
     const buttons = page.locator(`${buttonSection} button`);
     const buttonCount = await buttons.count();
 
@@ -30,9 +33,13 @@ test.describe("Button", () => {
   });
 
   test("@control IsSubmit renders a submit button", async ({ page }) => {
-    await expect(
-      page.locator(`${buttonSection} button[type=submit]`),
-    ).toHaveCount(1);
+    const submitPanel = await openExamplePanel(
+      page,
+      buttonSection,
+      "Full-Width & Submit",
+    );
+
+    await expect(submitPanel.locator("button[type=submit]")).toHaveCount(1);
   });
 
   test("@control re-embedding the tooltip state script does not throw", async ({

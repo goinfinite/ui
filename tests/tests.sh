@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# @description  Test entry point: selects registered suites, serves the demo, runs them, reports.
+# @description  Test entry point: selects registered suites, serves the demo and the Lightpanda browser, runs them, reports.
 # @usage        tests/tests.sh [list] [--level=<fast|standard|exhaustive>] [--feature=<name>[,<name>...]] [--scope=<name>[,<name>...]]
 # @output       Per-node progress on stdout, failures on stderr, final RESULT line, exit 0 pass / 1 failure / 2 runner error.
-# @requires     bash v4+, node v24+, curl, timeout, go
-# @version      0.4.0
-# @updated      2026-09-24
+# @requires     bash v4+, node v24+, curl, timeout, go, lightpanda
+# @version      0.5.0
+# @updated      2026-10-12
 # @see          .agents/skills/design-testing-strategy/SKILL.md
 set -euo pipefail
 
@@ -42,6 +42,23 @@ buildRegistryFilters() {
 }
 
 #
+## BackgroundServer
+#
+waitForBackgroundServer() {
+	local probeUrl="$1" serverPid="$2" failureMessage="$3"
+	local readyDeadline=$((SECONDS + 10))
+	while [[ "$SECONDS" -lt "$readyDeadline" ]]; do
+		if kill -0 "$serverPid" 2>/dev/null &&
+			curl -fs -o /dev/null "$probeUrl"; then
+			return 0
+		fi
+		sleep 0.2
+	done
+	echo "tests.sh: $failureMessage" >&2
+	exit 2
+}
+
+#
 ## DemoServer
 #
 startDemoServer() {
@@ -50,18 +67,33 @@ startDemoServer() {
 	echo "$!"
 }
 
-waitForDemoServer() {
-	local demoUrl="$1" demoServerPid="$2"
-	local readyDeadline=$((SECONDS + 10))
-	while [[ "$SECONDS" -lt "$readyDeadline" ]]; do
-		if kill -0 "$demoServerPid" 2>/dev/null &&
-			curl -fs -o /dev/null "$demoUrl/index.html"; then
-			return 0
-		fi
-		sleep 0.2
-	done
-	echo "tests.sh: could not serve docs/ on port ${demoUrl##*:}" >&2
-	exit 2
+#
+## LightpandaServer
+#
+lightpandaCdpMessageCeilingBytes=$((16 * 1024 * 1024))
+
+requireLightpandaBinary() {
+	if ! command -v lightpanda >/dev/null 2>&1; then
+		echo "MissingRequiredTool: lightpanda (run 'mise install')" >&2
+		exit 2
+	fi
+}
+
+refuseOccupiedLightpandaPort() {
+	local cdpUrl="$1"
+	if curl -fs -o /dev/null "$cdpUrl/json/version"; then
+		echo "tests.sh: port ${cdpUrl##*:} already answers; stop the browser that holds it" >&2
+		exit 2
+	fi
+}
+
+startLightpandaServer() {
+	local cdpPort="$1"
+	lightpanda serve --host 127.0.0.1 --port "$cdpPort" \
+		--cdp-max-message-size "$lightpandaCdpMessageCeilingBytes" \
+		--disable-metrics \
+		>"${TMPDIR:-/tmp}/lightpanda-${cdpPort}.log" 2>&1 &
+	echo "$!"
 }
 
 #
@@ -127,11 +159,20 @@ fi
 selectedNodes="$(selectRegisteredNodes "${registryFilters[@]}")"
 
 if selectionRequiresDemo "$selectedNodes"; then
+	requireLightpandaBinary
 	demoPort="${UI_TEST_PORT:-8377}"
 	demoServerPid=$(startDemoServer "$demoPort")
-	export DEMO_URL="http://localhost:$demoPort"
 	trap 'kill "$demoServerPid" 2>/dev/null || true' EXIT
-	waitForDemoServer "$DEMO_URL" "$demoServerPid"
+	export DEMO_URL="http://localhost:$demoPort"
+	lightpandaPort="${UI_TEST_LIGHTPANDA_PORT:-9377}"
+	export UI_TEST_LIGHTPANDA_CDP_URL="http://127.0.0.1:$lightpandaPort"
+	refuseOccupiedLightpandaPort "$UI_TEST_LIGHTPANDA_CDP_URL"
+	lightpandaServerPid=$(startLightpandaServer "$lightpandaPort")
+	trap 'kill "$demoServerPid" "$lightpandaServerPid" 2>/dev/null || true' EXIT
+	waitForBackgroundServer "$DEMO_URL/index.html" "$demoServerPid" \
+		"could not serve docs/ on port $demoPort"
+	waitForBackgroundServer "$UI_TEST_LIGHTPANDA_CDP_URL/json/version" "$lightpandaServerPid" \
+		"could not start lightpanda on port $lightpandaPort"
 fi
 
 startedAt=$SECONDS

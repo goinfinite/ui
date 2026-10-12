@@ -1,5 +1,5 @@
-import { expect, test } from "@playwright/test";
 import { openExamplePanel } from "../../examplePanel.js";
+import { expect, test } from "../../fixture.js";
 
 const inputFieldSection = "#input-field-demo";
 
@@ -10,7 +10,7 @@ test.describe("InputField", () => {
     await openExamplePanel(page, inputFieldSection, "Affixes");
   });
 
-  test("@smoke a long suffix stays on one line inside the field border", async ({
+  test("@browser @smoke a long suffix stays on one line inside the field border", async ({
     page,
   }) => {
     const fieldset = page
@@ -45,7 +45,7 @@ test.describe("InputField", () => {
     expect(geometry.suffixRight).toBeLessThanOrEqual(geometry.fieldRight);
   });
 
-  test("@smoke a long suffix truncates and leaves the input usable", async ({
+  test("@browser @smoke a long suffix truncates and leaves the input usable", async ({
     page,
   }) => {
     const input = page.locator(`${inputFieldSection} input[name=slug]`);
@@ -65,7 +65,9 @@ test.describe("InputField", () => {
     expect(suffixScroll.scrollWidth).toBeGreaterThan(suffixScroll.clientWidth);
   });
 
-  test("@smoke text case transforms the floating label", async ({ page }) => {
+  test("@browser @smoke text case transforms the floating label", async ({
+    page,
+  }) => {
     const panel = await openExamplePanel(page, inputFieldSection, "Label Case");
     const fields = panel.locator("fieldset");
     const cases = [

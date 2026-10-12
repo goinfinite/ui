@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "../../fixture.js";
 
 const tableSection = "#data-table-demo";
 const tableRoot = "#data-table-demo-table";
@@ -360,7 +360,7 @@ test.describe("DataTable @structural", () => {
     ).toBeHidden();
   });
 
-  test("a stale failed refresh does not show the error row", async ({
+  test("@browser a stale failed refresh does not show the error row", async ({
     page,
   }) => {
     let requestCount = 0;
@@ -398,7 +398,7 @@ test.describe("DataTable @structural", () => {
     ).toBeHidden();
   });
 
-  test("refreshes through the fetch fallback when htmx is absent", async ({
+  test("@browser refreshes through the fetch fallback when htmx is absent", async ({
     browser,
   }) => {
     const context = await browser.newContext({ baseURL: process.env.DEMO_URL });
@@ -432,7 +432,7 @@ test.describe("DataTable @structural", () => {
     await expect(liveMessage).toHaveText("Table refreshed");
   });
 
-  test("items per page dropdown opens upward when it would overflow the viewport", async ({
+  test("@browser items per page dropdown opens upward when it would overflow the viewport", async ({
     page,
   }) => {
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
@@ -449,7 +449,7 @@ test.describe("DataTable @structural", () => {
     expect(dropdownBounds.bottom).toBeLessThanOrEqual(viewportHeight);
   });
 
-  test("the filter dropdown paints above the pinned header", async ({
+  test("@browser the filter dropdown paints above the pinned header", async ({
     page,
   }) => {
     const table = page.locator(tableRoot);
@@ -483,7 +483,7 @@ test.describe("DataTable @structural", () => {
     expect(stacking.dropdownWins).toBe(true);
   });
 
-  test("the items per page menu renders the default surface opacity", async ({
+  test("@browser the items per page menu renders the default surface opacity", async ({
     page,
   }) => {
     const table = page.locator(tableRoot);

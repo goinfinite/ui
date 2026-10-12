@@ -1,5 +1,5 @@
-import { expect, test } from "@playwright/test";
 import { openExamplePanel } from "../../examplePanel.js";
+import { expect, test } from "../../fixture.js";
 
 const selectSection = "#select-input-demo";
 
@@ -39,7 +39,7 @@ test.describe("SelectInput", () => {
     ).toBeChecked();
   });
 
-  test("@smoke option value with an apostrophe selects and highlights", async ({
+  test("@browser @smoke option value with an apostrophe selects and highlights", async ({
     page,
   }) => {
     const trigger = page.locator(`${selectSection} .group.flex`).first();
@@ -60,7 +60,7 @@ test.describe("SelectInput", () => {
     );
   });
 
-  test("@smoke trigger opens with the keyboard and closes with Escape", async ({
+  test("@browser @smoke trigger opens with the keyboard and closes with Escape", async ({
     page,
   }) => {
     const trigger = page.locator(`${selectSection} [role=button]`).first();
@@ -74,7 +74,7 @@ test.describe("SelectInput", () => {
     await expect(options).toBeHidden();
   });
 
-  test("@smoke arrow keys move through the named radio group and Escape closes", async ({
+  test("@browser @smoke arrow keys move through the named radio group and Escape closes", async ({
     page,
   }) => {
     const trigger = page.locator(`${selectSection} [role=button]`).first();
@@ -138,7 +138,7 @@ test.describe("SelectInput", () => {
     await expect(changeCount).toHaveText("2");
   });
 
-  test("@smoke multi-select keeps the dropdown open and joins the summary", async ({
+  test("@browser @smoke multi-select keeps the dropdown open and joins the summary", async ({
     page,
   }) => {
     const panel = await openExamplePanel(page, selectSection, "Multi-Select");

@@ -1,5 +1,5 @@
-import { expect, test } from "@playwright/test";
 import { openExamplePanel } from "../../examplePanel.js";
+import { expect, test } from "../../fixture.js";
 
 const toggleSection = "#toggle-switch-demo";
 const booleanStateInput = `${toggleSection} input[type=hidden][name=notificationsEnabled]`;
@@ -41,13 +41,15 @@ test.describe("ToggleSwitch", () => {
     await expect(page.locator(booleanStateInput)).toHaveValue("true");
   });
 
-  test("@smoke default label renders right of the track", async ({ page }) => {
+  test("@browser @smoke default label renders right of the track", async ({
+    page,
+  }) => {
     await expect
       .poll(() => labelOffsetFromTrack(page, "Enable notifications"))
       .toBeGreaterThan(0);
   });
 
-  test("label position left renders the label before the track", async ({
+  test("@browser label position left renders the label before the track", async ({
     page,
   }) => {
     await openExamplePanel(page, toggleSection, "Label Position");
@@ -56,7 +58,7 @@ test.describe("ToggleSwitch", () => {
       .toBeLessThan(0);
   });
 
-  test("label position left keeps the switch at the column start", async ({
+  test("@browser label position left keeps the switch at the column start", async ({
     page,
   }) => {
     await openExamplePanel(page, toggleSection, "Label Position");
@@ -69,7 +71,7 @@ test.describe("ToggleSwitch", () => {
       .toBeLessThanOrEqual(2);
   });
 
-  test("label position left keeps the label and track together", async ({
+  test("@browser label position left keeps the label and track together", async ({
     page,
   }) => {
     await openExamplePanel(page, toggleSection, "Label Position");

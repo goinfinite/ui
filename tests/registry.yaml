@@ -4,7 +4,7 @@ features:
   runner:
     - scope: unit
       level: fast
-      run: bash tests/tests_test.sh && bash tests/ui/run_test.sh
+      run: bash tests/tests_test.sh && bash tests/ui/run_test.sh && bash demo/serveDemo_test.sh
       requires_demo: false
   display:
     - scope: unit
@@ -38,11 +38,11 @@ features:
       run: tests/ui/run.sh standard
       requires_demo: true
     - scope: accessibility
-      level: standard
+      level: exhaustive
       run: tests/ui/run.sh a11y
       requires_demo: true
     - scope: performance
-      level: standard
+      level: exhaustive
       run: tests/ui/run.sh performance && node tests/lib/checkPerformance.mjs
       requires_demo: true
     - scope: ui

@@ -1,5 +1,5 @@
-import { expect, test } from "@playwright/test";
 import { openExamplePanel } from "../../examplePanel.js";
+import { expect, test } from "../../fixture.js";
 
 const carouselSection = "#carousel-demo";
 const inlineCarouselRoot = "#carousel-demo-tooltips-carousel";
@@ -17,7 +17,7 @@ test.describe("Carousel item tooltips @structural", () => {
     await openExamplePanel(page, carouselSection, "Item Tooltips");
   });
 
-  test("hovering an item shows one body tooltip wired to the item", async ({
+  test("@browser hovering an item shows one body tooltip wired to the item", async ({
     page,
   }) => {
     const firstTrigger = page
@@ -69,7 +69,7 @@ test.describe("Carousel item tooltips @structural", () => {
     await expect(tooltip).toHaveCount(0);
   });
 
-  test("the tooltip survives inside a modal", async ({ page }) => {
+  test("@browser the tooltip survives inside a modal", async ({ page }) => {
     await page
       .getByRole("button", { name: "Open the carousel in a modal" })
       .click();

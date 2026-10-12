@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# @description  CLI contract for tests.sh: registry filters, rejected invocations, and demo-server decisions.
+# @description  CLI contract for tests.sh: registry filters, rejected invocations, and demo-server and Lightpanda decisions.
 # @usage        bash tests/tests_test.sh
 # @output       PASS lines per assertion; exits 1 if any assertion fails.
-# @requires     bash v4+, node v24+, go
-# @version      0.3.0
-# @updated      2026-09-24
+# @requires     bash v4+, node v24+, go, lightpanda
+# @version      0.4.0
+# @updated      2026-10-12
 set -uo pipefail
 
 cd "$(dirname "$0")/.." || exit 2
@@ -42,5 +42,24 @@ assertExitCode "runs a demo-free node without serving the demo" "0" \
 	env "UI_TEST_PORT=$unusablePortNumber" bash tests/tests.sh --feature=display --scope=unit --level=fast
 assertExitCode "serves the demo before a demo-requiring node" "2" \
 	env "UI_TEST_PORT=$unusablePortNumber" bash tests/tests.sh --feature=form --scope=ui --level=fast
+
+#
+## LightpandaServerDecision
+#
+# The suite itself holds port 8377 while this file runs, so these runs serve
+# the demo on a free port to reach the Lightpanda step.
+freeDemoPortNumber=8466
+lightpandaStartOutput="$(env "UI_TEST_PORT=$freeDemoPortNumber" "UI_TEST_LIGHTPANDA_PORT=$unusablePortNumber" \
+	bash tests/tests.sh --feature=form --scope=ui --level=fast 2>&1)"
+assertContains "starts lightpanda before a demo-requiring node" \
+	"could not start lightpanda on port $unusablePortNumber" "$lightpandaStartOutput"
+
+# Mise also exposes lightpanda through its shims directory, so the run keeps
+# only the node directory and the system binaries.
+pathWithoutLightpanda="$(dirname "$(command -v node)"):/usr/bin:/bin"
+missingLightpandaOutput="$(env "PATH=$pathWithoutLightpanda" "UI_TEST_PORT=$freeDemoPortNumber" \
+	bash tests/tests.sh --feature=form --scope=ui --level=fast 2>&1)"
+assertContains "names the missing lightpanda binary" \
+	"MissingRequiredTool: lightpanda" "$missingLightpandaOutput"
 
 exitWithAssertionStatus

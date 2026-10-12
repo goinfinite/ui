@@ -1,4 +1,5 @@
-import { expect, test } from "@playwright/test";
+import { openExamplePanel } from "../../examplePanel.js";
+import { expect, test } from "../../fixture.js";
 
 const accordionSection = "#accordion-demo";
 
@@ -7,7 +8,7 @@ test.describe("Accordion", () => {
     await page.goto(`/index.html#${accordionSection.slice(1)}`);
   });
 
-  test("@smoke open item content reads as a cutout of the parent surface", async ({
+  test("@browser @smoke open item content reads as a cutout of the parent surface", async ({
     page,
   }) => {
     const firstLiveItem = page.locator(`${accordionSection} details`).first();
@@ -29,7 +30,9 @@ test.describe("Accordion", () => {
     expect(cutoutStyles.padding).toBe("16px");
   });
 
-  test("@smoke only the outer items keep rounded corners", async ({ page }) => {
+  test("@browser @smoke only the outer items keep rounded corners", async ({
+    page,
+  }) => {
     const liveAccordionItems = page
       .locator(`${accordionSection} details`)
       .filter({ hasText: "This is the content for section" });
@@ -50,14 +53,14 @@ test.describe("Accordion", () => {
       .toEqual(["6px/0px", "0px/0px", "0px/6px"]);
   });
 
-  test("@smoke single-open keeps one section open at a time", async ({
+  test("@browser @smoke single-open keeps one section open at a time", async ({
     page,
   }) => {
-    const singleOpenPanel = page
-      .locator(`${accordionSection} details`)
-      .filter({ hasText: "Single Open" })
-      .first();
-    await singleOpenPanel.locator("summary").first().click();
+    const singleOpenPanel = await openExamplePanel(
+      page,
+      accordionSection,
+      "Single Open",
+    );
 
     const sectionItems = singleOpenPanel.locator("details");
     await sectionItems.nth(0).locator("summary").click();
@@ -71,11 +74,11 @@ test.describe("Accordion", () => {
   test("@smoke first item open renders the first section expanded", async ({
     page,
   }) => {
-    const firstItemPanel = page
-      .locator(`${accordionSection} details`)
-      .filter({ hasText: "First Item Open" })
-      .first();
-    await firstItemPanel.locator("summary").first().click();
+    const firstItemPanel = await openExamplePanel(
+      page,
+      accordionSection,
+      "First Item Open",
+    );
 
     const sectionItems = firstItemPanel.locator("details");
     await expect(sectionItems.nth(0)).toHaveAttribute("open", "");
