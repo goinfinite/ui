@@ -19,6 +19,9 @@ var dataTableDemoRoutingScript string
 //go:embed remoteSearchableSelectDemoRouting.js
 var remoteSearchableSelectDemoRoutingScript string
 
+//go:embed advancedExampleLoader.js
+var advancedExampleLoaderScript string
+
 const (
 	dataTableDemoFragmentsAssetPath       = "docs/assets/dataTableDemoRefreshFragments.json"
 	carouselDemoFragmentsAssetPath        = "docs/assets/carouselDemoRefreshFragments.json"
@@ -49,9 +52,12 @@ func (generator demoGenerator) reconcileOutput(
 	return nil
 }
 
-func (generator demoGenerator) renderIndex() error {
+func (generator demoGenerator) renderIndex(
+	registry *advancedExampleRegistry,
+) error {
 	indexBody := &bytes.Buffer{}
-	renderErr := DemoIndex().Render(context.Background(), indexBody)
+	renderContext := registry.contextAttacher(context.Background())
+	renderErr := DemoIndex().Render(renderContext, indexBody)
 	if renderErr != nil {
 		return errors.New(
 			"RenderHtmlFailed (index.html): " + renderErr.Error(),
@@ -163,12 +169,8 @@ func (generator demoGenerator) buildCarouselTooltipFragments() (map[string]strin
 }
 
 func (generator demoGenerator) writeFragmentsAsset(
-	assetPath string, buildFragments func() (map[string]string, error),
+	assetPath string, fragments map[string]string,
 ) error {
-	fragments, err := buildFragments()
-	if err != nil {
-		return err
-	}
 	fragmentsBody := &bytes.Buffer{}
 	fragmentsEncoder := json.NewEncoder(fragmentsBody)
 	fragmentsEncoder.SetEscapeHTML(false)
@@ -182,11 +184,73 @@ func (generator demoGenerator) writeFragmentsAsset(
 	return generator.reconcileOutput(assetPath, fragmentsBody.Bytes())
 }
 
+func (generator demoGenerator) removeStaleAdvancedExampleAssets(
+	assetDirectory string, currentAssetPaths map[string]bool,
+) error {
+	directoryEntries, readErr := os.ReadDir(assetDirectory)
+	if readErr != nil {
+		return errors.New(
+			"ReadAdvancedExamplesDirectoryFailed: " + readErr.Error(),
+		)
+	}
+	for _, directoryEntry := range directoryEntries {
+		entryPath := assetDirectory + "/" + directoryEntry.Name()
+		if currentAssetPaths[entryPath] {
+			continue
+		}
+		removeErr := os.Remove(entryPath)
+		if removeErr != nil {
+			return errors.New(
+				"RemoveStaleAdvancedExampleAssetFailed (" + entryPath + "): " +
+					removeErr.Error(),
+			)
+		}
+	}
+	return nil
+}
+
+func (generator demoGenerator) writeAdvancedExampleAssets(
+	registry *advancedExampleRegistry,
+) error {
+	panelsBySection, err := registry.renderPanelsBySection()
+	if err != nil {
+		return err
+	}
+	assetDirectory := "docs/" + advancedExamplesAssetDirectory
+	mkdirErr := os.MkdirAll(assetDirectory, 0o755)
+	if mkdirErr != nil {
+		return errors.New(
+			"CreateAdvancedExamplesDirectoryFailed: " + mkdirErr.Error(),
+		)
+	}
+	currentAssetPaths := map[string]bool{}
+	for sectionId, panelsByKey := range panelsBySection {
+		assetPath := "docs/" + advancedExampleAssetPathBuilder(sectionId)
+		currentAssetPaths[assetPath] = true
+		writeErr := generator.writeFragmentsAsset(assetPath, panelsByKey)
+		if writeErr != nil {
+			return writeErr
+		}
+	}
+	return generator.removeStaleAdvancedExampleAssets(
+		assetDirectory, currentAssetPaths,
+	)
+}
+
 func main() {
 	generator := demoGenerator{}
-	renderErr := generator.renderIndex()
+	registry := &advancedExampleRegistry{}
+	renderErr := generator.renderIndex(registry)
 	if renderErr != nil {
 		slog.Error("RenderDemoIndexFailed", slog.String("err", renderErr.Error()))
+		os.Exit(1)
+	}
+	advancedWriteErr := generator.writeAdvancedExampleAssets(registry)
+	if advancedWriteErr != nil {
+		slog.Error(
+			"WriteAdvancedExampleAssetsFailed",
+			slog.String("err", advancedWriteErr.Error()),
+		)
 		os.Exit(1)
 	}
 	fragmentAssets := []struct {
@@ -211,9 +275,14 @@ func main() {
 		},
 	}
 	for _, fragmentAsset := range fragmentAssets {
-		writeErr := generator.writeFragmentsAsset(
-			fragmentAsset.assetPath, fragmentAsset.buildFragments,
-		)
+		fragments, buildErr := fragmentAsset.buildFragments()
+		if buildErr != nil {
+			slog.Error(
+				fragmentAsset.failureLogKey, slog.String("err", buildErr.Error()),
+			)
+			os.Exit(1)
+		}
+		writeErr := generator.writeFragmentsAsset(fragmentAsset.assetPath, fragments)
 		if writeErr != nil {
 			slog.Error(
 				fragmentAsset.failureLogKey, slog.String("err", writeErr.Error()),

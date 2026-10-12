@@ -4,6 +4,7 @@ import (
 	uiDisplay "github.com/goinfinite/ui/src/display"
 	uiImport "github.com/goinfinite/ui/src/import"
 	uiStructural "github.com/goinfinite/ui/src/structural"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
 const (
@@ -243,6 +244,7 @@ templ DemoIndex() {
 					</div>
 				</section>
 			</main>
+			@uiToolset.MinifierTemplateJs(&advancedExampleLoaderScript)
 		</body>
 	</html>
 }
