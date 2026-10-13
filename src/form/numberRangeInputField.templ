@@ -1,0 +1,145 @@
+package uiForm
+
+import (
+	_ "embed"
+
+	uiControl "github.com/goinfinite/ui/src/control"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+//go:embed numberRangeInputFieldState.js
+var numberRangeInputFieldAlpineState string
+
+var numberRangeInputFieldAlpineStateOnce = templ.NewOnceHandle(
+	templ.WithComponent(uiToolset.MinifierTemplateJs(&numberRangeInputFieldAlpineState)),
+)
+
+const (
+	NumberRangeInputFieldSliderDisplayAlways     string = "always"
+	NumberRangeInputFieldSliderDisplayHidden     string = "hidden"
+	NumberRangeInputFieldSliderDisplayResponsive string = "responsive"
+)
+
+type NumberRangeInputFieldSettings struct {
+	InputName       string
+	Label           string
+	TwoWayStatePath string
+
+	// OptionalFields
+	InputId       string
+	IsRequired    bool
+	IsValueLabelsHidden bool
+	Max           string
+	Min           string
+	Size          string
+	SliderDisplay string
+	Step          string
+	Thumb         uiControl.RangeSliderThumbSettings
+	Track         uiControl.RangeSliderTrackSettings
+	UnitSuffix    string
+}
+
+type numberRangeBounds struct {
+	Min  string
+	Max  string
+	Step string
+}
+
+func (componentSettings NumberRangeInputFieldSettings) boundsResolver() numberRangeBounds {
+	rangeBounds := numberRangeBounds{Min: "0", Max: "100", Step: "1"}
+	if componentSettings.Min != "" {
+		rangeBounds.Min = componentSettings.Min
+	}
+	if componentSettings.Max != "" {
+		rangeBounds.Max = componentSettings.Max
+	}
+	if componentSettings.Step != "" {
+		rangeBounds.Step = componentSettings.Step
+	}
+	return rangeBounds
+}
+
+templ numberRangeBox(rangeSettings NumberRangeInputFieldSettings) {
+	{{ rangeBounds := rangeSettings.boundsResolver() }}
+	@numberRangeInputFieldAlpineStateOnce.Once()
+	<div
+		class="w-full"
+		x-data={ templ.JSFuncCall("numberRangeInputField", rangeBounds.Min, rangeBounds.Max, rangeBounds.Step) }
+		x-effect={ "syncNumberRangeTypedValue(" + rangeSettings.TwoWayStatePath + ")" }
+		@change={ rangeSettings.TwoWayStatePath + " = commitNumberRangeTypedValue(" + rangeSettings.TwoWayStatePath + ")" }
+	>
+		@InputField(InputFieldSettings{
+			InputType:       InputTypeNumber,
+			InputName:       rangeSettings.InputName,
+			Label:           rangeSettings.Label,
+			TwoWayStatePath: "numberRangeTypedValue",
+			AffixRightValue: rangeSettings.UnitSuffix,
+			InputId:         rangeSettings.InputId,
+			InputNumberMin:  rangeBounds.Min,
+			InputNumberMax:  rangeBounds.Max,
+			InputNumberStep: rangeBounds.Step,
+			IsRequired:      rangeSettings.IsRequired,
+			Size:            rangeSettings.Size,
+		})
+	</div>
+}
+
+func (componentSettings NumberRangeInputFieldSettings) sliderTrackResolver() uiControl.RangeSliderTrackSettings {
+	trackSettings := componentSettings.Track
+	if componentSettings.IsValueLabelsHidden {
+		return trackSettings
+	}
+	trackSettings.StartValueLabelEnabled = true
+	trackSettings.EndValueLabelEnabled = true
+	if trackSettings.StartValueLabelPosition == "" {
+		trackSettings.StartValueLabelPosition = uiControl.RangeSliderTrackValueLabelPositionBottom
+	}
+	if trackSettings.EndValueLabelPosition == "" {
+		trackSettings.EndValueLabelPosition = uiControl.RangeSliderTrackValueLabelPositionBottom
+	}
+	return trackSettings
+}
+
+templ numberRangeSlider(rangeSettings NumberRangeInputFieldSettings) {
+	{{ rangeBounds := rangeSettings.boundsResolver() }}
+	{{ thumbSettings := rangeSettings.Thumb }}
+	if thumbSettings.AriaLabel == "" {
+		{{ thumbSettings.AriaLabel = rangeSettings.Label }}
+	}
+	<div class="w-full pb-4">
+		@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+			Size:                      rangeSettings.Size,
+			Thumb:                     thumbSettings,
+			Track:                     rangeSettings.sliderTrackResolver(),
+			ThumbValueTwoWayStatePath: rangeSettings.TwoWayStatePath,
+			TrackStartValue:           rangeBounds.Min,
+			TrackEndValue:             rangeBounds.Max,
+			TrackSteps:                rangeBounds.Step,
+		})
+	</div>
+}
+
+templ NumberRangeInputField(componentSettings NumberRangeInputFieldSettings) {
+	<!-- NumberRangeInputField -->
+	{{ boxClasses := "w-1/3 shrink-0" }}
+	{{ sliderClasses := "flex min-w-0 grow items-center" }}
+	switch componentSettings.SliderDisplay {
+		case NumberRangeInputFieldSliderDisplayHidden:
+			{{ boxClasses = "w-full" }}
+		case NumberRangeInputFieldSliderDisplayResponsive:
+			{{ boxClasses = "w-full shrink-0 @sm:w-1/3" }}
+			{{ sliderClasses = "hidden min-w-0 grow items-center @sm:flex" }}
+	}
+	<div class="@container w-full">
+		<div class="flex w-full flex-row items-center gap-4">
+			<div class={ boxClasses }>
+				@numberRangeBox(componentSettings)
+			</div>
+			if componentSettings.SliderDisplay != NumberRangeInputFieldSliderDisplayHidden {
+				<div class={ sliderClasses }>
+					@numberRangeSlider(componentSettings)
+				</div>
+			}
+		</div>
+	</div>
+}
