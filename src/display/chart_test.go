@@ -108,6 +108,22 @@ func TestChartConfigResolver(t *testing.T) {
 			},
 			expectedErrPrefix: "ChartInvalidDonutHolePercent",
 		},
+		{
+			name: "UnknownCenterLabelDisplayModeFails",
+			settings: ChartSettings{
+				Type: ChartTypeDonut, XAxis: timeAxis, Series: cpuSeries,
+				Donut: ChartDonutSettings{CenterLabelDisplayMode: "sometimes"},
+			},
+			expectedErrPrefix: "ChartInvalidDonutCenterLabelDisplayMode",
+		},
+		{
+			name: "UnknownCenterLabelSizeFails",
+			settings: ChartSettings{
+				Type: ChartTypeDonut, XAxis: timeAxis, Series: cpuSeries,
+				Donut: ChartDonutSettings{CenterLabelSize: "huge"},
+			},
+			expectedErrPrefix: "ChartInvalidDonutCenterLabelSize",
+		},
 	}
 
 	for _, testCase := range testCases {
@@ -151,13 +167,18 @@ func TestChartColorTokensCollector(t *testing.T) {
 			{RowKey: "cpu", IdentityColor: "sky-300"},
 			{RowKey: "memory"},
 		},
-		Donut: ChartDonutSettings{SliceIdentityColors: map[string]string{"nginx": "[#4c8dff]"}},
+		Donut: ChartDonutSettings{
+			SliceIdentityColors:    map[string]string{"nginx": "[#4c8dff]"},
+			CenterLabelDisplayMode: ChartDonutCenterLabelDisplayModeAlways,
+			CenterLabelSliceColor:  "amber-300",
+			CenterLabelValueColor:  "amber-100",
+		},
 	}.configResolver()
 	if resolveErr != nil {
 		t.Fatalf("UnexpectedChartConfigError: %v", resolveErr)
 	}
 	colorTokens := resolvedConfig.colorTokensCollector()
-	for _, expectedToken := range []string{"sky-300", "[#4c8dff]", "neutral-900", "neutral-50/30"} {
+	for _, expectedToken := range []string{"sky-300", "[#4c8dff]", "neutral-900", "neutral-50/30", "amber-300", "amber-100"} {
 		if !slices.Contains(colorTokens, expectedToken) {
 			t.Errorf("ColorTokenMissing: %q", expectedToken)
 		}
@@ -173,6 +194,26 @@ func TestChartColorTokensCollector(t *testing.T) {
 	}
 	if skyTokenCount != 1 {
 		t.Errorf("DuplicateColorToken: sky-300 appears %d times", skyTokenCount)
+	}
+}
+
+func TestChartHiddenCenterLabelSkipsItsColorTokens(t *testing.T) {
+	resolvedConfig, resolveErr := ChartSettings{
+		Type:   ChartTypeDonut,
+		XAxis:  ChartXAxisSettings{RowKey: "service"},
+		Series: []ChartSeriesSettings{{RowKey: "usedGib"}},
+		Donut: ChartDonutSettings{
+			CenterLabelSliceColor: "amber-300",
+			CenterLabelValueColor: "amber-100",
+		},
+	}.configResolver()
+	if resolveErr != nil {
+		t.Fatalf("UnexpectedChartConfigError: %v", resolveErr)
+	}
+	for _, unexpectedToken := range []string{"amber-300", "amber-100"} {
+		if slices.Contains(resolvedConfig.colorTokensCollector(), unexpectedToken) {
+			t.Errorf("HiddenCenterLabelColorTokenCollected: %q", unexpectedToken)
+		}
 	}
 }
 

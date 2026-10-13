@@ -26,6 +26,8 @@ UiToolset.RegisterAlpineState(() => {
   const chartFallbackTitleColor = "#d4d4d4";
   const chartFallbackLineColor = "rgba(250, 250, 250, 0.08)";
   const chartFallbackCrosshairColor = "rgba(250, 250, 250, 0.3)";
+  const chartFallbackCenterLabelSliceColor = "#a3a3a3";
+  const chartFallbackCenterLabelValueColor = "#fafafa";
   const chartFallbackColorByToken = {
     "neutral-900": chartFallbackGapColor,
     "neutral-400": chartFallbackTickLabelColor,
@@ -792,12 +794,33 @@ UiToolset.RegisterAlpineState(() => {
     );
     const donutTooltipExpression = `{title: datum.chartCategory, row: datum, rows: [{label: ${expressionStringQuoter(valueSeries.label)}, color: scale('color', datum.chartCategory), value: ${valueText}}]}`;
     const holeRatio = chartConfig.donut.holePercent / 100;
+    const donutConfig = chartConfig.donut;
+    const isCenterLabelShown = donutConfig.centerLabelDisplayMode !== "hidden";
 
     const chartSpec = chartBaseSpecBuilder(fontFamily);
     chartSpec.signals = [
       { name: "chartCategories", value: [] },
       { name: "chartCategoryColors", value: [] },
     ];
+    if (isCenterLabelShown) {
+      chartSpec.signals.push(
+        { name: "centerLabelAlwaysSlice", value: "" },
+        {
+          name: "centerLabelSlice",
+          value: "",
+          on: [
+            {
+              events: "@donutArcs:pointerover",
+              update: "datum.chartCategory",
+            },
+            {
+              events: "@donutArcs:pointerout",
+              update: "centerLabelAlwaysSlice",
+            },
+          ],
+        },
+      );
+    }
     chartSpec.data = [
       {
         name: "rows",
@@ -827,6 +850,7 @@ UiToolset.RegisterAlpineState(() => {
     ];
     chartSpec.marks = [
       {
+        name: "donutArcs",
         type: "arc",
         from: { data: "rows" },
         encode: {
@@ -856,6 +880,75 @@ UiToolset.RegisterAlpineState(() => {
         },
       },
     ];
+    if (isCenterLabelShown) {
+      const centerLabelScale = `min(width, height) / 2 * ${holeRatio} * ${donutConfig.centerLabelSizeMultiplier}`;
+      const valueSuffixLiteral = expressionStringQuoter(
+        donutConfig.centerLabelValueSuffix,
+      );
+      const centerLabelValueText = chartValueTextExpressionBuilder(
+        chartConfig,
+        "datum.chartValue",
+      );
+      const centerLabelLimit = {
+        signal: `min(width, height) * ${holeRatio} * 0.9`,
+      };
+      chartSpec.marks.push(
+        {
+          type: "text",
+          from: { data: "rows" },
+          interactive: false,
+          encode: {
+            update: {
+              x: { signal: "width / 2" },
+              y: { signal: "height / 2 - 3" },
+              align: { value: "center" },
+              baseline: { value: "bottom" },
+              text: { signal: "datum.chartCategory" },
+              fill: {
+                value: chartTokenColorResolver(
+                  colorByToken,
+                  donutConfig.centerLabelSliceColor,
+                  chartFallbackCenterLabelSliceColor,
+                ),
+              },
+              fontSize: { signal: `${centerLabelScale} * 0.20` },
+              limit: centerLabelLimit,
+              opacity: {
+                signal: "datum.chartCategory === centerLabelSlice ? 1 : 0",
+              },
+            },
+          },
+        },
+        {
+          type: "text",
+          from: { data: "rows" },
+          interactive: false,
+          encode: {
+            update: {
+              x: { signal: "width / 2" },
+              y: { signal: "height / 2 + 3" },
+              align: { value: "center" },
+              baseline: { value: "top" },
+              text: {
+                signal: `(${centerLabelValueText}) + ${valueSuffixLiteral}`,
+              },
+              fill: {
+                value: chartTokenColorResolver(
+                  colorByToken,
+                  donutConfig.centerLabelValueColor,
+                  chartFallbackCenterLabelValueColor,
+                ),
+              },
+              fontSize: { signal: `${centerLabelScale} * 0.34` },
+              limit: centerLabelLimit,
+              opacity: {
+                signal: "datum.chartCategory === centerLabelSlice ? 1 : 0",
+              },
+            },
+          },
+        },
+      );
+    }
     return chartSpec;
   }
 
@@ -865,6 +958,18 @@ UiToolset.RegisterAlpineState(() => {
       donutCategories.add(String(chartRow[chartConfig.xAxis.rowKey]));
     }
     return Array.from(donutCategories);
+  }
+
+  function chartDonutAlwaysSliceResolver(chartConfig, donutCategories) {
+    const alwaysSlice = chartConfig.donut.centerLabelAlwaysSlice;
+    if (alwaysSlice === "") {
+      return donutCategories.length > 0 ? donutCategories[0] : "";
+    }
+    if (donutCategories.includes(alwaysSlice)) {
+      return alwaysSlice;
+    }
+    console.error(`ChartDonutCenterLabelSliceNotFound: ${alwaysSlice}`);
+    return donutCategories.length > 0 ? donutCategories[0] : "";
   }
 
   function chartCategoryColorsResolver(
@@ -1081,6 +1186,17 @@ UiToolset.RegisterAlpineState(() => {
               chartColorByToken,
             ),
           );
+          if (this.chartConfig.donut.centerLabelDisplayMode !== "hidden") {
+            let alwaysSlice = "";
+            if (this.chartConfig.donut.centerLabelDisplayMode === "always") {
+              alwaysSlice = chartDonutAlwaysSliceResolver(
+                this.chartConfig,
+                donutCategories,
+              );
+            }
+            chartView.signal("centerLabelAlwaysSlice", alwaysSlice);
+            chartView.signal("centerLabelSlice", alwaysSlice);
+          }
         }
         const replacedRows = vega
           .changeset()

@@ -105,14 +105,52 @@ const (
 	ChartLegendAlignmentStart  ChartLegendAlignment = "start"
 )
 
+type ChartDonutCenterLabelDisplayMode string
+
 const (
-	chartDefaultTimeTitleFormat  string = "%b %d, %H:%M:%S"
-	chartDefaultValueFormat      string = ",.2~f"
-	chartDefaultPercentFormat    string = ".0%"
-	chartDefaultDonutHolePercent uint8  = 60
-	chartMaxDonutHolePercent     uint8  = 90
-	chartDefaultYTickCount       uint   = 5
+	ChartDonutCenterLabelDisplayModeAlways ChartDonutCenterLabelDisplayMode = "always"
+	ChartDonutCenterLabelDisplayModeHidden ChartDonutCenterLabelDisplayMode = "hidden"
+	ChartDonutCenterLabelDisplayModeHover  ChartDonutCenterLabelDisplayMode = "hover"
 )
+
+type ChartDonutCenterLabelSize string
+
+const (
+	ChartDonutCenterLabelSizeXs ChartDonutCenterLabelSize = "xs"
+	ChartDonutCenterLabelSizeSm ChartDonutCenterLabelSize = "sm"
+	ChartDonutCenterLabelSizeMd ChartDonutCenterLabelSize = "md"
+	ChartDonutCenterLabelSizeLg ChartDonutCenterLabelSize = "lg"
+	ChartDonutCenterLabelSizeXl ChartDonutCenterLabelSize = "xl"
+)
+
+const (
+	chartDefaultTimeTitleFormat       string = "%b %d, %H:%M:%S"
+	chartDefaultValueFormat           string = ",.2~f"
+	chartDefaultPercentFormat         string = ".0%"
+	chartDefaultDonutHolePercent      uint8  = 60
+	chartMaxDonutHolePercent          uint8  = 90
+	chartDefaultYTickCount            uint   = 5
+	chartDefaultCenterLabelSliceColor string = "neutral-400"
+	chartDefaultCenterLabelValueColor string = "neutral-50"
+)
+
+func chartCenterLabelSizeMultiplierResolver(
+	centerLabelSize ChartDonutCenterLabelSize,
+) string {
+	switch centerLabelSize {
+	case ChartDonutCenterLabelSizeXs:
+		return "0.75"
+	case ChartDonutCenterLabelSizeSm:
+		return "0.875"
+	case ChartDonutCenterLabelSizeMd:
+		return "1"
+	case ChartDonutCenterLabelSizeLg:
+		return "1.15"
+	case ChartDonutCenterLabelSizeXl:
+		return "1.3"
+	}
+	return "1"
+}
 
 type ChartSeriesSettings struct {
 	RowKey string
@@ -196,8 +234,14 @@ type ChartCartesianSettings struct {
 
 type ChartDonutSettings struct {
 	// OptionalFields
-	HolePercent         uint8
-	SliceIdentityColors map[string]string
+	CenterLabelAlwaysSlice string
+	CenterLabelDisplayMode ChartDonutCenterLabelDisplayMode
+	CenterLabelSize        ChartDonutCenterLabelSize
+	CenterLabelSliceColor  string
+	CenterLabelValueColor  string
+	CenterLabelValueSuffix string
+	HolePercent            uint8
+	SliceIdentityColors    map[string]string
 }
 
 type ChartSettings struct {
@@ -272,8 +316,14 @@ type chartCartesianConfig struct {
 }
 
 type chartDonutConfig struct {
-	HolePercent         uint8             `json:"holePercent"`
-	SliceIdentityColors map[string]string `json:"sliceIdentityColors"`
+	CenterLabelAlwaysSlice    string                           `json:"centerLabelAlwaysSlice"`
+	CenterLabelDisplayMode    ChartDonutCenterLabelDisplayMode `json:"centerLabelDisplayMode"`
+	CenterLabelSizeMultiplier string                           `json:"centerLabelSizeMultiplier"`
+	CenterLabelSliceColor     string                           `json:"centerLabelSliceColor"`
+	CenterLabelValueColor     string                           `json:"centerLabelValueColor"`
+	CenterLabelValueSuffix    string                           `json:"centerLabelValueSuffix"`
+	HolePercent               uint8                            `json:"holePercent"`
+	SliceIdentityColors       map[string]string                `json:"sliceIdentityColors"`
 }
 
 type chartConfig struct {
@@ -492,13 +542,42 @@ func chartDonutResolver(donut ChartDonutSettings) (chartDonutConfig, error) {
 			"ChartInvalidDonutHolePercent: %d", holePercent,
 		)
 	}
+	centerLabelDisplayMode, centerLabelDisplayModeErr := chartOptionResolver(
+		donut.CenterLabelDisplayMode, ChartDonutCenterLabelDisplayModeHidden,
+		[]ChartDonutCenterLabelDisplayMode{
+			ChartDonutCenterLabelDisplayModeAlways, ChartDonutCenterLabelDisplayModeHidden,
+			ChartDonutCenterLabelDisplayModeHover,
+		},
+		"ChartInvalidDonutCenterLabelDisplayMode",
+	)
+	if centerLabelDisplayModeErr != nil {
+		return chartDonutConfig{}, centerLabelDisplayModeErr
+	}
+	centerLabelSize, centerLabelSizeErr := chartOptionResolver(
+		donut.CenterLabelSize, ChartDonutCenterLabelSizeMd,
+		[]ChartDonutCenterLabelSize{
+			ChartDonutCenterLabelSizeXs, ChartDonutCenterLabelSizeSm,
+			ChartDonutCenterLabelSizeMd, ChartDonutCenterLabelSizeLg,
+			ChartDonutCenterLabelSizeXl,
+		},
+		"ChartInvalidDonutCenterLabelSize",
+	)
+	if centerLabelSizeErr != nil {
+		return chartDonutConfig{}, centerLabelSizeErr
+	}
 	sliceIdentityColors := donut.SliceIdentityColors
 	if sliceIdentityColors == nil {
 		sliceIdentityColors = map[string]string{}
 	}
 	return chartDonutConfig{
-		HolePercent:         holePercent,
-		SliceIdentityColors: sliceIdentityColors,
+		CenterLabelAlwaysSlice:    donut.CenterLabelAlwaysSlice,
+		CenterLabelDisplayMode:    centerLabelDisplayMode,
+		CenterLabelSizeMultiplier: chartCenterLabelSizeMultiplierResolver(centerLabelSize),
+		CenterLabelSliceColor:     chartTextDefaulter(donut.CenterLabelSliceColor, chartDefaultCenterLabelSliceColor),
+		CenterLabelValueColor:     chartTextDefaulter(donut.CenterLabelValueColor, chartDefaultCenterLabelValueColor),
+		CenterLabelValueSuffix:    donut.CenterLabelValueSuffix,
+		HolePercent:               holePercent,
+		SliceIdentityColors:       sliceIdentityColors,
 	}, nil
 }
 
@@ -645,6 +724,13 @@ func (resolvedConfig chartConfig) colorTokensCollector() []string {
 		resolvedConfig.Cartesian.YAxis.TickLabelColor,
 		resolvedConfig.Cartesian.YAxis.BaselineColor,
 		resolvedConfig.Cartesian.YAxis.GridLineColor,
+	}
+	if resolvedConfig.Donut.CenterLabelDisplayMode != ChartDonutCenterLabelDisplayModeHidden {
+		colorTokens = append(
+			colorTokens,
+			resolvedConfig.Donut.CenterLabelSliceColor,
+			resolvedConfig.Donut.CenterLabelValueColor,
+		)
 	}
 	for _, seriesEntry := range resolvedConfig.Series {
 		colorTokens = append(colorTokens, seriesEntry.IdentityColor)

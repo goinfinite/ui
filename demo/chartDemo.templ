@@ -186,6 +186,62 @@ templ ChartDonutExample() {
 	}
 }
 
+templ ChartDonutCenterLabelExample() {
+	{{
+		centerLabelUsage := `@uiDisplay.Chart(uiDisplay.ChartSettings{
+	Type:  uiDisplay.ChartTypeDonut,
+	XAxis: uiDisplay.ChartXAxisSettings{RowKey: "service"},
+	Series: []uiDisplay.ChartSeriesSettings{
+		{RowKey: "usedGib", Label: "Storage (GiB)"},
+	},
+
+	// OptionalFields
+	Tooltip: uiDisplay.ChartTooltipSettings{ValueFormat: ",.1f"},
+	Donut: uiDisplay.ChartDonutSettings{
+		CenterLabelDisplayMode: uiDisplay.ChartDonutCenterLabelDisplayModeAlways,
+		CenterLabelAlwaysSlice: "mariadb",
+		CenterLabelSize:        uiDisplay.ChartDonutCenterLabelSizeLg,
+		CenterLabelValueSuffix: " GiB",
+		HolePercent:            70,
+	},
+	Rows: []map[string]any{
+		{"service": "mariadb", "usedGib": 42.5},
+		{"service": "nginx", "usedGib": 3.2},
+		{"service": "php-webserver", "usedGib": 18.9},
+		{"service": "redis", "usedGib": 6.4},
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Donut Center Label",
+		"Donut.CenterLabelDisplayMode shows the slice name and its value in the donut hole. Always keeps the CenterLabelAlwaysSlice value, or the first slice when it is empty, until a hover replaces it. Hover shows the label only while a slice is hovered. CenterLabelSize scales both lines, and CenterLabelValueSuffix follows the value.",
+		"/display/chart.templ", centerLabelUsage,
+	) {
+		@uiDisplay.Chart(uiDisplay.ChartSettings{
+			Type:  uiDisplay.ChartTypeDonut,
+			XAxis: uiDisplay.ChartXAxisSettings{RowKey: "service"},
+			Series: []uiDisplay.ChartSeriesSettings{
+				{RowKey: "usedGib", Label: "Storage (GiB)"},
+			},
+			Rows: []map[string]any{
+				{"service": "mariadb", "usedGib": 42.5},
+				{"service": "nginx", "usedGib": 3.2},
+				{"service": "php-webserver", "usedGib": 18.9},
+				{"service": "redis", "usedGib": 6.4},
+			},
+			Tooltip: uiDisplay.ChartTooltipSettings{ValueFormat: ",.1f"},
+			Donut: uiDisplay.ChartDonutSettings{
+				CenterLabelDisplayMode: uiDisplay.ChartDonutCenterLabelDisplayModeAlways,
+				CenterLabelAlwaysSlice: "mariadb",
+				CenterLabelSize:        uiDisplay.ChartDonutCenterLabelSizeLg,
+				CenterLabelValueSuffix: " GiB",
+				HolePercent:            70,
+			},
+			AriaLabel: "Storage by service",
+		})
+	}
+}
+
 templ ChartAppearanceExample() {
 	{{
 		appearanceUsage := `@uiDisplay.Chart(uiDisplay.ChartSettings{
@@ -368,6 +424,7 @@ templ ChartDemo() {
 			{Title: "Bar", Icon: "ph-chart-bar", Content: ChartBarExample()},
 			{Title: "Stacked", Icon: "ph-stack", Content: ChartStackedExample()},
 			{Title: "Donut", Icon: "ph-chart-donut", Content: ChartDonutExample()},
+			{Title: "Donut Center Label", Icon: "ph-text-align-center", Content: ChartDonutCenterLabelExample()},
 			{Title: "Appearance", Icon: "ph-palette", Content: ChartAppearanceExample()},
 			{Title: "Empty State", Icon: "ph-chart-line-down", Content: ChartEmptyExample()},
 		})
