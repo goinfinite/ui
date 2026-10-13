@@ -270,7 +270,7 @@ func HeadTagsVega() templ.Component {
 			templ_7745c5c3_Var8 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<script src=\"https://cdn.jsdelivr.net/npm/vega@6.3.1/build/vega.min.js\" integrity=\"sha256-cL/chLFfEfP7NGmiSvAzFLMiLezk8shhXlQvGD+Pd1o=\" crossorigin=\"anonymous\"></script><script src=\"https://cdn.jsdelivr.net/npm/vega-lite@6.4.3/build/vega-lite.min.js\" integrity=\"sha256-NamCHfg4glsFpqc+lBS1h0ehsYMhWDhY7ZA8Zjk6XH4=\" crossorigin=\"anonymous\"></script><script src=\"https://cdn.jsdelivr.net/npm/vega-embed@7.1.0/build/vega-embed.min.js\" integrity=\"sha256-w2JUJwIZ7uWPubHZVN7K2VT7B7/Jq3gMXUQBvURc1Qw=\" crossorigin=\"anonymous\"></script>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<script src=\"https://cdn.jsdelivr.net/npm/vega@6.3.1/build/vega.min.js\" integrity=\"sha256-cL/chLFfEfP7NGmiSvAzFLMiLezk8shhXlQvGD+Pd1o=\" crossorigin=\"anonymous\"></script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
