@@ -269,18 +269,18 @@ templ ButtonTooltipsExample() {
 				TooltipPosition: uiToolset.TooltipPositionRight,
 			})
 			@uiControl.Button(uiControl.ButtonSettings{
-				Label:                    "Styled Tooltip",
-				IconLeft:                 "ph-paint-brush",
-				TooltipContent:           "A styled tooltip surface with a ring and size limits.",
-				TooltipPosition:          uiToolset.TooltipPositionTop,
-				TooltipBackgroundColor:   "violet-950/95",
-				TooltipTextColor:         "violet-100",
-				TooltipRingColor:         "violet-500",
-				TooltipRingThickness:     uiToolset.RingThicknessMd,
-				TooltipMinWidthClass:     "min-w-48",
-				TooltipMaxWidthClass:     "max-w-72",
-				TooltipMinHeightClass:    "min-h-12",
-				TooltipMaxHeightClass:    "max-h-32",
+				Label:                  "Styled Tooltip",
+				IconLeft:               "ph-paint-brush",
+				TooltipContent:         "A styled tooltip surface with a ring and size limits.",
+				TooltipPosition:        uiToolset.TooltipPositionTop,
+				TooltipBackgroundColor: "violet-950/95",
+				TooltipTextColor:       "violet-100",
+				TooltipRingColor:       "violet-500",
+				TooltipRingThickness:   uiToolset.RingThicknessMd,
+				TooltipMinWidthClass:   "min-w-48",
+				TooltipMaxWidthClass:   "max-w-72",
+				TooltipMinHeightClass:  "min-h-12",
+				TooltipMaxHeightClass:  "max-h-32",
 			})
 			@uiControl.Button(uiControl.ButtonSettings{
 				Label:              "HTML Tooltip",
@@ -387,6 +387,116 @@ templ ButtonFullWidthSubmitExample() {
 	}
 }
 
+templ ButtonActionStatesExample() {
+	{{
+		actionUsage := `<form hx-post="/api/v1/account/" hx-swap="none">
+	@uiControl.Button(uiControl.ButtonSettings{
+		Label:    "Save",
+		IsSubmit: true,
+
+		// OptionalFields
+		ShouldTrackAction: true,
+		PendingLabel:      "Saving",
+		SucceededLabel:    "Saved",
+		FailedLabel:       "Save failed",
+	})
+</form>
+
+@uiControl.Button(uiControl.ButtonSettings{
+	Label:       "Sync",
+	OnClickFunc: "UiToolset.JsonAjax('POST', '/api/v1/sync/')",
+
+	// OptionalFields
+	ShouldTrackAction: true,
+	PendingLabel:      "Syncing",
+	SucceededLabel:    "Synced",
+	FailedLabel:       "Sync failed",
+})
+
+@uiControl.Button(uiControl.ButtonSettings{
+	Label: "Delete account",
+
+	// OptionalFields
+	IsPendingOneWayStatePath: "isSyncing",
+	PendingLabel:             "Wait for the sync",
+})`
+	}}
+	@DemoExampleCard(
+		"Action States",
+		"ShouldTrackAction follows the action the button triggers. With IsSubmit, the action is the owning form: a native POST or an HTMX request. Without IsSubmit, the action is the promise OnClickFunc returns, for example UiToolset.JsonAjax(...), with no form needed. While the action runs, the button shows a spinner and PendingLabel and refuses a second click. When it ends, the button shows SucceededLabel or FailedLabel for two seconds. IsPendingOneWayStatePath shows the pending state from Alpine state, for example on every button that a shared request blocks.",
+		"/control/button.templ", actionUsage,
+	) {
+		@uiToolset.MinifierTemplateJs(&buttonDemoAlpineState)
+		<div class="flex flex-col gap-3" x-data="buttonDemoActions">
+			<p class="text-xs font-bold text-neutral-400">Form actions</p>
+			<div class="flex flex-row flex-wrap gap-3">
+				<form hx-get="assets/ui-logo.svg" hx-swap="none">
+					@uiControl.Button(uiControl.ButtonSettings{
+						Label:             "Save",
+						IconLeft:          "ph-floppy-disk",
+						IsSubmit:          true,
+						ShouldTrackAction: true,
+						PendingLabel:      "Saving",
+						SucceededLabel:    "Saved",
+						FailedLabel:       "Save failed",
+						BackgroundColor:   "primary-600",
+					})
+				</form>
+				<form hx-get="assets/missing-action-target" hx-swap="none">
+					@uiControl.Button(uiControl.ButtonSettings{
+						Label:             "Save to a missing endpoint",
+						IconLeft:          "ph-floppy-disk",
+						IsSubmit:          true,
+						ShouldTrackAction: true,
+						PendingLabel:      "Saving",
+						SucceededLabel:    "Saved",
+						FailedLabel:       "Save failed",
+					})
+				</form>
+			</div>
+			<p class="text-xs font-bold text-neutral-400">Click actions, no form</p>
+			<div class="flex flex-row flex-wrap gap-3">
+				@uiControl.Button(uiControl.ButtonSettings{
+					Id:                "button-demo-sync",
+					Label:             "Sync",
+					IconLeft:          "ph-arrows-clockwise",
+					OnClickFunc:       "syncAccounts()",
+					ShouldTrackAction: true,
+					PendingLabel:      "Syncing",
+					SucceededLabel:    "Synced",
+					FailedLabel:       "Sync failed",
+				})
+				@uiControl.Button(uiControl.ButtonSettings{
+					Id:                "button-demo-broken-sync",
+					Label:             "Sync a broken mirror",
+					IconLeft:          "ph-arrows-clockwise",
+					OnClickFunc:       "syncBrokenMirror()",
+					ShouldTrackAction: true,
+					PendingLabel:      "Syncing",
+					SucceededLabel:    "Synced",
+					FailedLabel:       "Sync failed",
+				})
+			</div>
+			<p class="text-xs font-bold text-neutral-400">Shared pending state</p>
+			<div class="flex flex-row flex-wrap gap-3">
+				@uiControl.Button(uiControl.ButtonSettings{
+					Id:                       "button-demo-start-sync",
+					Label:                    "Start sync",
+					OnClickFunc:              "startSharedSync()",
+					IsPendingOneWayStatePath: "isSyncing",
+					PendingLabel:             "Syncing",
+				})
+				@uiControl.Button(uiControl.ButtonSettings{
+					Id:                       "button-demo-delete-account",
+					Label:                    "Delete account",
+					IsPendingOneWayStatePath: "isSyncing",
+					PendingLabel:             "Wait for the sync",
+				})
+			</div>
+		</div>
+	}
+}
+
 templ ButtonTextCaseExample() {
 	{{
 		textCaseUsage := `@uiControl.Button(uiControl.ButtonSettings{
@@ -466,6 +576,7 @@ templ ButtonDemo() {
 			{Title: "Tooltips", Icon: "ph-chats", Content: ButtonTooltipsExample()},
 			{Title: "Disabled Binding", Icon: "ph-prohibit", Content: ButtonDisabledBindingExample()},
 			{Title: "Full-Width & Submit", Icon: "ph-arrows-out", Content: ButtonFullWidthSubmitExample()},
+			{Title: "Action States", Icon: "ph-spinner", Content: ButtonActionStatesExample()},
 			{Title: "Text Case", Icon: "ph-text-t", Content: ButtonTextCaseExample()},
 		})
 	</div>

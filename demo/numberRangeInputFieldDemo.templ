@@ -1,0 +1,217 @@
+package main
+
+import (
+	uiControl "github.com/goinfinite/ui/src/control"
+	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiForm "github.com/goinfinite/ui/src/form"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+templ NumberRangeInputFieldSliderDisplayExample() {
+	{{
+		sliderDisplayUsage := `@uiForm.NumberRangeInputField(uiForm.NumberRangeInputFieldSettings{
+	InputName:       "memoryLimit",
+	Label:           "Memory",
+	TwoWayStatePath: "memoryLimit",
+
+	// OptionalFields
+	Min:           "512",
+	Max:           "8192",
+	Step:          "256",
+	UnitSuffix:    "MiB",
+	SliderDisplay: uiForm.NumberRangeInputFieldSliderDisplayResponsive,
+})`
+	}}
+	@DemoExampleCard(
+		"Slider Display",
+		"SliderDisplay picks when the slider renders. Responsive hides the slider while the field container is narrower than 24rem. Hidden keeps only the number box.",
+		"/form/numberRangeInputField.templ", sliderDisplayUsage,
+	) {
+		<div class="flex flex-col gap-4" x-data="{memoryLimit: 1024}">
+			<div class="w-full">
+				@uiForm.NumberRangeInputField(uiForm.NumberRangeInputFieldSettings{
+					InputName:       "memoryLimitWide",
+					Label:           "Memory (responsive, wide)",
+					TwoWayStatePath: "memoryLimit",
+					Min:             "512",
+					Max:             "8192",
+					Step:            "256",
+					UnitSuffix:      "MiB",
+					SliderDisplay:   uiForm.NumberRangeInputFieldSliderDisplayResponsive,
+				})
+			</div>
+			<div class="w-60">
+				@uiForm.NumberRangeInputField(uiForm.NumberRangeInputFieldSettings{
+					InputName:       "memoryLimitNarrow",
+					Label:           "Memory (responsive, narrow)",
+					TwoWayStatePath: "memoryLimit",
+					Min:             "512",
+					Max:             "8192",
+					Step:            "256",
+					UnitSuffix:      "MiB",
+					SliderDisplay:   uiForm.NumberRangeInputFieldSliderDisplayResponsive,
+				})
+			</div>
+			<div class="w-full">
+				@uiForm.NumberRangeInputField(uiForm.NumberRangeInputFieldSettings{
+					InputName:       "memoryLimitHidden",
+					Label:           "Memory (hidden)",
+					TwoWayStatePath: "memoryLimit",
+					Min:             "512",
+					Max:             "8192",
+					Step:            "256",
+					UnitSuffix:      "MiB",
+					SliderDisplay:   uiForm.NumberRangeInputFieldSliderDisplayHidden,
+				})
+			</div>
+			<p class={ DemoLiveStateClasses }>
+				memoryLimit: <span x-text="memoryLimit"></span>
+			</p>
+		</div>
+	}
+}
+
+templ NumberRangeInputFieldSizesExample() {
+	{{
+		sizesUsage := `@uiForm.NumberRangeInputField(uiForm.NumberRangeInputFieldSettings{
+	InputName:       "cpuCores",
+	Label:           "CPU",
+	TwoWayStatePath: "cpuCores",
+
+	// OptionalFields
+	Size: uiForm.InputFieldSizeSm,
+})`
+	}}
+	@DemoExampleCard(
+		"Sizes",
+		"Size accepts the InputFieldSize constants. It scales the number box and the slider together.",
+		"/form/numberRangeInputField.templ", sizesUsage,
+	) {
+		<div class="flex flex-col gap-3" x-data="{cpuCores: 2}">
+			for _, fieldSize := range []string{uiForm.InputFieldSizeXs, uiForm.InputFieldSizeSm, uiForm.InputFieldSizeMd, uiForm.InputFieldSizeLg, uiForm.InputFieldSizeXl} {
+				@uiForm.NumberRangeInputField(uiForm.NumberRangeInputFieldSettings{
+					InputName:       "cpuCores-" + fieldSize,
+					Label:           "CPU " + fieldSize,
+					TwoWayStatePath: "cpuCores",
+					Min:             "1",
+					Max:             "16",
+					UnitSuffix:      "cores",
+					Size:            fieldSize,
+				})
+			}
+		</div>
+	}
+}
+
+templ NumberRangeInputFieldSliderAppearanceExample() {
+	{{
+		appearanceUsage := `@uiForm.NumberRangeInputField(uiForm.NumberRangeInputFieldSettings{
+	InputName:       "cpuQuota",
+	Label:           "CPU Quota",
+	TwoWayStatePath: "cpuQuota",
+
+	// OptionalFields
+	Min: "10",
+	Max: "400",
+	Thumb: uiControl.RangeSliderThumbSettings{
+		BackgroundColor:    "sky-500",
+		ValueBubbleEnabled: true,
+	},
+	Track: uiControl.RangeSliderTrackSettings{
+		FillColor:    "sky-500",
+		TicksEnabled: true,
+		TickStep:     "50",
+		TooltipEnabled: true,
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Slider Appearance",
+		"Thumb and Track take the RangeSlider appearance structs, so the field slider takes the same colors, value bubble, tick marks, tooltip, and bounds labels. The field still owns the value, the bounds, the size, and the accessible name.",
+		"/form/numberRangeInputField.templ", appearanceUsage,
+	) {
+		<div class="flex flex-col gap-4" x-data="{cpuQuota: 100}">
+			@uiForm.NumberRangeInputField(uiForm.NumberRangeInputFieldSettings{
+				InputName:       "cpuQuotaStyled",
+				Label:           "CPU Quota (styled)",
+				TwoWayStatePath: "cpuQuota",
+				Min:             "10",
+				Max:             "400",
+				Step:            "10",
+				Thumb: uiControl.RangeSliderThumbSettings{
+					BackgroundColor:      "sky-500",
+					ValueBubbleEnabled:   true,
+					ValueBubbleRingColor: "sky-200",
+				},
+				Track: uiControl.RangeSliderTrackSettings{
+					FillColor:       "sky-500",
+					TicksEnabled:    true,
+					TickStep:        "50",
+					TooltipEnabled:  true,
+					TooltipPosition: uiControl.RangeSliderTrackTooltipPositionTop,
+				},
+			})
+			@uiForm.NumberRangeInputField(uiForm.NumberRangeInputFieldSettings{
+				InputName:           "cpuQuotaPlain",
+				Label:               "CPU Quota (no bounds labels)",
+				TwoWayStatePath:     "cpuQuota",
+				Min:                 "10",
+				Max:                 "400",
+				Step:                "10",
+				IsValueLabelsHidden: true,
+				Thumb: uiControl.RangeSliderThumbSettings{
+					Shape: uiToolset.ShapeSquare,
+				},
+			})
+			<p class={ DemoLiveStateClasses }>
+				cpuQuota: <span x-text="cpuQuota"></span>
+			</p>
+		</div>
+	}
+}
+
+templ NumberRangeInputFieldDemo() {
+	{{
+		demoUsage := `@uiForm.NumberRangeInputField(uiForm.NumberRangeInputFieldSettings{
+	InputName:       "cpuQuota",
+	Label:           "CPU Quota",
+	TwoWayStatePath: "cpuQuota",
+
+	// OptionalFields
+	Min:        "10",
+	Max:        "400",
+	Step:       "10",
+	UnitSuffix: "%",
+})`
+	}}
+	<div class="flex flex-col gap-4" id="number-range-input-field-demo">
+		@DemoComponentSection(DemoComponentSectionSettings{
+			ComponentPath:          "/form/numberRangeInputField.templ",
+			Description:            "A number box and a slider bound to one state path. Type the value or drag it. A typed value commits on blur or Enter, after the field clamps it to Min and Max and snaps it to Step.",
+			LiveExampleDescription: "A CPU quota between 10% and 400% in steps of 10.",
+			Title:                  ".NumberRangeInputField",
+			UsageCode:              demoUsage,
+			AlpineStateCode:        `<div x-data="{cpuQuota: 100}"></div>`,
+		}) {
+			<div x-data="{cpuQuota: 100}">
+				@uiForm.NumberRangeInputField(uiForm.NumberRangeInputFieldSettings{
+					InputName:       "cpuQuota",
+					Label:           "CPU Quota",
+					TwoWayStatePath: "cpuQuota",
+					Min:             "10",
+					Max:             "400",
+					Step:            "10",
+					UnitSuffix:      "%",
+				})
+				<p class={ DemoLiveStateClasses }>
+					cpuQuota: <span x-text="cpuQuota"></span>
+				</p>
+			</div>
+		}
+		@DemoAdvancedExamples("number-range-input-field-demo", []uiDisplay.AccordionItemSettings{
+			{Title: "Slider Display", Icon: "ph-arrows-in-line-horizontal", Content: NumberRangeInputFieldSliderDisplayExample()},
+			{Title: "Slider Appearance", Icon: "ph-palette", Content: NumberRangeInputFieldSliderAppearanceExample()},
+			{Title: "Sizes", Icon: "ph-ruler", Content: NumberRangeInputFieldSizesExample()},
+		})
+	</div>
+}

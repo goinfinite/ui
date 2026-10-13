@@ -1,0 +1,185 @@
+package main
+
+import (
+	uiControl "github.com/goinfinite/ui/src/control"
+	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiForm "github.com/goinfinite/ui/src/form"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+templ FileUploadInputFailureExample() {
+	{{
+		failureUsage := `<form hx-post="/api/v1/files/" hx-encoding="multipart/form-data" hx-swap="none">
+	@uiForm.FileUploadInput(uiForm.FileUploadInputSettings{
+		InputName: "files",
+		Label:     "Drop files here or click to pick",
+	})
+</form>`
+	}}
+	@DemoExampleCard(
+		"Upload Failure",
+		"A failed HTMX request marks each uploading file as failed. The files stay in the form, so the next submit retries them. The demo endpoint here always fails.",
+		"/form/fileUploadInput.templ", failureUsage,
+	) {
+		<form hx-post="file-upload-demo-error" hx-encoding="multipart/form-data" hx-swap="none" class="flex flex-col gap-3">
+			@uiForm.FileUploadInput(uiForm.FileUploadInputSettings{
+				InputName: "failingFiles",
+				Label:     "Drop files here or click to pick",
+			})
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:             "Upload",
+				IconLeft:          "ph-upload-simple",
+				IsSubmit:          true,
+				ShouldTrackAction: true,
+				PendingLabel:      "Uploading",
+				FailedLabel:       "Upload failed",
+			})
+		</form>
+	}
+}
+
+templ FileUploadInputSingleFileExample() {
+	{{
+		singleFileUsage := `@uiForm.FileUploadInput(uiForm.FileUploadInputSettings{
+	InputName: "avatar",
+	Label:     "Drop an avatar here or click to pick",
+
+	// OptionalFields
+	AcceptedTypes:    []string{"image/*"},
+	MaxFileCount:     1,
+	MaxFileSizeBytes: 1048576,
+	IsRequired:       true,
+})`
+	}}
+	@DemoExampleCard(
+		"Single File",
+		"MaxFileCount 1 drops the multiple attribute, so the picker selects one file. A new file replaces the pending one.",
+		"/form/fileUploadInput.templ", singleFileUsage,
+	) {
+		@uiForm.FileUploadInput(uiForm.FileUploadInputSettings{
+			InputName:        "avatar",
+			Label:            "Drop an avatar here or click to pick",
+			Description:      "One image up to 1 MiB",
+			AcceptedTypes:    []string{"image/*"},
+			MaxFileCount:     1,
+			MaxFileSizeBytes: 1048576,
+			IsRequired:       true,
+		})
+	}
+}
+
+templ FileUploadInputStyleExample() {
+	{{
+		styleUsage := `@uiForm.FileUploadInput(uiForm.FileUploadInputSettings{
+	InputName: "files",
+	Label:     "Drop files here or click to pick",
+
+	// OptionalFields
+	Size: uiForm.FileUploadInputSizeLg,
+	Zone: uiForm.FileUploadZoneSettings{
+		BackgroundColor: "primary-500/10",
+		BorderColor:     "primary-500/40",
+		BorderRadius:    uiToolset.BorderRadiusXl,
+		Icon:            "ph-cloud-arrow-up",
+		IconColor:       "primary-300",
+		LabelColor:      "primary-100",
+	},
+	Row: uiForm.FileUploadRowSettings{
+		BackgroundColor: "primary-500/10",
+		TextColor:       "primary-100",
+	},
+	Progress: uiForm.FileUploadProgressSettings{
+		TrackColor: "primary-500/20",
+		FillColor:  "primary-400",
+	},
+	Rejected: uiForm.FileUploadRejectedSettings{
+		TextColor: "amber-400",
+		IconColor: "amber-400",
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Styling",
+		"Size scales the zone, the icon, the rows, and the text together. Zone, Row, Progress, and Rejected take the colors and the radius of each part. Zone.Icon picks the drop zone icon; the row icon follows the file type. Every color is a Tailwind token.",
+		"/form/fileUploadInput.templ", styleUsage,
+	) {
+		@uiForm.FileUploadInput(uiForm.FileUploadInputSettings{
+			InputName: "styledFiles",
+			Label:     "Drop files here or click to pick",
+			Size:      uiForm.FileUploadInputSizeLg,
+			Zone: uiForm.FileUploadZoneSettings{
+				BackgroundColor: "primary-500/10",
+				BorderColor:     "primary-500/40",
+				BorderRadius:    uiToolset.BorderRadiusXl,
+				Icon:            "ph-cloud-arrow-up",
+				IconColor:       "primary-300",
+				LabelColor:      "primary-100",
+			},
+			Row: uiForm.FileUploadRowSettings{
+				BackgroundColor: "primary-500/10",
+				TextColor:       "primary-100",
+			},
+			Progress: uiForm.FileUploadProgressSettings{
+				TrackColor: "primary-500/20",
+				FillColor:  "primary-400",
+			},
+			Rejected: uiForm.FileUploadRejectedSettings{
+				TextColor: "amber-400",
+				IconColor: "amber-400",
+			},
+		})
+	}
+}
+
+templ FileUploadInputDemo() {
+	{{
+		demoUsage := `<form hx-post="/api/v1/files/" hx-encoding="multipart/form-data" hx-swap="none">
+	@uiForm.FileUploadInput(uiForm.FileUploadInputSettings{
+		InputName: "archiveFiles",
+		Label:     "Drop archives here or click to pick",
+
+		// OptionalFields
+		Description:      ".tar, .zip, .xz, or .br up to 5 MiB, 3 files at most",
+		AcceptedTypes:    []string{".tar", ".zip", ".xz", ".br"},
+		MaxFileCount:     3,
+		MaxFileSizeBytes: 5242880,
+	})
+</form>`
+	}}
+	<div class="flex flex-col gap-4" id="file-upload-input-demo">
+		@DemoComponentSection(DemoComponentSectionSettings{
+			ComponentPath:          "/form/fileUploadInput.templ",
+			Description:            "A drop zone with click-to-pick. It lists each file with its type icon, size, and a remove button, and rejects files that break the size, count, or type limits. The files submit with the form under InputName. During an HTMX request, each file shows its own upload progress.",
+			LiveExampleDescription: "Pick or drop up to three archives. The demo endpoint keeps the files in the browser and replays the upload progress over two seconds.",
+			Title:                  ".FileUploadInput",
+			UsageCode:              demoUsage,
+			UsageNote:              "Set hx-encoding=\"multipart/form-data\" on an HTMX form, or enctype=\"multipart/form-data\" on a native form. The limits run in the browser only, so the server must check them again.",
+		}) {
+			@uiToolset.MinifierTemplateJs(&fileUploadDemoRoutingScript)
+			<form hx-post="file-upload-demo" hx-encoding="multipart/form-data" hx-swap="none" class="flex flex-col gap-3">
+				@uiForm.FileUploadInput(uiForm.FileUploadInputSettings{
+					InputName:        "archiveFiles",
+					Label:            "Drop archives here or click to pick",
+					Description:      ".tar, .zip, .xz, or .br up to 5 MiB, 3 files at most",
+					AcceptedTypes:    []string{".tar", ".zip", ".xz", ".br"},
+					MaxFileCount:     3,
+					MaxFileSizeBytes: 5242880,
+				})
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:             "Upload",
+					IconLeft:          "ph-upload-simple",
+					IsSubmit:          true,
+					ShouldTrackAction: true,
+					PendingLabel:      "Uploading",
+					SucceededLabel:    "Uploaded",
+					BackgroundColor:   "primary-600",
+				})
+			</form>
+		}
+		@DemoAdvancedExamples("file-upload-input-demo", []uiDisplay.AccordionItemSettings{
+			{Title: "Single File", Icon: "ph-file", Content: FileUploadInputSingleFileExample()},
+			{Title: "Styling", Icon: "ph-palette", Content: FileUploadInputStyleExample()},
+			{Title: "Upload Failure", Icon: "ph-warning-circle", Content: FileUploadInputFailureExample()},
+		})
+	</div>
+}
