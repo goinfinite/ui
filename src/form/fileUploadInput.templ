@@ -1,0 +1,288 @@
+package uiForm
+
+import (
+	_ "embed"
+	"strings"
+
+	uiControl "github.com/goinfinite/ui/src/control"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+//go:embed fileUploadInputState.js
+var fileUploadInputAlpineState string
+
+var fileUploadInputAlpineStateOnce = templ.NewOnceHandle(
+	templ.WithComponent(uiToolset.MinifierTemplateJs(&fileUploadInputAlpineState)),
+)
+
+const (
+	FileUploadInputSizeXs string = "xs"
+	FileUploadInputSizeSm string = "sm"
+	FileUploadInputSizeMd string = "md"
+	FileUploadInputSizeLg string = "lg"
+	FileUploadInputSizeXl string = "xl"
+)
+
+type fileUploadSizeTokens struct {
+	DescriptionTextSize string
+	IconSize            string
+	LabelTextSize       string
+	RowIconSize         string
+	RowTextSize         string
+	RowSizeLabelSize    string
+	ZonePadding         string
+}
+
+func fileUploadSizeTokensResolver(size string) fileUploadSizeTokens {
+	switch size {
+	case FileUploadInputSizeXs:
+		return fileUploadSizeTokens{
+			DescriptionTextSize: "text-[0.625rem]",
+			IconSize:            "text-xl",
+			LabelTextSize:       "text-xs",
+			RowIconSize:         "text-base",
+			RowTextSize:         "text-xs",
+			RowSizeLabelSize:    "text-[0.625rem]",
+			ZonePadding:         "p-3",
+		}
+	case FileUploadInputSizeSm:
+		return fileUploadSizeTokens{
+			DescriptionTextSize: "text-xs",
+			IconSize:            "text-2xl",
+			LabelTextSize:       "text-xs",
+			RowIconSize:         "text-base",
+			RowTextSize:         "text-xs",
+			RowSizeLabelSize:    "text-xs",
+			ZonePadding:         "p-4",
+		}
+	case FileUploadInputSizeLg:
+		return fileUploadSizeTokens{
+			DescriptionTextSize: "text-sm",
+			IconSize:            "text-4xl",
+			LabelTextSize:       "text-base",
+			RowIconSize:         "text-xl",
+			RowTextSize:         "text-base",
+			RowSizeLabelSize:    "text-sm",
+			ZonePadding:         "p-6",
+		}
+	case FileUploadInputSizeXl:
+		return fileUploadSizeTokens{
+			DescriptionTextSize: "text-base",
+			IconSize:            "text-5xl",
+			LabelTextSize:       "text-lg",
+			RowIconSize:         "text-2xl",
+			RowTextSize:         "text-lg",
+			RowSizeLabelSize:    "text-base",
+			ZonePadding:         "p-8",
+		}
+	}
+	return fileUploadSizeTokens{
+		DescriptionTextSize: "text-xs",
+		IconSize:            "text-3xl",
+		LabelTextSize:       "text-sm",
+		RowIconSize:         "text-lg",
+		RowTextSize:         "text-sm",
+		RowSizeLabelSize:    "text-xs",
+		ZonePadding:         "p-5",
+	}
+}
+
+type FileUploadZoneSettings struct {
+	// OptionalFields
+	BackgroundColor  string
+	BorderColor      string
+	BorderRadius     string
+	DescriptionColor string
+	Icon             string
+	IconColor        string
+	LabelColor       string
+	PaddingSize      string
+}
+
+type FileUploadRowSettings struct {
+	// OptionalFields
+	BackgroundColor string
+	BorderRadius    string
+	IconColor       string
+	SizeLabelColor  string
+	TextColor       string
+}
+
+type FileUploadProgressSettings struct {
+	// OptionalFields
+	FillColor  string
+	TrackColor string
+}
+
+type FileUploadRejectedSettings struct {
+	// OptionalFields
+	IconColor string
+	TextColor string
+}
+
+type FileUploadInputSettings struct {
+	InputName string
+	Label     string
+
+	// OptionalFields
+	AcceptedTypes    []string
+	Description      string
+	InputId          string
+	IsRequired       bool
+	MaxFileCount     uint
+	MaxFileSizeBytes uint64
+	Progress         FileUploadProgressSettings
+	Rejected         FileUploadRejectedSettings
+	Row              FileUploadRowSettings
+	Size             string
+	Zone             FileUploadZoneSettings
+}
+
+type fileUploadLimits struct {
+	AcceptedTypes    string `json:"acceptedTypes"`
+	MaxFileCount     uint   `json:"maxFileCount"`
+	MaxFileSizeBytes uint64 `json:"maxFileSizeBytes"`
+}
+
+func (componentSettings FileUploadInputSettings) acceptedTypesAttribute() string {
+	return strings.Join(componentSettings.AcceptedTypes, ",")
+}
+
+func (componentSettings FileUploadInputSettings) zoneClassesResolver() string {
+	zone := componentSettings.Zone
+	sizeTokens := fileUploadSizeTokensResolver(componentSettings.Size)
+	return uiToolset.NonEmptyClassJoiner([]string{
+		"flex w-full cursor-pointer flex-col items-center justify-center gap-1 border border-dashed transition-colors",
+		uiToolset.BackgroundColorClassResolver(zone.BackgroundColor, "bg-neutral-50/5"),
+		uiToolset.BorderColorClassResolver(zone.BorderColor, "border-neutral-50/20"),
+		uiToolset.BorderRadiusClassResolver(zone.BorderRadius, "rounded-md"),
+		uiToolset.PaddingClassResolver(zone.PaddingSize, sizeTokens.ZonePadding),
+		"hover:border-neutral-50/40 hover:bg-neutral-50/7.5 focus-within:border-neutral-50/50",
+	})
+}
+
+func (componentSettings FileUploadInputSettings) rowClassesResolver() string {
+	row := componentSettings.Row
+	sizeTokens := fileUploadSizeTokensResolver(componentSettings.Size)
+	return uiToolset.NonEmptyClassJoiner([]string{
+		"flex flex-row items-center gap-2 py-1.5 pl-2.5 pr-1.5",
+		uiToolset.BackgroundColorClassResolver(row.BackgroundColor, "bg-neutral-50/5"),
+		uiToolset.BorderRadiusClassResolver(row.BorderRadius, "rounded-md"),
+		sizeTokens.RowTextSize,
+	})
+}
+
+templ FileUploadInput(componentSettings FileUploadInputSettings) {
+	<!-- FileUploadInput -->
+	@fileUploadInputAlpineStateOnce.Once()
+	{{
+		uploadLimits := fileUploadLimits{
+			AcceptedTypes:    componentSettings.acceptedTypesAttribute(),
+			MaxFileCount:     componentSettings.MaxFileCount,
+			MaxFileSizeBytes: componentSettings.MaxFileSizeBytes,
+		}
+		sizeTokens := fileUploadSizeTokensResolver(componentSettings.Size)
+		zone := componentSettings.Zone
+		zoneIcon := "ph-tray-arrow-up"
+		if zone.Icon != "" {
+			{{ zoneIcon = zone.Icon }}
+		}
+		row := componentSettings.Row
+		progress := componentSettings.Progress
+		rejected := componentSettings.Rejected
+	}}
+	<div
+		class="flex w-full flex-col gap-2"
+		x-data={ templ.JSFuncCall("fileUploadInput", uploadLimits) }
+	>
+		<label
+			class={ componentSettings.zoneClassesResolver() }
+			:class="isDragActive && '!border-neutral-50/60 !bg-neutral-50/12.5'"
+			@dragenter.prevent="dragDepth++"
+			@dragover.prevent
+			@dragleave.prevent="dragDepth--"
+			@drop.prevent="addDroppedFiles($event)"
+		>
+			<i class={ "ph-bold " + zoneIcon + " " + sizeTokens.IconSize + " " + uiToolset.TextColorClassResolver(zone.IconColor, "text-neutral-400") } aria-hidden="true"></i>
+			<span class={ "font-bold " + sizeTokens.LabelTextSize + " " + uiToolset.TextColorClassResolver(zone.LabelColor, "text-neutral-50") }>
+				{ componentSettings.Label }
+				if componentSettings.IsRequired {
+					<span class="text-red-700">*</span>
+				}
+			</span>
+			if componentSettings.Description != "" {
+				<span class={ sizeTokens.DescriptionTextSize + " " + uiToolset.TextColorClassResolver(zone.DescriptionColor, "text-neutral-400") }>{ componentSettings.Description }</span>
+			}
+			<input
+				type="file"
+				class="sr-only"
+				x-ref="fileInput"
+				name={ componentSettings.InputName }
+				if componentSettings.InputId != "" {
+					id={ componentSettings.InputId }
+				}
+				if componentSettings.acceptedTypesAttribute() != "" {
+					accept={ componentSettings.acceptedTypesAttribute() }
+				}
+				if componentSettings.MaxFileCount != 1 {
+					multiple
+				}
+				if componentSettings.IsRequired {
+					required
+				}
+				@change="addPickedFiles()"
+			/>
+		</label>
+		<ul class="flex flex-col gap-1.5" x-show="fileEntries.length > 0" style="display: none">
+			<template x-for="fileEntry in fileEntries" :key="fileEntry.entryId">
+				<li class={ componentSettings.rowClassesResolver() }>
+					<i class={ "ph-bold shrink-0 " + sizeTokens.RowIconSize + " " + uiToolset.TextColorClassResolver(row.IconColor, "text-neutral-400") } :class="fileEntry.typeIcon" aria-hidden="true"></i>
+					<span class={ "min-w-0 grow truncate " + uiToolset.TextColorClassResolver(row.TextColor, "text-neutral-100") } x-text="fileEntry.name"></span>
+					<span class={ "shrink-0 " + sizeTokens.RowSizeLabelSize + " " + uiToolset.TextColorClassResolver(row.SizeLabelColor, "text-neutral-400") } x-text="fileEntry.sizeLabel"></span>
+					<div
+						class={ "h-1.5 w-20 shrink-0 overflow-hidden rounded-full " + uiToolset.BackgroundColorClassResolver(progress.TrackColor, "bg-neutral-50/10") }
+						x-show="fileEntry.status === 'uploading'"
+						role="progressbar"
+						aria-valuemin="0"
+						aria-valuemax="100"
+						:aria-valuenow="fileEntry.progressPercent"
+						:aria-label="fileEntry.name"
+					>
+						<div class={ "h-full rounded-full transition-all " + uiToolset.BackgroundColorClassResolver(progress.FillColor, "bg-neutral-50/60") } :style="'width: ' + fileEntry.progressPercent + '%'"></div>
+					</div>
+					<i
+						class="ph-bold ph-check-circle shrink-0 text-lg text-emerald-400"
+						x-show="fileEntry.status === 'uploaded'"
+						role="img"
+						:aria-label="fileUploadMessages.uploaded"
+					></i>
+					<i
+						class="ph-bold ph-warning-circle shrink-0 text-lg text-red-400"
+						x-show="fileEntry.status === 'failed'"
+						role="img"
+						:aria-label="fileUploadMessages.failed"
+					></i>
+					@uiControl.Button(uiControl.ButtonSettings{
+						IconLeft:                  "ph-x",
+						Size:                      uiControl.ButtonSizeXs,
+						BackgroundColor:           "transparent",
+						BackgroundColorHover:      "neutral-50/10",
+						TextColor:                 "neutral-400",
+						AriaLabelOneWayStatePath:  "removeFileLabelResolver(fileEntry.name)",
+						IsDisabledOneWayStatePath: "fileEntry.status === 'uploading'",
+						OnClickFunc:               "removeFileEntry(fileEntry.entryId)",
+					})
+				</li>
+			</template>
+		</ul>
+		<ul class="flex flex-col gap-1" x-show="rejectedFiles.length > 0" style="display: none" aria-live="polite">
+			<template x-for="rejectedFile in rejectedFiles">
+				<li class={ "flex flex-row items-center gap-1.5 text-xs " + uiToolset.TextColorClassResolver(rejected.TextColor, "text-red-400") }>
+					<i class={ "ph-bold ph-warning-circle shrink-0 " + uiToolset.TextColorClassResolver(rejected.IconColor, "text-red-400") } aria-hidden="true"></i>
+					<span class="truncate font-bold" x-text="rejectedFile.name"></span>
+					<span class="shrink-0" x-text="rejectedFile.reason"></span>
+				</li>
+			</template>
+		</ul>
+	</div>
+}
