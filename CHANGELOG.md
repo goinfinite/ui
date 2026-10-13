@@ -11,6 +11,7 @@ feat: add the FileUploadInput with drop and pick, limits, removal, and per-file 
 feat: take the FileUploadInput AcceptedTypes as a slice and add its size scale and Zone, Row, Progress, and Rejected style groups
 feat: add the Chart with line, area, bar, and donut types on plain Vega, with settings per axis, series, legend, and tooltip, color tokens, and stacking
 feat: add the Chart Tooltip.ContentFunc to render the tooltip from a global JS function
+feat: add the donut center label to the Chart with its display mode, size, colors, and value suffix
 refactor: split the chart type-specific options into ChartCartesianSettings and ChartDonutSettings
 refactor: move the chart JSON tags onto the private wire structs and off the public settings
 refactor: rename the chart RowsRetentionLimit to MaxRows, SurfaceColor to GapColor, and the YAxis DomainMin and DomainMax to MinValue and MaxValue
@@ -21,6 +22,7 @@ fix: clamp the bar and area baseline to the Y domain so the marks stay inside th
 feat!: load only Vega in HeadTagsVega and drop Vega-Lite and vega-embed
 test: cover the new components with unit and browser specs
 docs: update the readmes, the contexts, the feature map, and the changelog
+chore: ignore the Sonar S2699 rule on the Playwright specs that assert with expect.poll
 chore(docs): regenerate the demo page
 
 0.2.8 - 2026/10/12

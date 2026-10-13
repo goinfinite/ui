@@ -88,6 +88,9 @@ An unknown option value, a missing `RowKey`, or a bound that is not a number sto
 - `Cartesian.AreaFillStyle` takes `ChartAreaFillStyleGradient` (the default), `ChartAreaFillStyleSolid`, or `ChartAreaFillStyleNone`.
 - `Cartesian.MarkerDisplayMode` takes `ChartMarkerDisplayModeHover` (the default), `ChartMarkerDisplayModeAlways`, or `ChartMarkerDisplayModeHidden`.
 - A donut reads the first series. `XAxis.RowKey` names each slice. `Donut.HolePercent` sets the hole size (default 60, maximum 90).
+- `Donut.CenterLabelDisplayMode` shows the slice name and its value in the hole. It takes `ChartDonutCenterLabelDisplayModeHidden` (the default), `ChartDonutCenterLabelDisplayModeHover`, or `ChartDonutCenterLabelDisplayModeAlways`. Always keeps the at-rest slice. A hover replaces it. Hover mode shows the label only while a slice is hovered.
+- `Donut.CenterLabelAlwaysSlice` names the at-rest slice. An empty value shows the first slice. An unknown name logs `ChartDonutCenterLabelSliceNotFound` and shows the first slice. `Donut.CenterLabelSliceColor` and `Donut.CenterLabelValueColor` set the two label colors. The value takes `Tooltip.ValueFormat`.
+- `Donut.CenterLabelSize` takes `ChartDonutCenterLabelSizeXs` through `ChartDonutCenterLabelSizeXl` (default `Md`). It scales both label lines together. `Donut.CenterLabelValueSuffix` follows the center label value only, for example `" GiB"`. The tooltip keeps its own value.
 - `GapColor` sets the color of the gaps between bars, slices, and markers (default `neutral-900`). Match it to the background behind the chart.
 
 ### Colors
