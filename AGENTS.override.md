@@ -20,11 +20,16 @@ templ generate && go run ./demo/*.go
 
 `docs/index.html` is the rendered demo served at ui.demo.goinfinite.net. Without this step, the documentation is stale.
 
+## Visual Component Inspection
+
+Inspect every touched component in a rendering browser after frontend work, before you deliver. Follow `.agents/skills/browser-usage/SKILL.md`. A passing Playwright suite is not visual evidence: the suite asserts behavior, not appearance. Capture a screenshot of each touched component in its rendered state, read the image, and fix what looks wrong: alignment, spacing, overlap, clipping, and contrast.
+
 ## Local Demo Server
 
-Serve `docs/` with `tests/lib/serveDemo.mjs` when a browser check needs the demo (agent-browser, screenshots). The server rewrites external asset URLs to its `/proxy/` paths. A plain static server would fetch assets from the CDN, not the local cache.
+Serve `docs/` with `demo/serveDemo.sh` when a browser check needs the demo (agent-browser, screenshots). The script wraps `tests/lib/serveDemo.mjs`. The server rewrites external asset URLs to its `/proxy/` paths. A plain static server would fetch assets from the CDN, not the local cache.
 
-- Start: `(node tests/lib/serveDemo.mjs 8377 >/tmp/opencode/serveDemo.log 2>&1 &)`. Then run `curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1:8377/`. The answer MUST be `200`.
-- The `( ... & )` subshell detaches the server. The server survives between tool calls. A bare `&` or `nohup ... &` gets reaped when the command returns.
-- Stop: `kill "$(pgrep -f 'serveDemo\.mjs')"`. Escape the dot. The pattern MUST NOT match the `pgrep` command itself.
-- `tests/tests.sh` starts its own server on port 8377 when a suite needs the demo, and stops it when the run ends. Keep port 8377 free for the suite. Start the manual server on another port (`node tests/lib/serveDemo.mjs 8399`).
+- Start: `demo/serveDemo.sh start`. The script detaches the server, waits for HTTP 200, and prints the URL (`http://127.0.0.1:8399/`). A second start reuses the running server.
+- Status: `demo/serveDemo.sh status`. Stop: `demo/serveDemo.sh stop`.
+- Pass a port as the second argument to run more than one server (`demo/serveDemo.sh start 8400`). The server log goes to `${TMPDIR:-/tmp}/serveDemo-<port>.log`.
+- `tests/tests.sh` starts its own server on port 8377 when a suite needs the demo, and stops it when the run ends. The script refuses port 8377, so the suite keeps it.
+- The server serves the files in `docs/` as they are. Regenerate the demo first (see Demo Regeneration).

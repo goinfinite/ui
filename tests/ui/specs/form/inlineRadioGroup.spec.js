@@ -1,10 +1,10 @@
-import { expect, test } from "@playwright/test";
 import { openExamplePanel } from "../../examplePanel.js";
+import { expect, test } from "../../fixture.js";
 
 const radioGroupSection = "#inline-radio-group-demo";
 
 test.describe("InlineRadioGroup", () => {
-  test("@smoke label notches into the fieldset border like the other fields", async ({
+  test("@browser @smoke label notches into the fieldset border like the other fields", async ({
     page,
   }) => {
     await page.goto(`/index.html#${radioGroupSection.slice(1)}`);
@@ -27,7 +27,7 @@ test.describe("InlineRadioGroup", () => {
     expect(geometry.contentTop).toBeGreaterThan(geometry.legendTop);
   });
 
-  test("@smoke large radios grow the group and keep bottom clearance", async ({
+  test("@browser @smoke large radios grow the group and keep bottom clearance", async ({
     page,
   }) => {
     await page.goto("/index.html", { waitUntil: "domcontentloaded" });
@@ -55,7 +55,7 @@ test.describe("InlineRadioGroup", () => {
     ).toBeGreaterThanOrEqual(6);
   });
 
-  test("vertical orientation stacks the radios", async ({ page }) => {
+  test("@browser vertical orientation stacks the radios", async ({ page }) => {
     await page.goto("/index.html", { waitUntil: "domcontentloaded" });
     const panel = await openExamplePanel(
       page,

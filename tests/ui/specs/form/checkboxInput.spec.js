@@ -1,5 +1,5 @@
-import { expect, test } from "@playwright/test";
 import { openExamplePanel } from "../../examplePanel.js";
+import { expect, test } from "../../fixture.js";
 
 const checkboxSection = "#checkbox-input-demo";
 
@@ -51,7 +51,7 @@ test.describe("CheckboxInput", () => {
     await expect(checkboxInput(page, "Checked and disabled")).toBeDisabled();
   });
 
-  test("label position left keeps the box next to the label", async ({
+  test("@browser label position left keeps the box next to the label", async ({
     page,
   }) => {
     await openExamplePanel(page, checkboxSection, "Label Position");

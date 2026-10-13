@@ -1,6 +1,22 @@
 # Changelog
 
 ```log
+0.2.8 - 2026/10/12
+feat: add the carousel and data table refresh region templates for lean refresh responses
+feat: load the demo advanced examples on first open
+feat: add the local demo server script
+fix: run Lightpanda only for selections that use it
+fix: report the local demo server ready only when the launched server answered
+fix: emit the required attribute from the TextArea when IsRequired is set
+fix: disable the SearchableSelectInput controls when its disabled path is truthy
+fix: mark the advanced example panel load promise as intentionally unawaited
+fix: wait for the demo server to answer on reuse and to exit on stop
+fix: disable the remaining SearchableSelectInput controls while its disabled path is truthy
+test: run the fast UI suites on Lightpanda and tag engine-dependent specs with @browser
+chore: mark the generated demo docs with linguist-generated
+docs: update the readmes, the contexts, the feature map, and the changelog
+chore(docs): regenerate the demo page
+
 0.2.7 - 2026/10/09
 feat: add the IsFirstItemOpen option to the Accordion
 fix: hide the FilterBar chip row while no filter is active

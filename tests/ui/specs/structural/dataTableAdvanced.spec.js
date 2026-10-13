@@ -1,5 +1,5 @@
-import { expect, test } from "@playwright/test";
 import { openExamplePanel } from "../../examplePanel.js";
+import { expect, test } from "../../fixture.js";
 
 const demoSection = "#data-table-demo";
 
@@ -8,7 +8,7 @@ test.describe("DataTable advanced examples @structural", () => {
     await page.goto("/index.html#data-table-demo");
   });
 
-  test("rows configuration renders a named selection column", async ({
+  test("@browser rows configuration renders a named selection column", async ({
     page,
   }) => {
     const target = await openExamplePanel(
@@ -40,7 +40,9 @@ test.describe("DataTable advanced examples @structural", () => {
     await expect(chip.locator("span[x-text]")).toHaveText("running");
   });
 
-  test("search box panel binds the starting query", async ({ page }) => {
+  test("@browser search box panel binds the starting query", async ({
+    page,
+  }) => {
     const target = await openExamplePanel(page, demoSection, "Search Box");
     const searchInput = target.locator("input[name=search]");
 
@@ -88,7 +90,7 @@ test.describe("DataTable advanced examples @structural", () => {
     );
   });
 
-  test("row and column styling applies the header, stripe, cell, and row styling", async ({
+  test("@browser row and column styling applies the header, stripe, cell, and row styling", async ({
     page,
   }) => {
     const target = await openExamplePanel(
@@ -137,7 +139,7 @@ test.describe("DataTable advanced examples @structural", () => {
       .not.toBe(stripeBackground);
   });
 
-  test("the items per page menu follows the configured background", async ({
+  test("@browser the items per page menu follows the configured background", async ({
     page,
   }) => {
     const target = await openExamplePanel(
@@ -158,7 +160,7 @@ test.describe("DataTable advanced examples @structural", () => {
     ).toBe("rgb(6, 78, 59)");
   });
 
-  test("the filter dropdown escapes the table surface when the body is squeezed", async ({
+  test("@browser the filter dropdown escapes the table surface when the body is squeezed", async ({
     page,
   }) => {
     const target = await openExamplePanel(page, demoSection, "Filters");
@@ -192,7 +194,7 @@ test.describe("DataTable advanced examples @structural", () => {
     expect(visibility.lastOptionHittable).toBe(true);
   });
 
-  test("a dense table tooltip does not add a scrollbar to the table", async ({
+  test("@browser a dense table tooltip does not add a scrollbar to the table", async ({
     page,
   }) => {
     const target = await openExamplePanel(
@@ -240,7 +242,7 @@ test.describe("DataTable advanced examples @structural", () => {
     await expect.poll(tooltipCount).toBe(initialCount);
   });
 
-  test("the sticky header caps the viewport to the configured rows", async ({
+  test("@browser the sticky header caps the viewport to the configured rows", async ({
     page,
   }) => {
     const liveTable = page.locator("#data-table-demo-table");

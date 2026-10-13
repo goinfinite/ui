@@ -491,11 +491,13 @@ Build-time HTML generation showcasing all UI components with usage examples and 
 
 **Flow:**
 
-1. `demo/demo.go` — `demoGenerator` renders DemoIndex() to docs/index.html and the data table and carousel refresh fragments to one JSON asset each in docs/assets/, writing each output only when its content changed
+1. `demo/demo.go` — `demoGenerator` renders DemoIndex() to docs/index.html, the advanced example panels to one JSON asset per component section in docs/assets/advancedExamples/, and the data table and carousel refresh fragments to one JSON asset each in docs/assets/, writing each output only when its content changed
 2. `demo/demoIndex.templ` plus one `demo/*Demo.templ` file per component, framed by `demo/demoExample.templ` — Page structure, sidebar navigation, and every usage example
-3. `demo/data.go` — Demo record type, 25 sample rows, filter declarations, table column definitions, and the settings builder that slices one page
-4. `demo/dataTableDemoRouting.js` — Browser-side router that serves the requested page's pre-rendered fragment from the JSON asset as the refresh response
-5. `src/import/import.templ` — DemoIndex imports HeadTagsFull() for CDN resources
+3. `demo/advancedExamples.go` — Render-time registry that swaps each advanced example panel for a placeholder and renders the panel alone into its section asset
+4. `demo/advancedExampleLoader.js` — Browser-side loader that inserts a panel from its section asset on the first open
+5. `demo/data.go` — Demo record type, 25 sample rows, filter declarations, table column definitions, and the settings builder that slices one page
+6. `demo/dataTableDemoRouting.js` — Browser-side router that serves the requested page's pre-rendered fragment from the JSON asset as the refresh response
+7. `src/import/import.templ` — DemoIndex imports HeadTagsFull() for CDN resources
 
 ---
 
@@ -505,12 +507,13 @@ Single entry point for all verification: Go units, Playwright behavioral specs a
 
 **Flow:**
 
-1. `tests/tests.sh` — Contract entry point: registry selection, demo server lifecycle, cumulative levels, exit 0/1/2
+1. `tests/tests.sh` — Contract entry point: registry selection, demo server and Lightpanda CDP server lifecycle, cumulative levels, exit 0/1/2
 2. `tests/registry.yaml` — Explicit feature:scope/level registry; trusted input
 3. `tests/lib/registry.mjs` — Registry reader for list and select modes
 4. `tests/lib/serveDemo.mjs` — Localhost server for docs/ that proxies external script, stylesheet, and image URLs through a fetch-once cache, keeping CDN latency out of specs
 5. `tests/lib/checkPerformance.mjs` — Compares measured latencies against `tests/golden.yaml` tiers
-6. `tests/ui/run.sh` — Playwright mode runner (smoke, standard, a11y, performance, toolset, control, structural-smoke, structural, structural-a11y, cross-browser, toolset-cross-browser, control-cross-browser, structural-cross-browser)
-7. `tests/ui/specs/` — Behavioral specs by feature: form, control, display, structural, toolset, a11y, performance
+6. `tests/ui/run.sh` — Playwright mode runner: the fast and standard modes run on Lightpanda; the exhaustive modes (a11y, performance, and the cross-browser modes) run on Chromium, then Firefox, with 1 worker
+7. `tests/ui/fixture.js` — The `test` every spec imports; connects the worker browser to Lightpanda over CDP when the endpoint is set
+8. `tests/ui/specs/` — Behavioral specs by feature: form, control, display, structural, toolset, a11y, performance; tests that need a full browser engine carry the `@browser` tag
 
 ---

@@ -1,5 +1,5 @@
 import { writeFileSync } from "node:fs";
-import { expect, test } from "@playwright/test";
+import { expect, test } from "../../fixture.js";
 
 const resultsPath = new URL(
   "../../../performance-results.json",
@@ -102,7 +102,7 @@ async function measureSearchableFilterLatency(page) {
   });
 }
 
-test("@perf interaction latencies are measured and reported", async ({
+test("@browser @perf interaction latencies are measured and reported", async ({
   page,
 }) => {
   await page.addInitScript(() => {

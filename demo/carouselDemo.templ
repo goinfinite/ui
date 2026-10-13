@@ -97,15 +97,7 @@ func buildDemoCarouselTooltipSettings(
 }
 
 templ CarouselTooltipRefreshFragment(pageNumber uint, itemsPerPage uiStructural.ItemsPerPage) {
-	<!DOCTYPE html>
-	<html lang="en">
-		<head>
-			<title>Carousel Tooltip Refresh Fragment</title>
-		</head>
-		<body>
-			@uiStructural.Carousel(buildDemoCarouselTooltipSettings("carousel-demo-fragment-carousel", dataTableDemoRecords, pageNumber, itemsPerPage))
-		</body>
-	</html>
+	@uiStructural.CarouselRefreshRegions(buildDemoCarouselTooltipSettings("carousel-demo-fragment-carousel", dataTableDemoRecords, pageNumber, itemsPerPage))
 }
 
 func buildDemoCarouselSettings(
@@ -124,14 +116,14 @@ func buildDemoCarouselSettings(
 			"&itemsPerPage=" + uiStructural.CarouselUrlPlaceholderItemsPerPage +
 			"&search=" + uiStructural.CarouselUrlPlaceholderSearch +
 			"&componentId=" + id,
-		ItemsPerView:              uiStructural.CarouselItemsPerViewSettings{Base: 1, Sm: 2, Lg: 3},
-		Filters:                   buildDemoRecordFilters(),
-		Id:                        id,
-		ItemsPerPage:              itemsPerPage,
-		ItemsPerPageSizeChoices:   []uiStructural.ItemsPerPage{6, uiStructural.ItemsPerPage(len(records))},
-		ItemsTotal:                uint(len(records)),
-		PageNumber:                pageNumber,
-		PagesTotal:                pagesTotal,
+		ItemsPerView:            uiStructural.CarouselItemsPerViewSettings{Base: 1, Sm: 2, Lg: 3},
+		Filters:                 buildDemoRecordFilters(),
+		Id:                      id,
+		ItemsPerPage:            itemsPerPage,
+		ItemsPerPageSizeChoices: []uiStructural.ItemsPerPage{6, uiStructural.ItemsPerPage(len(records))},
+		ItemsTotal:              uint(len(records)),
+		PageNumber:              pageNumber,
+		PagesTotal:              pagesTotal,
 	}
 }
 
@@ -176,30 +168,30 @@ templ CarouselDemoStylingExample() {
 		<div id="carousel-demo-styling" x-data>
 			{{
 				stylingSettings := buildDemoCarouselSettings("carousel-demo-styling-carousel", dataTableDemoRecords[:6], 0, 6)
-			stylingSettings.ItemRenderer = func(record DemoServerRecord) templ.Component { return CarouselDemoPlainItem(record) }
-			stylingSettings.BackgroundColor = "neutral-800/50"
-			stylingSettings.BorderRadius = uiToolset.BorderRadiusXl
-			stylingSettings.PaddingSize = uiToolset.PaddingSizeLg
-			stylingSettings.GapSize = uiToolset.GapSizeLg
-			stylingSettings.RingColor = "secondary-500/30"
-			stylingSettings.RingThickness = uiToolset.RingThicknessMd
-			stylingSettings.ShadowSize = uiToolset.ShadowSizeLg
-			stylingSettings.TextColor = "neutral-100"
-			stylingSettings.ArrowsPosition = uiStructural.CarouselArrowsPositionInside
-			stylingSettings.ArrowsShape = uiToolset.ShapeRounded
-			stylingSettings.ArrowsSize = uiStructural.CarouselArrowsSizeLg
-			stylingSettings.ArrowsBackgroundColor = "secondary-500/20"
-			stylingSettings.ArrowsIconColor = "secondary-100"
-			stylingSettings.DotsPosition = uiStructural.CarouselDotsPositionTop
-			stylingSettings.DotsActiveColor = "secondary-500"
-			stylingSettings.DotsInactiveColor = "neutral-50/20"
-			stylingSettings.DotsSize = uiStructural.CarouselDotsSizeLg
-			stylingSettings.ItemBackgroundColor = "neutral-50/5"
-			stylingSettings.ItemBorderRadius = uiToolset.BorderRadiusLg
-			stylingSettings.ItemPaddingSize = uiToolset.PaddingSizeMd
-			stylingSettings.ItemRingColor = "neutral-50/10"
-			stylingSettings.ItemRingThickness = uiToolset.RingThicknessXs
-			stylingSettings.ItemShadowSize = uiToolset.ShadowSizeMd
+				stylingSettings.ItemRenderer = func(record DemoServerRecord) templ.Component { return CarouselDemoPlainItem(record) }
+				stylingSettings.BackgroundColor = "neutral-800/50"
+				stylingSettings.BorderRadius = uiToolset.BorderRadiusXl
+				stylingSettings.PaddingSize = uiToolset.PaddingSizeLg
+				stylingSettings.GapSize = uiToolset.GapSizeLg
+				stylingSettings.RingColor = "secondary-500/30"
+				stylingSettings.RingThickness = uiToolset.RingThicknessMd
+				stylingSettings.ShadowSize = uiToolset.ShadowSizeLg
+				stylingSettings.TextColor = "neutral-100"
+				stylingSettings.ArrowsPosition = uiStructural.CarouselArrowsPositionInside
+				stylingSettings.ArrowsShape = uiToolset.ShapeRounded
+				stylingSettings.ArrowsSize = uiStructural.CarouselArrowsSizeLg
+				stylingSettings.ArrowsBackgroundColor = "secondary-500/20"
+				stylingSettings.ArrowsIconColor = "secondary-100"
+				stylingSettings.DotsPosition = uiStructural.CarouselDotsPositionTop
+				stylingSettings.DotsActiveColor = "secondary-500"
+				stylingSettings.DotsInactiveColor = "neutral-50/20"
+				stylingSettings.DotsSize = uiStructural.CarouselDotsSizeLg
+				stylingSettings.ItemBackgroundColor = "neutral-50/5"
+				stylingSettings.ItemBorderRadius = uiToolset.BorderRadiusLg
+				stylingSettings.ItemPaddingSize = uiToolset.PaddingSizeMd
+				stylingSettings.ItemRingColor = "neutral-50/10"
+				stylingSettings.ItemRingThickness = uiToolset.RingThicknessXs
+				stylingSettings.ItemShadowSize = uiToolset.ShadowSizeMd
 			}}
 			@uiStructural.Carousel(stylingSettings)
 		</div>
@@ -338,9 +330,9 @@ templ CarouselDemoTooltipsExample() {
 		<div class="flex flex-col gap-4" x-data="{ isCarouselTooltipModalVisible: false }">
 			@CarouselTooltipDemoCarousel("carousel-demo-tooltips-carousel")
 			@uiControl.Button(uiControl.ButtonSettings{
-				Label:           "Open the carousel in a modal",
-				IconLeft:        "ph-arrows-out",
-				OnClickFunc:     "isCarouselTooltipModalVisible = true",
+				Label:       "Open the carousel in a modal",
+				IconLeft:    "ph-arrows-out",
+				OnClickFunc: "isCarouselTooltipModalVisible = true",
 			})
 			@uiDisplay.Modal(uiDisplay.ModalSettings{
 				MiddleContent:            CarouselTooltipDemoCarousel("carousel-demo-tooltips-modal-carousel"),
@@ -383,7 +375,7 @@ templ CarouselDemo() {
 				@uiStructural.Carousel(mainSettings)
 			</div>
 		}
-		@DemoAdvancedExamples([]uiDisplay.AccordionItemSettings{
+		@DemoAdvancedExamples("carousel-demo", []uiDisplay.AccordionItemSettings{
 			{Title: "Styling", Icon: "ph-paint-brush", Content: CarouselDemoStylingExample()},
 			{Title: "Chip Styling", Icon: "ph-tag", Content: CarouselDemoChipStylingExample()},
 			{Title: "Autoplay", Icon: "ph-play-circle", Content: CarouselDemoAutoplayExample()},
@@ -394,13 +386,5 @@ templ CarouselDemo() {
 }
 
 templ CarouselRefreshFragment(pageNumber uint, itemsPerPage uiStructural.ItemsPerPage) {
-	<!DOCTYPE html>
-	<html lang="en">
-		<head>
-			<title>Carousel Refresh Fragment</title>
-		</head>
-		<body>
-			@uiStructural.Carousel(buildDemoCarouselSettings("carousel-demo-fragment-carousel", dataTableDemoRecords, pageNumber, itemsPerPage))
-		</body>
-	</html>
+	@uiStructural.CarouselRefreshRegions(buildDemoCarouselSettings("carousel-demo-fragment-carousel", dataTableDemoRecords, pageNumber, itemsPerPage))
 }

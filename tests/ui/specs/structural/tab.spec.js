@@ -1,5 +1,5 @@
-import { expect, test } from "@playwright/test";
 import { openExamplePanel } from "../../examplePanel.js";
+import { expect, test } from "../../fixture.js";
 
 const tabsSection = "#tabs-demo";
 const mainTabs = "#tabs-demo-main";
@@ -73,7 +73,7 @@ test.describe("Tabs @structural", () => {
     await expect(badge).toHaveText("1");
   });
 
-  test("arrow keys move focus and selection to the neighbor tab", async ({
+  test("@browser arrow keys move focus and selection to the neighbor tab", async ({
     page,
   }) => {
     const tablist = page.locator(`${mainTabs} [role=tablist]`);
@@ -91,7 +91,9 @@ test.describe("Tabs @structural", () => {
     ).toHaveAttribute("tabindex", "-1");
   });
 
-  test("Home and End jump to the first and last tab", async ({ page }) => {
+  test("@browser Home and End jump to the first and last tab", async ({
+    page,
+  }) => {
     const tablist = page.locator(`${mainTabs} [role=tablist]`);
     await tablist.locator("[role=tab][data-tab-value=security]").focus();
     await page.keyboard.press("End");
@@ -105,7 +107,7 @@ test.describe("Tabs @structural", () => {
     ).toHaveAttribute("data-tab-value", "general");
   });
 
-  test("vertical orientation lays the list out as a column beside the panels", async ({
+  test("@browser vertical orientation lays the list out as a column beside the panels", async ({
     page,
   }) => {
     const panel = await openExamplePanel(page, tabsSection, "Vertical");
@@ -129,7 +131,7 @@ test.describe("Tabs @structural", () => {
     ).toHaveAttribute("data-tab-value", "security");
   });
 
-  test("right side places the vertical tab list beside the panels on the right", async ({
+  test("@browser right side places the vertical tab list beside the panels on the right", async ({
     page,
   }) => {
     const panel = await openExamplePanel(page, tabsSection, "Right Side");
@@ -175,7 +177,7 @@ test.describe("Tabs @structural", () => {
     expect(tabClasses).toContain("rounded-t-xl");
   });
 
-  test("vertical alignment centers the tab list with the content", async ({
+  test("@browser vertical alignment centers the tab list with the content", async ({
     page,
   }) => {
     const panel = await openExamplePanel(
@@ -200,7 +202,9 @@ test.describe("Tabs @structural", () => {
     expect(scrollsX).toBe(false);
   });
 
-  test("vertical overflow tab list scrolls vertically", async ({ page }) => {
+  test("@browser vertical overflow tab list scrolls vertically", async ({
+    page,
+  }) => {
     const panel = await openExamplePanel(
       page,
       tabsSection,
@@ -265,7 +269,7 @@ test.describe("Tabs @structural", () => {
     await expect(panel.locator("[role=tabpanel]").first()).toBeVisible();
   });
 
-  test("overflow tab list scrolls horizontally", async ({ page }) => {
+  test("@browser overflow tab list scrolls horizontally", async ({ page }) => {
     const panel = await openExamplePanel(page, tabsSection, "Overflow Scroll");
 
     const tablist = panel.locator("[role=tablist]").first();
@@ -295,7 +299,7 @@ test.describe("Tabs @structural", () => {
     ).toHaveAttribute("data-tab-value", "advanced");
   });
 
-  test("vertical overflow caps the list to MaxVisibleTabs tabs", async ({
+  test("@browser vertical overflow caps the list to MaxVisibleTabs tabs", async ({
     page,
   }) => {
     const panel = await openExamplePanel(

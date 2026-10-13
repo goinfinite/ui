@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@playwright/test";
+import { expect, test } from "../../fixture.js";
 
 const baselinePath = new URL("../../a11y-baseline.json", import.meta.url);
 
@@ -26,7 +26,7 @@ function findRegressions(current, baseline) {
   return regressions;
 }
 
-test("@a11y axe violations do not grow past the recorded baseline", async ({
+test("@browser @a11y axe violations do not grow past the recorded baseline", async ({
   page,
 }) => {
   await page.goto("/index.html");

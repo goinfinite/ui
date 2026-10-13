@@ -4,10 +4,11 @@ import (
 	uiDisplay "github.com/goinfinite/ui/src/display"
 	uiImport "github.com/goinfinite/ui/src/import"
 	uiStructural "github.com/goinfinite/ui/src/structural"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
 const (
-	UiVersion string = "0.2.7"
+	UiVersion string = "0.2.8"
 )
 
 templ DemoNavSection(label string) {
@@ -243,6 +244,7 @@ templ DemoIndex() {
 					</div>
 				</section>
 			</main>
+			@uiToolset.MinifierTemplateJs(&advancedExampleLoaderScript)
 		</body>
 	</html>
 }

@@ -223,4 +223,6 @@ createServer((request, response) => {
     return;
   }
   void serveFile(request, response);
-}).listen(listenPort, "127.0.0.1");
+}).listen(listenPort, "127.0.0.1", () => {
+  console.log(`serveDemoListening ${listenPort}`);
+});

@@ -1,5 +1,5 @@
-import { expect, test } from "@playwright/test";
 import { openExamplePanel } from "../../examplePanel.js";
+import { expect, test } from "../../fixture.js";
 
 const filterBarSection = "#filter-bar-demo-main";
 const stateReadout = "#filter-bar-demo-state span";

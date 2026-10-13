@@ -1,5 +1,5 @@
-import { expect, test } from "@playwright/test";
 import { openExamplePanel } from "../../examplePanel.js";
+import { expect, test } from "../../fixture.js";
 
 const modalSection = "#modal-demo";
 const closeTransitionDurationMs = 350;
@@ -25,7 +25,7 @@ test.describe("Modal", () => {
     const modal = backdropWith(page, "Uncloseable Modal");
     await expect(modal).toBeVisible();
     await expect(modal.locator("i.ph-x")).toHaveCount(0);
-    await modal.click({ position: { x: 5, y: 5 } });
+    await modal.dispatchEvent("mousedown");
     await expect(modal).toBeVisible();
   });
 
@@ -51,11 +51,11 @@ test.describe("Modal", () => {
       .click();
     const modal = backdropWith(page, "Blue Backdrop Modal");
     await expect(modal).toBeVisible();
-    await modal.click({ position: { x: 5, y: 5 } });
+    await modal.dispatchEvent("mousedown");
     await expect(modal).toBeHidden();
   });
 
-  test("dragging from the panel to the backdrop keeps the modal open", async ({
+  test("@browser dragging from the panel to the backdrop keeps the modal open", async ({
     page,
   }) => {
     await openExamplePanel(page, modalSection, "Custom Surface");
@@ -88,7 +88,7 @@ test.describe("Modal", () => {
       .click();
     const modal = backdropWith(page, "Interactive Modal");
     await expect(modal).toBeVisible();
-    await modal.click({ position: { x: 5, y: 5 } });
+    await modal.dispatchEvent("mousedown");
     await expect(modal).toBeHidden();
     await page
       .locator(modalSection)
@@ -116,7 +116,7 @@ test.describe("Modal", () => {
     return (await openModalPanel(page, text)).widthRatio;
   }
 
-  test("@smoke medium size spans about 60% of the viewport width", async ({
+  test("@browser @smoke medium size spans about 60% of the viewport width", async ({
     page,
   }) => {
     await page
@@ -128,7 +128,7 @@ test.describe("Modal", () => {
     expect(widthRatio).toBeLessThan(0.65);
   });
 
-  test("@smoke xs size spans about 40% of the viewport width", async ({
+  test("@browser @smoke xs size spans about 40% of the viewport width", async ({
     page,
   }) => {
     await page
@@ -140,7 +140,7 @@ test.describe("Modal", () => {
     expect(widthRatio).toBeLessThan(0.45);
   });
 
-  test("@smoke xxl size spans about 90% of the viewport width", async ({
+  test("@browser @smoke xxl size spans about 90% of the viewport width", async ({
     page,
   }) => {
     await page
@@ -152,7 +152,7 @@ test.describe("Modal", () => {
     expect(widthRatio).toBeLessThan(0.95);
   });
 
-  test("@smoke near-full terminal modal spans about 90% of the viewport", async ({
+  test("@browser @smoke near-full terminal modal spans about 90% of the viewport", async ({
     page,
   }) => {
     await openExamplePanel(page, modalSection, "Near-Full Size");
@@ -169,7 +169,7 @@ test.describe("Modal", () => {
     await expect(modal.getByText("agent@opencode").first()).toBeVisible();
   });
 
-  test("enlarge and reduce step through every size and hide at the ends", async ({
+  test("@browser enlarge and reduce step through every size and hide at the ends", async ({
     page,
   }) => {
     await page
@@ -239,7 +239,7 @@ test.describe("Modal", () => {
     await expect(modal).toBeHidden();
   });
 
-  test("@smoke width and height settings pin the panel dimensions", async ({
+  test("@browser @smoke width and height settings pin the panel dimensions", async ({
     page,
   }) => {
     await openExamplePanel(page, modalSection, "Custom Dimensions");
@@ -258,7 +258,9 @@ test.describe("Modal", () => {
     ).toHaveCount(0);
   });
 
-  test("@smoke size slice steps only through its entries", async ({ page }) => {
+  test("@browser @smoke size slice steps only through its entries", async ({
+    page,
+  }) => {
     await openExamplePanel(page, modalSection, "Size Slice");
     await page
       .locator(modalSection)

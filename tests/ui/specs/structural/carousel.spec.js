@@ -1,5 +1,5 @@
-import { expect, test } from "@playwright/test";
 import { openExamplePanel } from "../../examplePanel.js";
+import { expect, test } from "../../fixture.js";
 
 const carouselSection = "#carousel-demo";
 const carouselRoot = "#carousel-demo-main-carousel";
@@ -57,7 +57,7 @@ test.describe("Carousel @structural", () => {
     await expect(page.locator(`${carouselRoot} nav p`)).toHaveText("1–6 of 6");
   });
 
-  test("@smoke renders three items per view on a wide window", async ({
+  test("@browser @smoke renders three items per view on a wide window", async ({
     page,
   }) => {
     await expect(
@@ -118,7 +118,7 @@ test.describe("Carousel @structural", () => {
     ).toHaveAttribute("aria-current", "true");
   });
 
-  test("@smoke a swipe moves the window", async ({ page }) => {
+  test("@browser @smoke a swipe moves the window", async ({ page }) => {
     const viewport = page.locator(`${carouselRoot} [x-ref=viewport]`);
     await viewport.scrollIntoViewIfNeeded();
 
@@ -141,7 +141,9 @@ test.describe("Carousel @structural", () => {
     expect((await carouselData(page, carouselRoot)).windowStart).toBe(0);
   });
 
-  test("@smoke a touch pointer swipe moves the window", async ({ page }) => {
+  test("@browser @smoke a touch pointer swipe moves the window", async ({
+    page,
+  }) => {
     const viewport = page.locator(`${carouselRoot} [x-ref=viewport]`);
     await viewport.scrollIntoViewIfNeeded();
 
@@ -174,7 +176,7 @@ test.describe("Carousel @structural", () => {
     expect((await carouselData(page, carouselRoot)).windowStart).toBe(0);
   });
 
-  test("@smoke the named breakpoints change the visible item count", async ({
+  test("@browser @smoke the named breakpoints change the visible item count", async ({
     page,
   }) => {
     await page.setViewportSize({ width: 500, height: 900 });
@@ -202,7 +204,7 @@ test.describe("Carousel @structural", () => {
     await expect.poll(() => visibleItemCount(page, carouselRoot)).toBe(3);
   });
 
-  test("@smoke autoplay advances the window and pauses on hover", async ({
+  test("@browser @smoke autoplay advances the window and pauses on hover", async ({
     page,
   }) => {
     await openExamplePanel(page, carouselSection, "Autoplay");
@@ -310,7 +312,7 @@ test.describe("Carousel @structural", () => {
     ).toHaveCount(6);
   });
 
-  test("items per page dropdown stays inside the carousel surface", async ({
+  test("@browser items per page dropdown stays inside the carousel surface", async ({
     page,
   }) => {
     const selectTrigger = page.locator(`${carouselRoot} nav [role=button]`);

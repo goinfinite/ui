@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "../../fixture.js";
 
 const toastSection = "#toast-demo";
 
@@ -40,7 +40,7 @@ test.describe("Toast", () => {
   });
 
   for (const toneCase of toneCases) {
-    test(`@smoke ${toneCase.name}`, async ({ page }) => {
+    test(`@browser @smoke ${toneCase.name}`, async ({ page }) => {
       await page.evaluate(
         ({ message, type }) =>
           Alpine.store("toast").displayToast(message, type),

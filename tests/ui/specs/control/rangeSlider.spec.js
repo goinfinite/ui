@@ -1,5 +1,5 @@
-import { expect, test } from "@playwright/test";
 import { openExamplePanel } from "../../examplePanel.js";
+import { expect, test } from "../../fixture.js";
 
 const sliderSection = "#range-slider-demo";
 const trackRightInsetPx = 2;
@@ -85,7 +85,9 @@ test.describe("RangeSlider", () => {
     await page.goto(`/index.html#${sliderSection.slice(1)}`);
   });
 
-  test("@control arrow keys change the bound value", async ({ page }) => {
+  test("@browser @control arrow keys change the bound value", async ({
+    page,
+  }) => {
     const slider = sliderByLabel(page, "Value").first();
     await slider.focus();
     await page.keyboard.press("ArrowRight");
@@ -120,7 +122,7 @@ test.describe("RangeSlider", () => {
     );
   });
 
-  test("@control dragging the thumb changes the bound value", async ({
+  test("@browser @control dragging the thumb changes the bound value", async ({
     page,
   }) => {
     const slider = sliderByLabel(page, "Value").first();
@@ -129,7 +131,7 @@ test.describe("RangeSlider", () => {
     expect(Number(await slider.inputValue())).toBeGreaterThan(50);
   });
 
-  test("@control dragging each dual thumb changes its own bound value", async ({
+  test("@browser @control dragging each dual thumb changes its own bound value", async ({
     page,
   }) => {
     await openExamplePanel(page, sliderSection, "Dual-Thumb Mode");
@@ -144,7 +146,7 @@ test.describe("RangeSlider", () => {
     expect(Number(await upperSlider.inputValue())).toBeLessThan(75);
   });
 
-  test("@control lower thumb crossing the upper clamps and syncs both bound values", async ({
+  test("@browser @control lower thumb crossing the upper clamps and syncs both bound values", async ({
     page,
   }) => {
     await openExamplePanel(page, sliderSection, "Dual-Thumb Mode");
@@ -218,7 +220,7 @@ test.describe("RangeSlider", () => {
     await expect(unnormalizedSection.locator("p")).toContainText("$80 - $20");
   });
 
-  test("@control focusing the input reveals the focus ring", async ({
+  test("@browser @control focusing the input reveals the focus ring", async ({
     page,
   }) => {
     const slider = sliderByLabel(page, "Value").first();
@@ -234,7 +236,7 @@ test.describe("RangeSlider", () => {
       .not.toBe(restingShadow);
   });
 
-  test("@control tick marks render at the configured tick step", async ({
+  test("@browser @control tick marks render at the configured tick step", async ({
     page,
   }) => {
     await openExamplePanel(page, sliderSection, "Steps & Ticks");
@@ -259,7 +261,7 @@ test.describe("RangeSlider", () => {
     ).toHaveCount(6);
   });
 
-  test("@control hovering the track previews the value under the pointer", async ({
+  test("@browser @control hovering the track previews the value under the pointer", async ({
     page,
   }) => {
     const { tooltip, hover, trackBox } = await openTrackTooltipSlider(
@@ -280,31 +282,31 @@ test.describe("RangeSlider", () => {
     await expect(tooltip).toBeHidden();
   });
 
-  test("@control the track tooltip snaps to a fractional step", async ({
+  test("@browser @control the track tooltip snaps to a fractional step", async ({
     page,
   }) => {
     await expectTrackTooltipText(page, "Tooltip bottom", 0.3, "0.3");
   });
 
-  test("@control the track tooltip keeps a sub-micro step preview nonzero", async ({
+  test("@browser @control the track tooltip keeps a sub-micro step preview nonzero", async ({
     page,
   }) => {
     await expectTrackTooltipText(page, "Tooltip tiny step", 0.3, "3e-7");
   });
 
-  test("@control the track tooltip caps an unaligned endpoint to the step grid", async ({
+  test("@browser @control the track tooltip caps an unaligned endpoint to the step grid", async ({
     page,
   }) => {
     await expectTrackTooltipText(page, "Tooltip unaligned", 1, "60");
   });
 
-  test("@control the track tooltip keeps an aligned decimal endpoint on the grid", async ({
+  test("@browser @control the track tooltip keeps an aligned decimal endpoint on the grid", async ({
     page,
   }) => {
     await expectTrackTooltipText(page, "Tooltip aligned decimal", 1, "0.3");
   });
 
-  test("@control the value bubble display mode gates visibility", async ({
+  test("@browser @control the value bubble display mode gates visibility", async ({
     page,
   }) => {
     const panel = await openExamplePanel(page, sliderSection, "Value Bubble");

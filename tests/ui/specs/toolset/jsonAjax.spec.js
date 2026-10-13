@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "../../fixture.js";
 
 async function openToolsetPage(page) {
   await page.goto("/index.html");

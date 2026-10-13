@@ -1,20 +1,41 @@
 #!/usr/bin/env bash
 # @description  Runs Playwright specs for one registered mode against the served demo.
-# @usage        tests/ui/run.sh <smoke|standard|a11y|performance|toolset|control|structural-smoke|structural|structural-a11y|cross-browser|toolset-cross-browser|control-cross-browser|structural-cross-browser>
+# @usage        tests/ui/run.sh <smoke|standard|toolset|control|structural-smoke|structural|structural-a11y|a11y|performance|cross-browser|toolset-cross-browser|control-cross-browser|structural-cross-browser>
 # @output       Playwright test report, exit code forwarded from the run.
-# @requires     bash v4+, node v24+, DEMO_URL pointing at the demo page
-# @version      0.4.0
-# @updated      2026-09-18
+# @requires     bash v4+, node v24+, DEMO_URL pointing at the demo page, UI_TEST_LIGHTPANDA_CDP_URL for the Lightpanda modes
+# @version      0.5.1
+# @updated      2026-10-12
 set -euo pipefail
+
+lightpandaModes=(smoke standard toolset control structural-smoke structural structural-a11y)
+realEngineModes=(a11y performance cross-browser toolset-cross-browser control-cross-browser structural-cross-browser)
 
 #
 ## Invocation
 #
+isModeListed() {
+	local mode="$1"
+	shift
+	local listedMode
+	for listedMode in "$@"; do
+		if [[ "$listedMode" == "$mode" ]]; then
+			return 0
+		fi
+	done
+	return 1
+}
+
+modeRequiresLightpanda() {
+	isModeListed "$1" "${lightpandaModes[@]}"
+}
+
 validateInvocation() {
-	case "$1" in
-		smoke | standard | a11y | performance | toolset | control | structural-smoke | structural | structural-a11y | cross-browser | toolset-cross-browser | control-cross-browser | structural-cross-browser) return 0 ;;
-	esac
-	echo "usage: tests/ui/run.sh <smoke|standard|a11y|performance|toolset|control|structural-smoke|structural|structural-a11y|cross-browser|toolset-cross-browser|control-cross-browser|structural-cross-browser>" >&2
+	if isModeListed "$1" "${lightpandaModes[@]}" "${realEngineModes[@]}"; then
+		return 0
+	fi
+	local modeChoices
+	modeChoices="$(IFS='|' && echo "${lightpandaModes[*]}|${realEngineModes[*]}")"
+	echo "usage: tests/ui/run.sh <$modeChoices>" >&2
 	exit 2
 }
 
@@ -25,28 +46,42 @@ requireDemoUrl() {
 	fi
 }
 
+requireLightpandaEndpoint() {
+	if [[ -z "${UI_TEST_LIGHTPANDA_CDP_URL:-}" ]]; then
+		echo "run.sh: UI_TEST_LIGHTPANDA_CDP_URL is unset; enter the suite through tests/tests.sh" >&2
+		exit 2
+	fi
+}
+
 #
 ## SpecSelection
 #
-runSelectedSpecs() {
-	case "$1" in
-		smoke) ../node_modules/.bin/playwright test --project=chromium --grep @smoke ;;
-		standard) ../node_modules/.bin/playwright test --project=chromium --grep-invert "@smoke|@a11y|@perf|@toolset|@control|@structural" ;;
-		a11y) ../node_modules/.bin/playwright test --project=chromium --grep @a11y ;;
-		performance) ../node_modules/.bin/playwright test --project=chromium --grep @perf ;;
-		toolset) ../node_modules/.bin/playwright test --project=chromium --grep @toolset ;;
-		control) ../node_modules/.bin/playwright test --project=chromium --grep @control ;;
-		structural-smoke) ../node_modules/.bin/playwright test --project=chromium --grep "@structural.*@smoke" ;;
-		structural) ../node_modules/.bin/playwright test --project=chromium --grep "@structural" --grep-invert "@smoke|@a11y" ;;
-		structural-a11y) ../node_modules/.bin/playwright test --project=chromium --grep "@structural.*@a11y" ;;
-		cross-browser)
-			# WebKit is defined in playwright.config.js but needs system libraries
-			# this host lacks; enable it with --project=webkit where they exist.
-			../node_modules/.bin/playwright test --project=firefox --grep-invert "@a11y|@perf|@toolset|@control|@structural"
-			;;
-		toolset-cross-browser) ../node_modules/.bin/playwright test --project=firefox --grep @toolset ;;
-		control-cross-browser) ../node_modules/.bin/playwright test --project=firefox --grep @control ;;
-		structural-cross-browser) ../node_modules/.bin/playwright test --project=firefox --grep "@structural" --grep-invert "@a11y" ;;
+runLightpandaSpecs() {
+	local mode="$1"
+	requireLightpandaEndpoint
+	local playwrightCommand=(../node_modules/.bin/playwright test --project=lightpanda --output="../test-results/$mode")
+	case "$mode" in
+		smoke) "${playwrightCommand[@]}" --grep @smoke ;;
+		standard) "${playwrightCommand[@]}" --grep-invert "@smoke|@a11y|@perf|@toolset|@control|@structural" ;;
+		toolset) "${playwrightCommand[@]}" --grep @toolset ;;
+		control) "${playwrightCommand[@]}" --grep @control ;;
+		structural-smoke) "${playwrightCommand[@]}" --grep "@structural.*@smoke" ;;
+		structural) "${playwrightCommand[@]}" --grep "@structural" --grep-invert "@smoke|@a11y" ;;
+		structural-a11y) "${playwrightCommand[@]}" --grep "@structural.*@a11y" ;;
+	esac
+}
+
+runRealEngineSpecs() {
+	local mode="$1"
+	local playwrightCommand=(env -u UI_TEST_LIGHTPANDA_CDP_URL ../node_modules/.bin/playwright test --workers=1 --output="../test-results/$mode")
+	local realEngines=(--project=chromium --project=firefox)
+	case "$mode" in
+		a11y) "${playwrightCommand[@]}" --project=chromium --grep @a11y ;;
+		performance) "${playwrightCommand[@]}" --project=chromium --grep @perf ;;
+		cross-browser) "${playwrightCommand[@]}" "${realEngines[@]}" --grep-invert "@a11y|@perf|@toolset|@control|@structural" ;;
+		toolset-cross-browser) "${playwrightCommand[@]}" "${realEngines[@]}" --grep @toolset ;;
+		control-cross-browser) "${playwrightCommand[@]}" "${realEngines[@]}" --grep @control ;;
+		structural-cross-browser) "${playwrightCommand[@]}" "${realEngines[@]}" --grep "@structural" --grep-invert "@a11y" ;;
 	esac
 }
 
@@ -58,4 +93,8 @@ if [[ "${BASH_SOURCE[0]}" != "$0" ]]; then return 0; fi
 validateInvocation "${1:-}"
 requireDemoUrl
 cd "$(dirname "$0")"
-runSelectedSpecs "$1"
+specRunner=runRealEngineSpecs
+if modeRequiresLightpanda "$1"; then
+	specRunner=runLightpandaSpecs
+fi
+"$specRunner" "$1"

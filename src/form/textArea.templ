@@ -137,6 +137,9 @@ templ TextArea(componentSettings TextAreaSettings) {
 				if componentSettings.IsReadOnly {
 					readonly
 				}
+				if componentSettings.IsRequired {
+					required
+				}
 			>
 				{ componentSettings.Value }
 			</textarea>

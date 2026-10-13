@@ -1,5 +1,5 @@
-import { expect, test } from "@playwright/test";
 import { openExamplePanel } from "../../examplePanel.js";
+import { expect, test } from "../../fixture.js";
 
 const inputFieldSection = "#input-field-demo";
 const selectSection = "#select-input-demo";
@@ -17,7 +17,7 @@ test.describe("InputHint", () => {
     await page.waitForFunction(() => window.Alpine !== undefined);
   });
 
-  test("@smoke hint icon centers on the field box in both styles", async ({
+  test("@browser @smoke hint icon centers on the field box in both styles", async ({
     page,
   }) => {
     for (const panelTitle of ["Hints", "Hint Icon Styles"]) {
@@ -38,7 +38,7 @@ test.describe("InputHint", () => {
     }
   });
 
-  test("@smoke input field tooltip reveals when reached by keyboard", async ({
+  test("@browser @smoke input field tooltip reveals when reached by keyboard", async ({
     page,
   }) => {
     await openExamplePanel(page, inputFieldSection, "Hints");
@@ -128,11 +128,15 @@ test.describe("InputHint", () => {
   test("textarea hint text bound to a state path updates at runtime", async ({
     page,
   }) => {
-    await openExamplePanel(page, textAreaSection, "Hint State Path");
-    const trigger = page.locator(`${textAreaSection} [role=note]`).nth(1);
+    const statePathPanel = await openExamplePanel(
+      page,
+      textAreaSection,
+      "Hint State Path",
+    );
+    const trigger = statePathPanel.locator("[role=note]").first();
     const tooltip = await tooltipFor(trigger);
-    const changeButton = page
-      .locator(`${textAreaSection} button`)
+    const changeButton = statePathPanel
+      .locator("button")
       .filter({ hasText: "Change Hint Text" });
 
     await trigger.focus();

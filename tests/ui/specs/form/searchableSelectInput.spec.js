@@ -1,5 +1,5 @@
-import { expect, test } from "@playwright/test";
 import { openExamplePanel } from "../../examplePanel.js";
+import { expect, test } from "../../fixture.js";
 
 const section = "#searchable-select-input-demo";
 
@@ -52,7 +52,7 @@ test.describe("SearchableSelectInput", () => {
     await expect(listbox.getByRole("option", { name: "Brazil" })).toBeHidden();
   });
 
-  test("Escape closes the dropdown", async ({ page }) => {
+  test("@browser Escape closes the dropdown", async ({ page }) => {
     const combobox = mainCombobox(page);
     await combobox.click();
     await expect(mainListbox(page)).toBeVisible();
@@ -137,7 +137,7 @@ test.describe("SearchableSelectInput", () => {
     ).toBeVisible();
   });
 
-  test("tags: Backspace on an empty input removes the last tag", async ({
+  test("@browser tags: Backspace on an empty input removes the last tag", async ({
     page,
   }) => {
     const panel = await openExamplePanel(page, section, "Selected as Tags");
@@ -165,5 +165,31 @@ test.describe("SearchableSelectInput", () => {
     await combobox.fill("Atlantis");
     await page.keyboard.press("Enter");
     await expect(stateText).toHaveText('["Brazil"]');
+  });
+
+  test("disabled path disables the combobox, clear button, and options", async ({
+    page,
+  }) => {
+    const panel = await openExamplePanel(page, section, "Disabled Binding");
+    const componentState = panel.locator('div[x-data^="{country:"]');
+    const combobox = panel.locator("input[role=combobox]");
+    const listbox = panel.locator("ul[role=listbox]");
+
+    await expect(combobox).toBeDisabled();
+    await expect(
+      panel.getByRole("button", { name: "Clear selection" }),
+    ).toBeDisabled();
+
+    await componentState.evaluate((element) => {
+      window.Alpine.$data(element).isDisabled = false;
+    });
+    await combobox.click();
+    const option = listbox.getByRole("option", { name: "Brazil" });
+    await expect(option).toBeVisible();
+
+    await componentState.evaluate((element) => {
+      window.Alpine.$data(element).isDisabled = true;
+    });
+    await expect(option).toBeDisabled();
   });
 });

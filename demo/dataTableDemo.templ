@@ -666,13 +666,5 @@ templ DataTableDemo() {
 }
 
 templ DataTableRefreshFragment(pageNumber uint, itemsPerPage uiStructural.ItemsPerPage) {
-	<!DOCTYPE html>
-	<html lang="en">
-		<head>
-			<title>DataTable Refresh Fragment</title>
-		</head>
-		<body>
-			@uiStructural.DataTable(buildDemoDataTableSettings(dataTableDemoRecords, pageNumber, itemsPerPage))
-		</body>
-	</html>
+	@uiStructural.DataTableRefreshRegion(buildDemoDataTableSettings(dataTableDemoRecords, pageNumber, itemsPerPage))
 }

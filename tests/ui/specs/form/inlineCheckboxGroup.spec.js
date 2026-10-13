@@ -1,5 +1,5 @@
-import { expect, test } from "@playwright/test";
 import { openExamplePanel } from "../../examplePanel.js";
+import { expect, test } from "../../fixture.js";
 
 const section = "#inline-checkbox-group-demo";
 
@@ -53,7 +53,9 @@ test.describe("InlineCheckboxGroup", () => {
       .click();
 
     await expect(stateText).toContainText("[]");
-    await expect(fieldset.getByLabel("Apple", { exact: true })).not.toBeChecked();
+    await expect(
+      fieldset.getByLabel("Apple", { exact: true }),
+    ).not.toBeChecked();
     await expect(
       fieldset.getByLabel("Banana", { exact: true }),
     ).not.toBeChecked();
@@ -62,7 +64,9 @@ test.describe("InlineCheckboxGroup", () => {
     ).not.toBeChecked();
   });
 
-  test("actions stay hidden until hover or focus", async ({ page }) => {
+  test("@browser actions stay hidden until hover or focus", async ({
+    page,
+  }) => {
     const fieldset = page.locator(`${section} fieldset`).first();
     const selectAllButton = fieldset.getByRole("button", {
       name: "Select all options",
@@ -79,7 +83,7 @@ test.describe("InlineCheckboxGroup", () => {
     await expect(selectAllButton).toBeVisible();
   });
 
-  test("clicking the empty area of a vertical option row toggles it", async ({
+  test("@browser clicking the empty area of a vertical option row toggles it", async ({
     page,
   }) => {
     const panel = await openExamplePanel(page, section, "Vertical Orientation");
@@ -96,7 +100,9 @@ test.describe("InlineCheckboxGroup", () => {
     await expect(appleBox).toBeChecked();
   });
 
-  test("vertical orientation stacks the checkboxes", async ({ page }) => {
+  test("@browser vertical orientation stacks the checkboxes", async ({
+    page,
+  }) => {
     const panel = await openExamplePanel(page, section, "Vertical Orientation");
     const content = panel.locator("fieldset > div").first();
     const flexDirection = await content.evaluate(

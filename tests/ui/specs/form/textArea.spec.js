@@ -1,5 +1,5 @@
-import { expect, test } from "@playwright/test";
 import { openExamplePanel } from "../../examplePanel.js";
+import { expect, test } from "../../fixture.js";
 
 const textAreaSection = "#text-area-demo";
 const collapsedHeightPx = 144;
@@ -68,13 +68,13 @@ test.describe("TextArea", () => {
     await waitForAlpineHydration(page);
   });
 
-  test("@smoke default size renders at the md scale height", async ({
+  test("@browser @smoke default size renders at the md scale height", async ({
     page,
   }) => {
     expect(await heightOf(page, 0)).toBeCloseTo(collapsedHeightPx, 1);
   });
 
-  test("@smoke expand toggle grows the box and collapse restores it", async ({
+  test("@browser @smoke expand toggle grows the box and collapse restores it", async ({
     page,
   }) => {
     await toggleExpand(page, 0);
@@ -83,13 +83,15 @@ test.describe("TextArea", () => {
     await expectStableHeight(page, 0, collapsedHeightPx);
   });
 
-  test("read-only instance expands without a state path", async ({ page }) => {
+  test("@browser read-only instance expands without a state path", async ({
+    page,
+  }) => {
     await openExamplePanel(page, textAreaSection, "Value & Read-Only");
     await toggleExpand(page, 1);
     await expectStableHeight(page, 1, expandedHeightPx);
   });
 
-  test("action buttons reveal on focus and expand with the keyboard", async ({
+  test("@browser action buttons reveal on focus and expand with the keyboard", async ({
     page,
   }) => {
     const fieldset = page.locator(`${textAreaSection} fieldset`).first();
@@ -106,7 +108,7 @@ test.describe("TextArea", () => {
     await expectStableHeight(page, 0, expandedHeightPx);
   });
 
-  test("floating icons sit on the first text line when empty", async ({
+  test("@browser floating icons sit on the first text line when empty", async ({
     page,
   }) => {
     await expect
@@ -120,7 +122,7 @@ test.describe("TextArea", () => {
       .toBeLessThanOrEqual(2);
   });
 
-  test("floating icons sit on the first text line when filled", async ({
+  test("@browser floating icons sit on the first text line when filled", async ({
     page,
   }) => {
     await page

@@ -65,7 +65,22 @@ templ DemoAlpineStateBlock(stateCode string) {
 	</div>
 }
 
-templ DemoAdvancedExamples(items []uiDisplay.AccordionItemSettings) {
+templ DemoAdvancedExamplePlaceholder(assetPath, panelKey string) {
+	<div
+		class="contents"
+		data-demo-advanced-example-asset={ assetPath }
+		data-demo-advanced-example-key={ panelKey }
+		data-demo-advanced-example-status="pending"
+	>
+		<p class="text-sm text-neutral-400">Loading example...</p>
+	</div>
+}
+
+templ DemoAdvancedExamples(sectionId string, items []uiDisplay.AccordionItemSettings) {
+	{{ registry, hasRegistry := advancedExampleRegistryFinder(ctx) }}
+	if hasRegistry {
+		{{ items = registry.registerLazyPanels(sectionId, items) }}
+	}
 	<div class="flex flex-col gap-4">
 		<div class="flex flex-col gap-1">
 			<p class="text-lg font-bold">Advanced Examples</p>

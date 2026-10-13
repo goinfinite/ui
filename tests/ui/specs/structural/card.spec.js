@@ -1,5 +1,5 @@
-import { expect, test } from "@playwright/test";
 import { openExamplePanel } from "../../examplePanel.js";
+import { expect, test } from "../../fixture.js";
 
 const cardSection = "#card-demo";
 
@@ -27,7 +27,7 @@ test.describe("Card @structural", () => {
     );
   });
 
-  test("@smoke square card drops the rounded edges and keeps the action", async ({
+  test("@browser @smoke square card drops the rounded edges and keeps the action", async ({
     page,
   }) => {
     await openExamplePanel(page, cardSection, "Surface & Edges");
@@ -61,7 +61,7 @@ test.describe("Card @structural", () => {
     );
   });
 
-  test("@smoke content gap example sets the card gap scale", async ({
+  test("@browser @smoke content gap example sets the card gap scale", async ({
     page,
   }) => {
     await openExamplePanel(page, cardSection, "Content Gap");

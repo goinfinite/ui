@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "../../fixture.js";
 
 const tableRoot = "#data-table-demo-table";
 
