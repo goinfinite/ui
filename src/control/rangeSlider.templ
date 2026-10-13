@@ -34,75 +34,71 @@ const (
 	RangeSliderTrackTooltipPositionBottom string = "bottom"
 )
 
+type RangeSliderThumbSettings struct {
+	// OptionalFields
+	AriaLabel                  string
+	BackgroundColor            string
+	Label                      string
+	LabelIcon                  string
+	LabelOneWayStatePath       string
+	Shape                      string
+	TextColor                  string
+	ValueBubbleBackgroundColor string
+	ValueBubbleDisplayMode     string
+	ValueBubbleEnabled         bool
+	ValueBubblePosition        string
+	ValueBubbleRingColor       string
+	ValueBubbleRingThickness   string
+	ValueBubbleShape           string
+	ValueBubbleSize            string
+	ValueBubbleTextColor       string
+}
+
+type RangeSliderTrackSettings struct {
+	// OptionalFields
+	BackgroundColor          string
+	BackgroundColorFrom      string
+	BackgroundColorTo        string
+	BackgroundColorVia       string
+	EndValueLabelEnabled     bool
+	EndValueLabelIcon        string
+	EndValueLabelPosition    string
+	EndValueLabelTextColor   string
+	FillColor                string
+	FillColorFrom            string
+	FillColorTo              string
+	FillColorVia             string
+	StartValueLabelEnabled   bool
+	StartValueLabelIcon      string
+	StartValueLabelPosition  string
+	StartValueLabelTextColor string
+	TickStep                 string
+	TicksEnabled             bool
+	TooltipBackgroundColor   string
+	TooltipEnabled           bool
+	TooltipPosition          string
+	TooltipRingColor         string
+	TooltipRingThickness     string
+	TooltipTextColor         string
+}
+
 type RangeSliderSettings struct {
 	// OptionalFields
-	Size                                 string
-	ThumbLabel                           string
-	ThumbLabelOneWayStatePath            string
-	ThumbLabelIcon                       string
-	ThumbAriaLabel                       string
-	ThumbBackgroundColor                 string
-	ThumbTextColor                       string
-	ThumbShape                           string
-	ThumbValue                           string
-	ThumbValueTwoWayStatePath            string
-	ThumbValueBubbleEnabled              bool
-	ThumbValueBubbleDisplayMode          string
-	ThumbValueBubbleBackgroundColor      string
-	ThumbValueBubbleTextColor            string
-	ThumbValueBubbleRingColor            string
-	ThumbValueBubbleRingThickness        string
-	ThumbValueBubbleSize                 string
-	ThumbValueBubbleShape                string
-	ThumbValueBubblePosition             string
-	ThumbDualValueModeEnabled            bool
-	ThumbUpperValue                      string
-	ThumbUpperValueTwoWayStatePath       string
-	ThumbUpperBackgroundColor            string
-	ThumbUpperTextColor                  string
-	ThumbUpperLabel                      string
-	ThumbUpperLabelOneWayStatePath       string
-	ThumbUpperLabelIcon                  string
-	ThumbUpperAriaLabel                  string
-	ThumbUpperValueBubbleEnabled         bool
-	ThumbUpperValueBubbleDisplayMode     string
-	ThumbUpperValueBubbleBackgroundColor string
-	ThumbUpperValueBubbleTextColor       string
-	ThumbUpperValueBubbleRingColor       string
-	ThumbUpperValueBubbleRingThickness   string
-	ThumbUpperValueBubbleSize            string
-	ThumbUpperValueBubbleShape           string
-	ThumbUpperValueBubblePosition        string
-	TrackBackgroundColor                 string
-	TrackBackgroundColorFrom             string
-	TrackBackgroundColorVia              string
-	TrackBackgroundColorTo               string
-	TrackSteps                           string
-	TrackTicksEnabled                    bool
-	TrackTickStep                        string
-	TrackTooltipEnabled                  bool
-	TrackTooltipPosition                 string
-	TrackTooltipBackgroundColor          string
-	TrackTooltipTextColor                string
-	TrackTooltipRingColor                string
-	TrackTooltipRingThickness            string
-	TrackFillColor                       string
-	TrackFillColorFrom                   string
-	TrackFillColorVia                    string
-	TrackFillColorTo                     string
-	TrackStartValue                      string
-	TrackStartValueOneWayStatePath       string
-	TrackStartValueLabelEnabled          bool
-	TrackStartValueLabelTextColor        string
-	TrackStartValueLabelPosition         string
-	TrackStartValueLabelIcon             string
-	TrackEndValue                        string
-	TrackEndValueOneWayStatePath         string
-	TrackEndValueLabelEnabled            bool
-	TrackEndValueLabelTextColor          string
-	TrackEndValueLabelPosition           string
-	TrackEndValueLabelIcon               string
-	ShouldNormalizeInitialState          bool
+	ShouldNormalizeInitialState    bool
+	Size                           string
+	Thumb                          RangeSliderThumbSettings
+	ThumbDualValueModeEnabled      bool
+	ThumbUpper                     RangeSliderThumbSettings
+	ThumbUpperValue                string
+	ThumbUpperValueTwoWayStatePath string
+	ThumbValue                     string
+	ThumbValueTwoWayStatePath      string
+	Track                          RangeSliderTrackSettings
+	TrackEndValue                  string
+	TrackEndValueOneWayStatePath   string
+	TrackStartValue                string
+	TrackStartValueOneWayStatePath string
+	TrackSteps                     string
 }
 
 func resolveRangeSliderThumbSizeUnit(componentSettings RangeSliderSettings) string {
@@ -119,7 +115,7 @@ func resolveRangeSliderThumbSizeUnit(componentSettings RangeSliderSettings) stri
 	return "4.5"
 }
 
-templ Thumb(componentSettings RangeSliderSettings, isUpper bool) {
+templ Thumb(componentSettings RangeSliderSettings, thumbSettings RangeSliderThumbSettings, isUpper bool) {
 	{{ thumbSizeUnit := resolveRangeSliderThumbSizeUnit(componentSettings) }}
 	{{ thumbSize := "w-" + thumbSizeUnit + " h-" + thumbSizeUnit }}
 	{{ thumbPosition := "-top-1.25" }}
@@ -136,8 +132,8 @@ templ Thumb(componentSettings RangeSliderSettings, isUpper bool) {
 			{{ thumbPosition = "-top-2" }}
 	}
 	<!-- Thumb -->
-	{{ thumbShape := uiToolset.ShapeClassResolver(componentSettings.ThumbShape, "rounded-full") }}
-	if componentSettings.ThumbShape == RangeSliderThumbShapePipe {
+	{{ thumbShape := uiToolset.ShapeClassResolver(thumbSettings.Shape, "rounded-full") }}
+	if thumbSettings.Shape == RangeSliderThumbShapePipe {
 		{{ thumbShape = "rounded-none" }}
 		switch componentSettings.Size {
 			case RangeSliderSizeXs:
@@ -156,48 +152,19 @@ templ Thumb(componentSettings RangeSliderSettings, isUpper bool) {
 	}
 	{{ thumbBackgroundColor := "bg-neutral-50" }}
 	{{ thumbTextColor := "text-neutral-800" }}
-	{{ thumbIcon := componentSettings.ThumbLabelIcon }}
-	{{ thumbLabel := componentSettings.ThumbLabel }}
-	{{ thumbLabelPath := componentSettings.ThumbLabelOneWayStatePath }}
-	{{ thumbValueBubbleEnabled := componentSettings.ThumbValueBubbleEnabled }}
-	if isUpper {
-		if componentSettings.ThumbUpperBackgroundColor != "" {
-			{{ thumbBackgroundColor = "bg-" + componentSettings.ThumbUpperBackgroundColor }}
-		} else if componentSettings.ThumbBackgroundColor != "" {
-			{{ thumbBackgroundColor = "bg-" + componentSettings.ThumbBackgroundColor }}
-		}
-		if componentSettings.ThumbUpperTextColor != "" {
-			{{ thumbTextColor = "text-" + componentSettings.ThumbUpperTextColor }}
-		} else if componentSettings.ThumbTextColor != "" {
-			{{ thumbTextColor = "text-" + componentSettings.ThumbTextColor }}
-		}
-		if componentSettings.ThumbUpperLabelIcon != "" {
-			{{ thumbIcon = componentSettings.ThumbUpperLabelIcon }}
-		}
-		if componentSettings.ThumbUpperLabel != "" {
-			{{ thumbLabel = componentSettings.ThumbUpperLabel }}
-		}
-		if componentSettings.ThumbUpperLabelOneWayStatePath != "" {
-			{{ thumbLabelPath = componentSettings.ThumbUpperLabelOneWayStatePath }}
-		}
-		{{ thumbValueBubbleEnabled = componentSettings.ThumbUpperValueBubbleEnabled }}
-	} else {
-		if componentSettings.ThumbBackgroundColor != "" {
-			{{ thumbBackgroundColor = "bg-" + componentSettings.ThumbBackgroundColor }}
-		}
-		if componentSettings.ThumbTextColor != "" {
-			{{ thumbTextColor = "text-" + componentSettings.ThumbTextColor }}
-		}
+	if thumbSettings.BackgroundColor != "" {
+		{{ thumbBackgroundColor = "bg-" + thumbSettings.BackgroundColor }}
+	}
+	if thumbSettings.TextColor != "" {
+		{{ thumbTextColor = "text-" + thumbSettings.TextColor }}
 	}
 	{{ percentValue := "thumbValuePercent" }}
 	{{ bubbleValue := "thumbValue" }}
-	if isUpper {
-		{{ percentValue = "thumbUpperValuePercent" }}
-		{{ bubbleValue = "thumbUpperValue" }}
-	}
 	{{ hoverState := "thumbHover" }}
 	{{ focusState := "thumbFocused" }}
 	if isUpper {
+		{{ percentValue = "thumbUpperValuePercent" }}
+		{{ bubbleValue = "thumbUpperValue" }}
 		{{ hoverState = "thumbUpperHover" }}
 		{{ focusState = "thumbUpperFocused" }}
 	}
@@ -208,7 +175,7 @@ templ Thumb(componentSettings RangeSliderSettings, isUpper bool) {
 		@mouseenter={ hoverState + " = true" }
 		@mouseleave={ hoverState + " = false" }
 	>
-		if thumbIcon != "" {
+		if thumbSettings.LabelIcon != "" {
 			<!-- ThumbLabelIcon -->
 			{{ thumbIconSize := "text-sm" }}
 			switch componentSettings.Size {
@@ -223,9 +190,9 @@ templ Thumb(componentSettings RangeSliderSettings, isUpper bool) {
 				case RangeSliderSizeXl:
 					{{ thumbIconSize = "text-lg" }}
 			}
-			<i class={ "ph-bold " + thumbIcon + " flex h-full w-full items-center justify-center " + thumbIconSize }></i>
+			<i class={ "ph-bold " + thumbSettings.LabelIcon + " flex h-full w-full items-center justify-center " + thumbIconSize }></i>
 		}
-		if thumbLabel != "" || thumbLabelPath != "" {
+		if thumbSettings.Label != "" || thumbSettings.LabelOneWayStatePath != "" {
 			<!-- ThumbLabel -->
 			{{ thumbLabelSize := "text-xs" }}
 			switch componentSettings.Size {
@@ -242,15 +209,15 @@ templ Thumb(componentSettings RangeSliderSettings, isUpper bool) {
 			}
 			<span
 				class={ "flex h-full w-full items-center justify-center " + thumbLabelSize }
-				if thumbLabelPath != "" {
-					x-text={ thumbLabelPath }
+				if thumbSettings.LabelOneWayStatePath != "" {
+					x-text={ thumbSettings.LabelOneWayStatePath }
 				}
 			>
-				{ thumbLabel }
+				{ thumbSettings.Label }
 			</span>
 		}
 		<!-- ThumbValueBubble -->
-		if thumbValueBubbleEnabled {
+		if thumbSettings.ValueBubbleEnabled {
 			{{ bubblePositionOffset := "7.5" }}
 			switch componentSettings.Size {
 				case RangeSliderSizeXs:
@@ -264,11 +231,7 @@ templ Thumb(componentSettings RangeSliderSettings, isUpper bool) {
 				case RangeSliderSizeXl:
 					{{ bubblePositionOffset = "9.5" }}
 			}
-			{{ customBubbleSize := componentSettings.ThumbValueBubbleSize }}
-			if isUpper && componentSettings.ThumbUpperValueBubbleSize != "" {
-				{{ customBubbleSize = componentSettings.ThumbUpperValueBubbleSize }}
-			}
-			switch customBubbleSize {
+			switch thumbSettings.ValueBubbleSize {
 				case RangeSliderThumbValueBubbleSizeXs:
 					{{ bubblePositionOffset = "5.5" }}
 				case RangeSliderThumbValueBubbleSizeSm:
@@ -281,20 +244,11 @@ templ Thumb(componentSettings RangeSliderSettings, isUpper bool) {
 					{{ bubblePositionOffset = "9.5" }}
 			}
 			{{ bubblePosition := "-top-" + bubblePositionOffset }}
-			if componentSettings.ThumbValueBubblePosition == RangeSliderThumbValueBubblePositionBottom {
+			if thumbSettings.ValueBubblePosition == RangeSliderThumbValueBubblePositionBottom {
 				{{ bubblePosition = "-bottom-" + bubblePositionOffset }}
 			}
-			if isUpper && componentSettings.ThumbUpperValueBubblePosition != "" {
-				{{ bubblePosition = "-top-" + bubblePositionOffset }}
-				if componentSettings.ThumbUpperValueBubblePosition == RangeSliderThumbValueBubblePositionBottom {
-					{{ bubblePosition = "-bottom-" + bubblePositionOffset }}
-				}
-			}
 			{{ bubbleSize := "min-w-8 p-1 text-base" }}
-			if isUpper && componentSettings.ThumbUpperValueBubbleSize != "" {
-				{{ customBubbleSize = componentSettings.ThumbUpperValueBubbleSize }}
-			}
-			switch customBubbleSize {
+			switch thumbSettings.ValueBubbleSize {
 				case RangeSliderThumbValueBubbleSizeXs:
 					{{ bubbleSize = "min-w-6 p-0.5 text-xs" }}
 				case RangeSliderThumbValueBubbleSizeSm:
@@ -306,42 +260,20 @@ templ Thumb(componentSettings RangeSliderSettings, isUpper bool) {
 				case RangeSliderThumbValueBubbleSizeXl:
 					{{ bubbleSize = "min-w-12 p-2 text-xl" }}
 			}
-			{{ customBubbleShape := componentSettings.ThumbValueBubbleShape }}
-			if isUpper && componentSettings.ThumbUpperValueBubbleShape != "" {
-				{{ customBubbleShape = componentSettings.ThumbUpperValueBubbleShape }}
-			}
-			{{ bubbleShape := uiToolset.ShapeClassResolver(customBubbleShape, "rounded-full") }}
+			{{ bubbleShape := uiToolset.ShapeClassResolver(thumbSettings.ValueBubbleShape, "rounded-full") }}
 			{{ bubbleBackgroundColor := "bg-neutral-800" }}
-			if componentSettings.ThumbValueBubbleBackgroundColor != "" {
-				{{ bubbleBackgroundColor = "bg-" + componentSettings.ThumbValueBubbleBackgroundColor }}
-			}
-			if isUpper && componentSettings.ThumbUpperValueBubbleBackgroundColor != "" {
-				{{ bubbleBackgroundColor = "bg-" + componentSettings.ThumbUpperValueBubbleBackgroundColor }}
+			if thumbSettings.ValueBubbleBackgroundColor != "" {
+				{{ bubbleBackgroundColor = "bg-" + thumbSettings.ValueBubbleBackgroundColor }}
 			}
 			{{ bubbleTextColor := "text-neutral-50" }}
-			if componentSettings.ThumbValueBubbleTextColor != "" {
-				{{ bubbleTextColor = "text-" + componentSettings.ThumbValueBubbleTextColor }}
+			if thumbSettings.ValueBubbleTextColor != "" {
+				{{ bubbleTextColor = "text-" + thumbSettings.ValueBubbleTextColor }}
 			}
-			if isUpper && componentSettings.ThumbUpperValueBubbleTextColor != "" {
-				{{ bubbleTextColor = "text-" + componentSettings.ThumbUpperValueBubbleTextColor }}
-			}
-			{{ bubbleRingColor := componentSettings.ThumbValueBubbleRingColor }}
-			if isUpper && componentSettings.ThumbUpperValueBubbleRingColor != "" {
-				{{ bubbleRingColor = componentSettings.ThumbUpperValueBubbleRingColor }}
-			}
-			{{ bubbleRingThickness := componentSettings.ThumbValueBubbleRingThickness }}
-			if isUpper && componentSettings.ThumbUpperValueBubbleRingThickness != "" {
-				{{ bubbleRingThickness = componentSettings.ThumbUpperValueBubbleRingThickness }}
-			}
-			{{ bubbleRingClasses := uiToolset.CompactRingClassResolver(bubbleRingColor, bubbleRingThickness) }}
-			{{ bubbleDisplayMode := componentSettings.ThumbValueBubbleDisplayMode }}
-			if isUpper && componentSettings.ThumbUpperValueBubbleDisplayMode != "" {
-				{{ bubbleDisplayMode = componentSettings.ThumbUpperValueBubbleDisplayMode }}
-			}
+			{{ bubbleRingClasses := uiToolset.CompactRingClassResolver(thumbSettings.ValueBubbleRingColor, thumbSettings.ValueBubbleRingThickness) }}
 			<div
 				data-ui-range-slider-thumb-bubble
 				class={ "absolute " + bubblePosition + " select-none flex items-center justify-center " + bubbleSize + " " + bubbleShape + " " + bubbleBackgroundColor + " " + bubbleTextColor + " " + bubbleRingClasses }
-				if bubbleDisplayMode == RangeSliderThumbValueBubbleDisplayModeHover {
+				if thumbSettings.ValueBubbleDisplayMode == RangeSliderThumbValueBubbleDisplayModeHover {
 					x-show={ hoverState + " || " + focusState }
 					style="display: none"
 					x-transition.opacity.duration.150ms
@@ -354,24 +286,20 @@ templ Thumb(componentSettings RangeSliderSettings, isUpper bool) {
 	</div>
 }
 
-func resolveRangeSliderThumbAriaLabel(componentSettings RangeSliderSettings, isUpper bool) string {
+func resolveRangeSliderThumbAriaLabel(
+	componentSettings RangeSliderSettings, thumbSettings RangeSliderThumbSettings, isUpper bool,
+) string {
+	if thumbSettings.AriaLabel != "" {
+		return thumbSettings.AriaLabel
+	}
+	if thumbSettings.Label != "" {
+		if isUpper {
+			return "Upper " + thumbSettings.Label
+		}
+		return thumbSettings.Label
+	}
 	if isUpper {
-		if componentSettings.ThumbUpperAriaLabel != "" {
-			return componentSettings.ThumbUpperAriaLabel
-		}
-		if componentSettings.ThumbUpperLabel != "" {
-			return componentSettings.ThumbUpperLabel
-		}
-		if componentSettings.ThumbLabel != "" {
-			return "Upper " + componentSettings.ThumbLabel
-		}
 		return "Upper value"
-	}
-	if componentSettings.ThumbAriaLabel != "" {
-		return componentSettings.ThumbAriaLabel
-	}
-	if componentSettings.ThumbLabel != "" {
-		return componentSettings.ThumbLabel
 	}
 	if componentSettings.ThumbDualValueModeEnabled {
 		return "Lower value"
@@ -472,17 +400,17 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 		{{ trackSteps = componentSettings.TrackSteps }}
 	}
 	{{ trackTickStep := trackSteps }}
-	if componentSettings.TrackTickStep != "" {
-		{{ trackTickStep = componentSettings.TrackTickStep }}
+	if componentSettings.Track.TickStep != "" {
+		{{ trackTickStep = componentSettings.Track.TickStep }}
 	}
 	{{ alpineData := "{thumbValue: " + thumbValue + ", trackStartValue: " + trackStartValue + ", trackEndValue: " + trackEndValue + ", trackSteps: " + trackSteps + ", thumbHover: false, thumbFocused: false, clampPercent(percent) { return Math.min(Math.max(percent, 0), 100); }, get thumbValuePercent() { return this.clampPercent((this.thumbValue - this.trackStartValue) / (this.trackEndValue - this.trackStartValue) * 100); }" }}
 	if componentSettings.ThumbDualValueModeEnabled {
 		{{ alpineData += ", thumbUpperValue: " + thumbUpperValue + ", thumbUpperHover: false, thumbUpperFocused: false, get thumbUpperValuePercent() { return this.clampPercent((this.thumbUpperValue - this.trackStartValue) / (this.trackEndValue - this.trackStartValue) * 100); }, get thumbMidPercent() { return (this.thumbValuePercent + this.thumbUpperValuePercent) / 2; }" }}
 	}
-	if componentSettings.TrackTicksEnabled {
+	if componentSettings.Track.TicksEnabled {
 		{{ alpineData += ", trackTickStep: " + trackTickStep + ", get trackTickPercents() { const step = Number(this.trackTickStep); const start = Number(this.trackStartValue); const end = Number(this.trackEndValue); if (!(step > 0) || !(end > start)) return []; const tickCount = Math.floor((end - start) / step); if (!(tickCount > 0) || tickCount > 200) return []; const percents = []; for (let index = 0; index <= tickCount; index++) { percents.push(this.clampPercent((index * step) / (end - start) * 100)); } return percents; }" }}
 	}
-	if componentSettings.TrackTooltipEnabled {
+	if componentSettings.Track.TooltipEnabled {
 		{{ alpineData += ", trackTooltipVisible: false, trackTooltipPercent: 0, trackTooltipValue: 0, resolveTrackTooltipDecimalPlaces(valueText) { const exponentIndex = valueText.search(/[eE]/); const exponent = exponentIndex === -1 ? 0 : Number(valueText.slice(exponentIndex + 1)); const mantissaText = exponentIndex === -1 ? valueText : valueText.slice(0, exponentIndex); const dotIndex = mantissaText.indexOf('.'); const mantissaDecimalPlaces = dotIndex === -1 ? 0 : mantissaText.length - dotIndex - 1; return Math.max(mantissaDecimalPlaces - exponent, 0); }, showTrackTooltip(event) { const trackRect = event.currentTarget.getBoundingClientRect(); const hoverPercent = this.clampPercent((event.clientX - trackRect.left) / trackRect.width * 100); const startValue = Number(this.trackStartValue); const endValue = Number(this.trackEndValue); const stepSize = Number(this.trackSteps) > 0 ? Number(this.trackSteps) : 1; const rawValue = startValue + hoverPercent / 100 * (endValue - startValue); const stepIndexTolerance = 1e-9; const maximumStepIndex = Math.floor((endValue - startValue) / stepSize + stepIndexTolerance); const stepIndex = Math.min(Math.max(Math.round((rawValue - startValue) / stepSize), 0), maximumStepIndex); const steppedValue = startValue + stepIndex * stepSize; const valuePrecision = Math.max(this.resolveTrackTooltipDecimalPlaces(String(this.trackStartValue)), this.resolveTrackTooltipDecimalPlaces(String(this.trackSteps))); const clampedValue = Math.min(Math.max(steppedValue, startValue), endValue); const roundedValue = Number(clampedValue.toFixed(valuePrecision)); this.trackTooltipPercent = hoverPercent; this.trackTooltipValue = Math.min(Math.max(roundedValue, startValue), endValue); this.trackTooltipVisible = true; }" }}
 	}
 	{{ alpineData += "}" }}
@@ -500,7 +428,7 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 		case RangeSliderSizeXl:
 			{{ mainDivMinHeight = 8 }}
 	}
-	if componentSettings.ThumbValueBubbleEnabled {
+	if componentSettings.Thumb.ValueBubbleEnabled || componentSettings.ThumbUpper.ValueBubbleEnabled {
 		{{ mainDivMinHeight = mainDivMinHeight * 3 }}
 	}
 	<div
@@ -523,17 +451,17 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 					{{ trackHeight = "h-2" }}
 			}
 			<!-- TrackStartValue -->
-			if componentSettings.TrackStartValueLabelEnabled || componentSettings.TrackStartValueLabelIcon != "" {
+			if componentSettings.Track.StartValueLabelEnabled || componentSettings.Track.StartValueLabelIcon != "" {
 				{{ startLabelPosition := "" }}
-				switch componentSettings.TrackStartValueLabelPosition {
+				switch componentSettings.Track.StartValueLabelPosition {
 					case RangeSliderTrackValueLabelPositionTop:
 						{{ startLabelPosition = "absolute left-0 bottom-full mb-1" }}
 					case RangeSliderTrackValueLabelPositionBottom:
 						{{ startLabelPosition = "absolute left-0 top-full mt-1" }}
 				}
 				{{ startLabelTextColor := "text-neutral-400" }}
-				if componentSettings.TrackStartValueLabelTextColor != "" {
-					{{ startLabelTextColor = "text-" + componentSettings.TrackStartValueLabelTextColor }}
+				if componentSettings.Track.StartValueLabelTextColor != "" {
+					{{ startLabelTextColor = "text-" + componentSettings.Track.StartValueLabelTextColor }}
 				}
 				<div class={ startLabelPosition + " flex items-center text-xs gap-1 " + startLabelTextColor }>
 					{{ startLabelIconSize := "text-lg" }}
@@ -549,10 +477,10 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 						case RangeSliderSizeXl:
 							{{ startLabelIconSize = "text-2xl" }}
 					}
-					if componentSettings.TrackStartValueLabelIcon != "" {
-						<i class={ "ph-bold " + componentSettings.TrackStartValueLabelIcon + " " + startLabelIconSize }></i>
+					if componentSettings.Track.StartValueLabelIcon != "" {
+						<i class={ "ph-bold " + componentSettings.Track.StartValueLabelIcon + " " + startLabelIconSize }></i>
 					}
-					if componentSettings.TrackStartValueLabelEnabled {
+					if componentSettings.Track.StartValueLabelEnabled {
 						<span x-text="trackStartValue"></span>
 					}
 				</div>
@@ -561,24 +489,24 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 			<div class="relative flex w-full flex-row gap-2">
 				<!-- Track -->
 				{{ trackBackgroundColor := "bg-neutral-50/5" }}
-				if componentSettings.TrackBackgroundColor != "" {
-					{{ trackBackgroundColor = "bg-" + componentSettings.TrackBackgroundColor }}
+				if componentSettings.Track.BackgroundColor != "" {
+					{{ trackBackgroundColor = "bg-" + componentSettings.Track.BackgroundColor }}
 				}
-				if componentSettings.TrackBackgroundColorFrom != "" || componentSettings.TrackBackgroundColorVia != "" || componentSettings.TrackBackgroundColorTo != "" {
+				if componentSettings.Track.BackgroundColorFrom != "" || componentSettings.Track.BackgroundColorVia != "" || componentSettings.Track.BackgroundColorTo != "" {
 					{{ trackBackgroundColor = "bg-gradient-to-r" }}
-					if componentSettings.TrackBackgroundColorFrom != "" {
-						{{ trackBackgroundColor = trackBackgroundColor + " from-" + componentSettings.TrackBackgroundColorFrom }}
+					if componentSettings.Track.BackgroundColorFrom != "" {
+						{{ trackBackgroundColor = trackBackgroundColor + " from-" + componentSettings.Track.BackgroundColorFrom }}
 					}
-					if componentSettings.TrackBackgroundColorVia != "" {
-						{{ trackBackgroundColor = trackBackgroundColor + " via-" + componentSettings.TrackBackgroundColorVia }}
+					if componentSettings.Track.BackgroundColorVia != "" {
+						{{ trackBackgroundColor = trackBackgroundColor + " via-" + componentSettings.Track.BackgroundColorVia }}
 					}
-					if componentSettings.TrackBackgroundColorTo != "" {
-						{{ trackBackgroundColor = trackBackgroundColor + " to-" + componentSettings.TrackBackgroundColorTo }}
+					if componentSettings.Track.BackgroundColorTo != "" {
+						{{ trackBackgroundColor = trackBackgroundColor + " to-" + componentSettings.Track.BackgroundColorTo }}
 					}
 				}
 				<div
 					class={ trackBackgroundColor + " flex items-center relative rounded-full w-full " + trackHeight }
-					if componentSettings.TrackTooltipEnabled {
+					if componentSettings.Track.TooltipEnabled {
 						@mousemove="showTrackTooltip($event)"
 						@mouseleave="trackTooltipVisible = false"
 					}
@@ -598,7 +526,7 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 						case RangeSliderSizeXl:
 							{{ rangeInputHoverHeight = 11 }}
 					}
-					if componentSettings.ThumbValueBubbleEnabled {
+					if componentSettings.Thumb.ValueBubbleEnabled || componentSettings.ThumbUpper.ValueBubbleEnabled {
 						{{ rangeInputHoverHeight = rangeInputHoverHeight * 2 }}
 					}
 					{{ rangeInputHoverHeightStr := strconv.Itoa(rangeInputHoverHeight) }}
@@ -616,7 +544,7 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 					<input
 						type="range"
 						class={ rangeInputClasses }
-						aria-label={ resolveRangeSliderThumbAriaLabel(componentSettings, false) }
+						aria-label={ resolveRangeSliderThumbAriaLabel(componentSettings, componentSettings.Thumb, false) }
 						:min="trackStartValue"
 						:max="trackEndValue"
 						:step="trackSteps"
@@ -626,7 +554,7 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 						@mouseenter="thumbHover = true"
 						@mouseleave="thumbHover = false"
 						@input.debounce.100ms={ inputEvent }
-						if componentSettings.ThumbValueBubbleEnabled {
+						if componentSettings.Thumb.ValueBubbleEnabled {
 							:class={ "thumbHover && '!h-" + rangeInputHoverHeightStr + "'" }
 						}
 						if componentSettings.ThumbDualValueModeEnabled {
@@ -642,7 +570,7 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 						<input
 							type="range"
 							class={ rangeInputClasses }
-							aria-label={ resolveRangeSliderThumbAriaLabel(componentSettings, true) }
+							aria-label={ resolveRangeSliderThumbAriaLabel(componentSettings, componentSettings.ThumbUpper, true) }
 							:min="trackStartValue"
 							:max="trackEndValue"
 							:step="trackSteps"
@@ -653,26 +581,26 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 							@mouseleave="thumbUpperHover = false"
 							@input.debounce.100ms={ inputEvent }
 							:style="'clip-path: inset(0 0 0 ' + thumbMidPercent + '%)'"
-							if componentSettings.ThumbUpperValueBubbleEnabled {
+							if componentSettings.ThumbUpper.ValueBubbleEnabled {
 								:class={ "thumbUpperHover && '!h-" + rangeInputHoverHeightStr + "'" }
 							}
 						/>
 					}
 					<!-- TrackFill -->
 					{{ trackFillColor := "bg-neutral-50/30" }}
-					if componentSettings.TrackFillColor != "" {
-						{{ trackFillColor = "bg-" + componentSettings.TrackFillColor }}
+					if componentSettings.Track.FillColor != "" {
+						{{ trackFillColor = "bg-" + componentSettings.Track.FillColor }}
 					}
-					if componentSettings.TrackFillColorFrom != "" || componentSettings.TrackFillColorVia != "" || componentSettings.TrackFillColorTo != "" {
+					if componentSettings.Track.FillColorFrom != "" || componentSettings.Track.FillColorVia != "" || componentSettings.Track.FillColorTo != "" {
 						{{ trackFillColor = "bg-gradient-to-r" }}
-						if componentSettings.TrackFillColorFrom != "" {
-							{{ trackFillColor += " from-" + componentSettings.TrackFillColorFrom }}
+						if componentSettings.Track.FillColorFrom != "" {
+							{{ trackFillColor += " from-" + componentSettings.Track.FillColorFrom }}
 						}
-						if componentSettings.TrackFillColorVia != "" {
-							{{ trackFillColor += " via-" + componentSettings.TrackFillColorVia }}
+						if componentSettings.Track.FillColorVia != "" {
+							{{ trackFillColor += " via-" + componentSettings.Track.FillColorVia }}
 						}
-						if componentSettings.TrackFillColorTo != "" {
-							{{ trackFillColor += " to-" + componentSettings.TrackFillColorTo }}
+						if componentSettings.Track.FillColorTo != "" {
+							{{ trackFillColor += " to-" + componentSettings.Track.FillColorTo }}
 						}
 					}
 					{{ trackFillClass := "absolute inset-0 h-full rounded-full " + trackFillColor }}
@@ -683,7 +611,7 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 					}
 					<div class={ trackFillClass } x-bind:style={ trackFillStyle }></div>
 					<!-- TrackTicks -->
-					if componentSettings.TrackTicksEnabled {
+					if componentSettings.Track.TicksEnabled {
 						<div aria-hidden="true" class="absolute inset-0">
 							<template x-for="percent in trackTickPercents" :key="percent">
 								<span
@@ -694,22 +622,22 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 						</div>
 					}
 					<!-- TrackTooltip -->
-					if componentSettings.TrackTooltipEnabled {
+					if componentSettings.Track.TooltipEnabled {
 						{{ trackTooltipPositionClasses := "bottom-full mb-3" }}
-						if componentSettings.TrackTooltipPosition == RangeSliderTrackTooltipPositionBottom {
+						if componentSettings.Track.TooltipPosition == RangeSliderTrackTooltipPositionBottom {
 							{{ trackTooltipPositionClasses = "top-full mt-3" }}
 						}
 						{{ trackTooltipBackgroundColor := "bg-neutral-800" }}
-						if componentSettings.TrackTooltipBackgroundColor != "" {
-							{{ trackTooltipBackgroundColor = "bg-" + componentSettings.TrackTooltipBackgroundColor }}
+						if componentSettings.Track.TooltipBackgroundColor != "" {
+							{{ trackTooltipBackgroundColor = "bg-" + componentSettings.Track.TooltipBackgroundColor }}
 						}
 						{{ trackTooltipTextColor := "text-neutral-50" }}
-						if componentSettings.TrackTooltipTextColor != "" {
-							{{ trackTooltipTextColor = "text-" + componentSettings.TrackTooltipTextColor }}
+						if componentSettings.Track.TooltipTextColor != "" {
+							{{ trackTooltipTextColor = "text-" + componentSettings.Track.TooltipTextColor }}
 						}
 						{{ trackTooltipRingClasses := "" }}
-						if componentSettings.TrackTooltipRingColor != "" {
-							{{ trackTooltipRingClasses = uiToolset.CompactRingClassResolver(componentSettings.TrackTooltipRingColor, componentSettings.TrackTooltipRingThickness) }}
+						if componentSettings.Track.TooltipRingColor != "" {
+							{{ trackTooltipRingClasses = uiToolset.CompactRingClassResolver(componentSettings.Track.TooltipRingColor, componentSettings.Track.TooltipRingThickness) }}
 						}
 						<div
 							data-ui-range-slider-track-tooltip
@@ -722,25 +650,25 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 							aria-hidden="true"
 						></div>
 					}
-					@Thumb(componentSettings, false)
+					@Thumb(componentSettings, componentSettings.Thumb, false)
 					if componentSettings.ThumbDualValueModeEnabled {
 						<!-- ThumbUpper -->
-						@Thumb(componentSettings, true)
+						@Thumb(componentSettings, componentSettings.ThumbUpper, true)
 					}
 				</div>
 			</div>
 			<!-- TrackEndValue -->
-			if componentSettings.TrackEndValueLabelEnabled || componentSettings.TrackEndValueLabelIcon != "" {
+			if componentSettings.Track.EndValueLabelEnabled || componentSettings.Track.EndValueLabelIcon != "" {
 				{{ endLabelPosition := "" }}
-				switch componentSettings.TrackEndValueLabelPosition {
+				switch componentSettings.Track.EndValueLabelPosition {
 					case RangeSliderTrackValueLabelPositionTop:
 						{{ endLabelPosition = "absolute right-0 bottom-full mb-1" }}
 					case RangeSliderTrackValueLabelPositionBottom:
 						{{ endLabelPosition = "absolute right-0 top-full mt-1" }}
 				}
 				{{ endLabelTextColor := "text-neutral-400" }}
-				if componentSettings.TrackEndValueLabelTextColor != "" {
-					{{ endLabelTextColor = "text-" + componentSettings.TrackEndValueLabelTextColor }}
+				if componentSettings.Track.EndValueLabelTextColor != "" {
+					{{ endLabelTextColor = "text-" + componentSettings.Track.EndValueLabelTextColor }}
 				}
 				{{ endLabelIconSize := "text-lg" }}
 				switch componentSettings.Size {
@@ -756,10 +684,10 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 						{{ endLabelIconSize = "text-2xl" }}
 				}
 				<div class={ endLabelPosition + " flex items-center text-xs gap-1 " + endLabelTextColor }>
-					if componentSettings.TrackEndValueLabelIcon != "" {
-						<i class={ "ph-bold " + componentSettings.TrackEndValueLabelIcon + " " + endLabelIconSize }></i>
+					if componentSettings.Track.EndValueLabelIcon != "" {
+						<i class={ "ph-bold " + componentSettings.Track.EndValueLabelIcon + " " + endLabelIconSize }></i>
 					}
-					if componentSettings.TrackEndValueLabelEnabled {
+					if componentSettings.Track.EndValueLabelEnabled {
 						<span x-text="trackEndValue"></span>
 					}
 				</div>

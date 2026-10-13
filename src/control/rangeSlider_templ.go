@@ -42,75 +42,71 @@ const (
 	RangeSliderTrackTooltipPositionBottom string = "bottom"
 )
 
+type RangeSliderThumbSettings struct {
+	// OptionalFields
+	AriaLabel                  string
+	BackgroundColor            string
+	Label                      string
+	LabelIcon                  string
+	LabelOneWayStatePath       string
+	Shape                      string
+	TextColor                  string
+	ValueBubbleBackgroundColor string
+	ValueBubbleDisplayMode     string
+	ValueBubbleEnabled         bool
+	ValueBubblePosition        string
+	ValueBubbleRingColor       string
+	ValueBubbleRingThickness   string
+	ValueBubbleShape           string
+	ValueBubbleSize            string
+	ValueBubbleTextColor       string
+}
+
+type RangeSliderTrackSettings struct {
+	// OptionalFields
+	BackgroundColor          string
+	BackgroundColorFrom      string
+	BackgroundColorTo        string
+	BackgroundColorVia       string
+	EndValueLabelEnabled     bool
+	EndValueLabelIcon        string
+	EndValueLabelPosition    string
+	EndValueLabelTextColor   string
+	FillColor                string
+	FillColorFrom            string
+	FillColorTo              string
+	FillColorVia             string
+	StartValueLabelEnabled   bool
+	StartValueLabelIcon      string
+	StartValueLabelPosition  string
+	StartValueLabelTextColor string
+	TickStep                 string
+	TicksEnabled             bool
+	TooltipBackgroundColor   string
+	TooltipEnabled           bool
+	TooltipPosition          string
+	TooltipRingColor         string
+	TooltipRingThickness     string
+	TooltipTextColor         string
+}
+
 type RangeSliderSettings struct {
 	// OptionalFields
-	Size                                 string
-	ThumbLabel                           string
-	ThumbLabelOneWayStatePath            string
-	ThumbLabelIcon                       string
-	ThumbAriaLabel                       string
-	ThumbBackgroundColor                 string
-	ThumbTextColor                       string
-	ThumbShape                           string
-	ThumbValue                           string
-	ThumbValueTwoWayStatePath            string
-	ThumbValueBubbleEnabled              bool
-	ThumbValueBubbleDisplayMode          string
-	ThumbValueBubbleBackgroundColor      string
-	ThumbValueBubbleTextColor            string
-	ThumbValueBubbleRingColor            string
-	ThumbValueBubbleRingThickness        string
-	ThumbValueBubbleSize                 string
-	ThumbValueBubbleShape                string
-	ThumbValueBubblePosition             string
-	ThumbDualValueModeEnabled            bool
-	ThumbUpperValue                      string
-	ThumbUpperValueTwoWayStatePath       string
-	ThumbUpperBackgroundColor            string
-	ThumbUpperTextColor                  string
-	ThumbUpperLabel                      string
-	ThumbUpperLabelOneWayStatePath       string
-	ThumbUpperLabelIcon                  string
-	ThumbUpperAriaLabel                  string
-	ThumbUpperValueBubbleEnabled         bool
-	ThumbUpperValueBubbleDisplayMode     string
-	ThumbUpperValueBubbleBackgroundColor string
-	ThumbUpperValueBubbleTextColor       string
-	ThumbUpperValueBubbleRingColor       string
-	ThumbUpperValueBubbleRingThickness   string
-	ThumbUpperValueBubbleSize            string
-	ThumbUpperValueBubbleShape           string
-	ThumbUpperValueBubblePosition        string
-	TrackBackgroundColor                 string
-	TrackBackgroundColorFrom             string
-	TrackBackgroundColorVia              string
-	TrackBackgroundColorTo               string
-	TrackSteps                           string
-	TrackTicksEnabled                    bool
-	TrackTickStep                        string
-	TrackTooltipEnabled                  bool
-	TrackTooltipPosition                 string
-	TrackTooltipBackgroundColor          string
-	TrackTooltipTextColor                string
-	TrackTooltipRingColor                string
-	TrackTooltipRingThickness            string
-	TrackFillColor                       string
-	TrackFillColorFrom                   string
-	TrackFillColorVia                    string
-	TrackFillColorTo                     string
-	TrackStartValue                      string
-	TrackStartValueOneWayStatePath       string
-	TrackStartValueLabelEnabled          bool
-	TrackStartValueLabelTextColor        string
-	TrackStartValueLabelPosition         string
-	TrackStartValueLabelIcon             string
-	TrackEndValue                        string
-	TrackEndValueOneWayStatePath         string
-	TrackEndValueLabelEnabled            bool
-	TrackEndValueLabelTextColor          string
-	TrackEndValueLabelPosition           string
-	TrackEndValueLabelIcon               string
-	ShouldNormalizeInitialState          bool
+	ShouldNormalizeInitialState    bool
+	Size                           string
+	Thumb                          RangeSliderThumbSettings
+	ThumbDualValueModeEnabled      bool
+	ThumbUpper                     RangeSliderThumbSettings
+	ThumbUpperValue                string
+	ThumbUpperValueTwoWayStatePath string
+	ThumbValue                     string
+	ThumbValueTwoWayStatePath      string
+	Track                          RangeSliderTrackSettings
+	TrackEndValue                  string
+	TrackEndValueOneWayStatePath   string
+	TrackStartValue                string
+	TrackStartValueOneWayStatePath string
+	TrackSteps                     string
 }
 
 func resolveRangeSliderThumbSizeUnit(componentSettings RangeSliderSettings) string {
@@ -127,7 +123,7 @@ func resolveRangeSliderThumbSizeUnit(componentSettings RangeSliderSettings) stri
 	return "4.5"
 }
 
-func Thumb(componentSettings RangeSliderSettings, isUpper bool) templ.Component {
+func Thumb(componentSettings RangeSliderSettings, thumbSettings RangeSliderThumbSettings, isUpper bool) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -167,8 +163,8 @@ func Thumb(componentSettings RangeSliderSettings, isUpper bool) templ.Component 
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		thumbShape := uiToolset.ShapeClassResolver(componentSettings.ThumbShape, "rounded-full")
-		if componentSettings.ThumbShape == RangeSliderThumbShapePipe {
+		thumbShape := uiToolset.ShapeClassResolver(thumbSettings.Shape, "rounded-full")
+		if thumbSettings.Shape == RangeSliderThumbShapePipe {
 			thumbShape = "rounded-none"
 			switch componentSettings.Size {
 			case RangeSliderSizeXs:
@@ -187,72 +183,19 @@ func Thumb(componentSettings RangeSliderSettings, isUpper bool) templ.Component 
 		}
 		thumbBackgroundColor := "bg-neutral-50"
 		thumbTextColor := "text-neutral-800"
-		thumbIcon := componentSettings.ThumbLabelIcon
-		thumbLabel := componentSettings.ThumbLabel
-		thumbLabelPath := componentSettings.ThumbLabelOneWayStatePath
-		thumbValueBubbleEnabled := componentSettings.ThumbValueBubbleEnabled
-		if isUpper {
-			if componentSettings.ThumbUpperBackgroundColor != "" {
-				thumbBackgroundColor = "bg-" + componentSettings.ThumbUpperBackgroundColor
-			} else if componentSettings.ThumbBackgroundColor != "" {
-				thumbBackgroundColor = "bg-" + componentSettings.ThumbBackgroundColor
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " ")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			if componentSettings.ThumbUpperTextColor != "" {
-				thumbTextColor = "text-" + componentSettings.ThumbUpperTextColor
-			} else if componentSettings.ThumbTextColor != "" {
-				thumbTextColor = "text-" + componentSettings.ThumbTextColor
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, " ")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			if componentSettings.ThumbUpperLabelIcon != "" {
-				thumbIcon = componentSettings.ThumbUpperLabelIcon
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, " ")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			if componentSettings.ThumbUpperLabel != "" {
-				thumbLabel = componentSettings.ThumbUpperLabel
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, " ")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			if componentSettings.ThumbUpperLabelOneWayStatePath != "" {
-				thumbLabelPath = componentSettings.ThumbUpperLabelOneWayStatePath
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, " ")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			thumbValueBubbleEnabled = componentSettings.ThumbUpperValueBubbleEnabled
-		} else {
-			if componentSettings.ThumbBackgroundColor != "" {
-				thumbBackgroundColor = "bg-" + componentSettings.ThumbBackgroundColor
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, " ")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			if componentSettings.ThumbTextColor != "" {
-				thumbTextColor = "text-" + componentSettings.ThumbTextColor
-			}
+		if thumbSettings.BackgroundColor != "" {
+			thumbBackgroundColor = "bg-" + thumbSettings.BackgroundColor
+		}
+		if thumbSettings.TextColor != "" {
+			thumbTextColor = "text-" + thumbSettings.TextColor
 		}
 		percentValue := "thumbValuePercent"
 		bubbleValue := "thumbValue"
-		if isUpper {
-			percentValue = "thumbUpperValuePercent"
-			bubbleValue = "thumbUpperValue"
-		}
 		hoverState := "thumbHover"
 		focusState := "thumbFocused"
 		if isUpper {
+			percentValue = "thumbUpperValuePercent"
+			bubbleValue = "thumbUpperValue"
 			hoverState = "thumbUpperHover"
 			focusState = "thumbUpperFocused"
 		}
@@ -261,7 +204,7 @@ func Thumb(componentSettings RangeSliderSettings, isUpper bool) templ.Component 
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -274,64 +217,64 @@ func Thumb(componentSettings RangeSliderSettings, isUpper bool) templ.Component 
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" :style=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" :style=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue("'left: calc(' + " + percentValue + " + '%); transform: translateX(-50%) scale(' + (" + hoverState + " || " + focusState + " ? 1.1 : 1) + ');'")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 206, Col: 154}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 173, Col: 154}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" :class=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" :class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.ResolveAttributeValue("{" + "'!z-30': " + hoverState + " || " + focusState + ", 'ring-2 ring-secondary-500/50': " + focusState + "}")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 207, Col: 121}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 174, Col: 121}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" @mouseenter=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" @mouseenter=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.ResolveAttributeValue(hoverState + " = true")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 208, Col: 38}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 175, Col: 38}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" @mouseleave=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" @mouseleave=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.ResolveAttributeValue(hoverState + " = false")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 209, Col: 39}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 176, Col: 39}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if thumbIcon != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<!-- ThumbLabelIcon --> ")
+		if thumbSettings.LabelIcon != "" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<!-- ThumbLabelIcon --> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -348,16 +291,16 @@ func Thumb(componentSettings RangeSliderSettings, isUpper bool) templ.Component 
 			case RangeSliderSizeXl:
 				thumbIconSize = "text-lg"
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var8 = []any{"ph-bold " + thumbIcon + " flex h-full w-full items-center justify-center " + thumbIconSize}
+			var templ_7745c5c3_Var8 = []any{"ph-bold " + thumbSettings.LabelIcon + " flex h-full w-full items-center justify-center " + thumbIconSize}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var8...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<i class=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<i class=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -370,13 +313,13 @@ func Thumb(componentSettings RangeSliderSettings, isUpper bool) templ.Component 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\"></i> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\"></i> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		if thumbLabel != "" || thumbLabelPath != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<!-- ThumbLabel --> ")
+		if thumbSettings.Label != "" || thumbSettings.LabelOneWayStatePath != "" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<!-- ThumbLabel --> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -393,7 +336,7 @@ func Thumb(componentSettings RangeSliderSettings, isUpper bool) templ.Component 
 			case RangeSliderSizeXl:
 				thumbLabelSize = "text-lg"
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -402,7 +345,7 @@ func Thumb(componentSettings RangeSliderSettings, isUpper bool) templ.Component 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<span class=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<span class=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -415,52 +358,52 @@ func Thumb(componentSettings RangeSliderSettings, isUpper bool) templ.Component 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if thumbLabelPath != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, " x-text=\"")
+			if thumbSettings.LabelOneWayStatePath != "" {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, " x-text=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var12 string
-				templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.ResolveAttributeValue(thumbLabelPath)
+				templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.ResolveAttributeValue(thumbSettings.LabelOneWayStatePath)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 246, Col: 28}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 213, Col: 48}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var12)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, ">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, ">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var13 string
-			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(thumbLabel)
+			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(thumbSettings.Label)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 249, Col: 16}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 216, Col: 25}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<!-- ThumbValueBubble -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<!-- ThumbValueBubble -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if thumbValueBubbleEnabled {
+		if thumbSettings.ValueBubbleEnabled {
 			bubblePositionOffset := "7.5"
 			switch componentSettings.Size {
 			case RangeSliderSizeXs:
@@ -474,19 +417,11 @@ func Thumb(componentSettings RangeSliderSettings, isUpper bool) templ.Component 
 			case RangeSliderSizeXl:
 				bubblePositionOffset = "9.5"
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			customBubbleSize := componentSettings.ThumbValueBubbleSize
-			if isUpper && componentSettings.ThumbUpperValueBubbleSize != "" {
-				customBubbleSize = componentSettings.ThumbUpperValueBubbleSize
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, " ")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			switch customBubbleSize {
+			switch thumbSettings.ValueBubbleSize {
 			case RangeSliderThumbValueBubbleSizeXs:
 				bubblePositionOffset = "5.5"
 			case RangeSliderThumbValueBubbleSizeSm:
@@ -498,37 +433,20 @@ func Thumb(componentSettings RangeSliderSettings, isUpper bool) templ.Component 
 			case RangeSliderThumbValueBubbleSizeXl:
 				bubblePositionOffset = "9.5"
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			bubblePosition := "-top-" + bubblePositionOffset
-			if componentSettings.ThumbValueBubblePosition == RangeSliderThumbValueBubblePositionBottom {
+			if thumbSettings.ValueBubblePosition == RangeSliderThumbValueBubblePositionBottom {
 				bubblePosition = "-bottom-" + bubblePositionOffset
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, " ")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			if isUpper && componentSettings.ThumbUpperValueBubblePosition != "" {
-				bubblePosition = "-top-" + bubblePositionOffset
-				if componentSettings.ThumbUpperValueBubblePosition == RangeSliderThumbValueBubblePositionBottom {
-					bubblePosition = "-bottom-" + bubblePositionOffset
-				}
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			bubbleSize := "min-w-8 p-1 text-base"
-			if isUpper && componentSettings.ThumbUpperValueBubbleSize != "" {
-				customBubbleSize = componentSettings.ThumbUpperValueBubbleSize
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, " ")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			switch customBubbleSize {
+			switch thumbSettings.ValueBubbleSize {
 			case RangeSliderThumbValueBubbleSizeXs:
 				bubbleSize = "min-w-6 p-0.5 text-xs"
 			case RangeSliderThumbValueBubbleSizeSm:
@@ -540,80 +458,34 @@ func Thumb(componentSettings RangeSliderSettings, isUpper bool) templ.Component 
 			case RangeSliderThumbValueBubbleSizeXl:
 				bubbleSize = "min-w-12 p-2 text-xl"
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			customBubbleShape := componentSettings.ThumbValueBubbleShape
-			if isUpper && componentSettings.ThumbUpperValueBubbleShape != "" {
-				customBubbleShape = componentSettings.ThumbUpperValueBubbleShape
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, " ")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			bubbleShape := uiToolset.ShapeClassResolver(customBubbleShape, "rounded-full")
+			bubbleShape := uiToolset.ShapeClassResolver(thumbSettings.ValueBubbleShape, "rounded-full")
 			bubbleBackgroundColor := "bg-neutral-800"
-			if componentSettings.ThumbValueBubbleBackgroundColor != "" {
-				bubbleBackgroundColor = "bg-" + componentSettings.ThumbValueBubbleBackgroundColor
+			if thumbSettings.ValueBubbleBackgroundColor != "" {
+				bubbleBackgroundColor = "bg-" + thumbSettings.ValueBubbleBackgroundColor
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, " ")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			if isUpper && componentSettings.ThumbUpperValueBubbleBackgroundColor != "" {
-				bubbleBackgroundColor = "bg-" + componentSettings.ThumbUpperValueBubbleBackgroundColor
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			bubbleTextColor := "text-neutral-50"
-			if componentSettings.ThumbValueBubbleTextColor != "" {
-				bubbleTextColor = "text-" + componentSettings.ThumbValueBubbleTextColor
+			if thumbSettings.ValueBubbleTextColor != "" {
+				bubbleTextColor = "text-" + thumbSettings.ValueBubbleTextColor
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if isUpper && componentSettings.ThumbUpperValueBubbleTextColor != "" {
-				bubbleTextColor = "text-" + componentSettings.ThumbUpperValueBubbleTextColor
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, " ")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			bubbleRingColor := componentSettings.ThumbValueBubbleRingColor
-			if isUpper && componentSettings.ThumbUpperValueBubbleRingColor != "" {
-				bubbleRingColor = componentSettings.ThumbUpperValueBubbleRingColor
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, " ")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			bubbleRingThickness := componentSettings.ThumbValueBubbleRingThickness
-			if isUpper && componentSettings.ThumbUpperValueBubbleRingThickness != "" {
-				bubbleRingThickness = componentSettings.ThumbUpperValueBubbleRingThickness
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, " ")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			bubbleRingClasses := uiToolset.CompactRingClassResolver(bubbleRingColor, bubbleRingThickness)
-			bubbleDisplayMode := componentSettings.ThumbValueBubbleDisplayMode
-			if isUpper && componentSettings.ThumbUpperValueBubbleDisplayMode != "" {
-				bubbleDisplayMode = componentSettings.ThumbUpperValueBubbleDisplayMode
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, " ")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
+			bubbleRingClasses := uiToolset.CompactRingClassResolver(thumbSettings.ValueBubbleRingColor, thumbSettings.ValueBubbleRingThickness)
 			var templ_7745c5c3_Var14 = []any{"absolute " + bubblePosition + " select-none flex items-center justify-center " + bubbleSize + " " + bubbleShape + " " + bubbleBackgroundColor + " " + bubbleTextColor + " " + bubbleRingClasses}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var14...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "<div data-ui-range-slider-thumb-bubble class=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "<div data-ui-range-slider-thumb-bubble class=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -626,74 +498,74 @@ func Thumb(componentSettings RangeSliderSettings, isUpper bool) templ.Component 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if bubbleDisplayMode == RangeSliderThumbValueBubbleDisplayModeHover {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, " x-show=\"")
+			if thumbSettings.ValueBubbleDisplayMode == RangeSliderThumbValueBubbleDisplayModeHover {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, " x-show=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var16 string
 				templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.ResolveAttributeValue(hoverState + " || " + focusState)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 345, Col: 46}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 277, Col: 46}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var16)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "\" style=\"display: none\" x-transition.opacity.duration.150ms")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "\" style=\"display: none\" x-transition.opacity.duration.150ms")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, " x-text=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, " x-text=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var17 string
 			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.ResolveAttributeValue(bubbleValue)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 349, Col: 24}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 281, Col: 24}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var17)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "\" @mouseenter=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "\" @mouseenter=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var18 string
 			templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.ResolveAttributeValue(hoverState + " = true")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 350, Col: 40}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 282, Col: 40}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var18)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "\" @mouseleave=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\" @mouseleave=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var19 string
 			templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.ResolveAttributeValue(hoverState + " = false")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 351, Col: 41}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 283, Col: 41}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var19)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "\"></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "\"></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "</div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -701,24 +573,20 @@ func Thumb(componentSettings RangeSliderSettings, isUpper bool) templ.Component 
 	})
 }
 
-func resolveRangeSliderThumbAriaLabel(componentSettings RangeSliderSettings, isUpper bool) string {
+func resolveRangeSliderThumbAriaLabel(
+	componentSettings RangeSliderSettings, thumbSettings RangeSliderThumbSettings, isUpper bool,
+) string {
+	if thumbSettings.AriaLabel != "" {
+		return thumbSettings.AriaLabel
+	}
+	if thumbSettings.Label != "" {
+		if isUpper {
+			return "Upper " + thumbSettings.Label
+		}
+		return thumbSettings.Label
+	}
 	if isUpper {
-		if componentSettings.ThumbUpperAriaLabel != "" {
-			return componentSettings.ThumbUpperAriaLabel
-		}
-		if componentSettings.ThumbUpperLabel != "" {
-			return componentSettings.ThumbUpperLabel
-		}
-		if componentSettings.ThumbLabel != "" {
-			return "Upper " + componentSettings.ThumbLabel
-		}
 		return "Upper value"
-	}
-	if componentSettings.ThumbAriaLabel != "" {
-		return componentSettings.ThumbAriaLabel
-	}
-	if componentSettings.ThumbLabel != "" {
-		return componentSettings.ThumbLabel
 	}
 	if componentSettings.ThumbDualValueModeEnabled {
 		return "Lower value"
@@ -805,7 +673,7 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 			templ_7745c5c3_Var20 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "<!-- RangeSlider -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "<!-- RangeSlider -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -842,17 +710,17 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 			trackSteps = componentSettings.TrackSteps
 		}
 		trackTickStep := trackSteps
-		if componentSettings.TrackTickStep != "" {
-			trackTickStep = componentSettings.TrackTickStep
+		if componentSettings.Track.TickStep != "" {
+			trackTickStep = componentSettings.Track.TickStep
 		}
 		alpineData := "{thumbValue: " + thumbValue + ", trackStartValue: " + trackStartValue + ", trackEndValue: " + trackEndValue + ", trackSteps: " + trackSteps + ", thumbHover: false, thumbFocused: false, clampPercent(percent) { return Math.min(Math.max(percent, 0), 100); }, get thumbValuePercent() { return this.clampPercent((this.thumbValue - this.trackStartValue) / (this.trackEndValue - this.trackStartValue) * 100); }"
 		if componentSettings.ThumbDualValueModeEnabled {
 			alpineData += ", thumbUpperValue: " + thumbUpperValue + ", thumbUpperHover: false, thumbUpperFocused: false, get thumbUpperValuePercent() { return this.clampPercent((this.thumbUpperValue - this.trackStartValue) / (this.trackEndValue - this.trackStartValue) * 100); }, get thumbMidPercent() { return (this.thumbValuePercent + this.thumbUpperValuePercent) / 2; }"
 		}
-		if componentSettings.TrackTicksEnabled {
+		if componentSettings.Track.TicksEnabled {
 			alpineData += ", trackTickStep: " + trackTickStep + ", get trackTickPercents() { const step = Number(this.trackTickStep); const start = Number(this.trackStartValue); const end = Number(this.trackEndValue); if (!(step > 0) || !(end > start)) return []; const tickCount = Math.floor((end - start) / step); if (!(tickCount > 0) || tickCount > 200) return []; const percents = []; for (let index = 0; index <= tickCount; index++) { percents.push(this.clampPercent((index * step) / (end - start) * 100)); } return percents; }"
 		}
-		if componentSettings.TrackTooltipEnabled {
+		if componentSettings.Track.TooltipEnabled {
 			alpineData += ", trackTooltipVisible: false, trackTooltipPercent: 0, trackTooltipValue: 0, resolveTrackTooltipDecimalPlaces(valueText) { const exponentIndex = valueText.search(/[eE]/); const exponent = exponentIndex === -1 ? 0 : Number(valueText.slice(exponentIndex + 1)); const mantissaText = exponentIndex === -1 ? valueText : valueText.slice(0, exponentIndex); const dotIndex = mantissaText.indexOf('.'); const mantissaDecimalPlaces = dotIndex === -1 ? 0 : mantissaText.length - dotIndex - 1; return Math.max(mantissaDecimalPlaces - exponent, 0); }, showTrackTooltip(event) { const trackRect = event.currentTarget.getBoundingClientRect(); const hoverPercent = this.clampPercent((event.clientX - trackRect.left) / trackRect.width * 100); const startValue = Number(this.trackStartValue); const endValue = Number(this.trackEndValue); const stepSize = Number(this.trackSteps) > 0 ? Number(this.trackSteps) : 1; const rawValue = startValue + hoverPercent / 100 * (endValue - startValue); const stepIndexTolerance = 1e-9; const maximumStepIndex = Math.floor((endValue - startValue) / stepSize + stepIndexTolerance); const stepIndex = Math.min(Math.max(Math.round((rawValue - startValue) / stepSize), 0), maximumStepIndex); const steppedValue = startValue + stepIndex * stepSize; const valuePrecision = Math.max(this.resolveTrackTooltipDecimalPlaces(String(this.trackStartValue)), this.resolveTrackTooltipDecimalPlaces(String(this.trackSteps))); const clampedValue = Math.min(Math.max(steppedValue, startValue), endValue); const roundedValue = Number(clampedValue.toFixed(valuePrecision)); this.trackTooltipPercent = hoverPercent; this.trackTooltipValue = Math.min(Math.max(roundedValue, startValue), endValue); this.trackTooltipVisible = true; }"
 		}
 		alpineData += "}"
@@ -870,7 +738,7 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 		case RangeSliderSizeXl:
 			mainDivMinHeight = 8
 		}
-		if componentSettings.ThumbValueBubbleEnabled {
+		if componentSettings.Thumb.ValueBubbleEnabled || componentSettings.ThumbUpper.ValueBubbleEnabled {
 			mainDivMinHeight = mainDivMinHeight * 3
 		}
 		var templ_7745c5c3_Var21 = []any{"flex w-full flex-col items-center justify-center" + " min-h-" + strconv.Itoa(mainDivMinHeight)}
@@ -878,7 +746,7 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "<div class=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "<div class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -891,33 +759,33 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "\" x-data=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "\" x-data=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var23 string
 		templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.ResolveAttributeValue(alpineData)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 508, Col: 21}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 436, Col: 21}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var23)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "\" x-init=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "\" x-init=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var24 string
 		templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.ResolveAttributeValue(alpineWatch)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 509, Col: 22}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 437, Col: 22}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var24)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "\"><div class=\"relative flex w-full flex-row items-center gap-2\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "\"><div class=\"relative flex w-full flex-row items-center gap-2\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -934,27 +802,27 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 		case RangeSliderSizeXl:
 			trackHeight = "h-2"
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "<!-- TrackStartValue -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "<!-- TrackStartValue -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if componentSettings.TrackStartValueLabelEnabled || componentSettings.TrackStartValueLabelIcon != "" {
+		if componentSettings.Track.StartValueLabelEnabled || componentSettings.Track.StartValueLabelIcon != "" {
 			startLabelPosition := ""
-			switch componentSettings.TrackStartValueLabelPosition {
+			switch componentSettings.Track.StartValueLabelPosition {
 			case RangeSliderTrackValueLabelPositionTop:
 				startLabelPosition = "absolute left-0 bottom-full mb-1"
 			case RangeSliderTrackValueLabelPositionBottom:
 				startLabelPosition = "absolute left-0 top-full mt-1"
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 57, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			startLabelTextColor := "text-neutral-400"
-			if componentSettings.TrackStartValueLabelTextColor != "" {
-				startLabelTextColor = "text-" + componentSettings.TrackStartValueLabelTextColor
+			if componentSettings.Track.StartValueLabelTextColor != "" {
+				startLabelTextColor = "text-" + componentSettings.Track.StartValueLabelTextColor
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -963,7 +831,7 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, "<div class=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "<div class=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -976,7 +844,7 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -993,13 +861,13 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 			case RangeSliderSizeXl:
 				startLabelIconSize = "text-2xl"
 			}
-			if componentSettings.TrackStartValueLabelIcon != "" {
-				var templ_7745c5c3_Var27 = []any{"ph-bold " + componentSettings.TrackStartValueLabelIcon + " " + startLabelIconSize}
+			if componentSettings.Track.StartValueLabelIcon != "" {
+				var templ_7745c5c3_Var27 = []any{"ph-bold " + componentSettings.Track.StartValueLabelIcon + " " + startLabelIconSize}
 				templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var27...)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, "<i class=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "<i class=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -1012,48 +880,48 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 62, "\"></i> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "\"></i> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			if componentSettings.TrackStartValueLabelEnabled {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, "<span x-text=\"trackStartValue\"></span>")
+			if componentSettings.Track.StartValueLabelEnabled {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "<span x-text=\"trackStartValue\"></span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, "</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 65, "<!-- Track&Thumb --><div class=\"relative flex w-full flex-row gap-2\"><!-- Track -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "<!-- Track&Thumb --><div class=\"relative flex w-full flex-row gap-2\"><!-- Track -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		trackBackgroundColor := "bg-neutral-50/5"
-		if componentSettings.TrackBackgroundColor != "" {
-			trackBackgroundColor = "bg-" + componentSettings.TrackBackgroundColor
+		if componentSettings.Track.BackgroundColor != "" {
+			trackBackgroundColor = "bg-" + componentSettings.Track.BackgroundColor
 		}
-		if componentSettings.TrackBackgroundColorFrom != "" || componentSettings.TrackBackgroundColorVia != "" || componentSettings.TrackBackgroundColorTo != "" {
+		if componentSettings.Track.BackgroundColorFrom != "" || componentSettings.Track.BackgroundColorVia != "" || componentSettings.Track.BackgroundColorTo != "" {
 			trackBackgroundColor = "bg-gradient-to-r"
-			if componentSettings.TrackBackgroundColorFrom != "" {
-				trackBackgroundColor = trackBackgroundColor + " from-" + componentSettings.TrackBackgroundColorFrom
+			if componentSettings.Track.BackgroundColorFrom != "" {
+				trackBackgroundColor = trackBackgroundColor + " from-" + componentSettings.Track.BackgroundColorFrom
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 66, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if componentSettings.TrackBackgroundColorVia != "" {
-				trackBackgroundColor = trackBackgroundColor + " via-" + componentSettings.TrackBackgroundColorVia
+			if componentSettings.Track.BackgroundColorVia != "" {
+				trackBackgroundColor = trackBackgroundColor + " via-" + componentSettings.Track.BackgroundColorVia
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 67, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if componentSettings.TrackBackgroundColorTo != "" {
-				trackBackgroundColor = trackBackgroundColor + " to-" + componentSettings.TrackBackgroundColorTo
+			if componentSettings.Track.BackgroundColorTo != "" {
+				trackBackgroundColor = trackBackgroundColor + " to-" + componentSettings.Track.BackgroundColorTo
 			}
 		}
 		var templ_7745c5c3_Var29 = []any{trackBackgroundColor + " flex items-center relative rounded-full w-full " + trackHeight}
@@ -1061,7 +929,7 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 68, "<div class=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "<div class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1074,17 +942,17 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 69, "\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if componentSettings.TrackTooltipEnabled {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 70, " @mousemove=\"showTrackTooltip($event)\" @mouseleave=\"trackTooltipVisible = false\"")
+		if componentSettings.Track.TooltipEnabled {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, " @mousemove=\"showTrackTooltip($event)\" @mouseleave=\"trackTooltipVisible = false\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 71, "><!-- RangeInputs -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "><!-- RangeInputs -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1102,7 +970,7 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 		case RangeSliderSizeXl:
 			rangeInputHoverHeight = 11
 		}
-		if componentSettings.ThumbValueBubbleEnabled {
+		if componentSettings.Thumb.ValueBubbleEnabled || componentSettings.ThumbUpper.ValueBubbleEnabled {
 			rangeInputHoverHeight = rangeInputHoverHeight * 2
 		}
 		rangeInputHoverHeightStr := strconv.Itoa(rangeInputHoverHeight)
@@ -1122,7 +990,7 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 72, "<input type=\"range\" class=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 57, "<input type=\"range\" class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1135,67 +1003,67 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 73, "\" aria-label=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, "\" aria-label=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var33 string
-		templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.ResolveAttributeValue(resolveRangeSliderThumbAriaLabel(componentSettings, false))
+		templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.ResolveAttributeValue(resolveRangeSliderThumbAriaLabel(componentSettings, componentSettings.Thumb, false))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 619, Col: 77}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 547, Col: 102}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var33)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 74, "\" :min=\"trackStartValue\" :max=\"trackEndValue\" :step=\"trackSteps\" x-model.number:value=\"thumbValue\" @focus=\"thumbFocused = true\" @blur=\"thumbFocused = false\" @mouseenter=\"thumbHover = true\" @mouseleave=\"thumbHover = false\" @input.debounce.100ms=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, "\" :min=\"trackStartValue\" :max=\"trackEndValue\" :step=\"trackSteps\" x-model.number:value=\"thumbValue\" @focus=\"thumbFocused = true\" @blur=\"thumbFocused = false\" @mouseenter=\"thumbHover = true\" @mouseleave=\"thumbHover = false\" @input.debounce.100ms=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var34 string
 		templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.ResolveAttributeValue(inputEvent)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 628, Col: 40}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 556, Col: 40}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var34)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 75, "\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if componentSettings.ThumbValueBubbleEnabled {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 76, " :class=\"")
+		if componentSettings.Thumb.ValueBubbleEnabled {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, " :class=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var35 string
 			templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.ResolveAttributeValue("thumbHover && '!h-" + rangeInputHoverHeightStr + "'")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 630, Col: 69}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 558, Col: 69}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var35)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 77, "\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 62, "\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
 		if componentSettings.ThumbDualValueModeEnabled {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 78, " :style=\"'clip-path: inset(0 ' + (100 - thumbMidPercent) + '% 0 0)'\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, " :style=\"'clip-path: inset(0 ' + (100 - thumbMidPercent) + '% 0 0)'\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 79, "> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, "> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if componentSettings.ThumbDualValueModeEnabled {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 80, "<!-- RangeInputUpper --> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 65, "<!-- RangeInputUpper --> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1203,7 +1071,7 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 			if componentSettings.ThumbUpperValueTwoWayStatePath != "" {
 				inputEvent += componentSettings.ThumbUpperValueTwoWayStatePath + " = thumbUpperValue"
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 81, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 66, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1212,7 +1080,7 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 82, "<input type=\"range\" class=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 67, "<input type=\"range\" class=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1225,86 +1093,86 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 83, "\" aria-label=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 68, "\" aria-label=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var38 string
-			templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.ResolveAttributeValue(resolveRangeSliderThumbAriaLabel(componentSettings, true))
+			templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.ResolveAttributeValue(resolveRangeSliderThumbAriaLabel(componentSettings, componentSettings.ThumbUpper, true))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 645, Col: 77}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 573, Col: 107}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var38)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 84, "\" :min=\"trackStartValue\" :max=\"trackEndValue\" :step=\"trackSteps\" x-model.number:value=\"thumbUpperValue\" @focus=\"thumbUpperFocused = true\" @blur=\"thumbUpperFocused = false\" @mouseenter=\"thumbUpperHover = true\" @mouseleave=\"thumbUpperHover = false\" @input.debounce.100ms=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 69, "\" :min=\"trackStartValue\" :max=\"trackEndValue\" :step=\"trackSteps\" x-model.number:value=\"thumbUpperValue\" @focus=\"thumbUpperFocused = true\" @blur=\"thumbUpperFocused = false\" @mouseenter=\"thumbUpperHover = true\" @mouseleave=\"thumbUpperHover = false\" @input.debounce.100ms=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var39 string
 			templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.ResolveAttributeValue(inputEvent)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 654, Col: 41}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 582, Col: 41}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var39)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 85, "\" :style=\"'clip-path: inset(0 0 0 ' + thumbMidPercent + '%)'\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 70, "\" :style=\"'clip-path: inset(0 0 0 ' + thumbMidPercent + '%)'\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if componentSettings.ThumbUpperValueBubbleEnabled {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 86, " :class=\"")
+			if componentSettings.ThumbUpper.ValueBubbleEnabled {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 71, " :class=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var40 string
 				templ_7745c5c3_Var40, templ_7745c5c3_Err = templ.ResolveAttributeValue("thumbUpperHover && '!h-" + rangeInputHoverHeightStr + "'")
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 657, Col: 75}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 585, Col: 75}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var40)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 87, "\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 72, "\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 88, ">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 73, ">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 89, "<!-- TrackFill -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 74, "<!-- TrackFill -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		trackFillColor := "bg-neutral-50/30"
-		if componentSettings.TrackFillColor != "" {
-			trackFillColor = "bg-" + componentSettings.TrackFillColor
+		if componentSettings.Track.FillColor != "" {
+			trackFillColor = "bg-" + componentSettings.Track.FillColor
 		}
-		if componentSettings.TrackFillColorFrom != "" || componentSettings.TrackFillColorVia != "" || componentSettings.TrackFillColorTo != "" {
+		if componentSettings.Track.FillColorFrom != "" || componentSettings.Track.FillColorVia != "" || componentSettings.Track.FillColorTo != "" {
 			trackFillColor = "bg-gradient-to-r"
-			if componentSettings.TrackFillColorFrom != "" {
-				trackFillColor += " from-" + componentSettings.TrackFillColorFrom
+			if componentSettings.Track.FillColorFrom != "" {
+				trackFillColor += " from-" + componentSettings.Track.FillColorFrom
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 90, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 75, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if componentSettings.TrackFillColorVia != "" {
-				trackFillColor += " via-" + componentSettings.TrackFillColorVia
+			if componentSettings.Track.FillColorVia != "" {
+				trackFillColor += " via-" + componentSettings.Track.FillColorVia
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 91, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 76, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if componentSettings.TrackFillColorTo != "" {
-				trackFillColor += " to-" + componentSettings.TrackFillColorTo
+			if componentSettings.Track.FillColorTo != "" {
+				trackFillColor += " to-" + componentSettings.Track.FillColorTo
 			}
 		}
 		trackFillClass := "absolute inset-0 h-full rounded-full " + trackFillColor
@@ -1318,7 +1186,7 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 92, "<div class=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 77, "<div class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1331,63 +1199,63 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 93, "\" x-bind:style=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 78, "\" x-bind:style=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var43 string
 		templ_7745c5c3_Var43, templ_7745c5c3_Err = templ.ResolveAttributeValue(trackFillStyle)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 684, Col: 64}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/control/rangeSlider.templ`, Line: 612, Col: 64}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var43)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 94, "\"></div><!-- TrackTicks -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 79, "\"></div><!-- TrackTicks -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if componentSettings.TrackTicksEnabled {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 95, "<div aria-hidden=\"true\" class=\"absolute inset-0\"><template x-for=\"percent in trackTickPercents\" :key=\"percent\"><span class=\"absolute top-1/2 h-2.5 w-0.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-neutral-50/50\" :style=\"'left: ' + percent + '%'\"></span></template></div>")
+		if componentSettings.Track.TicksEnabled {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 80, "<div aria-hidden=\"true\" class=\"absolute inset-0\"><template x-for=\"percent in trackTickPercents\" :key=\"percent\"><span class=\"absolute top-1/2 h-2.5 w-0.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-neutral-50/50\" :style=\"'left: ' + percent + '%'\"></span></template></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 96, "<!-- TrackTooltip -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 81, "<!-- TrackTooltip -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if componentSettings.TrackTooltipEnabled {
+		if componentSettings.Track.TooltipEnabled {
 			trackTooltipPositionClasses := "bottom-full mb-3"
-			if componentSettings.TrackTooltipPosition == RangeSliderTrackTooltipPositionBottom {
+			if componentSettings.Track.TooltipPosition == RangeSliderTrackTooltipPositionBottom {
 				trackTooltipPositionClasses = "top-full mt-3"
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 97, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 82, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			trackTooltipBackgroundColor := "bg-neutral-800"
-			if componentSettings.TrackTooltipBackgroundColor != "" {
-				trackTooltipBackgroundColor = "bg-" + componentSettings.TrackTooltipBackgroundColor
+			if componentSettings.Track.TooltipBackgroundColor != "" {
+				trackTooltipBackgroundColor = "bg-" + componentSettings.Track.TooltipBackgroundColor
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 98, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 83, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			trackTooltipTextColor := "text-neutral-50"
-			if componentSettings.TrackTooltipTextColor != "" {
-				trackTooltipTextColor = "text-" + componentSettings.TrackTooltipTextColor
+			if componentSettings.Track.TooltipTextColor != "" {
+				trackTooltipTextColor = "text-" + componentSettings.Track.TooltipTextColor
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 99, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 84, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			trackTooltipRingClasses := ""
-			if componentSettings.TrackTooltipRingColor != "" {
-				trackTooltipRingClasses = uiToolset.CompactRingClassResolver(componentSettings.TrackTooltipRingColor, componentSettings.TrackTooltipRingThickness)
+			if componentSettings.Track.TooltipRingColor != "" {
+				trackTooltipRingClasses = uiToolset.CompactRingClassResolver(componentSettings.Track.TooltipRingColor, componentSettings.Track.TooltipRingThickness)
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 100, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 85, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1396,7 +1264,7 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 101, "<div data-ui-range-slider-track-tooltip class=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 86, "<div data-ui-range-slider-track-tooltip class=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1409,46 +1277,46 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 102, "\" x-show=\"trackTooltipVisible\" style=\"display: none\" x-transition.opacity.duration.150ms :style=\"'left: ' + trackTooltipPercent + '%'\" x-text=\"trackTooltipValue\" aria-hidden=\"true\"></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 87, "\" x-show=\"trackTooltipVisible\" style=\"display: none\" x-transition.opacity.duration.150ms :style=\"'left: ' + trackTooltipPercent + '%'\" x-text=\"trackTooltipValue\" aria-hidden=\"true\"></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = Thumb(componentSettings, false).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = Thumb(componentSettings, componentSettings.Thumb, false).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if componentSettings.ThumbDualValueModeEnabled {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 103, "<!-- ThumbUpper --> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 88, "<!-- ThumbUpper --> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = Thumb(componentSettings, true).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = Thumb(componentSettings, componentSettings.ThumbUpper, true).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 104, "</div></div><!-- TrackEndValue -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 89, "</div></div><!-- TrackEndValue -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if componentSettings.TrackEndValueLabelEnabled || componentSettings.TrackEndValueLabelIcon != "" {
+		if componentSettings.Track.EndValueLabelEnabled || componentSettings.Track.EndValueLabelIcon != "" {
 			endLabelPosition := ""
-			switch componentSettings.TrackEndValueLabelPosition {
+			switch componentSettings.Track.EndValueLabelPosition {
 			case RangeSliderTrackValueLabelPositionTop:
 				endLabelPosition = "absolute right-0 bottom-full mb-1"
 			case RangeSliderTrackValueLabelPositionBottom:
 				endLabelPosition = "absolute right-0 top-full mt-1"
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 105, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 90, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			endLabelTextColor := "text-neutral-400"
-			if componentSettings.TrackEndValueLabelTextColor != "" {
-				endLabelTextColor = "text-" + componentSettings.TrackEndValueLabelTextColor
+			if componentSettings.Track.EndValueLabelTextColor != "" {
+				endLabelTextColor = "text-" + componentSettings.Track.EndValueLabelTextColor
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 106, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 91, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1465,7 +1333,7 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 			case RangeSliderSizeXl:
 				endLabelIconSize = "text-2xl"
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 107, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 92, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1474,7 +1342,7 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 108, "<div class=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 93, "<div class=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1487,17 +1355,17 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 109, "\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 94, "\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if componentSettings.TrackEndValueLabelIcon != "" {
-				var templ_7745c5c3_Var48 = []any{"ph-bold " + componentSettings.TrackEndValueLabelIcon + " " + endLabelIconSize}
+			if componentSettings.Track.EndValueLabelIcon != "" {
+				var templ_7745c5c3_Var48 = []any{"ph-bold " + componentSettings.Track.EndValueLabelIcon + " " + endLabelIconSize}
 				templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var48...)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 110, "<i class=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 95, "<i class=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -1510,23 +1378,23 @@ func RangeSlider(componentSettings RangeSliderSettings) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 111, "\"></i> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 96, "\"></i> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			if componentSettings.TrackEndValueLabelEnabled {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 112, "<span x-text=\"trackEndValue\"></span>")
+			if componentSettings.Track.EndValueLabelEnabled {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 97, "<span x-text=\"trackEndValue\"></span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 113, "</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 98, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 114, "</div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 99, "</div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

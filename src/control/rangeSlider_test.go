@@ -11,11 +11,15 @@ import (
 
 func TestThumbRendersUpperOnlyBubbleRingClasses(t *testing.T) {
 	var buffer bytes.Buffer
-	renderErr := Thumb(RangeSliderSettings{
-		ThumbUpperValueBubbleEnabled:       true,
-		ThumbUpperValueBubbleRingColor:     "red-700",
-		ThumbUpperValueBubbleRingThickness: uiToolset.RingThicknessLg,
-	}, true).Render(context.Background(), &buffer)
+	renderErr := Thumb(
+		RangeSliderSettings{},
+		RangeSliderThumbSettings{
+			ValueBubbleEnabled:       true,
+			ValueBubbleRingColor:     "red-700",
+			ValueBubbleRingThickness: uiToolset.RingThicknessLg,
+		},
+		true,
+	).Render(context.Background(), &buffer)
 	if renderErr != nil {
 		t.Fatalf("ThumbRenderFailed: %v", renderErr)
 	}
