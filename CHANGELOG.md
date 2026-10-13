@@ -9,6 +9,9 @@ fix: run Lightpanda only for selections that use it
 fix: report the local demo server ready only when the launched server answered
 fix: emit the required attribute from the TextArea when IsRequired is set
 fix: disable the SearchableSelectInput controls when its disabled path is truthy
+fix: mark the advanced example panel load promise as intentionally unawaited
+fix: wait for the demo server to answer on reuse and to exit on stop
+fix: disable the remaining SearchableSelectInput controls while its disabled path is truthy
 test: run the fast UI suites on Lightpanda and tag engine-dependent specs with @browser
 chore: mark the generated demo docs with linguist-generated
 docs: update the readmes, the contexts, the feature map, and the changelog
