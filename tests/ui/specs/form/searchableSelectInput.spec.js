@@ -166,4 +166,30 @@ test.describe("SearchableSelectInput", () => {
     await page.keyboard.press("Enter");
     await expect(stateText).toHaveText('["Brazil"]');
   });
+
+  test("disabled path disables the combobox, clear button, and options", async ({
+    page,
+  }) => {
+    const panel = await openExamplePanel(page, section, "Disabled Binding");
+    const componentState = panel.locator('div[x-data^="{country:"]');
+    const combobox = panel.locator("input[role=combobox]");
+    const listbox = panel.locator("ul[role=listbox]");
+
+    await expect(combobox).toBeDisabled();
+    await expect(
+      panel.getByRole("button", { name: "Clear selection" }),
+    ).toBeDisabled();
+
+    await componentState.evaluate((element) => {
+      window.Alpine.$data(element).isDisabled = false;
+    });
+    await combobox.click();
+    const option = listbox.getByRole("option", { name: "Brazil" });
+    await expect(option).toBeVisible();
+
+    await componentState.evaluate((element) => {
+      window.Alpine.$data(element).isDisabled = true;
+    });
+    await expect(option).toBeDisabled();
+  });
 });

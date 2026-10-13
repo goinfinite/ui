@@ -210,6 +210,9 @@ templ searchableSelectInputOptionRow(
 		<button
 			type="button"
 			role="option"
+			if settings.IsDisabledOneWayStatePath != "" {
+				:disabled={ settings.IsDisabledOneWayStatePath }
+			}
 			:aria-selected={ selectedExpression }
 			@click={ clickExpression }
 			class="flex w-full cursor-pointer items-center gap-2 bg-transparent px-3 py-2 text-left outline-none transition-colors hover:bg-neutral-50/5 focus-visible:bg-neutral-50/10 focus-visible:outline-none"
@@ -257,6 +260,9 @@ templ searchableSelectInputSelectedTags(settings searchableSelectInputShellSetti
 			<span class={ "max-w-full truncate rounded px-1.5 py-0.5 text-xs bg-" + tagInnerBackgroundColor } x-text="optionLabelResolver(selectedValue)"></span>
 			<button
 				type="button"
+				if settings.IsDisabledOneWayStatePath != "" {
+					:disabled={ settings.IsDisabledOneWayStatePath }
+				}
 				class="flex cursor-pointer items-center rounded bg-transparent p-0.5 transition-opacity hover:opacity-80"
 				:aria-label="'Remove ' + optionLabelResolver(selectedValue)"
 				@click.stop={ searchableSelectInputTagRemoveExpressionBuilder(settings.TwoWayStatePath, "selectedValue", settings.OnChangeSuffix) }
