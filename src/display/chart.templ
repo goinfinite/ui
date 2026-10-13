@@ -1,0 +1,112 @@
+package uiDisplay
+
+import (
+	"strconv"
+
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+templ chartDefaultEmptyState() {
+	<p class="text-sm text-neutral-400">No data</p>
+}
+
+templ chartLegend(resolvedLegend ChartLegendSettings) {
+	if resolvedLegend.DisplayMode != ChartLegendDisplayModeHidden {
+		<ul class={ resolvedLegend.listClassesResolver() } x-show={ resolvedLegend.visibilityExpressionResolver() }>
+			<template x-for="(legendEntry, legendIndex) in chartLegendEntries" :key="legendIndex">
+				<li class="flex flex-row items-center gap-1.5">
+					<span class={ resolvedLegend.swatchClassesResolver() } :style="{ backgroundColor: legendEntry.color }" aria-hidden="true"></span>
+					<span x-text="legendEntry.label"></span>
+				</li>
+			</template>
+		</ul>
+	}
+}
+
+templ chartTooltip(componentSettings ChartSettings) {
+	{{ tooltip := componentSettings.Tooltip }}
+	<div
+		class={ componentSettings.tooltipClassesResolver() }
+		x-show="chartTooltip.isVisible"
+		style="display: none"
+		:style="chartTooltipStyleResolver()"
+		aria-hidden="true"
+	>
+		<p class={ "font-bold " + uiToolset.TextColorClassResolver(tooltip.TitleColor, "text-neutral-300") } x-show="chartTooltip.title !== '' && !chartTooltip.isContentHtmlShown" x-text="chartTooltip.title"></p>
+		<template x-for="(tooltipRow, tooltipRowIndex) in chartTooltip.rows" :key="tooltipRowIndex">
+			<div class="flex flex-row items-center gap-2" x-show="!chartTooltip.isContentHtmlShown">
+				<span class="h-2 w-2 shrink-0 rounded-full" :style="{ backgroundColor: tooltipRow.color }"></span>
+				<span class={ uiToolset.TextColorClassResolver(tooltip.SeriesLabelColor, "text-neutral-300") } x-text="tooltipRow.label"></span>
+				<span class={ "ml-auto pl-3 font-bold tabular-nums " + uiToolset.TextColorClassResolver(tooltip.ValueColor, "text-neutral-50") } x-text="tooltipRow.value"></span>
+			</div>
+		</template>
+		<div x-show="chartTooltip.isContentHtmlShown" x-html="chartTooltip.contentHtml"></div>
+	</div>
+}
+
+templ chartColorProbes(colorTokens []string) {
+	<div x-ref="chartColorProbes" class="hidden" style="color: rgb(1, 2, 3)" aria-hidden="true">
+		for _, colorToken := range colorTokens {
+			<span class={ "text-" + colorToken } data-chart-color-token={ colorToken }></span>
+		}
+	</div>
+}
+
+templ chartScreenReaderTable(resolvedConfig chartConfig, ariaLabel string) {
+	<table class="sr-only">
+		<caption>{ ariaLabel }</caption>
+		<thead>
+			<tr>
+				<th scope="col">{ chartTextDefaulter(resolvedConfig.XAxis.Title, resolvedConfig.XAxis.RowKey) }</th>
+				for _, seriesEntry := range resolvedConfig.Series {
+					<th scope="col">{ seriesEntry.Label }</th>
+				}
+			</tr>
+		</thead>
+		<tbody>
+			<template x-for="chartRow in chartRows">
+				<tr>
+					<th scope="row" x-text={ "chartRow[" + strconv.Quote(resolvedConfig.XAxis.RowKey) + "]" }></th>
+					for _, seriesEntry := range resolvedConfig.Series {
+						<td x-text={ "chartRow[" + strconv.Quote(seriesEntry.RowKey) + "]" }></td>
+					}
+				</tr>
+			</template>
+		</tbody>
+	</table>
+}
+
+templ Chart(componentSettings ChartSettings) {
+	<!-- Chart -->
+	{{ resolvedConfig, configErr := componentSettings.configResolver() }}
+	if configErr != nil {
+		{{ return configErr }}
+	}
+	{{ resolvedLegend, legendErr := componentSettings.legendResolver() }}
+	if legendErr != nil {
+		{{ return legendErr }}
+	}
+	@chartAlpineStateOnce.Once()
+	{{ configScriptId := generateChartConfigScriptId() }}
+	@templ.JSONScript(configScriptId, resolvedConfig)
+	{{ ariaLabel := chartTextDefaulter(componentSettings.AriaLabel, resolvedConfig.seriesLabelsJoiner()) }}
+	{{ emptyState := componentSettings.EmptyState }}
+	if emptyState == nil {
+		{{ emptyState = chartDefaultEmptyState() }}
+	}
+	<div
+		class="flex w-full flex-col gap-2"
+		x-data={ templ.JSFuncCall("chart", configScriptId) }
+	>
+		@chartLegend(resolvedLegend)
+		<div class={ "relative w-full " + chartTextDefaulter(componentSettings.HeightClass, "h-64") } role="img" aria-label={ ariaLabel }>
+			<div x-ref="chartCanvas" class="h-full w-full" aria-hidden="true"></div>
+			<div class="pointer-events-none absolute inset-0 flex items-center justify-center" x-show="chartRows.length === 0">
+				@emptyState
+			</div>
+		</div>
+		@chartTooltip(componentSettings)
+		@chartColorProbes(resolvedConfig.colorTokensCollector())
+		@chartScreenReaderTable(resolvedConfig, ariaLabel)
+	</div>
+}
