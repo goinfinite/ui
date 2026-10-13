@@ -60,4 +60,86 @@ test.describe("Button", () => {
     await page.waitForTimeout(100);
     expect(pageErrors).toEqual([]);
   });
+
+  test("@control a tracked submit shows the HTMX request result", async ({
+    page,
+  }) => {
+    const actionPanel = await openExamplePanel(
+      page,
+      buttonSection,
+      "Action States",
+    );
+    const savingButton = actionPanel
+      .locator("form[hx-get='assets/ui-logo.svg'] button")
+      .first();
+    const failingButton = actionPanel
+      .locator("form[hx-get='assets/missing-action-target'] button")
+      .first();
+
+    await savingButton.click();
+    await failingButton.click();
+
+    await expect(savingButton).toHaveText("Saved");
+    await expect(failingButton).toHaveText("Save failed");
+    await expect(savingButton).toHaveText("Save", { timeout: 4000 });
+  });
+
+  test("@control a tracked submit refuses a second submit while pending", async ({
+    page,
+  }) => {
+    const actionPanel = await openExamplePanel(
+      page,
+      buttonSection,
+      "Action States",
+    );
+    const savingForm = actionPanel
+      .locator("form[hx-get='assets/ui-logo.svg']")
+      .first();
+
+    const passedSubmitCount = await savingForm.evaluate((formElement) => {
+      let submitCount = 0;
+      formElement.addEventListener("submit", () => {
+        submitCount += 1;
+      });
+      formElement.requestSubmit();
+      formElement.requestSubmit();
+      return submitCount;
+    });
+
+    expect(passedSubmitCount).toBe(1);
+  });
+
+  test("@control a tracked click follows the promise it returns", async ({
+    page,
+  }) => {
+    await openExamplePanel(page, buttonSection, "Action States");
+    const syncButton = page.locator("#button-demo-sync");
+    const brokenSyncButton = page.locator("#button-demo-broken-sync");
+
+    await syncButton.click();
+    await brokenSyncButton.click();
+
+    await expect(syncButton).toHaveText("Syncing");
+    await expect(syncButton).toBeDisabled();
+    await expect(syncButton).toHaveAttribute("aria-busy", "true");
+    await expect(syncButton).toHaveText("Synced", { timeout: 4000 });
+    await expect(brokenSyncButton).toHaveText("Sync failed", { timeout: 4000 });
+    await expect(syncButton).toHaveText("Sync", { timeout: 4000 });
+    await expect(syncButton).toBeEnabled();
+  });
+
+  test("@control the pending path disables every bound button", async ({
+    page,
+  }) => {
+    await openExamplePanel(page, buttonSection, "Action States");
+    const startButton = page.locator("#button-demo-start-sync");
+    const deleteButton = page.locator("#button-demo-delete-account");
+
+    await startButton.click();
+
+    await expect(deleteButton).toHaveText("Wait for the sync");
+    await expect(deleteButton).toBeDisabled();
+    await expect(deleteButton).toHaveText("Delete account", { timeout: 4000 });
+    await expect(deleteButton).toBeEnabled();
+  });
 });
