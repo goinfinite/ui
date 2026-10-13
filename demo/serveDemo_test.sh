@@ -3,8 +3,8 @@
 # @usage        bash demo/serveDemo_test.sh
 # @output       PASS lines per assertion; exits 1 if any assertion fails.
 # @requires     bash v4+, node v24+, curl
-# @version      0.1.0
-# @updated      2026-10-12
+# @version      0.1.1
+# @updated      2026-10-13
 set -uo pipefail
 
 cd "$(dirname "$0")/.." || exit 2
@@ -48,8 +48,7 @@ assertEquals "a second start reuses the running server" "$startedUrl" \
 	"$(startDemoServer "$lifecyclePort")"
 
 stopDemoServer "$lifecyclePort"
-sleep 0.5
-assertEquals "stop ends the server" "stopped" \
+assertEquals "stop ends the server before it returns" "stopped" \
 	"$(reportDemoServerStatus "$lifecyclePort")"
 
 exitWithAssertionStatus

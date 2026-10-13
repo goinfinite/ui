@@ -3,13 +3,14 @@
 # @usage        demo/serveDemo.sh <start|stop|status> [port]
 # @output       The demo URL on start, the server state on status, nothing on stop.
 # @requires     bash v4+, node v24+, curl
-# @version      0.1.1
-# @updated      2026-10-12
+# @version      0.1.2
+# @updated      2026-10-13
 # @see          tests/lib/serveDemo.mjs
 set -euo pipefail
 
 defaultDemoPort=8399
 testSuiteDemoPort=8377
+demoServerWaitSeconds=10
 
 #
 ## Invocation
@@ -44,7 +45,7 @@ demoServerProcessPatternBuilder() {
 
 demoServerPidFinder() {
 	local port="$1"
-	pgrep -f "$(demoServerProcessPatternBuilder "$port")" || true
+	pgrep -f "$(demoServerProcessPatternBuilder "$port")" | head -n 1 || true
 }
 
 demoServerUrlBuilder() {
@@ -59,18 +60,37 @@ isDemoServerAnswering() {
 	[[ "$statusCode" == "200" ]]
 }
 
-waitForDemoServer() {
+isLaunchedDemoServerReady() {
 	local port="$1" serverPid="$2" logFile="$3"
-	local readyDeadline=$((SECONDS + 10))
+	kill -0 "$serverPid" 2>/dev/null &&
+		grep -qF "serveDemoListening $port" "$logFile" 2>/dev/null &&
+		isDemoServerAnswering "$port"
+}
+
+waitForDemoServerReady() {
+	local port="$1"
+	shift
+	local readyDeadline=$((SECONDS + demoServerWaitSeconds))
 	while [[ "$SECONDS" -lt "$readyDeadline" ]]; do
-		if kill -0 "$serverPid" 2>/dev/null &&
-			grep -qF "serveDemoListening $port" "$logFile" 2>/dev/null &&
-			isDemoServerAnswering "$port"; then
+		if "$@"; then
 			return 0
 		fi
 		sleep 0.5
 	done
-	echo "DemoServerNotReady: port $port did not serve the demo within 10 seconds" >&2
+	echo "DemoServerNotReady: port $port did not serve the demo within ${demoServerWaitSeconds} seconds" >&2
+	exit 1
+}
+
+waitForDemoServerExit() {
+	local port="$1" serverPid="$2"
+	local exitDeadline=$((SECONDS + demoServerWaitSeconds))
+	while [[ "$SECONDS" -lt "$exitDeadline" ]]; do
+		if ! kill -0 "$serverPid" 2>/dev/null; then
+			return 0
+		fi
+		sleep 0.5
+	done
+	echo "DemoServerStopTimeout: port $port did not stop within ${demoServerWaitSeconds} seconds" >&2
 	exit 1
 }
 
@@ -81,6 +101,7 @@ startDemoServer() {
 	local port="$1"
 	local projectRoot logFile demoServerPid
 	if [[ -n "$(demoServerPidFinder "$port")" ]]; then
+		waitForDemoServerReady "$port" isDemoServerAnswering "$port"
 		demoServerUrlBuilder "$port"
 		return 0
 	fi
@@ -90,13 +111,19 @@ startDemoServer() {
 		node "$projectRoot/tests/lib/serveDemo.mjs" "$port" >"$logFile" 2>&1 &
 		echo "$!"
 	)"
-	waitForDemoServer "$port" "$demoServerPid" "$logFile"
+	waitForDemoServerReady "$port" isLaunchedDemoServerReady "$port" "$demoServerPid" "$logFile"
 	demoServerUrlBuilder "$port"
 }
 
 stopDemoServer() {
 	local port="$1"
-	pkill -f "$(demoServerProcessPatternBuilder "$port")" || true
+	local demoServerPid
+	demoServerPid="$(demoServerPidFinder "$port")"
+	if [[ -z "$demoServerPid" ]]; then
+		return 0
+	fi
+	kill "$demoServerPid" 2>/dev/null || true
+	waitForDemoServerExit "$port" "$demoServerPid"
 }
 
 reportDemoServerStatus() {
