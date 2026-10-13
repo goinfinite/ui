@@ -83,7 +83,7 @@
       if (!placeholder) {
         return;
       }
-      loadPanel(placeholder);
+      void loadPanel(placeholder);
     },
     true,
   );
