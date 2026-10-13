@@ -51,6 +51,7 @@ The module directory matches the version in `go.mod`, so its documentation match
 Every component assumes the page loads Alpine.js, the CSS engine, and Phosphor Icons. Include the head tags in your layout's `<head>`:
 
 - `@uiImport.HeadTagsMinimal()` — Alpine, UnoCSS runtime, Phosphor Icons.
+- `@uiImport.HeadTagsVega()` — Vega only, for `uiDisplay.Chart`. Load it once, usually in the layout head; the chart never loads Vega itself. It no longer loads Vega-Lite or vega-embed.
 - `@uiImport.HeadTagsFull()` — adds Google Fonts, HTMX, and the JS toolset.
 
 Granular variants exist (`HeadTagsAlpineJs()`, `HeadTagsHtmx()`, `HeadTagsToolset()`, ...) for selective inclusion. The UnoCSS runtime serves Tailwind. Put custom `primary` and `secondary` colors in the `window.__unocss` theme config on the page. Set that config in a plain `<script>` before the head tags, so the runtime reads it at startup. A `tailwind.config.js` file has no effect on the runtime.
