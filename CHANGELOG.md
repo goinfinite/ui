@@ -19,10 +19,13 @@ fix: normalize the probed chart colors to sRGB so the gradient fill works on any
 fix: fall back to a readable color when an axis, surface, or crosshair token does not resolve
 fix: stop the chart init after a destroy during the color probe wait
 fix: clamp the bar and area baseline to the Y domain so the marks stay inside the plot
+fix: clear the chart hover signal and hide the tooltip when the rows are replaced
+fix: reset the FileUploadInput drag depth when the form reset clears the entries
 feat!: load only Vega in HeadTagsVega and drop Vega-Lite and vega-embed
 test: cover the new components with unit and browser specs
 docs: update the readmes, the contexts, the feature map, and the changelog
 chore: ignore the Sonar S2699 rule on the Playwright specs that assert with expect.poll
+chore: ignore the Sonar S2245 rule on the demo pseudorandom data generator
 chore(docs): regenerate the demo page
 
 0.2.8 - 2026/10/12
