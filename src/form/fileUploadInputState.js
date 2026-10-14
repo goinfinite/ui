@@ -330,6 +330,7 @@ UiToolset.RegisterAlpineState(() => {
         filesByEntryId.clear();
         this.fileEntries = [];
         this.rejectedFiles = [];
+        this.dragDepth = 0;
       },
 
       markUploadStarted(requestEvent) {
