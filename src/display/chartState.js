@@ -1203,6 +1203,10 @@ UiToolset.RegisterAlpineState(() => {
           .remove(() => true)
           .insert(vegaRows);
         chartView.change("rows", replacedRows);
+        if (this.chartConfig.chartType !== "donut") {
+          chartView.signal("hoveredX", null);
+        }
+        this.chartTooltip.isVisible = false;
         this.resizeChartView();
       },
 
