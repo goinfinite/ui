@@ -57,7 +57,7 @@ func TestButtonRendersActionDisplay(t *testing.T) {
 			},
 			expectedFragments: []string{
 				`class="contents"`,
-				`buttonAction({&#34;idle&#34;:&#34;Save&#34;,&#34;pending&#34;:&#34;Save&#34;,&#34;succeeded&#34;:&#34;Save&#34;,&#34;failed&#34;:&#34;Save&#34;},true)`,
+				`buttonAction({&#34;idle&#34;:&#34;Save&#34;,&#34;pending&#34;:&#34;Save&#34;,&#34;succeeded&#34;:&#34;Save&#34;,&#34;failed&#34;:&#34;Save&#34;},{&#34;idle&#34;:&#34;&#34;,&#34;pending&#34;:&#34;ph-spinner animate-spin&#34;,&#34;succeeded&#34;:&#34;ph-check-circle&#34;,&#34;failed&#34;:&#34;ph-warning-circle&#34;},true)`,
 				`:disabled="isActionPending(false)"`,
 				`:aria-busy="isActionPending(false)"`,
 				`x-text="actionLabelResolver(false)"`,
@@ -71,6 +71,55 @@ func TestButtonRendersActionDisplay(t *testing.T) {
 			expectedFragments: []string{
 				`},false)`,
 				`@click="trackActionPromise(syncAccounts())"`,
+			},
+		},
+		{
+			name: "CustomActionIconsReplaceTheDefaults",
+			settings: ButtonSettings{
+				Label: "Save", IsSubmit: true, ShouldTrackAction: true,
+				PendingIcon: "ph-hourglass", SucceededIcon: "ph-thumbs-up",
+				FailedIcon: "ph-skull",
+			},
+			expectedFragments: []string{
+				`&#34;pending&#34;:&#34;ph-hourglass animate-spin&#34;`,
+				`&#34;succeeded&#34;:&#34;ph-thumbs-up&#34;`,
+				`&#34;failed&#34;:&#34;ph-skull&#34;`,
+			},
+		},
+		{
+			name: "PendingIconAnimationConstantReplacesTheSpin",
+			settings: ButtonSettings{
+				Label: "Save", IsSubmit: true, ShouldTrackAction: true,
+				PendingIconAnimation: uiToolset.AnimationPulse,
+			},
+			expectedFragments: []string{
+				`&#34;pending&#34;:&#34;ph-spinner animate-pulse&#34;`,
+			},
+			forbiddenFragments: []string{
+				"animate-spin",
+			},
+		},
+		{
+			name: "PendingIconAnimationCustomClassPassesThrough",
+			settings: ButtonSettings{
+				Label: "Save", IsSubmit: true, ShouldTrackAction: true,
+				PendingIconAnimation: "animate-wiggle",
+			},
+			expectedFragments: []string{
+				`&#34;pending&#34;:&#34;ph-spinner animate-wiggle&#34;`,
+			},
+		},
+		{
+			name: "PendingIconAnimationNoneDropsTheAnimation",
+			settings: ButtonSettings{
+				Label: "Save", IsSubmit: true, ShouldTrackAction: true,
+				PendingIconAnimation: uiToolset.AnimationNone,
+			},
+			expectedFragments: []string{
+				`&#34;pending&#34;:&#34;ph-spinner&#34;`,
+			},
+			forbiddenFragments: []string{
+				"animate-spin",
 			},
 		},
 		{

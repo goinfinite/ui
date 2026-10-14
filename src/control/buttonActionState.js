@@ -1,19 +1,12 @@
 UiToolset.RegisterAlpineState(() => {
   const actionResultDisplayMs = 2000;
 
-  const actionIconByStatus = {
-    idle: "",
-    pending: "ph-spinner animate-spin",
-    succeeded: "ph-check-circle",
-    failed: "ph-warning-circle",
-  };
-
   function afterSubmitDispatchScheduler(pendingCallback) {
     const remainingListenersDelayMs = 0;
     setTimeout(pendingCallback, remainingListenersDelayMs);
   }
 
-  Alpine.data("buttonAction", (actionLabelByStatus, isFormAction) => ({
+  Alpine.data("buttonAction", (actionLabels, actionIcons, isFormAction) => ({
     actionStatus: "idle",
     actionResultTimeoutId: null,
     actionListenersController: new AbortController(),
@@ -157,13 +150,13 @@ UiToolset.RegisterAlpineState(() => {
     actionLabelResolver(isPendingExternally) {
       const displayStatus =
         this.actionDisplayStatusResolver(isPendingExternally);
-      return actionLabelByStatus[displayStatus];
+      return actionLabels[displayStatus];
     },
 
     actionIconResolver(isPendingExternally) {
       const displayStatus =
         this.actionDisplayStatusResolver(isPendingExternally);
-      return actionIconByStatus[displayStatus];
+      return actionIcons[displayStatus];
     },
   }));
 });

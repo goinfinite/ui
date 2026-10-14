@@ -37,6 +37,7 @@ type ButtonSettings struct {
 	BackgroundColor               string
 	BackgroundColorActive         string
 	BackgroundColorHover          string
+	FailedIcon                    string
 	FailedLabel                   string
 	IconLeft                      string
 	IconLeftOneWayStatePath       string
@@ -56,10 +57,13 @@ type ButtonSettings struct {
 	OnClickFunc                   string
 	OnClickPreventDefault         bool
 	PaddingSize                   string
+	PendingIcon                   string
+	PendingIconAnimation          string
 	PendingLabel                  string
 	Shape                         string
 	ShouldTrackAction             bool
 	Size                          string
+	SucceededIcon                 string
 	SucceededLabel                string
 	TextCase                      string
 	TextColor                     string
@@ -410,6 +414,38 @@ func (componentSettings ButtonSettings) actionLabelsResolver() buttonActionLabel
 	return actionLabels
 }
 
+type buttonActionIcons struct {
+	Idle      string `json:"idle"`
+	Pending   string `json:"pending"`
+	Succeeded string `json:"succeeded"`
+	Failed    string `json:"failed"`
+}
+
+func (componentSettings ButtonSettings) actionIconsResolver() buttonActionIcons {
+	actionIcons := buttonActionIcons{
+		Idle:      "",
+		Pending:   "ph-spinner",
+		Succeeded: "ph-check-circle",
+		Failed:    "ph-warning-circle",
+	}
+	if componentSettings.PendingIcon != "" {
+		actionIcons.Pending = componentSettings.PendingIcon
+	}
+	if componentSettings.SucceededIcon != "" {
+		actionIcons.Succeeded = componentSettings.SucceededIcon
+	}
+	if componentSettings.FailedIcon != "" {
+		actionIcons.Failed = componentSettings.FailedIcon
+	}
+	pendingAnimation := uiToolset.AnimationClassResolver(
+		componentSettings.PendingIconAnimation, "animate-spin",
+	)
+	if pendingAnimation != "" {
+		actionIcons.Pending += " " + pendingAnimation
+	}
+	return actionIcons
+}
+
 func (componentSettings ButtonSettings) isFormAction() bool {
 	return componentSettings.ShouldTrackAction && componentSettings.IsSubmit
 }
@@ -420,7 +456,7 @@ templ Button(componentSettings ButtonSettings) {
 		@buttonActionAlpineStateOnce.Once()
 		<div
 			class="contents"
-			x-data={ templ.JSFuncCall("buttonAction", componentSettings.actionLabelsResolver(), componentSettings.isFormAction()) }
+			x-data={ templ.JSFuncCall("buttonAction", componentSettings.actionLabelsResolver(), componentSettings.actionIconsResolver(), componentSettings.isFormAction()) }
 		>
 			@buttonFrame(componentSettings)
 		</div>
