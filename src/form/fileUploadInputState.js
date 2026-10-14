@@ -267,12 +267,18 @@ UiToolset.RegisterAlpineState(() => {
         return "";
       },
 
-      removePendingFileEntries() {
-        for (const fileEntry of this.pendingFileEntries) {
+      removeReplaceableFileEntries() {
+        for (const fileEntry of this.fileEntries) {
+          const isReplaceable =
+            fileEntry.status === "ready" || fileEntry.status === "failed";
+          if (!isReplaceable) {
+            continue;
+          }
           filesByEntryId.delete(fileEntry.entryId);
         }
         this.fileEntries = this.fileEntries.filter(
-          (fileEntry) => fileEntry.status === "uploaded",
+          (fileEntry) =>
+            fileEntry.status === "uploaded" || fileEntry.status === "uploading",
         );
       },
 
@@ -297,7 +303,7 @@ UiToolset.RegisterAlpineState(() => {
             continue;
           }
           if (isSingleFileMode) {
-            this.removePendingFileEntries();
+            this.removeReplaceableFileEntries();
           }
           this.lastFileEntryId += 1;
           filesByEntryId.set(this.lastFileEntryId, candidateFile);
@@ -395,6 +401,7 @@ UiToolset.RegisterAlpineState(() => {
           fileEntry.status = uploadStatus;
           if (uploadStatus === "uploaded") {
             fileEntry.progressPercent = 100;
+            filesByEntryId.delete(fileEntry.entryId);
           }
         }
         this.syncFileInput();
