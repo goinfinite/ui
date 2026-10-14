@@ -4,7 +4,7 @@ The toolset package holds the JavaScript `UiToolset` object, a Go minifier, and 
 
 ## Style tokens
 
-Resolvers that turn a token into a Tailwind class. Each resolver takes a fallback class for an empty or unknown token. The fixed-value constants (`BorderRadius*`, `Shape*`, `ShadowSize*`, `RingThickness*`, `PaddingSize*`, and `GapSize*`) live here. Color tokens are free-form strings.
+Resolvers that turn a token into a Tailwind class. Each resolver takes a fallback class for an empty or unknown token. The fixed-value constants (`BorderRadius*`, `Shape*`, `ShadowSize*`, `RingThickness*`, `PaddingSize*`, `GapSize*`, and `Animation*`) live here. Color tokens are free-form strings.
 
 - `BackgroundColorClassResolver(backgroundColor, fallbackClass)` returns `bg-` plus the token.
 - `TextColorClassResolver(textColor, fallbackClass)` returns `text-` plus the token.
@@ -19,6 +19,7 @@ Resolvers that turn a token into a Tailwind class. Each resolver takes a fallbac
 - `PaddingClassResolver(paddingSize, fallbackClass)` returns the `p-*` class for `none` through `xl`.
 - `CompactPaddingClassResolver(paddingSize, fallbackClass)` uses a smaller `p-*` scale for chips and list items.
 - `GapClassResolver(gapSize, fallbackClass)` returns the `gap-*` class for `none` through `xl`.
+- `AnimationClassResolver(animation, fallbackClass)` returns the `animate-*` class for `AnimationSpin`, `AnimationPulse`, `AnimationBounce`, or `AnimationPing`. `AnimationNone` returns an empty string, an empty token returns the fallback, and any other value passes through as a custom class.
 - `NonEmptyClassJoiner(classList)` joins the non-empty entries with one space.
 
 ## Component id

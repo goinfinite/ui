@@ -3,6 +3,7 @@
 ```log
 0.2.9 - 2026/10/14
 feat: add the action states to the Button for a click promise or a form submission, with the pending label, the double-submit guard, and the result
+feat: let the Button action states take a per-state icon and a pending icon animation through PendingIcon, SucceededIcon, FailedIcon, and PendingIconAnimation, and add the uiToolset.Animation* constants
 feat: add the NumberRangeInputField with a draft that commits clamped and snapped, and a responsive slider
 refactor!: split the RangeSlider settings into Thumb, ThumbUpper, and Track, replacing the flat ThumbUpper* fields
 feat: let the NumberRangeInputField take the RangeSlider thumb and track appearance through Thumb and Track

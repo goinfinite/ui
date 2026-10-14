@@ -31,6 +31,8 @@ A button with an optional label, icons, tooltip, ring, and shape.
 
 `ShouldTrackAction` makes the button follow the action it starts. While the action runs, the button shows a spinner and `PendingLabel`, disables itself, and sets `aria-busy`. When the action ends, the button shows `SucceededLabel` or `FailedLabel` for two seconds. Each label defaults to `Label`.
 
+`PendingIcon`, `SucceededIcon`, and `FailedIcon` replace the action icons. They default to `ph-spinner`, `ph-check-circle`, and `ph-warning-circle`. `PendingIconAnimation` takes a `uiToolset.Animation*` constant and defaults to `AnimationSpin`. `AnimationNone` drops the animation. Any other value passes through as-is, so a custom animation must include its full class name, for example `"animate-wiggle"`.
+
 Without `IsSubmit`, the action is the promise that `OnClickFunc` returns. No form is necessary.
 
 - A resolved promise shows success. A rejected promise shows failure and logs `ButtonActionFailed`.
