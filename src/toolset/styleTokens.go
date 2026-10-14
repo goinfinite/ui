@@ -43,6 +43,12 @@ const (
 	GapSizeMd   string = "md"
 	GapSizeLg   string = "lg"
 	GapSizeXl   string = "xl"
+
+	AnimationNone   string = "none"
+	AnimationSpin   string = "spin"
+	AnimationPulse  string = "pulse"
+	AnimationBounce string = "bounce"
+	AnimationPing   string = "ping"
 )
 
 func BackgroundColorClassResolver(backgroundColor, fallbackClass string) string {
@@ -209,6 +215,18 @@ func GapClassResolver(gapSize, fallbackClass string) string {
 		return "gap-8"
 	}
 	return fallbackClass
+}
+
+func AnimationClassResolver(animation, fallbackClass string) string {
+	switch animation {
+	case "":
+		return fallbackClass
+	case AnimationNone:
+		return ""
+	case AnimationSpin, AnimationPulse, AnimationBounce, AnimationPing:
+		return "animate-" + animation
+	}
+	return animation
 }
 
 func NonEmptyClassJoiner(classList []string) string {

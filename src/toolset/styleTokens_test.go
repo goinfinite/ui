@@ -295,6 +295,31 @@ func TestGapClassResolver(t *testing.T) {
 	}
 }
 
+func TestAnimationClassResolver(t *testing.T) {
+	testCases := []struct {
+		name          string
+		animation     string
+		fallbackClass string
+		want          string
+	}{
+		{name: "empty takes the fallback", animation: "", fallbackClass: "animate-spin", want: "animate-spin"},
+		{name: "none drops the animation", animation: AnimationNone, fallbackClass: "animate-spin", want: ""},
+		{name: "spin", animation: AnimationSpin, fallbackClass: "", want: "animate-spin"},
+		{name: "pulse", animation: AnimationPulse, fallbackClass: "", want: "animate-pulse"},
+		{name: "bounce", animation: AnimationBounce, fallbackClass: "", want: "animate-bounce"},
+		{name: "ping", animation: AnimationPing, fallbackClass: "", want: "animate-ping"},
+		{name: "unknown passes through as a custom class", animation: "animate-wiggle", fallbackClass: "animate-spin", want: "animate-wiggle"},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			got := AnimationClassResolver(testCase.animation, testCase.fallbackClass)
+			if got != testCase.want {
+				t.Errorf("AnimationClassResolver() = %q, want %q", got, testCase.want)
+			}
+		})
+	}
+}
+
 func TestNonEmptyClassJoiner(t *testing.T) {
 	testCases := []struct {
 		name      string
