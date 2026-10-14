@@ -395,10 +395,14 @@ templ ButtonActionStatesExample() {
 		IsSubmit: true,
 
 		// OptionalFields
-		ShouldTrackAction: true,
-		PendingLabel:      "Saving",
-		SucceededLabel:    "Saved",
-		FailedLabel:       "Save failed",
+		ShouldTrackAction:    true,
+		PendingLabel:         "Saving",
+		PendingIcon:          "ph-hourglass",
+		PendingIconAnimation: uiToolset.AnimationPulse,
+		SucceededLabel:       "Saved",
+		SucceededIcon:        "ph-thumbs-up",
+		FailedLabel:          "Save failed",
+		FailedIcon:           "ph-skull",
 	})
 </form>
 
@@ -423,7 +427,7 @@ templ ButtonActionStatesExample() {
 	}}
 	@DemoExampleCard(
 		"Action States",
-		"ShouldTrackAction follows the action the button triggers. With IsSubmit, the action is the owning form: a native POST or an HTMX request. Without IsSubmit, the action is the promise OnClickFunc returns, for example UiToolset.JsonAjax(...), with no form needed. While the action runs, the button shows a spinner and PendingLabel and refuses a second click. When it ends, the button shows SucceededLabel or FailedLabel for two seconds. IsPendingOneWayStatePath shows the pending state from Alpine state, for example on every button that a shared request blocks.",
+		"ShouldTrackAction makes the button report the action it starts: the owning form when IsSubmit is set, or the promise OnClickFunc returns. It shows PendingLabel while the action runs, then SucceededLabel or FailedLabel for two seconds. PendingIcon, SucceededIcon, and FailedIcon replace the default icons, and PendingIconAnimation takes a uiToolset.Animation* constant. IsPendingOneWayStatePath shows the pending state from Alpine state.",
 		"/control/button.templ", actionUsage,
 	) {
 		@uiToolset.MinifierTemplateJs(&buttonDemoAlpineState)
@@ -451,6 +455,35 @@ templ ButtonActionStatesExample() {
 						PendingLabel:      "Saving",
 						SucceededLabel:    "Saved",
 						FailedLabel:       "Save failed",
+					})
+				</form>
+			</div>
+			<p class="text-xs font-bold text-neutral-400">Custom action icons and animation</p>
+			<div class="flex flex-row flex-wrap gap-3">
+				<form hx-get="assets/ui-logo.svg" hx-swap="none">
+					@uiControl.Button(uiControl.ButtonSettings{
+						Id:                   "button-demo-custom-icons",
+						Label:                "Save with custom icons",
+						IsSubmit:             true,
+						ShouldTrackAction:    true,
+						PendingIcon:          "ph-hourglass",
+						PendingIconAnimation: uiToolset.AnimationPulse,
+						SucceededIcon:        "ph-thumbs-up",
+						FailedIcon:           "ph-skull",
+						PendingLabel:         "Saving",
+						SucceededLabel:       "Saved",
+						FailedLabel:          "Save failed",
+					})
+				</form>
+				<form hx-get="assets/ui-logo.svg" hx-swap="none">
+					@uiControl.Button(uiControl.ButtonSettings{
+						Id:                   "button-demo-no-animation",
+						Label:                "Save with no animation",
+						IsSubmit:             true,
+						ShouldTrackAction:    true,
+						PendingIconAnimation: uiToolset.AnimationNone,
+						PendingLabel:         "Saving",
+						SucceededLabel:       "Saved",
 					})
 				</form>
 			</div>
