@@ -1,7 +1,7 @@
 # Changelog
 
 ```log
-0.2.9 - 2026/10/13
+0.2.9 - 2026/10/14
 feat: add the action states to the Button for a click promise or a form submission, with the pending label, the double-submit guard, and the result
 feat: add the NumberRangeInputField with a draft that commits clamped and snapped, and a responsive slider
 refactor!: split the RangeSlider settings into Thumb, ThumbUpper, and Track, replacing the flat ThumbUpper* fields
@@ -21,6 +21,8 @@ fix: stop the chart init after a destroy during the color probe wait
 fix: clamp the bar and area baseline to the Y domain so the marks stay inside the plot
 fix: clear the chart hover signal and hide the tooltip when the rows are replaced
 fix: reset the FileUploadInput drag depth when the form reset clears the entries
+fix: release the File object of an uploaded FileUploadInput entry and keep its row for display
+fix: keep an uploading FileUploadInput entry when a single-file replacement picks a new file
 feat!: load only Vega in HeadTagsVega and drop Vega-Lite and vega-embed
 test: cover the new components with unit and browser specs
 docs: update the readmes, the contexts, the feature map, and the changelog
