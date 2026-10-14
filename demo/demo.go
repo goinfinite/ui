@@ -19,6 +19,15 @@ var dataTableDemoRoutingScript string
 //go:embed remoteSearchableSelectDemoRouting.js
 var remoteSearchableSelectDemoRoutingScript string
 
+//go:embed buttonDemoState.js
+var buttonDemoAlpineState string
+
+//go:embed chartDemoState.js
+var chartDemoAlpineState string
+
+//go:embed fileUploadDemoRouting.js
+var fileUploadDemoRoutingScript string
+
 //go:embed advancedExampleLoader.js
 var advancedExampleLoaderScript string
 

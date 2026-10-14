@@ -1,10 +1,18 @@
 package uiControl
 
 import (
+	_ "embed"
 	"fmt"
 	"sync/atomic"
 
 	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+//go:embed buttonActionState.js
+var buttonActionAlpineState string
+
+var buttonActionAlpineStateOnce = templ.NewOnceHandle(
+	templ.WithComponent(uiToolset.MinifierTemplateJs(&buttonActionAlpineState)),
 )
 
 var buttonTooltipIdCounter atomic.Uint64
@@ -29,6 +37,8 @@ type ButtonSettings struct {
 	BackgroundColor               string
 	BackgroundColorActive         string
 	BackgroundColorHover          string
+	FailedIcon                    string
+	FailedLabel                   string
 	IconLeft                      string
 	IconLeftOneWayStatePath       string
 	IconRight                     string
@@ -36,6 +46,7 @@ type ButtonSettings struct {
 	Id                            string
 	IsDisabled                    bool
 	IsDisabledOneWayStatePath     string
+	IsPendingOneWayStatePath      string
 	IsVisibleOneWayStatePath      string
 	IsFullWidth                   bool
 	IsSubmit                      bool
@@ -46,8 +57,14 @@ type ButtonSettings struct {
 	OnClickFunc                   string
 	OnClickPreventDefault         bool
 	PaddingSize                   string
+	PendingIcon                   string
+	PendingIconAnimation          string
+	PendingLabel                  string
 	Shape                         string
+	ShouldTrackAction             bool
 	Size                          string
+	SucceededIcon                 string
+	SucceededLabel                string
 	TextCase                      string
 	TextColor                     string
 	TextColorHover                string
@@ -68,8 +85,59 @@ type ButtonSettings struct {
 	RingThickness                 string
 }
 
-templ Button(componentSettings ButtonSettings) {
-	<!-- Button -->
+func (componentSettings ButtonSettings) hasActionDisplay() bool {
+	return componentSettings.ShouldTrackAction ||
+		componentSettings.IsPendingOneWayStatePath != ""
+}
+
+type buttonActionExpressions struct {
+	IsDisplayed        bool
+	PendingExpression  string
+	IconExpression     string
+	LabelExpression    string
+	IconLeftVisibility string
+}
+
+func (componentSettings ButtonSettings) actionExpressionsResolver() buttonActionExpressions {
+	if !componentSettings.hasActionDisplay() {
+		return buttonActionExpressions{}
+	}
+	isPendingExternallyExpression := "false"
+	if componentSettings.IsPendingOneWayStatePath != "" {
+		isPendingExternallyExpression = "(" + componentSettings.IsPendingOneWayStatePath + ")"
+	}
+	iconExpression := "actionIconResolver(" + isPendingExternallyExpression + ")"
+	return buttonActionExpressions{
+		IsDisplayed:        true,
+		PendingExpression:  "isActionPending(" + isPendingExternallyExpression + ")",
+		IconExpression:     iconExpression,
+		LabelExpression:    "actionLabelResolver(" + isPendingExternallyExpression + ")",
+		IconLeftVisibility: iconExpression + " === ''",
+	}
+}
+
+func (componentSettings ButtonSettings) disabledExpressionResolver(
+	actionPendingExpression string,
+) string {
+	disabledStatePath := componentSettings.IsDisabledOneWayStatePath
+	if actionPendingExpression == "" {
+		return disabledStatePath
+	}
+	if disabledStatePath == "" {
+		return actionPendingExpression
+	}
+	return "(" + disabledStatePath + ") || " + actionPendingExpression
+}
+
+func (componentSettings ButtonSettings) clickExpressionResolver() string {
+	isPromiseAction := componentSettings.ShouldTrackAction && !componentSettings.IsSubmit
+	if !isPromiseAction {
+		return componentSettings.OnClickFunc
+	}
+	return "trackActionPromise(" + componentSettings.OnClickFunc + ")"
+}
+
+templ buttonFrame(componentSettings ButtonSettings) {
 	{{ buttonWidth := "w-fit" }}
 	if componentSettings.IsFullWidth {
 		{{ buttonWidth = "w-full" }}
@@ -80,6 +148,8 @@ templ Button(componentSettings ButtonSettings) {
 		@uiToolset.TooltipAlpineStateOnce.Once()
 		{{ tooltipId = generateButtonTooltipId() }}
 	}
+	{{ actionExpressions := componentSettings.actionExpressionsResolver() }}
+	{{ disabledExpression := componentSettings.disabledExpressionResolver(actionExpressions.PendingExpression) }}
 	<div
 		class={ "relative " + buttonWidth }
 		if hasTooltip {
@@ -148,10 +218,12 @@ templ Button(componentSettings ButtonSettings) {
 		}
 		{{ backgroundSize := buttonPadding + " " + buttonTextSize + " " + buttonGap }}
 		{{ backgroundClasses := backgroundColor + " " + backgroundHoverColor + " " + backgroundActiveColor + " " + backgroundSize }}
-		{{ sizeConstraintClasses := uiToolset.NonEmptyClassJoiner([]string{
-			componentSettings.MinWidthClass, componentSettings.MaxWidthClass,
-			componentSettings.MinHeightClass, componentSettings.MaxHeightClass,
-		}) }}
+		{{
+			sizeConstraintClasses := uiToolset.NonEmptyClassJoiner([]string{
+				componentSettings.MinWidthClass, componentSettings.MaxWidthClass,
+				componentSettings.MinHeightClass, componentSettings.MaxHeightClass,
+			})
+		}}
 		if sizeConstraintClasses != "" {
 			{{ sizeConstraintClasses = " " + sizeConstraintClasses }}
 		}
@@ -215,32 +287,60 @@ templ Button(componentSettings ButtonSettings) {
 			}
 			if componentSettings.OnClickFunc != "" && !componentSettings.IsDisabled {
 				if componentSettings.OnClickPreventDefault {
-					@click.prevent={ componentSettings.OnClickFunc }
+					@click.prevent={ componentSettings.clickExpressionResolver() }
 				} else {
-					@click={ componentSettings.OnClickFunc }
+					@click={ componentSettings.clickExpressionResolver() }
 				}
 			}
 			if componentSettings.IsDisabled {
 				disabled
 			}
-			if componentSettings.IsDisabledOneWayStatePath != "" {
-				:disabled={ componentSettings.IsDisabledOneWayStatePath }
+			if disabledExpression != "" {
+				:disabled={ disabledExpression }
+			}
+			if actionExpressions.IsDisplayed {
+				:aria-busy={ actionExpressions.PendingExpression }
 			}
 			if componentSettings.IsVisibleOneWayStatePath != "" {
 				x-show={ componentSettings.IsVisibleOneWayStatePath }
 			}
 			class={ buttonClasses }
-			if componentSettings.IsDisabledOneWayStatePath != "" {
-				:class={ "(" + componentSettings.IsDisabledOneWayStatePath + ") && '" + disabledClasses + "'" }
+			if disabledExpression != "" {
+				:class={ "(" + disabledExpression + ") && '" + disabledClasses + "'" }
 			}
 		>
+			if actionExpressions.IsDisplayed {
+				<i
+					class={ "ph-bold " + iconSize }
+					:class={ actionExpressions.IconExpression }
+					x-show={ actionExpressions.IconExpression + " !== ''" }
+					style="display: none"
+					aria-hidden="true"
+				></i>
+			}
 			if componentSettings.IconLeft != "" {
-				<i class={ "ph-bold " + componentSettings.IconLeft + " " + iconSize }></i>
+				<i
+					class={ "ph-bold " + componentSettings.IconLeft + " " + iconSize }
+					if actionExpressions.IsDisplayed {
+						x-show={ actionExpressions.IconLeftVisibility }
+					}
+				></i>
 			}
 			if componentSettings.IconLeftOneWayStatePath != "" {
-				<i class={ "ph-bold " + iconSize } :class={ componentSettings.IconLeftOneWayStatePath }></i>
+				<i
+					class={ "ph-bold " + iconSize }
+					:class={ componentSettings.IconLeftOneWayStatePath }
+					if actionExpressions.IsDisplayed {
+						x-show={ actionExpressions.IconLeftVisibility }
+					}
+				></i>
 			}
-			if componentSettings.Label != "" {
+			if componentSettings.Label != "" && actionExpressions.IsDisplayed {
+				<span x-text={ actionExpressions.LabelExpression }>
+					{ componentSettings.Label }
+				</span>
+			}
+			if componentSettings.Label != "" && !actionExpressions.IsDisplayed {
 				{ componentSettings.Label }
 			}
 			if componentSettings.IconRight != "" {
@@ -286,4 +386,81 @@ templ Button(componentSettings ButtonSettings) {
 			</template>
 		}
 	</div>
+}
+
+type buttonActionLabels struct {
+	Idle      string `json:"idle"`
+	Pending   string `json:"pending"`
+	Succeeded string `json:"succeeded"`
+	Failed    string `json:"failed"`
+}
+
+func (componentSettings ButtonSettings) actionLabelsResolver() buttonActionLabels {
+	actionLabels := buttonActionLabels{
+		Idle:      componentSettings.Label,
+		Pending:   componentSettings.Label,
+		Succeeded: componentSettings.Label,
+		Failed:    componentSettings.Label,
+	}
+	if componentSettings.PendingLabel != "" {
+		actionLabels.Pending = componentSettings.PendingLabel
+	}
+	if componentSettings.SucceededLabel != "" {
+		actionLabels.Succeeded = componentSettings.SucceededLabel
+	}
+	if componentSettings.FailedLabel != "" {
+		actionLabels.Failed = componentSettings.FailedLabel
+	}
+	return actionLabels
+}
+
+type buttonActionIcons struct {
+	Idle      string `json:"idle"`
+	Pending   string `json:"pending"`
+	Succeeded string `json:"succeeded"`
+	Failed    string `json:"failed"`
+}
+
+func (componentSettings ButtonSettings) actionIconsResolver() buttonActionIcons {
+	actionIcons := buttonActionIcons{
+		Idle:      "",
+		Pending:   "ph-spinner",
+		Succeeded: "ph-check-circle",
+		Failed:    "ph-warning-circle",
+	}
+	if componentSettings.PendingIcon != "" {
+		actionIcons.Pending = componentSettings.PendingIcon
+	}
+	if componentSettings.SucceededIcon != "" {
+		actionIcons.Succeeded = componentSettings.SucceededIcon
+	}
+	if componentSettings.FailedIcon != "" {
+		actionIcons.Failed = componentSettings.FailedIcon
+	}
+	pendingAnimation := uiToolset.AnimationClassResolver(
+		componentSettings.PendingIconAnimation, "animate-spin",
+	)
+	if pendingAnimation != "" {
+		actionIcons.Pending += " " + pendingAnimation
+	}
+	return actionIcons
+}
+
+func (componentSettings ButtonSettings) isFormAction() bool {
+	return componentSettings.ShouldTrackAction && componentSettings.IsSubmit
+}
+
+templ Button(componentSettings ButtonSettings) {
+	<!-- Button -->
+	if componentSettings.hasActionDisplay() {
+		@buttonActionAlpineStateOnce.Once()
+		<div
+			class="contents"
+			x-data={ templ.JSFuncCall("buttonAction", componentSettings.actionLabelsResolver(), componentSettings.actionIconsResolver(), componentSettings.isFormAction()) }
+		>
+			@buttonFrame(componentSettings)
+		</div>
+	} else {
+		@buttonFrame(componentSettings)
+	}
 }

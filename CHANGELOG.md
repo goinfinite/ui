@@ -1,6 +1,36 @@
 # Changelog
 
 ```log
+0.2.9 - 2026/10/14
+feat: add the action states to the Button for a click promise or a form submission, with the pending label, the double-submit guard, and the result
+feat: let the Button action states take a per-state icon and a pending icon animation through PendingIcon, SucceededIcon, FailedIcon, and PendingIconAnimation, and add the uiToolset.Animation* constants
+feat: add the NumberRangeInputField with a draft that commits clamped and snapped, and a responsive slider
+refactor!: split the RangeSlider settings into Thumb, ThumbUpper, and Track, replacing the flat ThumbUpper* fields
+feat: let the NumberRangeInputField take the RangeSlider thumb and track appearance through Thumb and Track
+feat!: remove the DualNumberRangeInputField; a caller pairs two NumberRangeInputFields
+feat: add the FileUploadInput with drop and pick, limits, removal, and per-file HTMX upload progress
+feat: take the FileUploadInput AcceptedTypes as a slice and add its size scale and Zone, Row, Progress, and Rejected style groups
+feat: add the Chart with line, area, bar, and donut types on plain Vega, with settings per axis, series, legend, and tooltip, color tokens, and stacking
+feat: add the Chart Tooltip.ContentFunc to render the tooltip from a global JS function
+feat: add the donut center label to the Chart with its display mode, size, colors, and value suffix
+refactor: split the chart type-specific options into ChartCartesianSettings and ChartDonutSettings
+refactor: move the chart JSON tags onto the private wire structs and off the public settings
+refactor: rename the chart RowsRetentionLimit to MaxRows, SurfaceColor to GapColor, and the YAxis DomainMin and DomainMax to MinValue and MaxValue
+fix: normalize the probed chart colors to sRGB so the gradient fill works on any token color
+fix: fall back to a readable color when an axis, surface, or crosshair token does not resolve
+fix: stop the chart init after a destroy during the color probe wait
+fix: clamp the bar and area baseline to the Y domain so the marks stay inside the plot
+fix: clear the chart hover signal and hide the tooltip when the rows are replaced
+fix: reset the FileUploadInput drag depth when the form reset clears the entries
+fix: release the File object of an uploaded FileUploadInput entry and keep its row for display
+fix: keep an uploading FileUploadInput entry when a single-file replacement picks a new file
+feat!: load only Vega in HeadTagsVega and drop Vega-Lite and vega-embed
+test: cover the new components with unit and browser specs
+docs: update the readmes, the contexts, the feature map, and the changelog
+chore: ignore the Sonar S2699 rule on the Playwright specs that assert with expect.poll
+chore: ignore the Sonar S2245 rule on the demo pseudorandom data generator
+chore(docs): regenerate the demo page
+
 0.2.8 - 2026/10/12
 feat: add the carousel and data table refresh region templates for lean refresh responses
 feat: load the demo advanced examples on first open

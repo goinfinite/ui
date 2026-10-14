@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	UiVersion string = "0.2.8"
+	UiVersion string = "0.2.9"
 )
 
 templ DemoNavSection(label string) {
@@ -71,9 +71,11 @@ templ DemoNavigationContent() {
 	>
 		@DemoNavSection("@uiForm")
 		@DemoNavItem("CheckboxInput", "checkbox-input-demo", "ph-check-square")
+		@DemoNavItem("FileUploadInput", "file-upload-input-demo", "ph-upload-simple")
 		@DemoNavItem("InlineCheckboxGroup", "inline-checkbox-group-demo", "ph-checks")
 		@DemoNavItem("InlineRadioGroup", "inline-radio-group-demo", "ph-selection")
 		@DemoNavItem("InputField", "input-field-demo", "ph-text-aa")
+		@DemoNavItem("NumberRangeInputField", "number-range-input-field-demo", "ph-number-square-one")
 		@DemoNavItem("PasswordInput", "password-input-demo", "ph-password")
 		@DemoNavItem("SearchableSelectInput", "searchable-select-input-demo", "ph-magnifying-glass")
 		@DemoNavItem("RemoteSearchableSelectInput", "remote-searchable-select-input-demo", "ph-cloud-arrow-down")
@@ -84,6 +86,7 @@ templ DemoNavigationContent() {
 		@DemoNavSection("@uiDisplay")
 		@DemoNavItem("Accordion", "accordion-demo", "ph-list")
 		@DemoNavItem("Alert", "alert-demo", "ph-warning")
+		@DemoNavItem("Chart", "chart-demo", "ph-chart-line")
 		@DemoNavItem("CloakLoading", "cloak-loading-demo", "ph-eye-slash")
 		@DemoNavItem("ConfirmationDialog", "confirmation-dialog-demo", "ph-question")
 		@DemoNavItem("LoadingOverlay", "loading-overlay-demo", "ph-spinner")
@@ -125,6 +128,7 @@ templ DemoIndex() {
 			<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256' fill='%23a34c30'%3E%3Cpath d='M203.57,51A107.9,107.9,0,0,0,20,128c0,44.72,27.6,82.25,72,97.94A36,36,0,0,0,140,192a12,12,0,0,1,12-12h46.21a35.79,35.79,0,0,0,35.1-28A108.6,108.6,0,0,0,236,127.09,107.23,107.23,0,0,0,203.57,51Zm6.34,95.67a11.91,11.91,0,0,1-11.7,9.3H152a36,36,0,0,0-36,36,12,12,0,0,1-16,11.3c-16.65-5.88-30.65-15.76-40.48-28.56A76,76,0,0,1,44,128a84,84,0,0,1,83.13-84H128a84.35,84.35,0,0,1,84,83.29A84.72,84.72,0,0,1,209.91,146.71ZM144,76a16,16,0,1,1-16-16A16,16,0,0,1,144,76Zm-44,24A16,16,0,1,1,84,84,16,16,0,0,1,100,100Zm0,56a16,16,0,1,1-16-16A16,16,0,0,1,100,156Zm88-56a16,16,0,1,1-16-16A16,16,0,0,1,188,100Z'/%3E%3C/svg%3E"/>
 			<script type="text/javascript">window.__unocss={theme:{colors:{primary:{50:'#edfcff',100:'#d7f6ff',200:'#b8f0ff',300:'#86eaff',400:'#4edbff',500:'#25c2ff',600:'#0da6ff',700:'#0993f8',800:'#0d6fc0',900:'#115e97',950:'#10395b'},secondary:{50:"#dea893",100:"#d89a81",200:"#d38b6f",300:"#cd7d5d",400:"#ca7654",500:"#c97350",600:"#c46f4d",700:"#ba6949",800:"#a55e41",900:"#905239",950:"#7c4631"}}}};</script>
 			@uiImport.HeadTagsFull()
+			@uiImport.HeadTagsVega()
 		</head>
 		<body class="bg-neutral-900 text-neutral-50 flex">
 			@uiDisplay.CloakLoading(uiDisplay.CloakLoadingSettings{BackgroundColor: "rgb(38, 38, 38)"})
@@ -173,9 +177,11 @@ templ DemoIndex() {
 						</div>
 						<div class="*:border-t *:border-neutral-800 *:py-20 flex flex-col">
 							@CheckboxInputDemo()
+							@FileUploadInputDemo()
 							@InlineCheckboxGroupDemo()
 							@InlineRadioGroupDemo()
 							@InputFieldDemo()
+							@NumberRangeInputFieldDemo()
 							@PasswordInputDemo()
 							@SearchableSelectInputDemo()
 							@RemoteSearchableSelectInputDemo()
@@ -198,6 +204,7 @@ templ DemoIndex() {
 						<div class="*:border-t *:border-neutral-800 *:py-20 flex flex-col">
 							@AccordionDemo()
 							@AlertDemo()
+							@ChartDemo()
 							@CloakLoadingDemo()
 							@ConfirmationDialogDemo()
 							@LoadingOverlayDemo()

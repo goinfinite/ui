@@ -163,14 +163,40 @@ Small icon button that floats over a field and reveals on hover or focus. `Inlin
 
 ## Button
 
-Interactive button component with customizable label, icons (left/right using Phosphor), size/shape variants, colors, disabled state, click handlers, and an optional hover tooltip. Every button renders a `type` attribute: `button` by default, `submit` when `IsSubmit` is set.
+Interactive button component with customizable label, icons (left/right using Phosphor), size/shape variants, colors, disabled state, click handlers, an optional hover tooltip, and action states. Every button renders a `type` attribute: `button` by default, `submit` when `IsSubmit` is set. With `ShouldTrackAction`, the button follows the action it triggers: the promise its OnClickFunc returns, or, with `IsSubmit`, the native POST or HTMX request of its form. While the action runs, it shows an icon and the pending label and disables itself; when the action ends, it shows a succeeded or failed result. `PendingIcon`, `SucceededIcon`, and `FailedIcon` replace the default action icons, and `PendingIconAnimation` takes a `uiToolset.Animation*` constant for the pending icon animation.
 
 **Flow:**
 
-1. `src/control/button.templ` — Component definition with ButtonSettings struct supporting OnClickFunc handlers, icon binding, a padding override with min/max width and height constraints, a static or Alpine-bound aria label, the type attribute, and the optional tooltip
-2. `src/toolset/tooltipState.js` — Shared Alpine data component that teleports a tooltip to the document body, positions it with fixed coordinates on hover or focus, and flips it to stay inside the viewport
-3. `src/toolset/tooltip.go` — The once-handle that embeds the shared tooltip state, plus TooltipSurfaceClassesResolver for the shared fixed-layer tooltip classes and the shared TooltipPosition* placement values
-4. `src/control/button_templ.go` — Compiled output rendering the button with Alpine.js event binding and the teleported tooltip
+1. `src/control/button.templ` — Component definition with ButtonSettings struct supporting OnClickFunc handlers, icon binding, a padding override with min/max width and height constraints, a static or Alpine-bound aria label, the type attribute, the optional tooltip, and the action labels and per-state icons; `Button` wraps `buttonFrame` in the action scope when an action setting is present, and a tracked non-submit click passes its result to `trackActionPromise`
+2. `src/control/buttonActionState.js` — Alpine data component that tracks the click promise or the owning form submit and HTMX request events, guards double submission, and resolves the label and icon for the idle, pending, succeeded, and failed states from the maps the component passes in
+3. `src/toolset/tooltipState.js` — Shared Alpine data component that teleports a tooltip to the document body, positions it with fixed coordinates on hover or focus, and flips it to stay inside the viewport
+4. `src/toolset/tooltip.go` — The once-handle that embeds the shared tooltip state, plus TooltipSurfaceClassesResolver for the shared fixed-layer tooltip classes and the shared TooltipPosition* placement values
+5. `src/control/button_templ.go` — Compiled output rendering the button with Alpine.js event binding and the teleported tooltip
+
+---
+
+## Number Range Input Field
+
+Number box and slider bound to one state path. The box edits a local draft and commits on change: it clamps the draft to min/max, snaps it to the step, and writes a number to the path. The slider writes the path directly. The slider renders always, hides below a 24rem container, or never renders. The slider takes its appearance from the uiControl RangeSlider thumb and track settings.
+
+**Flow:**
+
+1. `src/form/numberRangeInputField.templ` — Settings, bounds defaults, the box and slider sub-templates, the slider display layout, and the thumb and track appearance passthrough
+2. `src/form/numberRangeInputFieldState.js` — Alpine draft sync and the clamp-and-snap commit
+3. `src/form/inputField.templ` — Renders the number box, the unit affix, and the floating label
+4. `src/control/rangeSlider.templ` — Renders the slider and clamps the path on writes
+
+---
+
+## File Upload Input
+
+Drop zone with click-to-pick that lists each file with a type icon, size, status, and remove button, rejects files that break the size, count, type, or duplicate rules, and submits the files with the form under InputName. During an HTMX request from the owning form, each file shows its share of the upload progress, then an uploaded or failed state.
+
+**Flow:**
+
+1. `src/form/fileUploadInput.templ` — Settings, the upload limits config, the size scale, the drop zone over a visually hidden, focusable file input, the file list with a remove Button, the rejection list, and the Zone, Row, Progress, and Rejected style groups
+2. `src/form/fileUploadInputState.js` — Limit checks, the DataTransfer sync of the non-uploaded files into the input, the per-file progress split, the result marking, the reset clear, and the language-matched messages
+3. `demo/fileUploadDemoRouting.js` — Demo-only XHR patch that replays upload progress without network traffic
 
 ---
 
@@ -193,6 +219,20 @@ Dismissible alert component with title, description, icons (left/right), and var
 
 1. `src/display/alert.templ` — Component definition with AlertSettings struct exposing variants, sizes, and icon options
 2. `src/display/alert_templ.go` — Compiled output rendering alert box with Tailwind styling and optional close button
+
+---
+
+## Chart
+
+Line, area, bar, and donut charts drawn with plain Vega. The settings split by chart kind: the shared settings hold the X axis, the series, the legend, and the tooltip, while the type-specific options live in a Cartesian or a Donut group. Colors are Tailwind tokens. The chart supports stacking, area fills, markers, line dashes, an empty state, a screen-reader table, and live rows from an Alpine path with a row cap.
+
+**Flow:**
+
+1. `src/display/chart.go` — The shared settings and the per-kind Cartesian and Donut groups, the private wire structs with their JSON tags, the config resolver with defaults and option checks, the legend and tooltip classes, and the color token collector
+2. `src/display/chart.templ` — JSON config script, legend, canvas, empty state, tooltip, color probes, and table markup
+3. `src/display/chartState.js` — Color probe reader, Vega spec builders per chart type, the validated palette, the Vega view lifecycle outside Alpine state, the rows watch, and the tooltip handler
+4. `src/import/import.templ` — HeadTagsVega loads Vega once for the page, usually from the layout head
+5. `demo/chartDemo.templ` and `demo/chartDemoState.js` — Live streaming area chart and the line, bar, stacked, donut, appearance, and empty examples
 
 ---
 
@@ -411,7 +451,7 @@ Collapsible section component for grouping content into expandable panels. The c
 
 ## CDN Dependencies Setup
 
-Consolidated export of all third-party library dependencies (Alpine.js, UnoCSS runtime with Tailwind-compatible presets, Phosphor Icons, Google Fonts, HTMX) as composable templ components for easy inclusion in application head tags.
+Consolidated export of all third-party library dependencies (Alpine.js, UnoCSS runtime with Tailwind-compatible presets, Phosphor Icons, Google Fonts, HTMX, Vega) as composable templ components for easy inclusion in application head tags.
 
 **Flow:**
 
@@ -450,7 +490,7 @@ Shared token-to-class resolvers for components that expose a styling token. Each
 
 **Flow:**
 
-1. `src/toolset/styleTokens.go` — the shared `BorderRadius*`, `Shape*`, `ShadowSize*`, `RingThickness*`, `PaddingSize*`, and `GapSize*` token constants, plus `BackgroundColorClassResolver()`, `TextColorClassResolver()`, `BorderColorClassResolver()`, `BorderRadiusTokenResolver()`, `BorderRadiusClassResolver()`, `ShapeClassResolver()`, `ShadowClassResolver()`, `RingThicknessClassResolver()`, `RingClassResolver()`, `CompactRingClassResolver()`, `PaddingClassResolver()`, `CompactPaddingClassResolver()`, and `GapClassResolver()`
+1. `src/toolset/styleTokens.go` — the shared `BorderRadius*`, `Shape*`, `ShadowSize*`, `RingThickness*`, `PaddingSize*`, `GapSize*`, and `Animation*` token constants, plus `BackgroundColorClassResolver()`, `TextColorClassResolver()`, `BorderColorClassResolver()`, `BorderRadiusTokenResolver()`, `BorderRadiusClassResolver()`, `ShapeClassResolver()`, `ShadowClassResolver()`, `RingThicknessClassResolver()`, `RingClassResolver()`, `CompactRingClassResolver()`, `PaddingClassResolver()`, `CompactPaddingClassResolver()`, `GapClassResolver()`, and `AnimationClassResolver()`
 2. `src/structural/carousel.go`, `carousel.templ`, `tabs.go`, `tabs.templ`, `card.templ` — structural callers
 3. `src/display/modal.templ`, `alert.templ`, `headerIcon.templ`, `toast.templ`, `accordion.templ`, `tag.templ`, `confirmationDialog.templ` — display callers
 4. `src/control/button.templ`, `rangeSlider.templ`, `src/form/checkboxInput.templ` — control and form callers

@@ -1,0 +1,432 @@
+package main
+
+import (
+	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+func chartDemoMonthlyTrafficRows() []map[string]any {
+	return []map[string]any{
+		{"month": "Jan", "received": 412, "transmitted": 230},
+		{"month": "Feb", "received": 388, "transmitted": 251},
+		{"month": "Mar", "received": 455, "transmitted": 297},
+		{"month": "Apr", "received": 501, "transmitted": 310},
+		{"month": "May", "received": 478, "transmitted": 344},
+		{"month": "Jun", "received": 530, "transmitted": 362},
+	}
+}
+
+templ ChartLineExample() {
+	{{
+		lineUsage := `@uiDisplay.Chart(uiDisplay.ChartSettings{
+	Type:  uiDisplay.ChartTypeLine,
+	XAxis: uiDisplay.ChartXAxisSettings{RowKey: "month"},
+	Series: []uiDisplay.ChartSeriesSettings{
+		{RowKey: "received", Label: "Received (GiB)"},
+		{
+			RowKey:        "transmitted",
+			Label:         "Transmitted (GiB)",
+			LineDashStyle: uiDisplay.ChartLineDashStyleDashed,
+		},
+	},
+
+	// OptionalFields
+	Cartesian: uiDisplay.ChartCartesianSettings{
+		YAxis:             uiDisplay.ChartYAxisSettings{Title: "GiB", TickLabelFormat: ",.0f"},
+		MarkerDisplayMode: uiDisplay.ChartMarkerDisplayModeAlways,
+	},
+	Rows: chartDemoMonthlyTrafficRows(),
+})`
+	}}
+	@DemoExampleCard(
+		"Line",
+		"A category axis shows the XAxis.RowKey values in row order. LineDashStyle draws a dashed series. Cartesian.MarkerDisplayMode always shows a marker on each point.",
+		"/display/chart.templ", lineUsage,
+	) {
+		@uiDisplay.Chart(uiDisplay.ChartSettings{
+			Type:  uiDisplay.ChartTypeLine,
+			XAxis: uiDisplay.ChartXAxisSettings{RowKey: "month"},
+			Series: []uiDisplay.ChartSeriesSettings{
+				{RowKey: "received", Label: "Received (GiB)"},
+				{
+					RowKey:        "transmitted",
+					Label:         "Transmitted (GiB)",
+					LineDashStyle: uiDisplay.ChartLineDashStyleDashed,
+				},
+			},
+			Cartesian: uiDisplay.ChartCartesianSettings{
+				YAxis:             uiDisplay.ChartYAxisSettings{Title: "GiB", TickLabelFormat: ",.0f"},
+				MarkerDisplayMode: uiDisplay.ChartMarkerDisplayModeAlways,
+			},
+			Rows:              chartDemoMonthlyTrafficRows(),
+			AriaLabel:         "Monthly network traffic",
+		})
+	}
+}
+
+templ ChartBarExample() {
+	{{
+		barUsage := `@uiDisplay.Chart(uiDisplay.ChartSettings{
+	Type:  uiDisplay.ChartTypeBar,
+	XAxis: uiDisplay.ChartXAxisSettings{RowKey: "month"},
+	Series: []uiDisplay.ChartSeriesSettings{
+		{RowKey: "received", Label: "Received (GiB)"},
+		{RowKey: "transmitted", Label: "Transmitted (GiB)"},
+	},
+
+	// OptionalFields
+	Cartesian: uiDisplay.ChartCartesianSettings{
+		YAxis: uiDisplay.ChartYAxisSettings{TickLabelFormat: ",.0f"},
+	},
+	Rows: chartDemoMonthlyTrafficRows(),
+})`
+	}}
+	@DemoExampleCard(
+		"Bar",
+		"Bar groups the series side by side for each XAxis.RowKey value. Each bar has its own tooltip.",
+		"/display/chart.templ", barUsage,
+	) {
+		@uiDisplay.Chart(uiDisplay.ChartSettings{
+			Type:  uiDisplay.ChartTypeBar,
+			XAxis: uiDisplay.ChartXAxisSettings{RowKey: "month"},
+			Series: []uiDisplay.ChartSeriesSettings{
+				{RowKey: "received", Label: "Received (GiB)"},
+				{RowKey: "transmitted", Label: "Transmitted (GiB)"},
+			},
+			Cartesian: uiDisplay.ChartCartesianSettings{
+				YAxis: uiDisplay.ChartYAxisSettings{TickLabelFormat: ",.0f"},
+			},
+			Rows:      chartDemoMonthlyTrafficRows(),
+			AriaLabel: "Monthly network traffic",
+		})
+	}
+}
+
+templ ChartStackedExample() {
+	{{
+		stackedUsage := `@uiDisplay.Chart(uiDisplay.ChartSettings{
+	Type:  uiDisplay.ChartTypeBar,
+	XAxis: uiDisplay.ChartXAxisSettings{RowKey: "month", Title: "Month"},
+	Series: []uiDisplay.ChartSeriesSettings{
+		{RowKey: "received", Label: "Received", IdentityColor: "sky-500"},
+		{RowKey: "transmitted", Label: "Transmitted", IdentityColor: "amber-500"},
+	},
+
+	// OptionalFields
+	Cartesian: uiDisplay.ChartCartesianSettings{StackMode: uiDisplay.ChartStackModePercent},
+	Rows:      chartDemoMonthlyTrafficRows(),
+})`
+	}}
+	@DemoExampleCard(
+		"Stacked",
+		"Cartesian.StackMode stacked piles the series on each other. Cartesian.StackMode percent shows each series as a share of the total, and the Y axis switches to percent. IdentityColor takes a color token for the series line, area, bar, marker, legend swatch, and tooltip swatch.",
+		"/display/chart.templ", stackedUsage,
+	) {
+		@uiDisplay.Chart(uiDisplay.ChartSettings{
+			Type:  uiDisplay.ChartTypeBar,
+			XAxis: uiDisplay.ChartXAxisSettings{RowKey: "month", Title: "Month"},
+			Series: []uiDisplay.ChartSeriesSettings{
+				{RowKey: "received", Label: "Received", IdentityColor: "sky-500"},
+				{RowKey: "transmitted", Label: "Transmitted", IdentityColor: "amber-500"},
+			},
+			Cartesian: uiDisplay.ChartCartesianSettings{StackMode: uiDisplay.ChartStackModePercent},
+			Rows:      chartDemoMonthlyTrafficRows(),
+			AriaLabel: "Monthly traffic share",
+		})
+	}
+}
+
+templ ChartDonutExample() {
+	{{
+		donutUsage := `@uiDisplay.Chart(uiDisplay.ChartSettings{
+	Type:  uiDisplay.ChartTypeDonut,
+	XAxis: uiDisplay.ChartXAxisSettings{RowKey: "service"},
+	Series: []uiDisplay.ChartSeriesSettings{
+		{RowKey: "usedGib", Label: "Storage (GiB)"},
+	},
+
+	// OptionalFields
+	Tooltip: uiDisplay.ChartTooltipSettings{ValueFormat: ",.1f"},
+	Donut: uiDisplay.ChartDonutSettings{
+		SliceIdentityColors: map[string]string{"mariadb": "sky-500"},
+		HolePercent:         70,
+	},
+	Rows: []map[string]any{
+		{"service": "mariadb", "usedGib": 42.5},
+		{"service": "nginx", "usedGib": 3.2},
+		{"service": "php-webserver", "usedGib": 18.9},
+		{"service": "redis", "usedGib": 6.4},
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Donut",
+		"Donut reads one value per row from the first series. XAxis.RowKey names the slice, and the legend lists the slices in row order. Donut.SliceIdentityColors sets the color of a slice by its name.",
+		"/display/chart.templ", donutUsage,
+	) {
+		@uiDisplay.Chart(uiDisplay.ChartSettings{
+			Type:  uiDisplay.ChartTypeDonut,
+			XAxis: uiDisplay.ChartXAxisSettings{RowKey: "service"},
+			Series: []uiDisplay.ChartSeriesSettings{
+				{RowKey: "usedGib", Label: "Storage (GiB)"},
+			},
+			Rows: []map[string]any{
+				{"service": "mariadb", "usedGib": 42.5},
+				{"service": "nginx", "usedGib": 3.2},
+				{"service": "php-webserver", "usedGib": 18.9},
+				{"service": "redis", "usedGib": 6.4},
+			},
+			Tooltip: uiDisplay.ChartTooltipSettings{ValueFormat: ",.1f"},
+			Donut: uiDisplay.ChartDonutSettings{
+				SliceIdentityColors: map[string]string{"mariadb": "sky-500"},
+				HolePercent:         70,
+			},
+			AriaLabel: "Storage by service",
+		})
+	}
+}
+
+templ ChartDonutCenterLabelExample() {
+	{{
+		centerLabelUsage := `@uiDisplay.Chart(uiDisplay.ChartSettings{
+	Type:  uiDisplay.ChartTypeDonut,
+	XAxis: uiDisplay.ChartXAxisSettings{RowKey: "service"},
+	Series: []uiDisplay.ChartSeriesSettings{
+		{RowKey: "usedGib", Label: "Storage (GiB)"},
+	},
+
+	// OptionalFields
+	Tooltip: uiDisplay.ChartTooltipSettings{ValueFormat: ",.1f"},
+	Donut: uiDisplay.ChartDonutSettings{
+		CenterLabelDisplayMode: uiDisplay.ChartDonutCenterLabelDisplayModeAlways,
+		CenterLabelAlwaysSlice: "mariadb",
+		CenterLabelSize:        uiDisplay.ChartDonutCenterLabelSizeLg,
+		CenterLabelValueSuffix: " GiB",
+		HolePercent:            70,
+	},
+	Rows: []map[string]any{
+		{"service": "mariadb", "usedGib": 42.5},
+		{"service": "nginx", "usedGib": 3.2},
+		{"service": "php-webserver", "usedGib": 18.9},
+		{"service": "redis", "usedGib": 6.4},
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Donut Center Label",
+		"Donut.CenterLabelDisplayMode shows the slice name and its value in the donut hole. Always keeps the CenterLabelAlwaysSlice value, or the first slice when it is empty, until a hover replaces it. Hover shows the label only while a slice is hovered. CenterLabelSize scales both lines, and CenterLabelValueSuffix follows the value.",
+		"/display/chart.templ", centerLabelUsage,
+	) {
+		@uiDisplay.Chart(uiDisplay.ChartSettings{
+			Type:  uiDisplay.ChartTypeDonut,
+			XAxis: uiDisplay.ChartXAxisSettings{RowKey: "service"},
+			Series: []uiDisplay.ChartSeriesSettings{
+				{RowKey: "usedGib", Label: "Storage (GiB)"},
+			},
+			Rows: []map[string]any{
+				{"service": "mariadb", "usedGib": 42.5},
+				{"service": "nginx", "usedGib": 3.2},
+				{"service": "php-webserver", "usedGib": 18.9},
+				{"service": "redis", "usedGib": 6.4},
+			},
+			Tooltip: uiDisplay.ChartTooltipSettings{ValueFormat: ",.1f"},
+			Donut: uiDisplay.ChartDonutSettings{
+				CenterLabelDisplayMode: uiDisplay.ChartDonutCenterLabelDisplayModeAlways,
+				CenterLabelAlwaysSlice: "mariadb",
+				CenterLabelSize:        uiDisplay.ChartDonutCenterLabelSizeLg,
+				CenterLabelValueSuffix: " GiB",
+				HolePercent:            70,
+			},
+			AriaLabel: "Storage by service",
+		})
+	}
+}
+
+templ ChartAppearanceExample() {
+	{{
+		appearanceUsage := `@uiDisplay.Chart(uiDisplay.ChartSettings{
+	Type:  uiDisplay.ChartTypeArea,
+	XAxis: uiDisplay.ChartXAxisSettings{
+		RowKey:             "month",
+		IsTickStartEndOnly: true,
+		TickLabelColor:     "secondary-300",
+	},
+	Series: []uiDisplay.ChartSeriesSettings{
+		{RowKey: "received", Label: "Received", IdentityColor: "secondary-500"},
+	},
+
+	// OptionalFields
+	Cartesian: uiDisplay.ChartCartesianSettings{
+		YAxis: uiDisplay.ChartYAxisSettings{
+			Position:         uiDisplay.ChartYAxisPositionRight,
+			IsGridLineHidden: true,
+		},
+		AreaFillStyle: uiDisplay.ChartAreaFillStyleSolid,
+	},
+	Legend: uiDisplay.ChartLegendSettings{
+		DisplayMode: uiDisplay.ChartLegendDisplayModeAlways,
+		Position:    uiDisplay.ChartLegendPositionBottom,
+		Alignment:   uiDisplay.ChartLegendAlignmentEnd,
+		SwatchShape: uiToolset.ShapeSquare,
+	},
+	Tooltip: uiDisplay.ChartTooltipSettings{
+		BackgroundColor:   "secondary-950/95",
+		ValueColor:        "secondary-200",
+		RingColor:         "secondary-500/40",
+		IsCrosshairHidden: true,
+		ContentFunc:       "chartDemoTooltipContent",
+	},
+	Rows: chartDemoMonthlyTrafficRows(),
+})`
+	}}
+	@DemoExampleCard(
+		"Appearance",
+		"Each part of the chart has its own settings. XAxis and YAxis set the scale, title, tick labels, baseline, and grid. Legend sets the display mode, position, alignment, and swatch shape. Tooltip sets the surface, the text colors, and the crosshair. Tooltip.ContentFunc names a global JS function that returns the tooltip HTML for the hovered row, and it replaces the default title and rows.",
+		"/display/chart.templ", appearanceUsage,
+	) {
+		@uiDisplay.Chart(uiDisplay.ChartSettings{
+			Type: uiDisplay.ChartTypeArea,
+			XAxis: uiDisplay.ChartXAxisSettings{
+				RowKey:             "month",
+				IsTickStartEndOnly: true,
+				TickLabelColor:     "secondary-300",
+			},
+			Series: []uiDisplay.ChartSeriesSettings{
+				{RowKey: "received", Label: "Received", IdentityColor: "secondary-500"},
+			},
+			Cartesian: uiDisplay.ChartCartesianSettings{
+				YAxis: uiDisplay.ChartYAxisSettings{
+					Position:         uiDisplay.ChartYAxisPositionRight,
+					IsGridLineHidden: true,
+				},
+				AreaFillStyle: uiDisplay.ChartAreaFillStyleSolid,
+			},
+			Legend: uiDisplay.ChartLegendSettings{
+				DisplayMode: uiDisplay.ChartLegendDisplayModeAlways,
+				Position:    uiDisplay.ChartLegendPositionBottom,
+				Alignment:   uiDisplay.ChartLegendAlignmentEnd,
+				SwatchShape: uiToolset.ShapeSquare,
+			},
+			Tooltip: uiDisplay.ChartTooltipSettings{
+				BackgroundColor:   "secondary-950/95",
+				ValueColor:        "secondary-200",
+				RingColor:         "secondary-500/40",
+				IsCrosshairHidden: true,
+				ContentFunc:       "chartDemoTooltipContent",
+			},
+			Rows:      chartDemoMonthlyTrafficRows(),
+			AriaLabel: "Monthly received traffic",
+		})
+	}
+}
+
+templ chartDemoEmptyState() {
+	<div class="flex flex-col items-center gap-1 text-sm text-neutral-400">
+		<i class="ph-bold ph-chart-line-down text-2xl"></i>
+		<p>No requests yet</p>
+	</div>
+}
+
+templ ChartEmptyExample() {
+	{{
+		emptyUsage := `@uiDisplay.Chart(uiDisplay.ChartSettings{
+	Type:   uiDisplay.ChartTypeArea,
+	XAxis:  uiDisplay.ChartXAxisSettings{RowKey: "time"},
+	Series: []uiDisplay.ChartSeriesSettings{{RowKey: "requests", Label: "Requests"}},
+
+	// OptionalFields
+	EmptyState: chartDemoEmptyState(),
+})`
+	}}
+	@DemoExampleCard(
+		"Empty State",
+		"With no rows, the chart shows EmptyState over the plot. The default is the text No data.",
+		"/display/chart.templ", emptyUsage,
+	) {
+		@uiDisplay.Chart(uiDisplay.ChartSettings{
+			Type: uiDisplay.ChartTypeArea,
+			XAxis: uiDisplay.ChartXAxisSettings{
+				RowKey:    "time",
+				ScaleType: uiDisplay.ChartScaleTypeTime,
+			},
+			Series:      []uiDisplay.ChartSeriesSettings{{RowKey: "requests", Label: "Requests"}},
+			EmptyState:  chartDemoEmptyState(),
+			HeightClass: "h-40",
+		})
+	}
+}
+
+templ ChartDemo() {
+	{{
+		demoUsage := `@uiDisplay.Chart(uiDisplay.ChartSettings{
+	Type: uiDisplay.ChartTypeArea,
+	XAxis: uiDisplay.ChartXAxisSettings{
+		RowKey:          "time",
+		ScaleType:       uiDisplay.ChartScaleTypeTime,
+		TickLabelFormat: "%H:%M:%S",
+	},
+	Series: []uiDisplay.ChartSeriesSettings{
+		{RowKey: "cpu", Label: "CPU"},
+		{RowKey: "memory", Label: "Memory"},
+	},
+
+	// OptionalFields
+	Cartesian: uiDisplay.ChartCartesianSettings{
+		YAxis: uiDisplay.ChartYAxisSettings{
+			TickLabelFormat: ".0%",
+			MinValue:        "0",
+			MaxValue:        "1",
+		},
+	},
+	Tooltip:             uiDisplay.ChartTooltipSettings{TitleFormat: "%H:%M:%S"},
+	RowsOneWayStatePath: "resourceUsageRows",
+	MaxRows:             20,
+})`
+	}}
+	<div class="flex flex-col gap-4" id="chart-demo">
+		@DemoComponentSection(DemoComponentSectionSettings{
+			ComponentPath:          "/display/chart.templ",
+			Description:            "A chart renders line, area, bar, and donut charts with Vega. It draws an HTML legend, a hover tooltip, and a screen-reader table, and it redraws when the rows at RowsOneWayStatePath change. The page must load Vega once, usually with @uiImport.HeadTagsVega() in the layout head.",
+			LiveExampleDescription: "CPU and memory usage. The parent state appends a row every two seconds and drops the oldest.",
+			Title:                  ".Chart",
+			UsageCode:              demoUsage,
+			AlpineStateCode:        `<div x-data="{resourceUsageRows: [{time: 1760360000000, cpu: 0.42, memory: 0.61}]}"></div>`,
+		}) {
+			@uiToolset.MinifierTemplateJs(&chartDemoAlpineState)
+			<div x-data="chartDemoResourceUsage">
+				@uiDisplay.Chart(uiDisplay.ChartSettings{
+					Type: uiDisplay.ChartTypeArea,
+					XAxis: uiDisplay.ChartXAxisSettings{
+						RowKey:          "time",
+						ScaleType:       uiDisplay.ChartScaleTypeTime,
+						TickLabelFormat: "%H:%M:%S",
+					},
+					Series: []uiDisplay.ChartSeriesSettings{
+						{RowKey: "cpu", Label: "CPU"},
+						{RowKey: "memory", Label: "Memory"},
+					},
+					Cartesian: uiDisplay.ChartCartesianSettings{
+						YAxis: uiDisplay.ChartYAxisSettings{
+							TickLabelFormat: ".0%",
+							MinValue:        "0",
+							MaxValue:        "1",
+						},
+					},
+					Tooltip:             uiDisplay.ChartTooltipSettings{TitleFormat: "%H:%M:%S"},
+					RowsOneWayStatePath: "resourceUsageRows",
+					MaxRows:             20,
+					AriaLabel:           "CPU and memory usage",
+				})
+			</div>
+		}
+		@DemoAdvancedExamples("chart-demo", []uiDisplay.AccordionItemSettings{
+			{Title: "Line", Icon: "ph-chart-line", Content: ChartLineExample()},
+			{Title: "Bar", Icon: "ph-chart-bar", Content: ChartBarExample()},
+			{Title: "Stacked", Icon: "ph-stack", Content: ChartStackedExample()},
+			{Title: "Donut", Icon: "ph-chart-donut", Content: ChartDonutExample()},
+			{Title: "Donut Center Label", Icon: "ph-text-align-center", Content: ChartDonutCenterLabelExample()},
+			{Title: "Appearance", Icon: "ph-palette", Content: ChartAppearanceExample()},
+			{Title: "Empty State", Icon: "ph-chart-line-down", Content: ChartEmptyExample()},
+		})
+	</div>
+}
