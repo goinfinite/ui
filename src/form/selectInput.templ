@@ -3,6 +3,7 @@ package uiForm
 import (
 	_ "embed"
 	"fmt"
+	"strconv"
 	"sync/atomic"
 
 	uiToolset "github.com/goinfinite/ui/src/toolset"
@@ -35,6 +36,14 @@ type SelectLabelValueOption struct {
 	Value     string          `json:"value"`
 }
 
+type SelectInputTriggerStyle struct {
+	// OptionalFields
+	BackgroundColor string
+	BorderColor     string
+	BorderRadius    string
+	TextColor       string
+}
+
 type SelectInputSettings struct {
 	InputName string
 	Label     string
@@ -48,9 +57,13 @@ type SelectInputSettings struct {
 	OnChangeFunc                      string
 	Size                              string
 	TextCase                          string
+	Trigger                           SelectInputTriggerStyle
 	DropdownBackgroundColor           string
+	DropdownBorderColor               string
+	DropdownBorderRadius              string
 	DropdownMinHeightClass            string
 	DropdownMaxHeightClass            string
+	SelectedIconColor                 string
 	MaxVisibleOptions                 uint
 	IsDisabledOneWayStatePath         string
 	IsRequired                        bool
@@ -118,6 +131,15 @@ templ selectInputOptionCheckbox(
 	</span>
 }
 
+templ selectInputOptionIcon(
+	selectedIconColor, selectedValueStatePath, optionValue string,
+) {
+	<i
+		class={ "ph-duotone text-lg text-neutral-400 peer-checked:text-" + selectedIconColor + " peer-focus-visible:ring-2 peer-focus-visible:ring-" + selectedIconColor }
+		:class={ `String(` + selectedValueStatePath + `) == ` + strconv.Quote(optionValue) + ` ? "ph-check-circle" : "ph-circle"` }
+	></i>
+}
+
 templ SelectInput(componentSettings SelectInputSettings) {
 	@selectInputAlpineStateOnce.Once()
 	{{ selectValueStatePath := "selectedValue" }}
@@ -133,12 +155,20 @@ templ SelectInput(componentSettings SelectInputSettings) {
 		{{ onChangeFuncSuffix = "; " + componentSettings.OnChangeFunc }}
 	}
 	{{ toggleExpression := "toggleDropdown()" }}
+	{{ openWithOptionFocusExpression := "openWithOptionFocus()" }}
 	{{ isDisabledPath := componentSettings.IsDisabledOneWayStatePath }}
 	if isDisabledPath != "" {
 		{{ toggleExpression = "!(" + isDisabledPath + ") && toggleDropdown()" }}
+		{{ openWithOptionFocusExpression = "!(" + isDisabledPath + ") && openWithOptionFocus()" }}
 	}
 	{{ legendSizeClasses, triggerSizeClasses, emptyPaddingClass := selectInputSizeClassesResolver(componentSettings.Size) }}
 	{{ textCaseClass := uiToolset.TextCaseClassResolver(componentSettings.TextCase) }}
+	{{ triggerStyle := componentSettings.Trigger }}
+	{{ triggerBackgroundClass := uiToolset.BackgroundColorClassResolver(triggerStyle.BackgroundColor, "bg-neutral-50/7.5") }}
+	{{ triggerBorderClass := uiToolset.BorderColorClassResolver(triggerStyle.BorderColor, "border-neutral-50/5") }}
+	{{ triggerBorderRadiusClass := uiToolset.BorderRadiusClassResolver(triggerStyle.BorderRadius, "rounded") }}
+	{{ triggerTextColorClass := uiToolset.TextColorClassResolver(triggerStyle.TextColor, "text-neutral-100") }}
+	{{ selectedIconColor := componentSettings.SelectedIconColor }}
 	{{ labelValueOptionsScriptId := generateLabelValueOptionsScriptId() }}
 	{{ fieldsetEmptyStateExpression := "" }}
 	{{ legendEmptyStateExpression := "" }}
@@ -160,7 +190,7 @@ templ SelectInput(componentSettings SelectInputSettings) {
 		x-data={ templ.JSFuncCall("selectInput", labelValueOptionsScriptId) }
 		class="relative w-full"
 		@click.away="closeDropdown()"
-		@keydown.escape.window="closeDropdown()"
+		@keydown.escape.window="closeWithFocusReturn()"
 		if isDisabledPath != "" {
 			:class={ isDisabledPath + " && 'pointer-events-none opacity-50'" }
 		}
@@ -170,7 +200,7 @@ templ SelectInput(componentSettings SelectInputSettings) {
 		}
 		<div class="flex w-full flex-col">
 			<fieldset
-				class="bg-neutral-50/7.5 relative -mt-1.5 w-full rounded border border-neutral-50/5 transition-colors autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30"
+				class={ triggerBackgroundClass + " relative -mt-1.5 w-full " + triggerBorderRadiusClass + " border " + triggerBorderClass + " transition-colors autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30" }
 				if fieldsetEmptyStateExpression != "" {
 					:class={ fieldsetEmptyStateExpression }
 				}
@@ -189,12 +219,13 @@ templ SelectInput(componentSettings SelectInputSettings) {
 				<!-- SelectField -->
 				<div
 					x-ref="selectTrigger"
-					class={ "group flex w-full cursor-pointer items-center justify-between text-neutral-100 " + triggerSizeClasses }
+					class={ "group flex w-full cursor-pointer items-center justify-between " + triggerTextColorClass + " " + triggerSizeClasses }
 					tabindex="0"
 					role="button"
 					:aria-expanded="isOpen"
 					@keydown.enter.prevent={ toggleExpression }
 					@keydown.space.prevent={ toggleExpression }
+					@keydown.arrow-down.prevent={ openWithOptionFocusExpression }
 					if triggerEmptyStateExpression != "" {
 						:class={ triggerEmptyStateExpression }
 					}
@@ -242,23 +273,20 @@ templ SelectInput(componentSettings SelectInputSettings) {
 					</div>
 				</div>
 				<!-- SelectDropdown -->
-				{{ dropdownBackgroundClass := "bg-neutral-800/95" }}
-				if componentSettings.DropdownBackgroundColor != "" {
-					{{ dropdownBackgroundClass = "bg-" + componentSettings.DropdownBackgroundColor }}
-				}
-				{{ dropdownHeightClasses := selectDropdownHeightClassesResolver(componentSettings.DropdownMinHeightClass, componentSettings.DropdownMaxHeightClass) }}
+				{{ dropdownSurfaceClasses := selectDropdownSurfaceClassesResolver(componentSettings.DropdownBackgroundColor, componentSettings.DropdownBorderColor, componentSettings.DropdownBorderRadius, componentSettings.DropdownMinHeightClass, componentSettings.DropdownMaxHeightClass) }}
 				{{ dropdownMaxVisibleOptionsStyle := selectDropdownMaxVisibleOptionsStyle(componentSettings.MaxVisibleOptions, selectInputOptionRowHeightRem) }}
 				<ul
 					x-ref="selectDropdown"
-					class={ "absolute left-0 z-20 w-full overflow-auto rounded-md border border-neutral-50/5 " + dropdownHeightClasses + " " + dropdownBackgroundClass + " shadow-lg hover:border-neutral-50/30" }
+					class={ dropdownSurfaceClasses }
 					if dropdownMaxVisibleOptionsStyle != "" {
 						style={ dropdownMaxVisibleOptionsStyle }
 					}
 					:class={ "openUpward ? 'bottom-full mb-1' : 'mt-1'" }
 					x-show="isOpen"
 					if !componentSettings.IsMultiSelect {
-						@click="closeDropdown()"
+						@click="closeWithFocusReturn()"
 						@change={ selectValueStatePath + " = $event.target.value" + onChangeFuncSuffix }
+						@keydown.enter.prevent="commitFocusedOption()"
 					}
 					x-transition
 				>
@@ -269,6 +297,9 @@ templ SelectInput(componentSettings SelectInputSettings) {
 					}
 					{{ optionLabelClasses := "flex w-full cursor-pointer items-center px-3 py-2" }}
 					if componentSettings.IsMultiSelect {
+						{{ optionLabelClasses += " gap-2" }}
+					}
+					if selectedIconColor != "" {
 						{{ optionLabelClasses += " gap-2" }}
 					}
 					if componentSettings.ShouldIncludeBlankOption && !componentSettings.IsMultiSelect {
@@ -283,8 +314,11 @@ templ SelectInput(componentSettings SelectInputSettings) {
 										:disabled={ isDisabledPath }
 									}
 									@click.stop
-									class="sr-only"
+									class="sr-only peer"
 								/>
+								if selectedIconColor != "" {
+									@selectInputOptionIcon(selectedIconColor, selectValueStatePath, "")
+								}
 								<span>--</span>
 							</label>
 						</li>
@@ -312,8 +346,11 @@ templ SelectInput(componentSettings SelectInputSettings) {
 											:disabled={ isDisabledPath }
 										}
 										@click.stop
-										class="sr-only"
+										class="sr-only peer"
 									/>
+									if selectedIconColor != "" {
+										@selectInputOptionIcon(selectedIconColor, selectValueStatePath, option)
+									}
 									<span>{ option }</span>
 								}
 							</label>
@@ -347,8 +384,11 @@ templ SelectInput(componentSettings SelectInputSettings) {
 											:disabled={ isDisabledPath }
 										}
 										@click.stop
-										class="sr-only"
+										class="sr-only peer"
 									/>
+									if selectedIconColor != "" {
+										@selectInputOptionIcon(selectedIconColor, selectValueStatePath, option.Value)
+									}
 									if option.LabelHtml != nil {
 										@option.LabelHtml
 									}

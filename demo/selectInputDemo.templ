@@ -565,6 +565,55 @@ templ SelectInputMultiSelectLabelValueExample() {
 	}
 }
 
+templ SelectInputStyleExample() {
+	{{
+		styleUsage := `@uiForm.SelectInput(uiForm.SelectInputSettings{
+	InputName: "country",
+	Label:     "Country",
+
+	// OptionalFields
+	FlatOptions:          []string{"Argentina", "Brazil", "Chile"},
+	TwoWayStatePath:      "country",
+	SelectedIconColor:    "violet-500",
+	DropdownBorderColor:  "violet-500/20",
+	DropdownBorderRadius: uiToolset.BorderRadiusLg,
+	Trigger: uiForm.SelectInputTriggerStyle{
+		BackgroundColor: "violet-950",
+		BorderColor:     "violet-500/40",
+		BorderRadius:    uiToolset.BorderRadiusLg,
+		TextColor:       "violet-100",
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Style",
+		"Trigger repaints the field surface. SelectedIconColor adds the checked-row icon and its focus ring, and the dropdown border and radius shape the list.",
+		"/form/selectInput.templ", styleUsage,
+	) {
+		@DemoAlpineStateBlock(`<div x-data="{country: 'Brazil'}"></div>`)
+		<div x-data="{country: 'Brazil'}">
+			@uiForm.SelectInput(uiForm.SelectInputSettings{
+				InputName:            "countryStyled",
+				Label:                "Country",
+				FlatOptions:          []string{"Argentina", "Brazil", "Chile"},
+				TwoWayStatePath:      "country",
+				SelectedIconColor:    "violet-500",
+				DropdownBorderColor:  "violet-500/20",
+				DropdownBorderRadius: uiToolset.BorderRadiusLg,
+				Trigger: uiForm.SelectInputTriggerStyle{
+					BackgroundColor: "violet-950",
+					BorderColor:     "violet-500/40",
+					BorderRadius:    uiToolset.BorderRadiusLg,
+					TextColor:       "violet-100",
+				},
+			})
+			<p class={ DemoLiveStateClasses }>
+				Value: <span x-text="country"></span>
+			</p>
+		</div>
+	}
+}
+
 templ SelectInputDemo() {
 	{{
 		demoUsage := `@uiForm.SelectInput(uiForm.SelectInputSettings{
@@ -610,6 +659,7 @@ templ SelectInputDemo() {
 			{Title: "Sizes", Icon: "ph-ruler", Content: SelectInputSizesExample()},
 			{Title: "Text Case", Icon: "ph-text-t", Content: SelectInputTextCaseExample()},
 			{Title: "Dropdown Background", Icon: "ph-paint-brush", Content: SelectInputDropdownBackgroundExample()},
+			{Title: "Style", Icon: "ph-palette", Content: SelectInputStyleExample()},
 			{Title: "Dropdown Height", Icon: "ph-arrows-out-line-vertical", Content: SelectInputDropdownHeightExample()},
 			{Title: "Required", Icon: "ph-asterisk", Content: SelectInputRequiredExample()},
 			{Title: "Disabled Binding", Icon: "ph-prohibit", Content: SelectInputDisabledBindingExample()},

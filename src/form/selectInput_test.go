@@ -5,6 +5,8 @@ import (
 	"context"
 	"strings"
 	"testing"
+
+	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
 func TestSelectInputSizeClassesResolver(t *testing.T) {
@@ -106,5 +108,62 @@ func TestSelectInputRendersOpaqueDropdownAboveStickyHeaders(t *testing.T) {
 	}
 	if strings.Contains(coloredHtml, "bg-neutral-800/95") {
 		t.Errorf("RenderedHtmlKeepsDefaultDropdownBackground")
+	}
+}
+
+func TestSelectInputRendersTriggerDropdownAndIconStyle(t *testing.T) {
+	var buffer bytes.Buffer
+	renderErr := SelectInput(SelectInputSettings{
+		InputName:            "country",
+		Label:                "Country",
+		FlatOptions:          []string{"Argentina", "Brazil"},
+		TwoWayStatePath:      "country",
+		SelectedIconColor:    "violet-500",
+		DropdownBorderColor:  "violet-500/20",
+		DropdownBorderRadius: uiToolset.BorderRadiusLg,
+		Trigger: SelectInputTriggerStyle{
+			BackgroundColor: "violet-950",
+			BorderColor:     "violet-500/40",
+			BorderRadius:    uiToolset.BorderRadiusLg,
+			TextColor:       "violet-100",
+		},
+	}).Render(context.Background(), &buffer)
+	if renderErr != nil {
+		t.Fatalf("SelectInputRenderFailed: %v", renderErr)
+	}
+	renderedHtml := buffer.String()
+	expectedFragments := []string{
+		"bg-violet-950", "border-violet-500/40", "rounded-lg", "text-violet-100",
+		"border-violet-500/20", "peer-checked:text-violet-500",
+		"peer-focus-visible:ring-violet-500", "ph-circle",
+		`@keydown.arrow-down.prevent="openWithOptionFocus()"`,
+	}
+	for _, expectedFragment := range expectedFragments {
+		if !strings.Contains(renderedHtml, expectedFragment) {
+			t.Errorf("RenderedHtmlMissingFragment: %q", expectedFragment)
+		}
+	}
+}
+
+func TestSelectInputRendersNeutralSurfaceByDefault(t *testing.T) {
+	var buffer bytes.Buffer
+	renderErr := SelectInput(SelectInputSettings{
+		InputName:   "status",
+		Label:       "Status",
+		FlatOptions: []string{"running"},
+	}).Render(context.Background(), &buffer)
+	if renderErr != nil {
+		t.Fatalf("SelectInputRenderFailed: %v", renderErr)
+	}
+	renderedHtml := buffer.String()
+	for _, expectedFragment := range []string{
+		"bg-neutral-50/7.5", "border-neutral-50/5", "rounded", "text-neutral-100",
+	} {
+		if !strings.Contains(renderedHtml, expectedFragment) {
+			t.Errorf("RenderedHtmlMissingFragment: %q", expectedFragment)
+		}
+	}
+	if strings.Contains(renderedHtml, "ph-circle") {
+		t.Errorf("RenderedHtmlKeepsSelectedIconWithoutColorSetting")
 	}
 }

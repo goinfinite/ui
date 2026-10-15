@@ -72,6 +72,39 @@ test.describe("SelectInput", () => {
 
     await page.keyboard.press("Escape");
     await expect(options).toBeHidden();
+    await expect(trigger).toBeFocused();
+  });
+
+  test("@browser @smoke arrow down opens with the checked option focused and enter commits", async ({
+    page,
+  }) => {
+    const trigger = page.locator(`${selectSection} [role=button]`).first();
+    const options = page.locator(`${selectSection} ul`).first();
+
+    await trigger.focus();
+    await page.keyboard.press("ArrowDown");
+    await expect(options).toBeVisible();
+    await expect(checkedRadioOf(page, "country")).toHaveValue("Brazil");
+    await expect(checkedRadioOf(page, "country")).toBeFocused();
+
+    await page.keyboard.press("ArrowDown");
+    await expect(checkedRadioOf(page, "country")).toHaveValue("Chile");
+    await expect(trigger).toContainText("Chile");
+
+    await page.keyboard.press("Enter");
+    await expect(options).toBeHidden();
+    await expect(trigger).toBeFocused();
+  });
+
+  test("@browser the Style example shows the checked row icon", async ({
+    page,
+  }) => {
+    const panel = await openExamplePanel(page, selectSection, "Style");
+    const trigger = panel.locator("[x-ref=selectTrigger]");
+    const options = panel.locator("ul").first();
+
+    await trigger.click();
+    await expect(options.locator("i.ph-check-circle")).toHaveCount(1);
   });
 
   test("@browser @smoke arrow keys move through the named radio group and Escape closes", async ({
