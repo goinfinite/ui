@@ -495,7 +495,7 @@ func DualSelectInput(componentSettings DualSelectInputSettings) templ.Component 
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "\" x-show=\"isOpen\" x-transition @keydown.enter.prevent=\"commitFocusedOption()\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "\" x-show=\"isOpen\" x-transition @keydown.arrow-down.prevent=\"focusAdjacentOption(1)\" @keydown.arrow-up.prevent=\"focusAdjacentOption(-1)\" @keydown.enter.prevent=\"commitFocusedOption()\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -531,7 +531,7 @@ func DualSelectInput(componentSettings DualSelectInputSettings) templ.Component 
 				var templ_7745c5c3_Var30 string
 				templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.SelectName)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/dualSelectInput.templ`, Line: 176, Col: 45}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/dualSelectInput.templ`, Line: 178, Col: 45}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var30)
 				if templ_7745c5c3_Err != nil {
@@ -549,7 +549,7 @@ func DualSelectInput(componentSettings DualSelectInputSettings) templ.Component 
 			var templ_7745c5c3_Var31 string
 			templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.ResolveAttributeValue(option.Value)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/dualSelectInput.templ`, Line: 178, Col: 29}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/dualSelectInput.templ`, Line: 180, Col: 29}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var31)
 			if templ_7745c5c3_Err != nil {
@@ -562,7 +562,7 @@ func DualSelectInput(componentSettings DualSelectInputSettings) templ.Component 
 			var templ_7745c5c3_Var32 string
 			templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.ResolveAttributeValue(selectStatePath)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/dualSelectInput.templ`, Line: 179, Col: 34}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/dualSelectInput.templ`, Line: 181, Col: 34}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var32)
 			if templ_7745c5c3_Err != nil {
@@ -580,7 +580,7 @@ func DualSelectInput(componentSettings DualSelectInputSettings) templ.Component 
 				var templ_7745c5c3_Var33 string
 				templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.OnChangeFunc)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/dualSelectInput.templ`, Line: 181, Col: 50}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/dualSelectInput.templ`, Line: 183, Col: 50}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var33)
 				if templ_7745c5c3_Err != nil {
@@ -598,7 +598,7 @@ func DualSelectInput(componentSettings DualSelectInputSettings) templ.Component 
 			var templ_7745c5c3_Var34 string
 			templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.JoinStringErrs(option.Label)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/dualSelectInput.templ`, Line: 186, Col: 28}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/dualSelectInput.templ`, Line: 188, Col: 28}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var34))
 			if templ_7745c5c3_Err != nil {
@@ -634,7 +634,7 @@ func DualSelectInput(componentSettings DualSelectInputSettings) templ.Component 
 		var templ_7745c5c3_Var37 string
 		templ_7745c5c3_Var37, templ_7745c5c3_Err = templ.ResolveAttributeValue(unmatchedSelectValueExpression)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/dualSelectInput.templ`, Line: 190, Col: 75}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/dualSelectInput.templ`, Line: 192, Col: 75}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var37)
 		if templ_7745c5c3_Err != nil {
@@ -647,7 +647,7 @@ func DualSelectInput(componentSettings DualSelectInputSettings) templ.Component 
 		var templ_7745c5c3_Var38 string
 		templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.ResolveAttributeValue(unmatchedSelectValueExpression)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/dualSelectInput.templ`, Line: 192, Col: 68}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/dualSelectInput.templ`, Line: 194, Col: 68}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var38)
 		if templ_7745c5c3_Err != nil {
@@ -660,7 +660,7 @@ func DualSelectInput(componentSettings DualSelectInputSettings) templ.Component 
 		var templ_7745c5c3_Var39 string
 		templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.JoinStringErrs("Custom")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/dualSelectInput.templ`, Line: 193, Col: 23}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/dualSelectInput.templ`, Line: 195, Col: 23}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var39))
 		if templ_7745c5c3_Err != nil {
@@ -682,7 +682,7 @@ func DualSelectInput(componentSettings DualSelectInputSettings) templ.Component 
 		var templ_7745c5c3_Var41 string
 		templ_7745c5c3_Var41, templ_7745c5c3_Err = templ.ResolveAttributeValue(inputType)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/dualSelectInput.templ`, Line: 198, Col: 21}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/dualSelectInput.templ`, Line: 200, Col: 21}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var41)
 		if templ_7745c5c3_Err != nil {
@@ -695,7 +695,7 @@ func DualSelectInput(componentSettings DualSelectInputSettings) templ.Component 
 		var templ_7745c5c3_Var42 string
 		templ_7745c5c3_Var42, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.Label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/dualSelectInput.templ`, Line: 199, Col: 41}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/dualSelectInput.templ`, Line: 201, Col: 41}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var42)
 		if templ_7745c5c3_Err != nil {
@@ -713,7 +713,7 @@ func DualSelectInput(componentSettings DualSelectInputSettings) templ.Component 
 			var templ_7745c5c3_Var43 string
 			templ_7745c5c3_Var43, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.InputId)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/dualSelectInput.templ`, Line: 201, Col: 36}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/dualSelectInput.templ`, Line: 203, Col: 36}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var43)
 			if templ_7745c5c3_Err != nil {
@@ -732,7 +732,7 @@ func DualSelectInput(componentSettings DualSelectInputSettings) templ.Component 
 			var templ_7745c5c3_Var44 string
 			templ_7745c5c3_Var44, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.InputName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/dualSelectInput.templ`, Line: 204, Col: 40}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/dualSelectInput.templ`, Line: 206, Col: 40}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var44)
 			if templ_7745c5c3_Err != nil {
@@ -751,7 +751,7 @@ func DualSelectInput(componentSettings DualSelectInputSettings) templ.Component 
 			var templ_7745c5c3_Var45 string
 			templ_7745c5c3_Var45, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.ValueTwoWayStatePath)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/dualSelectInput.templ`, Line: 207, Col: 60}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/dualSelectInput.templ`, Line: 209, Col: 60}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var45)
 			if templ_7745c5c3_Err != nil {
@@ -770,7 +770,7 @@ func DualSelectInput(componentSettings DualSelectInputSettings) templ.Component 
 			var templ_7745c5c3_Var46 string
 			templ_7745c5c3_Var46, templ_7745c5c3_Err = templ.ResolveAttributeValue(invalidAriaExpression)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/dualSelectInput.templ`, Line: 210, Col: 43}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/dualSelectInput.templ`, Line: 212, Col: 43}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var46)
 			if templ_7745c5c3_Err != nil {
@@ -789,7 +789,7 @@ func DualSelectInput(componentSettings DualSelectInputSettings) templ.Component 
 			var templ_7745c5c3_Var47 string
 			templ_7745c5c3_Var47, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.OnChangeFunc)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/dualSelectInput.templ`, Line: 213, Col: 46}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/dualSelectInput.templ`, Line: 215, Col: 46}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var47)
 			if templ_7745c5c3_Err != nil {
@@ -807,7 +807,7 @@ func DualSelectInput(componentSettings DualSelectInputSettings) templ.Component 
 		var templ_7745c5c3_Var48 string
 		templ_7745c5c3_Var48, templ_7745c5c3_Err = templ.ResolveAttributeValue(componentSettings.Label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/dualSelectInput.templ`, Line: 215, Col: 42}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/dualSelectInput.templ`, Line: 217, Col: 42}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var48)
 		if templ_7745c5c3_Err != nil {
@@ -848,7 +848,7 @@ func DualSelectInput(componentSettings DualSelectInputSettings) templ.Component 
 			var templ_7745c5c3_Var50 string
 			templ_7745c5c3_Var50, templ_7745c5c3_Err = templ.ResolveAttributeValue("{" + "'!pt-" + sizeTokens.LabelOffset + "': " + valueStateIsEmptyExpression + ", '" + valueInputBandClasses + "': " + componentSettings.ValueTwoWayStatePath + "}")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/dualSelectInput.templ`, Line: 221, Col: 178}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/dualSelectInput.templ`, Line: 223, Col: 178}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var50)
 			if templ_7745c5c3_Err != nil {

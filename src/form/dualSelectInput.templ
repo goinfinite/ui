@@ -164,6 +164,8 @@ templ DualSelectInput(componentSettings DualSelectInputSettings) {
 					:class={ "openUpward ? 'bottom-full mb-1' : 'top-full mt-1'" }
 					x-show="isOpen"
 					x-transition
+					@keydown.arrow-down.prevent="focusAdjacentOption(1)"
+					@keydown.arrow-up.prevent="focusAdjacentOption(-1)"
 					@keydown.enter.prevent="commitFocusedOption()"
 				>
 					{{ optionRowClasses := "transition-colors hover:bg-neutral-50/5 border-neutral-50/5 border-t first:border-t-0 has-checked:bg-neutral-50/10 has-checked:border-y has-checked:!border-neutral-50/10" }}

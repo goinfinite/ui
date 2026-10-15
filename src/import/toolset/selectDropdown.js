@@ -70,6 +70,29 @@ const selectDropdownController = {
     this.isOpen = false;
   },
 
+  focusAdjacentOption(direction) {
+    const dropdown = this.$refs.selectDropdown;
+    const options = [
+      ...dropdown.querySelectorAll(
+        'input[type="radio"], input[type="checkbox"]',
+      ),
+    ];
+    if (options.length === 0) {
+      return;
+    }
+    const focusedIndex = options.indexOf(document.activeElement);
+    const firstIndex = direction > 0 ? 0 : options.length - 1;
+    const steppedIndex = Math.min(
+      Math.max(focusedIndex + direction, 0),
+      options.length - 1,
+    );
+    const nextOption = options[focusedIndex === -1 ? firstIndex : steppedIndex];
+    nextOption.focus();
+    if (nextOption.type === "radio") {
+      nextOption.click();
+    }
+  },
+
   closeWithFocusReturn() {
     const wasOpen = this.isOpen;
     this.isOpen = false;

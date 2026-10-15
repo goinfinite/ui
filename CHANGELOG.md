@@ -9,7 +9,9 @@ feat: add the Trigger style group, SelectedIconColor, and the dropdown border an
 fix: reserve the floating action width from the resolved button size, so a large action never covers the TextArea content or the vertical InlineCheckboxGroup labels
 fix: hide the TextArea clear action on a read-only field, so a read-only field never mutates its bound state
 fix: reset the TextArea negative top margin when it is the first child, so its legend is never clipped by a scroll container
+fix: let the arrow keys move between the unnamed dropdown options, so the SelectInput and the DualSelectInput navigate in every browser, not only where an unnamed radio happens to group
 test: cover the new controls with unit and browser specs
+test: cover the unnamed preset arrow navigation in the CronSchedule
 test: add behavior specs for the Alert, the Tag, the Sidebar, the InlineRadioGroup, and the JSON Ajax failure paths
 test: remove the geometry-only and duplicate specs, and assert exact output in the Minifier test
 test: add the Gremlins mutation runner with a per-feature efficacy and coverage floor, and kill the survivors across the control, display, form, and structural packages

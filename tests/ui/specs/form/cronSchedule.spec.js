@@ -20,6 +20,26 @@ function fieldInput(page, fieldLabel) {
   return page.locator(`${cronSection} input[aria-label=${fieldLabel}]`);
 }
 
+async function expectInvalidFieldThenRecovers(
+  page,
+  fieldLabel,
+  invalidValue,
+  validValue,
+  expectedExpression,
+  expectedPreview,
+) {
+  await fieldInput(page, fieldLabel).fill(invalidValue);
+
+  await expect(page.locator(previewText)).toHaveText(
+    "Invalid schedule: fix the highlighted fields",
+  );
+  await expect(page.locator(boundValue)).toHaveText("");
+
+  await fieldInput(page, fieldLabel).fill(validValue);
+  await expect(page.locator(boundValue)).toHaveText(expectedExpression);
+  await expect(page.locator(previewText)).toHaveText(expectedPreview);
+}
+
 test.describe("CronSchedule", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(`/index.html#${cronSection.slice(1)}`);
@@ -43,6 +63,25 @@ test.describe("CronSchedule", () => {
     );
   });
 
+  test("@browser arrow keys move through the unnamed preset radios and write the expression", async ({
+    page,
+  }) => {
+    const trigger = presetTrigger(page);
+    const options = page.locator(`${cronSection} ul`).first();
+
+    await trigger.focus();
+    await page.keyboard.press("ArrowDown");
+    await expect(options).toBeVisible();
+
+    await page.keyboard.press("ArrowDown");
+    await expect(options.locator("input:checked")).toHaveValue("0 1 * * *");
+    await expect(page.locator(boundValue)).toHaveText("0 1 * * *");
+
+    await page.keyboard.press("Enter");
+    await expect(options).toBeHidden();
+    await expect(trigger).toBeFocused();
+  });
+
   test("@smoke custom mode composes the five fields into the bound path", async ({
     page,
   }) => {
@@ -59,32 +98,28 @@ test.describe("CronSchedule", () => {
     page,
   }) => {
     await customModeLabel(page).click();
-    await fieldInput(page, "Minute").fill("99");
-
-    await expect(page.locator(previewText)).toHaveText(
-      "Invalid schedule: fix the highlighted fields",
+    await expectInvalidFieldThenRecovers(
+      page,
+      "Minute",
+      "99",
+      "15",
+      "15 0 * * *",
+      "At 00:15, every day",
     );
-    await expect(page.locator(boundValue)).toHaveText("");
-
-    await fieldInput(page, "Minute").fill("15");
-    await expect(page.locator(boundValue)).toHaveText("15 0 * * *");
-    await expect(page.locator(previewText)).toHaveText("At 00:15, every day");
   });
 
   test("@smoke a descending weekday range is rejected and weekends is valid", async ({
     page,
   }) => {
     await customModeLabel(page).click();
-    await fieldInput(page, "Weekday").fill("6-0");
-
-    await expect(page.locator(previewText)).toHaveText(
-      "Invalid schedule: fix the highlighted fields",
+    await expectInvalidFieldThenRecovers(
+      page,
+      "Weekday",
+      "6-0",
+      "6,0",
+      "0 0 * * 6,0",
+      "At 00:00, on weekends",
     );
-    await expect(page.locator(boundValue)).toHaveText("");
-
-    await fieldInput(page, "Weekday").fill("6,0");
-    await expect(page.locator(boundValue)).toHaveText("0 0 * * 6,0");
-    await expect(page.locator(previewText)).toHaveText("At 00:00, on weekends");
   });
 
   test("@browser an invalid field marks the border red", async ({ page }) => {
