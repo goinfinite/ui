@@ -1,0 +1,227 @@
+package uiForm
+
+import (
+	_ "embed"
+	"strings"
+
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+//go:embed dualSelectInputState.js
+var dualSelectInputAlpineState string
+
+var dualSelectInputAlpineStateOnce = templ.NewOnceHandle(
+	templ.WithComponent(uiToolset.MinifierTemplateJs(&dualSelectInputAlpineState)),
+)
+
+type DualSelectInputDropdownStyle struct {
+	// OptionalFields
+	BackgroundColor string
+	BorderColor     string
+	BorderRadius    string
+}
+
+type DualSelectInputFieldStyle struct {
+	// OptionalFields
+	BackgroundColor string
+	BorderColor     string
+	BorderRadius    string
+	DividerColor    string
+	TextColor       string
+}
+
+type DualSelectInputSettings struct {
+	Label   string
+	Options []SelectLabelValueOption
+
+	// OptionalFields
+	Dropdown                 DualSelectInputDropdownStyle
+	Field                    DualSelectInputFieldStyle
+	InputId                  string
+	InputName                string
+	InputType                string
+	IsInvalidOneWayStatePath string
+	IsRequired               bool
+	OnChangeFunc             string
+	SelectName               string
+	SelectTwoWayStatePath    string
+	Size                     string
+	TextCase                 string
+	ValueTwoWayStatePath     string
+}
+
+templ DualSelectInput(componentSettings DualSelectInputSettings) {
+	<!-- DualSelectInput -->
+	@dualSelectInputAlpineStateOnce.Once()
+	{{ sizeTokens := inputFieldSizeTokensResolver(componentSettings.Size) }}
+	{{ textCaseClass := uiToolset.TextCaseClassResolver(componentSettings.TextCase) }}
+	{{ legendClasses := "ml-1 select-none px-1 font-bold leading-none text-neutral-50/80 " + sizeTokens.LegendTextSize }}
+	if textCaseClass != "" {
+		{{ legendClasses += " " + textCaseClass }}
+	}
+	{{ fieldStyle := componentSettings.Field }}
+	{{ fieldBackgroundClass := uiToolset.BackgroundColorClassResolver(fieldStyle.BackgroundColor, "bg-neutral-50/7.5") }}
+	{{ fieldBorderClass := uiToolset.BorderColorClassResolver(fieldStyle.BorderColor, "border-neutral-50/5") }}
+	{{ fieldBorderRadiusClass := uiToolset.BorderRadiusClassResolver(fieldStyle.BorderRadius, "rounded") }}
+	{{ fieldRightBorderRadiusClass := "rounded-r" + strings.TrimPrefix(fieldBorderRadiusClass, "rounded") }}
+	{{ fieldDividerClass := uiToolset.BorderColorClassResolver(fieldStyle.DividerColor, "border-neutral-50/5") }}
+	{{ fieldTextColorClass := uiToolset.TextColorClassResolver(fieldStyle.TextColor, "text-neutral-100") }}
+	{{ fieldsetClasses := fieldBackgroundClass + " relative -mt-" + sizeTokens.LabelOffset + " flex w-full min-w-0 grow flex-col " + fieldBorderRadiusClass + " border " + fieldBorderClass + " transition-colors autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30" }}
+	{{ dropdownClasses := selectDropdownSurfaceClassesResolver(componentSettings.Dropdown.BackgroundColor, componentSettings.Dropdown.BorderColor, componentSettings.Dropdown.BorderRadius, "", "") }}
+	{{ selectStatePath := componentSettings.SelectTwoWayStatePath }}
+	if selectStatePath == "" {
+		{{ selectStatePath = componentSettings.ValueTwoWayStatePath }}
+	}
+	if selectStatePath == "" {
+		{{ selectStatePath = "selectedValue" }}
+	}
+	{{ selectedLabelExpression := "selectedLabelResolver(" + selectStatePath + ")" }}
+	{{ unmatchedSelectValueExpression := "hasUnmatchedSelectValue(" + selectStatePath + ")" }}
+	{{ optionsScriptId := generateLabelValueOptionsScriptId() }}
+	{{ inputType := componentSettings.InputType }}
+	if inputType == "" {
+		{{ inputType = InputTypeText }}
+	}
+	{{ valueInputBandClasses := "-mt-" + sizeTokens.LegendBand + " !pt-" + sizeTokens.LegendBand }}
+	{{ valueInputClasses := "peer w-full min-w-0 basis-1/3 bg-neutral-950/50 placeholder:text-neutral-50 placeholder:opacity-80 outline-none focus:outline-none " + fieldRightBorderRadiusClass + " " + fieldTextColorClass + " " + sizeTokens.InputPadding + " " + sizeTokens.TextSize }}
+	{{ valueStateIsEmptyExpression := "" }}
+	if componentSettings.ValueTwoWayStatePath != "" {
+		{{ valueStateIsEmptyExpression = "!" + componentSettings.ValueTwoWayStatePath }}
+	}
+	if valueStateIsEmptyExpression == "" {
+		{{ valueInputClasses += " " + valueInputBandClasses }}
+	}
+	{{ fieldsetClassEntries := make([]string, 0, 2) }}
+	{{ legendClassEntries := make([]string, 0, 1) }}
+	if valueStateIsEmptyExpression != "" {
+		{{ fieldsetClassEntries = append(fieldsetClassEntries, "'mt-0': "+valueStateIsEmptyExpression) }}
+		{{ legendClassEntries = append(legendClassEntries, "'hidden': "+valueStateIsEmptyExpression) }}
+	}
+	if componentSettings.IsInvalidOneWayStatePath != "" {
+		{{ fieldsetClassEntries = append(fieldsetClassEntries, "'!border-red-500': "+componentSettings.IsInvalidOneWayStatePath) }}
+	}
+	{{ invalidAriaExpression := componentSettings.IsInvalidOneWayStatePath }}
+	<div
+		class="flex w-full flex-col"
+		x-data={ templ.JSFuncCall("dualSelectInput", optionsScriptId) }
+		@click.away="closeDropdown()"
+		@keydown.escape.window="closeWithFocusReturn()"
+	>
+		@templ.JSONScript(optionsScriptId, componentSettings.Options)
+		<fieldset
+			class={ fieldsetClasses }
+			if len(fieldsetClassEntries) > 0 {
+				:class={ "{" + strings.Join(fieldsetClassEntries, ", ") + "}" }
+			}
+		>
+			<legend
+				class={ legendClasses }
+				if len(legendClassEntries) > 0 {
+					:class={ "{" + strings.Join(legendClassEntries, ", ") + "}" }
+				}
+			>
+				{ componentSettings.Label }
+				if componentSettings.IsRequired {
+					<span class="text-red-700">*</span>
+				}
+			</legend>
+			<div class="relative flex grow items-stretch">
+				<div class={ "flex min-w-0 grow items-center border-r " + fieldDividerClass }>
+					<div
+						x-ref="selectTrigger"
+						role="button"
+						tabindex="0"
+						aria-label={ componentSettings.Label }
+						:aria-expanded="isOpen"
+						@click="toggleDropdown()"
+						@keydown.enter.prevent="toggleDropdown()"
+						@keydown.space.prevent="toggleDropdown()"
+						@keydown.arrow-down.prevent="openWithOptionFocus()"
+						class={ "group flex w-full min-w-0 cursor-pointer items-center justify-between " + fieldTextColorClass + " " + sizeTokens.InputPadding + " " + sizeTokens.TextSize }
+						if invalidAriaExpression != "" {
+							:aria-invalid={ invalidAriaExpression }
+						}
+						if valueStateIsEmptyExpression != "" {
+							:class={ "{" + "'pt-" + sizeTokens.LabelOffset + "': " + valueStateIsEmptyExpression + "}" }
+						}
+					>
+						<div class="w-full overflow-hidden text-ellipsis whitespace-nowrap">
+							<span x-show={ selectedLabelExpression } x-text={ selectedLabelExpression }></span>
+							<span class={ textCaseClass } x-show={ "!(" + selectedLabelExpression + ")" }>{ componentSettings.Label }</span>
+						</div>
+						<div class="flex items-center gap-2.5 text-neutral-100/60">
+							<i
+								class={ "ph-bold ph-caret-down pt-0.5 transition-transform group-focus-within:text-neutral-300 group-hover:text-neutral-300 " + sizeTokens.TextSize }
+								:class="isOpen ? 'rotate-180' : ''"
+								aria-hidden="true"
+							></i>
+						</div>
+					</div>
+				</div>
+				<ul
+					x-ref="selectDropdown"
+					class={ dropdownClasses }
+					:class={ "openUpward ? 'bottom-full mb-1' : 'top-full mt-1'" }
+					x-show="isOpen"
+					x-transition
+					@keydown.enter.prevent="commitFocusedOption()"
+				>
+					{{ optionRowClasses := "transition-colors hover:bg-neutral-50/5 border-neutral-50/5 border-t first:border-t-0 has-checked:bg-neutral-50/10 has-checked:border-y has-checked:!border-neutral-50/10" }}
+					for _, option := range componentSettings.Options {
+						<li class={ optionRowClasses }>
+							<label class="flex w-full cursor-pointer items-center px-3 py-2" @click="closeWithFocusReturn()">
+								<input
+									type="radio"
+									if componentSettings.SelectName != "" {
+										name={ componentSettings.SelectName }
+									}
+									value={ option.Value }
+									x-model={ selectStatePath }
+									if componentSettings.OnChangeFunc != "" {
+										@change={ componentSettings.OnChangeFunc }
+									}
+									@click.stop
+									class="sr-only"
+								/>
+								<span>{ option.Label }</span>
+							</label>
+						</li>
+					}
+					<li class={ optionRowClasses } x-show={ unmatchedSelectValueExpression }>
+						<label class="flex w-full cursor-pointer items-center px-3 py-2" @click="closeWithFocusReturn()">
+							<input type="radio" :checked={ unmatchedSelectValueExpression } tabindex="-1" class="sr-only"/>
+							<span>{ "Custom" }</span>
+						</label>
+					</li>
+				</ul>
+				<input
+					type={ inputType }
+					aria-label={ componentSettings.Label }
+					if componentSettings.InputId != "" {
+						id={ componentSettings.InputId }
+					}
+					if componentSettings.InputName != "" {
+						name={ componentSettings.InputName }
+					}
+					if componentSettings.ValueTwoWayStatePath != "" {
+						x-model:value={ componentSettings.ValueTwoWayStatePath }
+					}
+					if invalidAriaExpression != "" {
+						:aria-invalid={ invalidAriaExpression }
+					}
+					if componentSettings.OnChangeFunc != "" {
+						@change={ componentSettings.OnChangeFunc }
+					}
+					placeholder={ componentSettings.Label }
+					if componentSettings.IsRequired {
+						required
+					}
+					class={ valueInputClasses }
+					if valueStateIsEmptyExpression != "" {
+						:class={ "{" + "'!pt-" + sizeTokens.LabelOffset + "': " + valueStateIsEmptyExpression + ", '" + valueInputBandClasses + "': " + componentSettings.ValueTwoWayStatePath + "}" }
+					}
+				/>
+			</div>
+		</fieldset>
+	</div>
+}

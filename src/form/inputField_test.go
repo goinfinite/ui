@@ -31,6 +31,26 @@ func TestInputFieldRendersHintTooltipSizeClasses(t *testing.T) {
 	}
 }
 
+func TestInputFieldRendersPlaceholderStyling(t *testing.T) {
+	var buffer bytes.Buffer
+	renderErr := InputField(InputFieldSettings{
+		InputType: InputTypeText,
+		InputName: "name",
+		Label:     "Name",
+	}).Render(context.Background(), &buffer)
+	if renderErr != nil {
+		t.Fatalf("InputFieldRenderFailed: %v", renderErr)
+	}
+	renderedHtml := buffer.String()
+	for _, expectedClass := range []string{
+		"placeholder:text-neutral-50", "placeholder:opacity-80",
+	} {
+		if !strings.Contains(renderedHtml, expectedClass) {
+			t.Errorf("RenderedHtmlMissingPlaceholderClass(%q)", expectedClass)
+		}
+	}
+}
+
 func TestInputFieldSizeTokensResolver(t *testing.T) {
 	testCases := []struct {
 		name           string
@@ -45,6 +65,7 @@ func TestInputFieldSizeTokensResolver(t *testing.T) {
 				InputPadding:   "p-1 pt-0",
 				LeftPadding:    "pl-1",
 				LabelOffset:    "0.5",
+				LegendBand:     "1.15",
 				LegendTextSize: "text-[0.625rem]",
 				TextSize:       "text-xs",
 			},
@@ -57,6 +78,7 @@ func TestInputFieldSizeTokensResolver(t *testing.T) {
 				InputPadding:   "p-1.5 pt-0",
 				LeftPadding:    "pl-1.5",
 				LabelOffset:    "1",
+				LegendBand:     "1.15",
 				LegendTextSize: "text-[0.625rem]",
 				TextSize:       "text-xs",
 			},
@@ -69,6 +91,7 @@ func TestInputFieldSizeTokensResolver(t *testing.T) {
 				InputPadding:   "p-2 pt-0",
 				LeftPadding:    "pl-2",
 				LabelOffset:    "2",
+				LegendBand:     "1.65",
 				LegendTextSize: "text-sm",
 				TextSize:       "text-base",
 			},
@@ -81,6 +104,7 @@ func TestInputFieldSizeTokensResolver(t *testing.T) {
 				InputPadding:   "p-2.5 pt-0",
 				LeftPadding:    "pl-2.5",
 				LabelOffset:    "2.5",
+				LegendBand:     "1.65",
 				LegendTextSize: "text-base",
 				TextSize:       "text-lg",
 			},
@@ -93,6 +117,7 @@ func TestInputFieldSizeTokensResolver(t *testing.T) {
 				InputPadding:   "p-1.5 pt-0",
 				LeftPadding:    "pl-1.5",
 				LabelOffset:    "1.5",
+				LegendBand:     "1.4",
 				LegendTextSize: "text-xs",
 				TextSize:       "text-sm",
 			},

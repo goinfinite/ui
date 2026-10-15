@@ -1,0 +1,316 @@
+package main
+
+import (
+	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiForm "github.com/goinfinite/ui/src/form"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+templ DualSelectInputStyleExample() {
+	{{
+		styleUsage := `@uiForm.DualSelectInput(uiForm.DualSelectInputSettings{
+	Label:   "Port",
+	Options: portOptions,
+
+	// OptionalFields
+	SelectTwoWayStatePath: "portUnit",
+	ValueTwoWayStatePath:  "portValue",
+	Field: uiForm.DualSelectInputFieldStyle{
+		BackgroundColor: "violet-950",
+		BorderColor:     "violet-500/40",
+		BorderRadius:    uiToolset.BorderRadiusLg,
+		DividerColor:    "violet-500/30",
+		TextColor:       "violet-100",
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Style",
+		"Field repaints the shared surface: the background, the border, the radius, the divider between the halves, and the text.",
+		"/form/dualSelectInput.templ", styleUsage,
+	) {
+		<div
+			class="flex w-full max-w-96 flex-col gap-3"
+			x-data="{portUnit: 'port', portValue: '80'}"
+		>
+			@uiForm.DualSelectInput(uiForm.DualSelectInputSettings{
+				Label: "Port",
+				Options: []uiForm.SelectLabelValueOption{
+					{Label: "port", Value: "port"},
+					{Label: "socket", Value: "socket"},
+				},
+				SelectTwoWayStatePath: "portUnit",
+				ValueTwoWayStatePath:  "portValue",
+				InputName:             "portValue",
+				SelectName:            "portUnit",
+				Field: uiForm.DualSelectInputFieldStyle{
+					BackgroundColor: "violet-950",
+					BorderColor:     "violet-500/40",
+					BorderRadius:    uiToolset.BorderRadiusLg,
+					DividerColor:    "violet-500/30",
+					TextColor:       "violet-100",
+				},
+			})
+			<p class={ DemoLiveStateClasses }>
+				Unit: <span x-text="portUnit"></span>,
+				Value: <span x-text="portValue"></span>
+			</p>
+		</div>
+	}
+}
+
+templ DualSelectInputDropdownExample() {
+	{{
+		dropdownUsage := `@uiForm.DualSelectInput(uiForm.DualSelectInputSettings{
+	Label:   "Port",
+	Options: portOptions,
+
+	// OptionalFields
+	ValueTwoWayStatePath: "portValue",
+	InputName:            "portValue",
+
+	Dropdown: uiForm.DualSelectInputDropdownStyle{
+		BackgroundColor: "violet-900",
+		BorderColor:     "violet-500/40",
+		BorderRadius:    uiToolset.BorderRadiusLg,
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Dropdown",
+		"Dropdown repaints the option list: the surface background, the border, and the radius.",
+		"/form/dualSelectInput.templ", dropdownUsage,
+	) {
+		<div class="flex w-full max-w-96 flex-col gap-3" x-data="{portValue: '80'}">
+			@uiForm.DualSelectInput(uiForm.DualSelectInputSettings{
+				Label: "Port",
+				Options: []uiForm.SelectLabelValueOption{
+					{Label: "port", Value: "port"},
+					{Label: "socket", Value: "socket"},
+				},
+				ValueTwoWayStatePath: "portValue",
+				InputName:            "portValue",
+				Dropdown: uiForm.DualSelectInputDropdownStyle{
+					BackgroundColor: "violet-900",
+					BorderColor:     "violet-500/40",
+					BorderRadius:    uiToolset.BorderRadiusLg,
+				},
+			})
+			<p class={ DemoLiveStateClasses }>
+				Value: <span x-text="portValue"></span>
+			</p>
+		</div>
+	}
+}
+
+templ DualSelectInputSharedSlotExample() {
+	{{
+		sharedSlotUsage := `@uiForm.DualSelectInput(uiForm.DualSelectInputSettings{
+	Label:   "Minute",
+	Options: minuteOptions,
+
+	// OptionalFields
+	ValueTwoWayStatePath: "minute",
+	InputName:            "minute",
+})`
+	}}
+	@DemoExampleCard(
+		"Shared Slot",
+		"Leave SelectTwoWayStatePath empty to bind both halves to ValueTwoWayStatePath. A preset pick writes the slot, and a typed value that matches no option shows Custom.",
+		"/form/dualSelectInput.templ", sharedSlotUsage,
+	) {
+		<div class="flex w-full max-w-96 flex-col gap-3" x-data="{minute: '*/5'}">
+			@uiForm.DualSelectInput(uiForm.DualSelectInputSettings{
+				Label: "Minute",
+				Options: []uiForm.SelectLabelValueOption{
+					{Label: "Every minute", Value: "*"},
+					{Label: "Every 5 minutes", Value: "*/5"},
+					{Label: "Every 15 minutes", Value: "*/15"},
+					{Label: "At minute 0", Value: "0"},
+					{Label: "At minute 30", Value: "30"},
+				},
+				ValueTwoWayStatePath: "minute",
+				InputName:            "minute",
+			})
+			<p class={ DemoLiveStateClasses }>
+				Value: <span x-text="minute"></span>
+			</p>
+		</div>
+	}
+}
+
+templ DualSelectInputNumberExample() {
+	{{
+		numberUsage := `@uiForm.DualSelectInput(uiForm.DualSelectInputSettings{
+	Label:   "Timeout",
+	Options: timeoutOptions,
+
+	// OptionalFields
+	InputType:            uiForm.InputTypeNumber,
+	SelectTwoWayStatePath: "timeoutUnit",
+	ValueTwoWayStatePath:  "timeoutValue",
+	InputName:             "timeoutValue",
+	SelectName:            "timeoutUnit",
+})`
+	}}
+	@DemoExampleCard(
+		"Number Value",
+		"InputType takes a uiForm.InputType constant. SelectName and InputName submit the two halves as separate form fields.",
+		"/form/dualSelectInput.templ", numberUsage,
+	) {
+		<div
+			class="flex w-full max-w-96 flex-col gap-3"
+			x-data="{timeoutUnit: 'seconds', timeoutValue: '30'}"
+		>
+			@uiForm.DualSelectInput(uiForm.DualSelectInputSettings{
+				Label: "Timeout",
+				Options: []uiForm.SelectLabelValueOption{
+					{Label: "seconds", Value: "seconds"},
+					{Label: "minutes", Value: "minutes"},
+					{Label: "hours", Value: "hours"},
+				},
+				InputType:             uiForm.InputTypeNumber,
+				SelectTwoWayStatePath: "timeoutUnit",
+				ValueTwoWayStatePath:  "timeoutValue",
+				InputName:             "timeoutValue",
+				SelectName:            "timeoutUnit",
+			})
+			<p class={ DemoLiveStateClasses }>
+				Unit: <span x-text="timeoutUnit"></span>,
+				Value: <span x-text="timeoutValue"></span>
+			</p>
+		</div>
+	}
+}
+
+templ DualSelectInputInvalidExample() {
+	{{
+		invalidUsage := `@uiForm.DualSelectInput(uiForm.DualSelectInputSettings{
+	Label:   "Port",
+	Options: portOptions,
+
+	// OptionalFields
+	SelectTwoWayStatePath:    "portUnit",
+	ValueTwoWayStatePath:     "portValue",
+	InputName:                "portValue",
+	IsInvalidOneWayStatePath: "portValue > 65535",
+})`
+	}}
+	@DemoExampleCard(
+		"Invalid State",
+		"IsInvalidOneWayStatePath takes an Alpine expression. While it is true the border turns red and both halves carry aria-invalid.",
+		"/form/dualSelectInput.templ", invalidUsage,
+	) {
+		<div
+			class="flex w-full max-w-96 flex-col gap-3"
+			x-data="{portUnit: 'port', portValue: '80'}"
+		>
+			@uiForm.DualSelectInput(uiForm.DualSelectInputSettings{
+				Label: "Port",
+				Options: []uiForm.SelectLabelValueOption{
+					{Label: "port", Value: "port"},
+					{Label: "socket", Value: "socket"},
+				},
+				SelectTwoWayStatePath:    "portUnit",
+				ValueTwoWayStatePath:     "portValue",
+				InputName:                "portValue",
+				SelectName:               "portUnit",
+				IsInvalidOneWayStatePath: "portValue > 65535",
+			})
+			<p class={ DemoLiveStateClasses }>
+				Valid: <span x-text="!(portValue > 65535)"></span>
+			</p>
+		</div>
+	}
+}
+
+templ DualSelectInputSizesExample() {
+	{{
+		sizesUsage := `@uiForm.DualSelectInput(uiForm.DualSelectInputSettings{
+	Label:   "Port",
+	Options: portOptions,
+
+	// OptionalFields
+	Size:                 uiForm.InputFieldSizeLg,
+	ValueTwoWayStatePath: "portValue",
+	InputName:            "portValue",
+})`
+	}}
+	@DemoExampleCard(
+		"Sizes",
+		"Size takes an InputFieldSize constant and scales the input, the select, and the label together: xs, sm, md (the default), lg, or xl.",
+		"/form/dualSelectInput.templ", sizesUsage,
+	) {
+		<div class="flex w-full max-w-96 flex-col gap-3" x-data="{xs: '80', sm: '80', md: '80', lg: '80', xl: '80'}">
+			for _, inputSize := range []string{
+				uiForm.InputFieldSizeXs,
+				uiForm.InputFieldSizeSm,
+				uiForm.InputFieldSizeMd,
+				uiForm.InputFieldSizeLg,
+				uiForm.InputFieldSizeXl,
+			} {
+				@uiForm.DualSelectInput(uiForm.DualSelectInputSettings{
+					Label: "Port (" + inputSize + ")",
+					Options: []uiForm.SelectLabelValueOption{
+						{Label: "port", Value: "port"},
+						{Label: "socket", Value: "socket"},
+					},
+					Size:                 inputSize,
+					ValueTwoWayStatePath: inputSize,
+					InputName:            "portValue",
+				})
+			}
+		</div>
+	}
+}
+
+templ DualSelectInputDemo() {
+	{{
+		demoUsage := `@uiForm.DualSelectInput(uiForm.DualSelectInputSettings{
+	Label:   "Port",
+	Options: portOptions,
+
+	// OptionalFields
+	SelectTwoWayStatePath: "portUnit",
+	ValueTwoWayStatePath:  "portValue",
+	InputName:             "portValue",
+	SelectName:            "portUnit",
+})`
+	}}
+	<div class="flex flex-col gap-4" id="dual-select-input-demo">
+		@DemoComponentSection(DemoComponentSectionSettings{
+			ComponentPath: "/form/dualSelectInput.templ",
+			Description: "A dual select input combines a select for the unit or operator with a text or number input for the value. Both halves share one label and one border.",
+			LiveExampleDescription: "A port entry bound to two Alpine state paths: the unit on the select and the number on the input.",
+			Title:                  ".DualSelectInput",
+			UsageCode:              demoUsage,
+			AlpineStateCode:        `<div x-data="{portUnit: 'port', portValue: '80'}"></div>`,
+		}) {
+			<div class="flex w-full max-w-96 flex-col gap-3" x-data="{portUnit: 'port', portValue: '80'}">
+				@uiForm.DualSelectInput(uiForm.DualSelectInputSettings{
+					Label: "Port",
+					Options: []uiForm.SelectLabelValueOption{
+						{Label: "port", Value: "port"},
+						{Label: "socket", Value: "socket"},
+					},
+					SelectTwoWayStatePath: "portUnit",
+					ValueTwoWayStatePath:  "portValue",
+					InputName:             "portValue",
+					SelectName:            "portUnit",
+				})
+				<p class={ DemoLiveStateClasses }>
+					Unit: <span x-text="portUnit"></span>,
+					Value: <span x-text="portValue"></span>
+				</p>
+			</div>
+		}
+		@DemoAdvancedExamples("dual-select-input-demo", []uiDisplay.AccordionItemSettings{
+			{Title: "Shared Slot", Icon: "ph-link", Content: DualSelectInputSharedSlotExample()},
+			{Title: "Number Value", Icon: "ph-number-square-one", Content: DualSelectInputNumberExample()},
+			{Title: "Invalid State", Icon: "ph-warning-circle", Content: DualSelectInputInvalidExample()},
+			{Title: "Dropdown", Icon: "ph-caret-down", Content: DualSelectInputDropdownExample()},
+			{Title: "Style", Icon: "ph-paint-brush", Content: DualSelectInputStyleExample()},
+			{Title: "Sizes", Icon: "ph-ruler", Content: DualSelectInputSizesExample()},
+		})
+	</div>
+}
