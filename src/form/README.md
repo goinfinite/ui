@@ -198,8 +198,8 @@ A multiline input with expand, copy, and clear actions.
 })
 ```
 
-- `IsCode` uses a monospace font. `IsReadOnly` sets `readonly`. `IsRequired` marks the label and sets `required`.
-- On hover or focus, the field shows the expand, copy, and clear `FloatingButton` actions. `FloatingButtonStyle` restyles them. `ShouldHideFloatingButtons` removes them, and the text uses the full width. The text reserves the resolved action width, so a large action never covers the content.
+- `IsCode` uses a monospace font. `IsReadOnly` sets `readonly` and drops the clear action, so a read-only field never mutates its bound state. `IsRequired` marks the label and sets `required`.
+- On hover or focus, the field shows the expand, copy, and clear `FloatingButton` actions. A read-only field shows expand and copy only. `FloatingButtonStyle` restyles them. `ShouldHideFloatingButtons` removes them, and the text uses the full width. The text reserves the resolved action width, so a large action never covers the content.
 
 ## SelectInput
 

@@ -1,12 +1,14 @@
 # Changelog
 
 ```log
-0.3.0 - 2026/10/14
+0.3.0 - 2026/10/15
 feat: add the CronSchedule with a predefined-schedule dropdown, a five-field custom builder, per-field validation, and a plain-words preview
 feat: add the DualSelectInput, a select and a value input under one label and one border, where the select half opens the shared custom dropdown and the value half carries a darker background
 feat: add style groups to the new controls: Field on the DualSelectInput, and Field plus Preview on the CronSchedule
 feat: add the Trigger style group, SelectedIconColor, and the dropdown border and radius to the SelectInput, which now shares the custom dropdown keyboard flow through the toolset controller
 fix: reserve the floating action width from the resolved button size, so a large action never covers the TextArea content or the vertical InlineCheckboxGroup labels
+fix: hide the TextArea clear action on a read-only field, so a read-only field never mutates its bound state
+fix: reset the TextArea negative top margin when it is the first child, so its legend is never clipped by a scroll container
 test: cover the new controls with unit and browser specs
 docs: update the readmes, the contexts, the feature map, and the changelog
 chore(docs): regenerate the demo page

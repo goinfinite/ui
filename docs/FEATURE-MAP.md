@@ -30,7 +30,7 @@ Password field with a reveal toggle, an optional random password generator, and 
 
 ## Multi-line Text Area
 
-Multi-line text input with five height steps (h-12/24/36/48/60), expand-to-3x toggle, floating action icons (expand, copy, clear) anchored to the text line, and optional hints rendered as a focusable tooltip or a description line. `FloatingButtonStyle` repaints the action icons and changes their size and shape; `ShouldHideFloatingButtons` removes them and drops the reserved right padding. The text reserves the resolved action width, so a large action never covers the content.
+Multi-line text input with five height steps (h-12/24/36/48/60), expand-to-3x toggle, floating action icons (expand, copy, clear) anchored to the text line, and optional hints rendered as a focusable tooltip or a description line. `FloatingButtonStyle` repaints the action icons and changes their size and shape; `ShouldHideFloatingButtons` removes them and drops the reserved right padding. The text reserves the resolved action width, so a large action never covers the content. A read-only field shows expand and copy only, so it never mutates its bound state, and its negative top margin resets when it is the first child, so a scroll container never clips the legend.
 
 **Flow:**
 
