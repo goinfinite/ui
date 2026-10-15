@@ -236,6 +236,43 @@ templ TextAreaRequiredExample() {
 	}
 }
 
+templ TextAreaFloatingButtonStyleExample() {
+	{{
+		floatingButtonStyleUsage := `@uiForm.TextArea(uiForm.TextAreaSettings{
+	InputName: "description",
+	Label:     "Description",
+
+	// OptionalFields
+	TwoWayStatePath: "description",
+	FloatingButtonStyle: uiForm.FloatingButtonStyle{
+		BackgroundColor: "secondary-500/20",
+		RingColor:       "secondary-500/40",
+		Size:            uiControl.ButtonSizeLg,
+		Shape:           uiToolset.ShapeCircular,
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Floating Button Style",
+		"FloatingButtonStyle repaints the expand, copy, and clear actions and changes their size and shape. The text reserves the resolved action width, so a large action never covers the content.",
+		"/form/textArea.templ", floatingButtonStyleUsage,
+	) {
+		<div x-data="{description: ''}">
+			@uiForm.TextArea(uiForm.TextAreaSettings{
+				InputName:       "description",
+				Label:           "Description",
+				TwoWayStatePath: "description",
+				FloatingButtonStyle: uiForm.FloatingButtonStyle{
+					BackgroundColor: "secondary-500/20",
+					RingColor:       "secondary-500/40",
+					Size:            uiControl.ButtonSizeLg,
+					Shape:           uiToolset.ShapeCircular,
+				},
+			})
+		</div>
+	}
+}
+
 templ TextAreaHiddenFloatingButtonsExample() {
 	{{
 		hiddenFloatingButtonsUsage := `@uiForm.TextArea(uiForm.TextAreaSettings{
@@ -301,6 +338,7 @@ templ TextAreaDemo() {
 			{Title: "Sizes", Icon: "ph-ruler", Content: TextAreaSizesExample()},
 			{Title: "Text Case", Icon: "ph-text-t", Content: TextAreaTextCaseExample()},
 			{Title: "Required", Icon: "ph-asterisk", Content: TextAreaRequiredExample()},
+			{Title: "Floating Button Style", Icon: "ph-cursor-click", Content: TextAreaFloatingButtonStyleExample()},
 			{Title: "Hidden Floating Buttons", Icon: "ph-eye-slash", Content: TextAreaHiddenFloatingButtonsExample()},
 		})
 	</div>

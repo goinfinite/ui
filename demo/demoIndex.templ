@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	UiVersion string = "0.2.9"
+	UiVersion string = "0.3.0"
 )
 
 templ DemoNavSection(label string) {
@@ -71,6 +71,8 @@ templ DemoNavigationContent() {
 	>
 		@DemoNavSection("@uiForm")
 		@DemoNavItem("CheckboxInput", "checkbox-input-demo", "ph-check-square")
+		@DemoNavItem("CronSchedule", "cron-schedule-demo", "ph-clock")
+		@DemoNavItem("DualSelectInput", "dual-select-input-demo", "ph-arrows-left-right")
 		@DemoNavItem("FileUploadInput", "file-upload-input-demo", "ph-upload-simple")
 		@DemoNavItem("InlineCheckboxGroup", "inline-checkbox-group-demo", "ph-checks")
 		@DemoNavItem("InlineRadioGroup", "inline-radio-group-demo", "ph-selection")
@@ -177,6 +179,8 @@ templ DemoIndex() {
 						</div>
 						<div class="*:border-t *:border-neutral-800 *:py-20 flex flex-col">
 							@CheckboxInputDemo()
+							@CronScheduleDemo()
+							@DualSelectInputDemo()
 							@FileUploadInputDemo()
 							@InlineCheckboxGroupDemo()
 							@InlineRadioGroupDemo()
