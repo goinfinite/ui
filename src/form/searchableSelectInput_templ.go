@@ -476,7 +476,7 @@ func searchableSelectInputFilterInput(
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\" role=\"combobox\" aria-autocomplete=\"list\" :aria-expanded=\"isOpen\" autocomplete=\"off\" class=\"w-full min-w-0 flex-1 bg-transparent text-neutral-100 placeholder-text-neutral-50/60 outline-none focus:outline-none\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\" role=\"combobox\" aria-autocomplete=\"list\" :aria-expanded=\"isOpen\" autocomplete=\"off\" class=\"w-full min-w-0 flex-1 bg-transparent text-neutral-100 placeholder:text-neutral-50/60 outline-none focus:outline-none\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1054,8 +1054,9 @@ func searchableSelectInputDropdown(settings searchableSelectInputShellSettings) 
 			templ_7745c5c3_Var50 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
+		dropdownSurfaceClasses := selectDropdownSurfaceClassesResolver(settings.DropdownBackgroundColor, "", "", settings.DropdownMinHeightClass, settings.DropdownMaxHeightClass)
 		dropdownMaxVisibleOptionsStyle := selectDropdownMaxVisibleOptionsStyle(settings.MaxVisibleOptions, searchableSelectInputOptionRowHeightRem)
-		var templ_7745c5c3_Var51 = []any{searchableSelectInputDropdownClassesResolver(settings)}
+		var templ_7745c5c3_Var51 = []any{dropdownSurfaceClasses}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var51...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -1085,7 +1086,7 @@ func searchableSelectInputDropdown(settings searchableSelectInputShellSettings) 
 			var templ_7745c5c3_Var53 string
 			templ_7745c5c3_Var53, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(dropdownMaxVisibleOptionsStyle)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/searchableSelectInput.templ`, Line: 296, Col: 41}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/searchableSelectInput.templ`, Line: 297, Col: 41}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var53))
 			if templ_7745c5c3_Err != nil {

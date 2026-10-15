@@ -214,7 +214,7 @@ func TestSearchableSelectInputRendersDropdownMaxHeightAndEmptyState(t *testing.T
 	renderedHtml := buffer.String()
 	for _, expectedText := range []string{
 		"max-h-32", "No matches", "searchableSelectInput",
-		"role=\"combobox\"",
+		"role=\"combobox\"", "placeholder:text-neutral-50/60",
 	} {
 		if !strings.Contains(renderedHtml, expectedText) {
 			t.Errorf("RenderedHtmlMissing(%q)", expectedText)
