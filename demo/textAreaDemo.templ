@@ -10,25 +10,27 @@ import (
 templ TextAreaReadOnlyExample() {
 	{{
 		readOnlyUsage := `@uiForm.TextArea(uiForm.TextAreaSettings{
-	InputName: "description",
-	Label:     "Description",
+	InputName:       "description",
+	Label:           "Description",
+	TwoWayStatePath: "description",
 
 	// OptionalFields
-	Value:      "Lorem ipsum dolor sit amet.",
 	IsReadOnly: true,
 })`
 	}}
 	@DemoExampleCard(
 		"Value & Read-Only",
-		"Value seeds the field content. IsReadOnly shows the value without accepting edits.",
+		"Value seeds the field content. IsReadOnly shows the value without accepting edits, and its actions are expand and copy only: a read-only field never offers the clear action.",
 		"/form/textArea.templ", readOnlyUsage,
 	) {
-		@uiForm.TextArea(uiForm.TextAreaSettings{
-			InputName:  "description",
-			Label:      "Description",
-			Value:      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-			IsReadOnly: true,
-		})
+		<div x-data="{description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'}">
+			@uiForm.TextArea(uiForm.TextAreaSettings{
+				InputName:       "description",
+				Label:           "Description",
+				TwoWayStatePath: "description",
+				IsReadOnly:      true,
+			})
+		</div>
 	}
 }
 

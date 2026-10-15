@@ -49,7 +49,7 @@ templ TextArea(componentSettings TextAreaSettings) {
 	{{ textCaseClass := uiToolset.TextCaseClassResolver(componentSettings.TextCase) }}
 	<!-- TextArea -->
 	<fieldset
-		class="bg-neutral-50/7.5 relative -mt-2 w-full rounded border border-neutral-50/5 transition-colors autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30"
+		class="bg-neutral-50/7.5 relative -mt-2 first:mt-0 w-full rounded border border-neutral-50/5 transition-colors autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30"
 		if componentSettings.TwoWayStatePath != "" {
 			:class={ `!` + componentSettings.TwoWayStatePath + ` && 'mt-0'` }
 		}
@@ -195,7 +195,7 @@ templ TextArea(componentSettings TextAreaSettings) {
 								Style:       componentSettings.FloatingButtonStyle,
 							})
 						}
-						if componentSettings.TwoWayStatePath != "" {
+						if componentSettings.TwoWayStatePath != "" && !componentSettings.IsReadOnly {
 							@FloatingButton(FloatingButtonSettings{
 								AriaLabel:   "Clear text area content",
 								Icon:        "ph-x-circle",

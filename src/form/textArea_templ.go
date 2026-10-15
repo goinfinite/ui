@@ -75,7 +75,7 @@ func TextArea(componentSettings TextAreaSettings) templ.Component {
 			textAreaRef = "textAreaInput"
 		}
 		textCaseClass := uiToolset.TextCaseClassResolver(componentSettings.TextCase)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!-- TextArea --><fieldset class=\"bg-neutral-50/7.5 relative -mt-2 w-full rounded border border-neutral-50/5 transition-colors autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!-- TextArea --><fieldset class=\"bg-neutral-50/7.5 relative -mt-2 first:mt-0 w-full rounded border border-neutral-50/5 transition-colors autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -520,7 +520,7 @@ func TextArea(componentSettings TextAreaSettings) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			if componentSettings.TwoWayStatePath != "" {
+			if componentSettings.TwoWayStatePath != "" && !componentSettings.IsReadOnly {
 				templ_7745c5c3_Err = FloatingButton(FloatingButtonSettings{
 					AriaLabel:   "Clear text area content",
 					Icon:        "ph-x-circle",

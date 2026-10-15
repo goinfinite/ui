@@ -7,6 +7,65 @@ import (
 	"testing"
 )
 
+func TestTextAreaRendersClearButtonByReadOnlyState(t *testing.T) {
+	testCases := []struct {
+		name            string
+		settings        TextAreaSettings
+		expectClearIcon bool
+	}{
+		{
+			name: "ReadOnlyBoundFieldHidesClear",
+			settings: TextAreaSettings{
+				InputName:       "output",
+				Label:           "Output",
+				TwoWayStatePath: "output",
+				IsReadOnly:      true,
+			},
+			expectClearIcon: false,
+		},
+		{
+			name: "EditableBoundFieldShowsClear",
+			settings: TextAreaSettings{
+				InputName:       "description",
+				Label:           "Description",
+				TwoWayStatePath: "description",
+			},
+			expectClearIcon: true,
+		},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			var buffer bytes.Buffer
+			renderErr := TextArea(testCase.settings).Render(context.Background(), &buffer)
+			if renderErr != nil {
+				t.Fatalf("TextAreaRenderFailed: %v", renderErr)
+			}
+			renderedHtml := buffer.String()
+			hasClearIcon := strings.Contains(renderedHtml, "ph-x-circle")
+			if hasClearIcon != testCase.expectClearIcon {
+				t.Errorf(
+					"ClearButtonMismatch: got %v, want %v",
+					hasClearIcon, testCase.expectClearIcon,
+				)
+			}
+		})
+	}
+}
+
+func TestTextAreaRendersFirstChildMarginReset(t *testing.T) {
+	var buffer bytes.Buffer
+	renderErr := TextArea(TextAreaSettings{
+		InputName: "description",
+		Label:     "Description",
+	}).Render(context.Background(), &buffer)
+	if renderErr != nil {
+		t.Fatalf("TextAreaRenderFailed: %v", renderErr)
+	}
+	if !strings.Contains(buffer.String(), "first:mt-0") {
+		t.Error("RenderedHtmlMissingFirstChildMarginReset")
+	}
+}
+
 func TestTextAreaRendersPlaceholderStyling(t *testing.T) {
 	testCases := []struct {
 		name                   string
