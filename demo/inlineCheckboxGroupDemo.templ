@@ -232,17 +232,18 @@ templ InlineCheckboxGroupFloatingButtonStyleExample() {
 	},
 
 	// OptionalFields
+	Orientation: uiForm.InlineCheckboxGroupOrientationVertical,
 	FloatingButtonStyle: uiForm.FloatingButtonStyle{
 		BackgroundColor: "secondary-500/20",
 		RingColor:       "secondary-500/40",
-		Size:            uiControl.ButtonSizeSm,
+		Size:            uiControl.ButtonSizeLg,
 		Shape:           uiToolset.ShapeCircular,
 	},
 })`
 	}}
 	@DemoExampleCard(
 		"Floating Button Style",
-		"FloatingButtonStyle repaints the select-all and deselect-all actions and changes their size and shape.",
+		"FloatingButtonStyle repaints the select-all and deselect-all actions and changes their size and shape. The vertical rows reserve the resolved action width, so a large action never covers the labels.",
 		"/form/inlineCheckboxGroup.templ", floatingButtonStyleUsage,
 	) {
 		<div x-data="{selectedFruits: []}" class="flex w-full max-w-80 flex-col gap-3">
@@ -253,10 +254,11 @@ templ InlineCheckboxGroupFloatingButtonStyleExample() {
 					{Label: "Banana", Value: "banana", TwoWayStatePath: "selectedFruits"},
 					{Label: "Orange", Value: "orange", TwoWayStatePath: "selectedFruits"},
 				},
+				Orientation: uiForm.InlineCheckboxGroupOrientationVertical,
 				FloatingButtonStyle: uiForm.FloatingButtonStyle{
 					BackgroundColor: "secondary-500/20",
 					RingColor:       "secondary-500/40",
-					Size:            uiControl.ButtonSizeSm,
+					Size:            uiControl.ButtonSizeLg,
 					Shape:           uiToolset.ShapeCircular,
 				},
 			})

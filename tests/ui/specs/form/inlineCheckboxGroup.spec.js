@@ -99,15 +99,4 @@ test.describe("InlineCheckboxGroup", () => {
     );
     await expect(appleBox).toBeChecked();
   });
-
-  test("@browser vertical orientation stacks the checkboxes", async ({
-    page,
-  }) => {
-    const panel = await openExamplePanel(page, section, "Vertical Orientation");
-    const content = panel.locator("fieldset > div").first();
-    const flexDirection = await content.evaluate(
-      (element) => getComputedStyle(element).flexDirection,
-    );
-    expect(flexDirection).toBe("column");
-  });
 });

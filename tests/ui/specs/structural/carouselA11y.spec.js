@@ -24,15 +24,9 @@ test.describe("Carousel accessibility @structural @a11y", () => {
     await nextButton.focus();
     await page.keyboard.press("Enter");
 
-    await expect
-      .poll(() =>
-        page.evaluate(
-          (selector) =>
-            Alpine.$data(document.querySelector(selector)).windowStart,
-          carouselRoot,
-        ),
-      )
-      .toBe(1);
+    await expect(
+      page.locator(`${carouselRoot} [aria-label="Go to item 2"]`),
+    ).toHaveAttribute("aria-current", "true");
   });
 
   test("each dot carries an accessible name and marks the current window", async ({

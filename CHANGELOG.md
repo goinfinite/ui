@@ -1,6 +1,26 @@
 # Changelog
 
 ```log
+0.3.0 - 2026/10/15
+feat: add the CronSchedule with a predefined-schedule dropdown, a five-field custom builder, per-field validation, and a plain-words preview
+feat: add the DualSelectInput, a select and a value input under one label and one border, where the select half opens the shared custom dropdown and the value half carries a darker background
+feat: add style groups to the new controls: Field on the DualSelectInput, and Field plus Preview on the CronSchedule
+feat: add the Trigger style group, SelectedIconColor, and the dropdown border and radius to the SelectInput, which now shares the custom dropdown keyboard flow through the toolset controller
+fix: reserve the floating action width from the resolved button size, so a large action never covers the TextArea content or the vertical InlineCheckboxGroup labels
+fix: hide the TextArea clear action on a read-only field, so a read-only field never mutates its bound state
+fix: reset the TextArea negative top margin when it is the first child, so its legend is never clipped by a scroll container
+fix: let the arrow keys move between the unnamed dropdown options, so the SelectInput and the DualSelectInput navigate in every browser, not only where an unnamed radio happens to group
+test: cover the new controls with unit and browser specs
+test: cover the unnamed preset arrow navigation in the CronSchedule
+test: add behavior specs for the Alert, the Tag, the Sidebar, the InlineRadioGroup, and the JSON Ajax failure paths
+test: remove the geometry-only and duplicate specs, and assert exact output in the Minifier test
+test: add the Gremlins mutation runner with a per-feature efficacy and coverage floor, and kill the survivors across the control, display, form, and structural packages
+test: add the fatal latency budget to the golden metrics
+chore: raise Go to 1.27.2 and the staticcheck and golangci-lint builds to match
+docs: update the readmes, the contexts, the feature map, and the changelog
+docs: record the mutation scope and the behavior-only specs
+chore(docs): regenerate the demo page
+
 0.2.9 - 2026/10/14
 feat: add the action states to the Button for a click promise or a form submission, with the pending label, the double-submit guard, and the result
 feat: let the Button action states take a per-state icon and a pending icon animation through PendingIcon, SucceededIcon, FailedIcon, and PendingIconAnimation, and add the uiToolset.Animation* constants

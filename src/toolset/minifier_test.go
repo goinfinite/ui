@@ -7,20 +7,24 @@ import (
 
 func TestMinifierJavaScript(t *testing.T) {
 	testCases := []struct {
-		name  string
-		input string
+		name           string
+		input          string
+		expectedOutput string
 	}{
 		{
-			name:  "simple variable declaration",
-			input: "const hello = 'world';\n\nfunction test() {\n  console.log(hello);\n}\n",
+			name:           "simple variable declaration",
+			input:          "const hello = 'world';\n\nfunction test() {\n  console.log(hello);\n}\n",
+			expectedOutput: "const hello = \"world\";\nfunction test() {\n  console.log(hello);\n}\n",
 		},
 		{
-			name:  "empty input",
-			input: "",
+			name:           "empty input",
+			input:          "",
+			expectedOutput: "",
 		},
 		{
-			name:  "comments and whitespace",
-			input: "// This is a comment\nconst x = 1;  // Another comment\n\n/* Multi-line\n   comment */\n",
+			name:           "comments and whitespace",
+			input:          "// This is a comment\nconst x = 1;  // Another comment\n\n/* Multi-line\n   comment */\n",
+			expectedOutput: "const x = 1;\n",
 		},
 	}
 
@@ -28,16 +32,8 @@ func TestMinifierJavaScript(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			result := Minifier(MinifierSettings{ContentType: MinifierContentTypeJavaScript, UnminifiedContent: &testCase.input})
 
-			if len(*result) > len(testCase.input) && testCase.input != "" {
-				t.Errorf("MinifiedResultShouldBeSmallerThanInput, Got Input: %d Chars, Result: %d Chars", len(testCase.input), len(*result))
-			}
-
-			if testCase.input != "" && len(strings.TrimSpace(*result)) == 0 {
-				t.Errorf("EmptyResultForNonEmptyInput")
-			}
-
-			if testCase.input == "" && len(*result) > 1 {
-				t.Errorf("InvalidResultForEmptyInput: %q", *result)
+			if *result != testCase.expectedOutput {
+				t.Errorf("MinifiedResultMismatch, Expected: %q, Got: %q", testCase.expectedOutput, *result)
 			}
 		})
 	}
@@ -45,20 +41,24 @@ func TestMinifierJavaScript(t *testing.T) {
 
 func TestMinifierCSS(t *testing.T) {
 	testCases := []struct {
-		name  string
-		input string
+		name           string
+		input          string
+		expectedOutput string
 	}{
 		{
-			name:  "simple css rule",
-			input: "body {\n  margin: 0;\n  padding: 10px;\n}\n\n.class {\n  color: red;\n}\n",
+			name:           "simple css rule",
+			input:          "body {\n  margin: 0;\n  padding: 10px;\n}\n\n.class {\n  color: red;\n}\n",
+			expectedOutput: "body {\n  margin: 0;\n  padding: 10px;\n}\n.class {\n  color: red;\n}\n",
 		},
 		{
-			name:  "empty input",
-			input: "",
+			name:           "empty input",
+			input:          "",
+			expectedOutput: "",
 		},
 		{
-			name:  "comments and whitespace",
-			input: "/* Header styles */\n.header {\n  display: flex;  /* flex display */\n  gap: 10px;\n}\n",
+			name:           "comments and whitespace",
+			input:          "/* Header styles */\n.header {\n  display: flex;  /* flex display */\n  gap: 10px;\n}\n",
+			expectedOutput: ".header {\n  display: flex;\n  gap: 10px;\n}\n",
 		},
 	}
 
@@ -66,20 +66,8 @@ func TestMinifierCSS(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			result := Minifier(MinifierSettings{ContentType: MinifierContentTypeCss, UnminifiedContent: &testCase.input})
 
-			if len(*result) > len(testCase.input) && testCase.input != "" {
-				t.Errorf("MinifiedResultShouldBeSmallerThanInput, Got Input: %d Chars, Result: %d Chars", len(testCase.input), len(*result))
-			}
-
-			if testCase.input != "" && len(strings.TrimSpace(*result)) == 0 {
-				t.Errorf("EmptyResultForNonEmptyInput")
-			}
-
-			if testCase.input == "" && len(*result) > 1 {
-				t.Errorf("InvalidResultForEmptyInput: %q", *result)
-			}
-
-			if strings.Contains(testCase.input, "/*") && strings.Contains(*result, "/*") {
-				t.Errorf("CommentsNotRemovedInOutput")
+			if *result != testCase.expectedOutput {
+				t.Errorf("MinifiedResultMismatch, Expected: %q, Got: %q", testCase.expectedOutput, *result)
 			}
 		})
 	}

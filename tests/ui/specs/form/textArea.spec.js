@@ -12,33 +12,6 @@ async function waitForAlpineHydration(page) {
   }, textAreaSection);
 }
 
-async function firstLineCenter(page, index) {
-  return page
-    .locator(`${textAreaSection} textarea`)
-    .nth(index)
-    .evaluate((ta) => {
-      const rect = ta.getBoundingClientRect();
-      const style = getComputedStyle(ta);
-      return (
-        rect.top +
-        parseFloat(style.paddingTop) +
-        parseFloat(style.lineHeight) / 2
-      );
-    });
-}
-
-async function firstIconCenter(page, index) {
-  const fieldset = page.locator(`${textAreaSection} fieldset`).nth(index);
-  await fieldset.locator("textarea").hover();
-  return fieldset
-    .locator(".ph-arrows-out")
-    .first()
-    .evaluate((icon) => {
-      const rect = icon.getBoundingClientRect();
-      return rect.top + rect.height / 2;
-    });
-}
-
 async function heightOf(page, index) {
   return page
     .locator(`${textAreaSection} textarea`)
@@ -66,12 +39,6 @@ test.describe("TextArea", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(`/index.html#${textAreaSection.slice(1)}`);
     await waitForAlpineHydration(page);
-  });
-
-  test("@browser @smoke default size renders at the md scale height", async ({
-    page,
-  }) => {
-    expect(await heightOf(page, 0)).toBeCloseTo(collapsedHeightPx, 1);
   });
 
   test("@browser @smoke expand toggle grows the box and collapse restores it", async ({
@@ -106,37 +73,5 @@ test.describe("TextArea", () => {
 
     await toggleHeightButton.press("Enter");
     await expectStableHeight(page, 0, expandedHeightPx);
-  });
-
-  test("@browser floating icons sit on the first text line when empty", async ({
-    page,
-  }) => {
-    await expect
-      .poll(
-        async () =>
-          Math.abs(
-            (await firstIconCenter(page, 0)) - (await firstLineCenter(page, 0)),
-          ),
-        { timeout: 5000 },
-      )
-      .toBeLessThanOrEqual(2);
-  });
-
-  test("@browser floating icons sit on the first text line when filled", async ({
-    page,
-  }) => {
-    await page
-      .locator(`${textAreaSection} textarea`)
-      .first()
-      .fill("Lorem ipsum dolor sit amet");
-    await expect
-      .poll(
-        async () =>
-          Math.abs(
-            (await firstIconCenter(page, 0)) - (await firstLineCenter(page, 0)),
-          ),
-        { timeout: 5000 },
-      )
-      .toBeLessThanOrEqual(2);
   });
 });

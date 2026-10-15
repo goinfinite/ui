@@ -6,10 +6,10 @@ const stateReadout = "#filter-bar-demo-state span";
 
 const chipOf = (page, section, filterLabel) =>
   page.locator(
-    `${section} span[x-show]:has(button[aria-label="Remove ${filterLabel} filter"])`,
+    `${section} span:has(button[aria-label="Remove ${filterLabel} filter"])`,
   );
 
-const chipValueOf = (chip) => chip.locator("span[x-text]");
+const chipValueOf = (chip) => chip.locator("span").last();
 
 test.describe("FilterBar @structural", () => {
   test.beforeEach(async ({ page }) => {
@@ -108,22 +108,22 @@ test.describe("FilterBar @structural", () => {
     );
   });
 
-  test("@smoke chip row renders only while a filter is active", async ({
+  test("@smoke chips render only while a filter is active", async ({
     page,
   }) => {
-    const chipRow = page.locator(
-      `${filterBarSection} div[x-show="hasActiveFilters()"]`,
+    const visibleChips = page.locator(
+      `${filterBarSection} button[aria-label$="filter"]:visible`,
     );
-    await expect(chipRow).toBeVisible();
+    await expect(visibleChips).toHaveCount(1);
 
     await page
       .locator(`${filterBarSection} button`)
       .filter({ hasText: "Clear filters" })
       .click();
-    await expect(chipRow).toBeHidden();
+    await expect(visibleChips).toHaveCount(0);
 
     await page.locator(`${filterBarSection} input[name=name]`).fill("alpha");
-    await expect(chipRow).toBeVisible();
+    await expect(visibleChips).toHaveCount(1);
   });
 
   test("@smoke multi-value filter holds an array and joins the chip", async ({

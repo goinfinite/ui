@@ -1,27 +1,11 @@
 UiToolset.RegisterAlpineState(() => {
   Alpine.data("selectInput", (labelValueOptionsScriptId) => ({
+    ...UiToolset.SelectDropdown.controller,
     labelValueOptionsScriptId: labelValueOptionsScriptId || "",
     isOpen: false,
     openUpward: false,
     selectedValue: "",
     selectedItems: [],
-
-    toggleDropdown() {
-      this.isOpen = !this.isOpen;
-      if (!this.isOpen) {
-        return;
-      }
-      this.$nextTick(() => {
-        this.openUpward = UiToolset.SelectDropdown.openUpwardResolver(
-          this.$refs.selectTrigger,
-          this.$refs.selectDropdown,
-        );
-      });
-    },
-
-    closeDropdown() {
-      this.isOpen = false;
-    },
 
     selectedItemsDisplayFormatter(items) {
       if (!items || items.length === 0) {

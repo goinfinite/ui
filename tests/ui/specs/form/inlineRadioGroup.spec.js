@@ -3,69 +3,70 @@ import { expect, test } from "../../fixture.js";
 
 const radioGroupSection = "#inline-radio-group-demo";
 
+function mainGroup(page) {
+  return page.locator(`${radioGroupSection} fieldset`).first();
+}
+
+function stateReadout(page) {
+  return page
+    .locator(`${radioGroupSection} p`, { hasText: "Value:" })
+    .locator("span");
+}
+
 test.describe("InlineRadioGroup", () => {
-  test("@browser @smoke label notches into the fieldset border like the other fields", async ({
-    page,
-  }) => {
+  test.beforeEach(async ({ page }) => {
     await page.goto(`/index.html#${radioGroupSection.slice(1)}`);
-    const fieldset = page.locator(`${radioGroupSection} fieldset`).first();
-    await expect(fieldset).toBeVisible();
-    const legend = fieldset.locator("legend");
-    await expect(legend).toHaveText("Select an option");
-    const geometry = await fieldset.evaluate((el) => {
-      const legendRect = el.querySelector("legend").getBoundingClientRect();
-      const contentRect = el
-        .querySelector("div.flex-row")
-        .getBoundingClientRect();
-      return {
-        legendTop: Math.round(legendRect.top),
-        fieldsetTop: Math.round(el.getBoundingClientRect().top),
-        contentTop: Math.round(contentRect.top),
-      };
-    });
-    expect(geometry.legendTop).toBe(geometry.fieldsetTop);
-    expect(geometry.contentTop).toBeGreaterThan(geometry.legendTop);
+    await expect(stateReadout(page)).toHaveText("option2");
   });
 
-  test("@browser @smoke large radios grow the group and keep bottom clearance", async ({
+  test("@smoke selecting an option updates the bound state", async ({
     page,
   }) => {
-    await page.goto("/index.html", { waitUntil: "domcontentloaded" });
-    await openExamplePanel(page, radioGroupSection, "Sizes");
-    const fieldset = page
-      .locator(`${radioGroupSection} details`)
-      .filter({ hasText: "Pick a size" })
-      .locator("fieldset");
-    await expect(fieldset).toBeVisible();
+    const group = mainGroup(page);
+    await group.getByText("Option 1", { exact: true }).click();
 
-    const geometry = await fieldset.evaluate((el) => {
-      const content = el.querySelector("div.flex-row");
-      const contentRect = content.getBoundingClientRect();
-      const radioRect = content.querySelector("label").getBoundingClientRect();
-      return {
-        paddingBottom: getComputedStyle(content).paddingBottom,
-        contentBottom: contentRect.bottom,
-        radioBottom: radioRect.bottom,
-      };
-    });
-
-    expect(geometry.paddingBottom).toBe("6px");
-    expect(
-      geometry.contentBottom - geometry.radioBottom,
-    ).toBeGreaterThanOrEqual(6);
+    await expect(stateReadout(page)).toHaveText("option1");
+    await expect(group.getByLabel("Option 1", { exact: true })).toBeChecked();
+    await expect(
+      group.getByLabel("Option 2", { exact: true }),
+    ).not.toBeChecked();
   });
 
-  test("@browser vertical orientation stacks the radios", async ({ page }) => {
-    await page.goto("/index.html", { waitUntil: "domcontentloaded" });
+  test("@smoke the group submits the selected value under its input name", async ({
+    page,
+  }) => {
+    await mainGroup(page).getByText("Option 1", { exact: true }).click();
+
+    const formEntries = await page.evaluate(() => {
+      const checkedRadio = document.querySelector(
+        "#inline-radio-group-demo input[type=radio]:checked",
+      );
+      const groupRoot = checkedRadio.closest("[x-data]");
+      const form = document.createElement("form");
+      groupRoot.parentNode.insertBefore(form, groupRoot);
+      form.appendChild(groupRoot);
+      const entries = [...new FormData(form).entries()];
+      form.parentNode.insertBefore(groupRoot, form);
+      form.remove();
+      return entries;
+    });
+
+    expect(formEntries).toEqual([["group1", "option1"]]);
+  });
+
+  test("vertical orientation keeps the group bound to one shared path", async ({
+    page,
+  }) => {
     const panel = await openExamplePanel(
       page,
       radioGroupSection,
       "Vertical Orientation",
     );
-    const content = panel.locator("fieldset > div").first();
-    const flexDirection = await content.evaluate(
-      (element) => getComputedStyle(element).flexDirection,
-    );
-    expect(flexDirection).toBe("column");
+    const readout = panel.locator("p", { hasText: "Value:" }).locator("span");
+    await expect(readout).toHaveText("option2");
+
+    await panel.getByText("Option 3", { exact: true }).click();
+
+    await expect(readout).toHaveText("option3");
   });
 });

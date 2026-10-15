@@ -172,31 +172,10 @@ templ buttonFrame(componentSettings ButtonSettings) {
 		if componentSettings.BackgroundColorActive != "" {
 			{{ backgroundActiveColor = "active:bg-" + componentSettings.BackgroundColorActive }}
 		}
-		{{ buttonPadding := "p-2" }}
-		{{ buttonTextSize := "text-base" }}
-		{{ buttonGap := "gap-1" }}
-		switch componentSettings.Size {
-			case ButtonSizeXs:
-				{{ buttonPadding = "p-1" }}
-				{{ buttonTextSize = "text-xs" }}
-				{{ buttonGap = "gap-0.5" }}
-			case ButtonSizeSm:
-				{{ buttonPadding = "p-1.5" }}
-				{{ buttonTextSize = "text-sm" }}
-				{{ buttonGap = "gap-0.75" }}
-			case ButtonSizeMd:
-				{{ buttonPadding = "p-2" }}
-				{{ buttonTextSize = "text-base" }}
-				{{ buttonGap = "gap-1" }}
-			case ButtonSizeLg:
-				{{ buttonPadding = "p-2.5" }}
-				{{ buttonTextSize = "text-lg" }}
-				{{ buttonGap = "gap-1.25" }}
-			case ButtonSizeXl:
-				{{ buttonPadding = "p-3" }}
-				{{ buttonTextSize = "text-xl" }}
-				{{ buttonGap = "gap-1.5" }}
-		}
+		{{ sizeTokens := buttonSizeTokensResolver(componentSettings.Size) }}
+		{{ buttonPadding := sizeTokens.Padding }}
+		{{ buttonTextSize := sizeTokens.TextSize }}
+		{{ buttonGap := sizeTokens.Gap }}
 		if componentSettings.Label != "" {
 			switch componentSettings.Size {
 				case ButtonSizeXs:
@@ -245,19 +224,7 @@ templ buttonFrame(componentSettings ButtonSettings) {
 			{{ ringClasses += " hover:ring-" + componentSettings.RingColorHover }}
 		}
 		{{ radiusRoundness := uiToolset.ShapeClassResolver(componentSettings.Shape, "rounded-md") }}
-		{{ iconSize := "text-base" }}
-		switch componentSettings.Size {
-			case ButtonSizeXs:
-				{{ iconSize = "text-base" }}
-			case ButtonSizeSm:
-				{{ iconSize = "text-base" }}
-			case ButtonSizeMd:
-				{{ iconSize = "text-lg" }}
-			case ButtonSizeLg:
-				{{ iconSize = "text-xl" }}
-			case ButtonSizeXl:
-				{{ iconSize = "text-2xl" }}
-		}
+		{{ iconSize := sizeTokens.IconSize }}
 		{{ buttonClasses := buttonWidth + " " + backgroundClasses + " " + textColor + " " + textColorHover + " " + radiusRoundness + " " + ringClasses + sizeConstraintClasses + " justify-center items-center text-center font-bold flex flex-row leading-none transition-all" }}
 		if textCaseClass != "" {
 			{{ buttonClasses += " " + textCaseClass }}

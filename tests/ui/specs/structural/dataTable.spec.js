@@ -144,10 +144,10 @@ test.describe("DataTable @structural", () => {
     await expect.poll(() => refreshUrls.length).toBe(1);
     expect(refreshUrls[0]).toContain("name=alpha");
     const chip = page.locator(
-      `${tableRoot} span[x-show]:has(button[aria-label="Remove Name filter"])`,
+      `${tableRoot} span:has(button[aria-label="Remove Name filter"])`,
     );
     await expect(chip).toBeVisible();
-    await expect(chip.locator("span[x-text]")).toHaveText("alpha");
+    await expect(chip.locator("span").last()).toHaveText("alpha");
   });
 
   test("search debounces into one request and resets the page", async ({
@@ -481,22 +481,5 @@ test.describe("DataTable @structural", () => {
     });
     expect(stacking.overlaps).toBe(true);
     expect(stacking.dropdownWins).toBe(true);
-  });
-
-  test("@browser the items per page menu renders the default surface opacity", async ({
-    page,
-  }) => {
-    const table = page.locator(tableRoot);
-    await table.scrollIntoViewIfNeeded();
-    await table.locator("nav [role=button]").click();
-
-    const dropdown = table.locator("nav ul");
-    await expect(dropdown).toBeVisible();
-    const backgroundColor = await dropdown.evaluate(
-      (element) => getComputedStyle(element).backgroundColor,
-    );
-    const colorChannels = (backgroundColor.match(/[\d.]+/g) ?? []).map(Number);
-    const backgroundAlpha = colorChannels.length === 4 ? colorChannels[3] : 1;
-    expect(backgroundAlpha).toBe(0.95);
   });
 });

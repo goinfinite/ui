@@ -27,6 +27,26 @@ A checkbox with a label. It binds to a boolean or to an array.
 - `IsInvalid` and `IsInvalidOneWayStatePath` set the error state. The border changes to `ErrorColor` (default `"red-500"`), and the input gets `aria-invalid`.
 - `ErrorMessage` and `ErrorMessageOneWayStatePath` show a message below the box. With an invalid path, the message shows only while the path is true. With `InputId`, the input points to the message through `aria-describedby`.
 
+## CronSchedule
+
+A cron expression control. A mode switch picks between a predefined-schedule dropdown and a five-field custom builder: minute, hour, day, month, weekday. Both modes write one cron string to `TwoWayStatePath`.
+
+```go
+@uiForm.CronSchedule(uiForm.CronScheduleSettings{
+    Label:           "Cron Schedule",
+    TwoWayStatePath: "schedule",
+    InputName:       "schedule",
+})
+```
+
+- The predefined dropdown carries the macro entries (hourly, weekly, monthly, annually, on reboot) and common fixed expressions.
+- Each custom field takes a preset from its own select or a typed value. The select shows `Custom` while the typed value matches no preset.
+- Each field validates its cron syntax (minute 0-59, hour 0-23, day 1-31, month 1-12, weekday 0-7, with `*`, ranges, lists, and steps). An invalid field turns red and the bound path clears until the schedule is valid again.
+- A preview below the fields reads the resulting schedule in plain words, for example `At 09:30, on weekdays`.
+- The bound path seeds the control: a preset expression opens in predefined mode, and a custom expression opens in custom mode with the fields filled.
+- `Size` takes an `InputFieldSize*` constant. `TextCase` changes the label, the field labels, and the preview.
+- `Field` takes a `CronScheduleFieldStyle` with the outer `BackgroundColor`, `BorderColor`, and `BorderRadius`. `Dropdown` takes a `CronScheduleDropdownStyle` with `BackgroundColor`, `BorderColor`, and `BorderRadius` for the predefined list and the five field lists. `Preview` takes a `CronSchedulePreviewStyle` with `TextColor` for the plain-words line and its clock icon, and `CodeBackgroundColor` and `CodeTextColor` for the expression chip. `RadioStyle` takes a `RadioInputStyle` for the mode radios. The predefined trigger and the five custom field surfaces keep their neutral style.
+
 ## InputField
 
 A single-line input with a floating label, optional affixes, and an optional hint.
@@ -149,7 +169,7 @@ A row or column of checkboxes under one label. The label sits in the top border,
 - `Orientation` takes `InlineCheckboxGroupOrientationHorizontal` (the default) or `InlineCheckboxGroupOrientationVertical`.
 - `MaxVisibleOptions` limits the visible rows and scrolls the rest.
 - `TextCase` changes only the group label.
-- On hover or focus, the group shows select-all and deselect-all `FloatingButton` actions. Select-all skips disabled options. `FloatingButtonStyle` restyles them. `ShouldHideFloatingButtons` removes them.
+- On hover or focus, the group shows select-all and deselect-all `FloatingButton` actions. Select-all skips disabled options. `FloatingButtonStyle` restyles them. `ShouldHideFloatingButtons` removes them. Vertical rows reserve the resolved action width, so a large action never covers the labels.
 
 ## FloatingButton
 
@@ -164,7 +184,8 @@ A small icon button over a field. It shows on hover or focus. `InlineCheckboxGro
 ```
 
 - `Icon` sets a static icon. `IconOneWayStatePath` binds the icon to Alpine state.
-- `Style` takes a `FloatingButtonStyle` with background, ring, and text colors, plus `Size` and `Shape`. An empty field keeps the neutral default.
+- `Style` takes a `FloatingButtonStyle` with background, ring, and text colors, plus `Size` and `Shape`. `Size` takes a `uiControl.ButtonSize*` constant (default `xs`). An empty field keeps the neutral default.
+- The hosting field reserves the resolved action width: `InlineCheckboxGroup` and `TextArea` read the same button-size width contract, so a `ButtonSizeLg` or `ButtonSizeXl` action never covers the field content.
 
 ## TextArea
 
@@ -177,8 +198,8 @@ A multiline input with expand, copy, and clear actions.
 })
 ```
 
-- `IsCode` uses a monospace font. `IsReadOnly` sets `readonly`. `IsRequired` marks the label and sets `required`.
-- On hover or focus, the field shows the expand, copy, and clear `FloatingButton` actions. `FloatingButtonStyle` restyles them. `ShouldHideFloatingButtons` removes them, and the text uses the full width.
+- `IsCode` uses a monospace font. `IsReadOnly` sets `readonly` and drops the clear action, so a read-only field never mutates its bound state. `IsRequired` marks the label and sets `required`.
+- On hover or focus, the field shows the expand, copy, and clear `FloatingButton` actions. A read-only field shows expand and copy only. `FloatingButtonStyle` restyles them. `ShouldHideFloatingButtons` removes them, and the text uses the full width. The text reserves the resolved action width, so a large action never covers the content.
 
 ## SelectInput
 
@@ -202,7 +223,35 @@ A dropdown select. It is not a native `<select>`: hidden radio inputs and an Alp
 - `IsDisabledOneWayStatePath` disables the trigger while the path is truthy.
 - `OnChangeFunc` runs after a change, a toggle, or a clear.
 - `Size` takes a `SelectInputSize*` constant (default `md`).
+- The trigger opens on click, Enter, Space, or ArrowDown; the checked row takes focus, Enter commits, and Escape closes with focus return. A pick in single mode closes the dropdown.
 - `DropdownMinHeightClass` and `DropdownMaxHeightClass` limit the list height (default `max-h-60`). `MaxVisibleOptions` sets a row count and replaces both.
+- `Trigger` takes a `SelectInputTriggerStyle` with `BackgroundColor`, `BorderColor`, `BorderRadius`, and `TextColor` for the field surface. `SelectedIconColor` adds a checked-row icon and its focus ring. `DropdownBackgroundColor`, `DropdownBorderColor`, and `DropdownBorderRadius` shape the list surface.
+
+## DualSelectInput
+
+One control that combines a select for the unit or operator with a text or number input for the value. Both halves share one label and one border, for entries like "port 80" or "equals 5".
+
+```go
+@uiForm.DualSelectInput(uiForm.DualSelectInputSettings{
+    Label:   "Port",
+    Options: portOptions,
+
+    // OptionalFields
+    SelectTwoWayStatePath: "portUnit",
+    ValueTwoWayStatePath:  "portValue",
+    InputName:             "portValue",
+    SelectName:            "portUnit",
+})
+```
+
+- With `SelectTwoWayStatePath` empty, both halves bind `ValueTwoWayStatePath`: a preset pick writes the slot, and a typed value that matches no option shows `Custom` on the select.
+- `InputType` takes a `uiForm.InputType*` constant (default `text`). `SelectName` and `InputName` submit the two halves as separate form fields.
+- The select half is not a native `<select>`: it opens the shared custom dropdown. The trigger opens on click, Enter, Space, or ArrowDown; the checked row takes focus, Enter commits, and Escape closes with focus return.
+- The value half carries a darker background than the select half, so the two halves read as separate controls.
+- `IsInvalidOneWayStatePath` marks both halves and the border while the path is truthy.
+- `Size` takes an `InputFieldSize*` constant. `TextCase` changes the label.
+- `Field` takes a `DualSelectInputFieldStyle` with `BackgroundColor`, `BorderColor`, `BorderRadius`, `DividerColor` (the line between the halves), and `TextColor`. An empty field keeps the neutral default.
+- `Dropdown` takes a `DualSelectInputDropdownStyle` with `BackgroundColor`, `BorderColor`, and `BorderRadius` for the option list surface.
 
 ## SearchableSelectInput
 
@@ -258,6 +307,9 @@ One radio option. Inputs on the same `TwoWayStatePath` form a group.
     TwoWayStatePath: "selectedOption",
 })
 ```
+
+- `Size` takes a `RadioInputSize*` constant. `TextCase` changes the label.
+- `Style` takes a `RadioInputStyle` with `TextColor` for the idle label (default `neutral-100`), `ActiveColor` for the checked and hover color (default `secondary-500`), and `FocusRingColor` for the keyboard focus ring (default: `ActiveColor`).
 
 ## InlineRadioGroup
 

@@ -12,9 +12,9 @@ test.describe("Chart", () => {
   test("@smoke the live chart lists its series and trims the streamed rows", async ({
     page,
   }) => {
-    const legendLabels = page.locator(`${chartSection} ul li span[x-text]`);
-    await expect(legendLabels.first()).toHaveText("CPU");
-    await expect(legendLabels.nth(1)).toHaveText("Memory");
+    const legendItems = page.locator(`${chartSection} ul li`);
+    await expect(legendItems.first()).toHaveText("CPU");
+    await expect(legendItems.nth(1)).toHaveText("Memory");
 
     const firstRowTime = page.locator(liveChartTableRows).first().locator("th");
     await expect(page.locator(liveChartTableRows)).toHaveCount(20);

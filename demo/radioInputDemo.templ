@@ -39,6 +39,54 @@ templ RadioInputSizesExample() {
 	}
 }
 
+templ RadioInputColorsExample() {
+	{{
+		colorsUsage := `@uiForm.RadioInput(uiForm.RadioInputSettings{
+	Label:           "Option 1",
+	StateValue:      "option1",
+	TwoWayStatePath: "selectedOption",
+
+	// OptionalFields
+	Style: uiForm.RadioInputStyle{
+		ActiveColor:    "violet-400",
+		FocusRingColor: "violet-400",
+		TextColor:      "violet-100",
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Colors",
+		"Style sets the idle text color, the checked and hover color, and the keyboard focus ring around the icon.",
+		"/form/radioInput.templ", colorsUsage,
+	) {
+		<div class="flex flex-col gap-2" x-data="{selectedOption: 'option1'}">
+			@uiForm.RadioInput(uiForm.RadioInputSettings{
+				Label:           "Option 1",
+				StateValue:      "option1",
+				TwoWayStatePath: "selectedOption",
+				Style: uiForm.RadioInputStyle{
+					ActiveColor:    "violet-400",
+					FocusRingColor: "violet-400",
+					TextColor:      "violet-100",
+				},
+			})
+			@uiForm.RadioInput(uiForm.RadioInputSettings{
+				Label:           "Option 2",
+				StateValue:      "option2",
+				TwoWayStatePath: "selectedOption",
+				Style: uiForm.RadioInputStyle{
+					ActiveColor:    "violet-400",
+					FocusRingColor: "violet-400",
+					TextColor:      "violet-100",
+				},
+			})
+			<p class={ DemoLiveStateClasses }>
+				Value: <span x-text="selectedOption"></span>
+			</p>
+		</div>
+	}
+}
+
 templ RadioInputDemo() {
 	{{
 		demoUsage := `@uiForm.RadioInput(uiForm.RadioInputSettings{
@@ -82,6 +130,7 @@ templ RadioInputDemo() {
 		}
 		@DemoAdvancedExamples("radio-input-demo", []uiDisplay.AccordionItemSettings{
 			{Title: "Sizes", Icon: "ph-ruler", Content: RadioInputSizesExample()},
+			{Title: "Colors", Icon: "ph-paint-brush", Content: RadioInputColorsExample()},
 		})
 	</div>
 }

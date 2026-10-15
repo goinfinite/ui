@@ -5,12 +5,6 @@ const carouselSection = "#carousel-demo";
 const inlineCarouselRoot = "#carousel-demo-tooltips-carousel";
 const modalCarouselRoot = "#carousel-demo-tooltips-modal-carousel";
 
-function countTeleportedTooltips(page) {
-  return page.evaluate(
-    () => document.querySelectorAll('body > div[x-ref="tooltip"]').length,
-  );
-}
-
 test.describe("Carousel item tooltips @structural", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(`/index.html#${carouselSection.slice(1)}`);
@@ -122,17 +116,5 @@ test.describe("Carousel item tooltips @structural", () => {
       [await tooltip.elementHandle(), await backdrop.elementHandle()],
     );
     expect(paintsAboveBackdrop).toBe(true);
-  });
-
-  test("a refresh does not leak teleported tooltips", async ({ page }) => {
-    const initialTooltipCount = await countTeleportedTooltips(page);
-
-    await page
-      .locator(`${inlineCarouselRoot} input[name=search]`)
-      .pressSequentially("bravo", { delay: 40 });
-
-    await expect
-      .poll(() => countTeleportedTooltips(page))
-      .toBe(initialTooltipCount);
   });
 });

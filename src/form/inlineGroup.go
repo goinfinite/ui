@@ -70,13 +70,14 @@ func inlineCheckboxGroupValuesArrayLiteralBuilder(inputSettings []CheckboxInputS
 }
 
 func inlineCheckboxGroupOptionRowClassesResolver(
-	orientation string, hasFloatingButtons bool,
+	orientation string, hasFloatingButtons bool, actionWidthRem float64,
 ) string {
 	rowWidthClass := "w-fit"
 	if orientation == inlineGroupOrientationVertical {
 		rowWidthClass = "w-[calc(100%+0.75rem)]"
 		if hasFloatingButtons {
-			rowWidthClass = "w-[calc(100%-1.5rem)]"
+			actionWidthText := strconv.FormatFloat(actionWidthRem, 'f', -1, 64)
+			rowWidthClass = "w-[calc(100%-" + actionWidthText + "rem)]"
 		}
 	}
 	return rowWidthClass + " -m-1.5 rounded p-1.5 transition-colors hover:bg-neutral-50/10"

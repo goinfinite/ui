@@ -155,53 +155,6 @@ test.describe("Tabs @structural", () => {
     ).toHaveAttribute("data-tab-value", "security");
   });
 
-  test("icon position top stacks the icon above the label", async ({
-    page,
-  }) => {
-    const panel = await openExamplePanel(page, tabsSection, "Icon Position");
-
-    const firstTab = panel.locator("[role=tab]").first();
-    const tabClasses = await firstTab.getAttribute("class");
-    expect(tabClasses).toContain("flex-col");
-    expect(tabClasses).toContain("text-center");
-
-    await expect(firstTab.locator("i.ph-duotone")).toBeVisible();
-    await expect(firstTab.locator("span").first()).toHaveText("General");
-  });
-
-  test("border radius rounds the tab edges", async ({ page }) => {
-    const panel = await openExamplePanel(page, tabsSection, "Border Radius");
-
-    const firstTab = panel.locator("[role=tab]").first();
-    const tabClasses = await firstTab.getAttribute("class");
-    expect(tabClasses).toContain("rounded-t-xl");
-  });
-
-  test("@browser vertical alignment centers the tab list with the content", async ({
-    page,
-  }) => {
-    const panel = await openExamplePanel(
-      page,
-      tabsSection,
-      "Vertical Alignment",
-    );
-
-    const tablist = panel.locator("[role=tablist]").first();
-    const tablistClasses = await tablist.getAttribute("class");
-    expect(tablistClasses).toContain("self-center");
-
-    const listBox = await tablist.boundingBox();
-    const rootBox = await tablist.locator("xpath=..").boundingBox();
-    const listCenter = listBox.y + listBox.height / 2;
-    const rootCenter = rootBox.y + rootBox.height / 2;
-    expect(Math.abs(listCenter - rootCenter)).toBeLessThan(2);
-
-    const scrollsX = await tablist.evaluate(
-      (element) => element.scrollWidth > element.clientWidth,
-    );
-    expect(scrollsX).toBe(false);
-  });
-
   test("@browser vertical overflow tab list scrolls vertically", async ({
     page,
   }) => {

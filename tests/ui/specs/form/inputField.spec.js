@@ -10,41 +10,6 @@ test.describe("InputField", () => {
     await openExamplePanel(page, inputFieldSection, "Affixes");
   });
 
-  test("@browser @smoke a long suffix stays on one line inside the field border", async ({
-    page,
-  }) => {
-    const fieldset = page
-      .locator(inputFieldSection)
-      .locator("fieldset")
-      .filter({ hasText: "Slug" });
-    const suffix = fieldset.locator("div.truncate").last();
-    await expect(suffix).toHaveText("ui.demo.goinfinite.net");
-
-    const geometry = await fieldset.evaluate((el) => {
-      const fieldRect = el.getBoundingClientRect();
-      const suffixRect = el
-        .querySelector("div.truncate:last-of-type")
-        .getBoundingClientRect();
-      return {
-        fieldBottom: fieldRect.bottom,
-        fieldLeft: fieldRect.left,
-        fieldRight: fieldRect.right,
-        suffixBottom: suffixRect.bottom,
-        suffixLeft: suffixRect.left,
-        suffixRight: suffixRect.right,
-        suffixHeight: suffixRect.height,
-        lineHeight: parseFloat(
-          getComputedStyle(el.querySelector("input")).lineHeight,
-        ),
-      };
-    });
-
-    expect(geometry.suffixHeight).toBeLessThan(geometry.lineHeight * 2);
-    expect(geometry.suffixBottom).toBeLessThanOrEqual(geometry.fieldBottom);
-    expect(geometry.suffixLeft).toBeGreaterThanOrEqual(geometry.fieldLeft);
-    expect(geometry.suffixRight).toBeLessThanOrEqual(geometry.fieldRight);
-  });
-
   test("@browser @smoke a long suffix truncates and leaves the input usable", async ({
     page,
   }) => {

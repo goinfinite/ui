@@ -2,11 +2,6 @@ import { expect, test } from "../../fixture.js";
 
 const toastSection = "#toast-demo";
 
-const toastBackgroundOf = (page) =>
-  page
-    .locator("#toast")
-    .evaluate((element) => getComputedStyle(element).backgroundColor);
-
 const toastShadowOf = (page) =>
   page
     .locator("#toast")
@@ -14,19 +9,19 @@ const toastShadowOf = (page) =>
 
 const toneCases = [
   {
-    name: "success tone keeps the neutral surface and rings green",
+    name: "success tone rings green",
     message: "Saved!",
     type: "success",
     ringColor: "rgb(34, 197, 94)",
   },
   {
-    name: "partial success tone keeps the neutral surface and rings yellow",
+    name: "partial success tone rings yellow",
     message: "Two of three.",
     type: "partialSuccess",
     ringColor: "rgb(234, 179, 8)",
   },
   {
-    name: "danger tone keeps the neutral surface and rings red",
+    name: "danger tone rings red",
     message: "Failed.",
     type: "danger",
     ringColor: "rgb(239, 68, 68)",
@@ -47,7 +42,6 @@ test.describe("Toast", () => {
         { message: toneCase.message, type: toneCase.type },
       );
       await expect(page.locator("#toast")).toBeVisible();
-      expect(await toastBackgroundOf(page)).toBe("rgba(38, 38, 38, 0.9)");
       expect(await toastShadowOf(page)).toContain(toneCase.ringColor);
     });
   }

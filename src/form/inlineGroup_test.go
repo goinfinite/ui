@@ -55,6 +55,20 @@ func TestInlineGroupMaxVisibleOptionsStyle(t *testing.T) {
 	}
 }
 
+func TestInlineCheckboxGroupStatePathResolver(t *testing.T) {
+	if actual := inlineCheckboxGroupStatePathResolver(nil); actual != "" {
+		t.Errorf("EmptyInputShouldYieldEmptyPath: %q", actual)
+	}
+
+	inputSettings := []CheckboxInputSettings{
+		{Value: "apple", TwoWayStatePath: "selectedFruits"},
+		{Value: "banana", TwoWayStatePath: "otherFruits"},
+	}
+	if actual := inlineCheckboxGroupStatePathResolver(inputSettings); actual != "selectedFruits" {
+		t.Errorf("FirstInputStatePathMismatch: %q", actual)
+	}
+}
+
 func TestInlineCheckboxGroupValuesArrayLiteralBuilder(t *testing.T) {
 	testCases := []struct {
 		name          string
@@ -106,6 +120,67 @@ func TestInlineCheckboxGroupValuesArrayLiteralBuilder(t *testing.T) {
 				t.Errorf(
 					"ValuesArrayLiteralMismatch: got %q, want %q",
 					actualLiteral, testCase.expected,
+				)
+			}
+		})
+	}
+}
+
+func TestInlineCheckboxGroupOptionRowClassesResolver(t *testing.T) {
+	testCases := []struct {
+		name               string
+		orientation        string
+		hasFloatingButtons bool
+		actionWidthRem     float64
+		expectedWidthClass string
+	}{
+		{
+			name:               "horizontal rows stay content-sized",
+			orientation:        InlineCheckboxGroupOrientationHorizontal,
+			hasFloatingButtons: true,
+			actionWidthRem:     2.5,
+			expectedWidthClass: "w-fit",
+		},
+		{
+			name:               "vertical rows span the group without actions",
+			orientation:        InlineCheckboxGroupOrientationVertical,
+			hasFloatingButtons: false,
+			actionWidthRem:     1.5,
+			expectedWidthClass: "w-[calc(100%+0.75rem)]",
+		},
+		{
+			name:               "vertical rows reserve the default action width",
+			orientation:        InlineCheckboxGroupOrientationVertical,
+			hasFloatingButtons: true,
+			actionWidthRem:     1.5,
+			expectedWidthClass: "w-[calc(100%-1.5rem)]",
+		},
+		{
+			name:               "vertical rows reserve the large action width",
+			orientation:        InlineCheckboxGroupOrientationVertical,
+			hasFloatingButtons: true,
+			actionWidthRem:     2.5,
+			expectedWidthClass: "w-[calc(100%-2.5rem)]",
+		},
+		{
+			name:               "vertical rows keep the fractional action width precise",
+			orientation:        InlineCheckboxGroupOrientationVertical,
+			hasFloatingButtons: true,
+			actionWidthRem:     1.25,
+			expectedWidthClass: "w-[calc(100%-1.25rem)]",
+		},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			actualClasses := inlineCheckboxGroupOptionRowClassesResolver(
+				testCase.orientation, testCase.hasFloatingButtons,
+				testCase.actionWidthRem,
+			)
+			actualWidthClass := strings.Fields(actualClasses)[0]
+			if actualWidthClass != testCase.expectedWidthClass {
+				t.Errorf(
+					"OptionRowWidthClassMismatch: got %q, want %q",
+					actualWidthClass, testCase.expectedWidthClass,
 				)
 			}
 		})

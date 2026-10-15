@@ -30,7 +30,7 @@ Password field with a reveal toggle, an optional random password generator, and 
 
 ## Multi-line Text Area
 
-Multi-line text input with five height steps (h-12/24/36/48/60), expand-to-3x toggle, floating action icons (expand, copy, clear) anchored to the text line, and optional hints rendered as a focusable tooltip or a description line. `FloatingButtonStyle` repaints the action icons and changes their size and shape; `ShouldHideFloatingButtons` removes them and drops the reserved right padding.
+Multi-line text input with five height steps (h-12/24/36/48/60), expand-to-3x toggle, floating action icons (expand, copy, clear) anchored to the text line, and optional hints rendered as a focusable tooltip or a description line. `FloatingButtonStyle` repaints the action icons and changes their size and shape; `ShouldHideFloatingButtons` removes them and drops the reserved right padding. The text reserves the resolved action width, so a large action never covers the content. A read-only field shows expand and copy only, so it never mutates its bound state, and its negative top margin resets when it is the first child, so a scroll container never clips the legend.
 
 **Flow:**
 
@@ -43,18 +43,32 @@ Multi-line text input with five height steps (h-12/24/36/48/60), expand-to-3x to
 
 ## Select Dropdown
 
-Dropdown select component with support for flat string options or label-value pairs, a blank option, and a multi-select mode. Single mode renders native radio rows; multi mode renders the shared styled checkbox rows, keeps the dropdown open after each toggle, and joins the selected labels in the trigger.
+Dropdown select component with support for flat string options or label-value pairs, a blank option, and a multi-select mode. Single mode renders native radio rows; multi mode renders the shared styled checkbox rows, keeps the dropdown open after each toggle, and joins the selected labels in the trigger. The trigger opens on click, Enter, Space, or ArrowDown; the checked row takes focus, Enter commits, and Escape or a pick closes with focus return.
 
 **Flow:**
 
-1. `src/form/selectInput.templ` — Component definition with SelectInputSettings struct (including IsMultiSelect and InputId), SelectLabelValueOption data structure, the option checkbox renderer, and the dropdown height and MaxVisibleOptions settings
-2. `src/form/selectInputState.js` — Alpine.js data component for the select dropdown: open toggle, close, the multi-select summary formatter, and the open-direction decision
-3. `src/import/toolset/selectDropdown.js` — Shared open-upward decision that measures the space above and below the trigger, bounded by the viewport and every clipping ancestor, so the list never opens downward into an overflow-hidden container
-4. `src/form/selectDropdown.go` — Shared dropdown height classes resolver and the MaxVisibleOptions height style, with the row height of each dropdown family
+1. `src/form/selectInput.templ` — Component definition with SelectInputSettings struct (including IsMultiSelect, InputId, the Trigger style group, SelectedIconColor, and the dropdown border and radius), SelectLabelValueOption data structure, the option checkbox and option icon renderers, and the dropdown height and MaxVisibleOptions settings
+2. `src/form/selectInputState.js` — Alpine.js data component for the select dropdown: the shared dropdown controller (open toggle, checked-row focus, close with focus return, and commit), and the multi-select summary formatter
+3. `src/import/toolset/selectDropdown.js` — Shared open-upward decision that measures the space above and below the trigger, bounded by the viewport and every clipping ancestor, so the list never opens downward into an overflow-hidden container; also the shared dropdown controller that drives the open, the focus, the close with focus return, and the commit for every custom dropdown
+4. `src/form/selectDropdown.go` — Shared dropdown surface classes with the optional border color and radius, the dropdown height classes resolver, the MaxVisibleOptions height style with the row height of each dropdown family, and the label-value option values resolver
 5. `src/form/inputHint.templ` — Shared hint renderer for the tooltip and description display modes
 6. `src/form/selectInput_templ.go` — Compiled output rendering select with native radio or checkbox options, an embedded JSON script for label lookup and the multi-select summary, and Alpine.js state management
 
 Supports optional hint text rendered either as a focusable info-icon tooltip inside the dropdown row or as a description line below the fieldset.
+
+---
+
+## Dual Select Input
+
+One control that combines a select for the unit or operator with a text or number input for the value, sharing one label and one border. The select half opens the shared custom dropdown, and the value half carries a darker background so the halves read as separate controls. A preset pick writes the shared path, and a typed value that matches no option shows a Custom row in the list and Custom on the trigger.
+
+**Flow:**
+
+1. `src/form/dualSelectInput.templ` — Component definition with DualSelectInputSettings struct, the DualSelectInputFieldStyle group (background, border, radius, divider, and text colors), and the DualSelectInputDropdownStyle group (background, border, and radius); the custom dropdown trigger, the option rows, the Custom row for unmatched values, and the value input with the darker background and the field right radius; the value input reaches the field's top border and bottom edge through the shared legend-band size token, and the fieldset stretches to fill a taller grid row; the select and the input bind the same ValueTwoWayStatePath unless SelectTwoWayStatePath splits them; the invalid path marks both halves and the border
+2. `src/form/dualSelectInputState.js` — Alpine data component: the options JSON parse, the unmatched-value check, the selected-label lookup with the Custom fallback, and the shared dropdown controller
+3. `src/form/inputField.templ` — Shared size tokens for the label, the padding, and the text size
+4. `src/form/dualSelectInput_test.go` — Tests for the rendered field style, the rendered dropdown style, the rendered value input legend band, and the rendered shared and split bindings
+5. `src/form/dualSelectInput_templ.go` — Compiled output
 
 ---
 
@@ -65,11 +79,12 @@ Dropdown with a filter box that narrows local options in place, a clear button, 
 **Flow:**
 
 1. `src/form/searchableSelectInput.templ` — SearchableSelectInputSettings and the shared shell, trigger, filter input, action icons, selected labels, selected tags with tag color settings, local option rows, and local dropdown
-2. `src/form/searchableSelectInput.go` — The client config types and resolvers (normalized items, multi-select and custom-value flags, remote settings, the selection presentation), the dropdown class resolver, plus the selection, toggle, clear, custom-value, tag-remove, tag-backspace, and selected-state expression builders
+2. `src/form/searchableSelectInput.go` — The client config types and resolvers (normalized items, multi-select and custom-value flags, remote settings, the selection presentation), plus the selection, toggle, clear, custom-value, tag-remove, tag-backspace, and selected-state expression builders
 3. `src/form/searchableSelectInputState.js` — Shared Alpine data component: filter, visibility, No matches, selected-label lookup, and the remote fetch lifecycle
 4. `src/import/toolset/selectDropdown.js` — Shared open-upward decision that measures the space above and below the trigger, bounded by the viewport and every clipping ancestor
-5. `src/form/searchableSelectInput_test.go` — Tests for the item and presentation resolvers, the expression builders, and the rendered dropdown
-6. `src/form/searchableSelectInput_templ.go` — Compiled output
+5. `src/form/selectDropdown.go` — Shared dropdown surface classes with the optional border color and radius, and the open-list height settings
+6. `src/form/searchableSelectInput_test.go` — Tests for the item and presentation resolvers, the expression builders, and the rendered dropdown
+7. `src/form/searchableSelectInput_templ.go` — Compiled output
 
 Single mode writes one hidden input; multi mode writes one hidden input per selected value under `InputName`.
 
@@ -103,6 +118,20 @@ The check renders through color inheritance: the box carries the checked color a
 
 ---
 
+## Cron Schedule
+
+Combined control for a cron expression. A mode switch picks between a predefined-schedule dropdown and a five-field custom builder (minute, hour, day, month, weekday). Both write one cron string to the bound path. Each field validates its cron syntax with the field marked red while invalid, an invalid schedule clears the bound path, and a preview reads the resulting schedule in plain words.
+
+**Flow:**
+
+1. `src/form/cronSchedule.templ` — Component definition with CronScheduleSettings struct and the CronScheduleFieldStyle (outer background, border, and radius), CronScheduleDropdownStyle (both option list surfaces), CronSchedulePreviewStyle (plain-words text color, icon color, and expression chip colors), and RadioInputStyle (mode radio colors) groups; the mode radios, the predefined SelectInput, the five DualSelectInput fields, the preview row that follows Size and TextCase, and the hidden form input
+2. `src/form/cronSchedule.go` — The predefined option list with the macro entries and the corrected Every 5 days value, and the field descriptors with the per-field invalid expressions; the option values reach the Alpine state through the shared selectDropdown.go resolver
+3. `src/form/cronScheduleState.js` — Alpine data component: the mode and field state, the cron field validator for stars, steps, ranges, and lists with per-field bounds, the custom expression composer, the human-readable preview builder, and the init that seeds the control from the bound path
+4. `src/form/cronSchedule_test.go` — Tests for the option list including the Every 5 days value, the field descriptors, the rendered bound state, the style groups, and the size and text case on the preview
+5. `src/form/cronSchedule_templ.go` — Compiled output
+
+---
+
 ## Toggle Switch
 
 Switch component that binds either a boolean Alpine.js state or a custom value in an Alpine.js array, with configurable sizes, colors, required state, and disabled state.
@@ -118,12 +147,13 @@ With `CustomValue`, Alpine.js adds or removes the value from an array. Without i
 
 ## Radio Button Input
 
-Single radio button component for choice selection within a group, with label and state binding support.
+Single radio button component for choice selection within a group, with label and state binding support. The RadioInputStyle group sets the idle text color, the checked and hover color, and the keyboard focus ring.
 
 **Flow:**
 
-1. `src/form/radioInput.templ` — Component definition with RadioInputSettings struct
-2. `src/form/radioInput_templ.go` — Compiled output rendering input[type="radio"] with Tailwind styling
+1. `src/form/radioInput.templ` — Component definition with RadioInputSettings struct and the RadioInputStyle group
+2. `src/form/radioInput_test.go` — Tests for the rendered default style and the rendered custom style
+3. `src/form/radioInput_templ.go` — Compiled output rendering input[type="radio"] with Tailwind styling
 
 ---
 
@@ -140,7 +170,7 @@ Radio button group for presenting multiple mutually exclusive options in a row o
 
 ## Inline Checkbox Group
 
-Checkbox group for presenting several choices in a row or a column under one notched label, bound to one array state path. The group reveals select-all and deselect-all floating actions on hover or focus; `FloatingButtonStyle` repaints them and changes their size and shape, and `ShouldHideFloatingButtons` removes them.
+Checkbox group for presenting several choices in a row or a column under one notched label, bound to one array state path. The group reveals select-all and deselect-all floating actions on hover or focus; `FloatingButtonStyle` repaints them and changes their size and shape, and `ShouldHideFloatingButtons` removes them. Vertical rows reserve the resolved action width, so a large action never covers the labels.
 
 **Flow:**
 
@@ -157,7 +187,8 @@ Small icon button that floats over a field and reveals on hover or focus. `Inlin
 **Flow:**
 
 1. `src/form/floatingButton.templ` — Component definition with FloatingButtonSettings and FloatingButtonStyle structs; resolves each style default and renders a Button
-2. `src/form/floatingButton_templ.go` — Compiled output rendering the Button with the resolved style
+2. `src/form/floatingButton.go` — The size resolver that defaults to the extra-small Button, and the action width resolver that asks the Button contract for the icon-only width the fields reserve
+3. `src/form/floatingButton_templ.go` — Compiled output rendering the Button with the resolved style
 
 ---
 
@@ -168,10 +199,12 @@ Interactive button component with customizable label, icons (left/right using Ph
 **Flow:**
 
 1. `src/control/button.templ` — Component definition with ButtonSettings struct supporting OnClickFunc handlers, icon binding, a padding override with min/max width and height constraints, a static or Alpine-bound aria label, the type attribute, the optional tooltip, and the action labels and per-state icons; `Button` wraps `buttonFrame` in the action scope when an action setting is present, and a tracked non-submit click passes its result to `trackActionPromise`
-2. `src/control/buttonActionState.js` — Alpine data component that tracks the click promise or the owning form submit and HTMX request events, guards double submission, and resolves the label and icon for the idle, pending, succeeded, and failed states from the maps the component passes in
-3. `src/toolset/tooltipState.js` — Shared Alpine data component that teleports a tooltip to the document body, positions it with fixed coordinates on hover or focus, and flips it to stay inside the viewport
-4. `src/toolset/tooltip.go` — The once-handle that embeds the shared tooltip state, plus TooltipSurfaceClassesResolver for the shared fixed-layer tooltip classes and the shared TooltipPosition* placement values
-5. `src/control/button_templ.go` — Compiled output rendering the button with Alpine.js event binding and the teleported tooltip
+2. `src/control/buttonSize.go` — The size token resolver (padding, text size, gap, icon size, and the padding and icon widths in rem) and the exported icon-only width contract that the floating action fields reserve
+3. `src/control/buttonSize_test.go` — Tests for the width contract and a rendered-class check that the contract matches the Button output
+4. `src/control/buttonActionState.js` — Alpine data component that tracks the click promise or the owning form submit and HTMX request events, guards double submission, and resolves the label and icon for the idle, pending, succeeded, and failed states from the maps the component passes in
+5. `src/toolset/tooltipState.js` — Shared Alpine data component that teleports a tooltip to the document body, positions it with fixed coordinates on hover or focus, and flips it to stay inside the viewport
+6. `src/toolset/tooltip.go` — The once-handle that embeds the shared tooltip state, plus TooltipSurfaceClassesResolver for the shared fixed-layer tooltip classes and the shared TooltipPosition* placement values
+7. `src/control/button_templ.go` — Compiled output rendering the button with Alpine.js event binding and the teleported tooltip
 
 ---
 

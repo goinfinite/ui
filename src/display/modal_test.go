@@ -269,62 +269,6 @@ func TestModalIsResizableResolver(t *testing.T) {
 	}
 }
 
-func TestModalCanEnlargeExpressionBuilder(t *testing.T) {
-	tests := []struct {
-		name           string
-		sizePath       string
-		reachableSizes []string
-		expected       string
-	}{
-		{
-			"NotAtLargestCanEnlarge",
-			"modalSize",
-			[]string{ModalSizeMd, ModalSizeLg, ModalSizeXl},
-			"modalSize !== 'xl'",
-		},
-		{"SingleSizeCannotEnlarge", "modalSize", []string{ModalSizeXl}, ""},
-		{"EmptyCannotEnlarge", "modalSize", nil, ""},
-	}
-
-	for _, testCase := range tests {
-		t.Run(testCase.name, func(t *testing.T) {
-			resolved := modalCanEnlargeExpressionBuilder(testCase.sizePath, testCase.reachableSizes)
-
-			if resolved != testCase.expected {
-				t.Errorf("CanEnlargeExpressionMismatch: got %q, want %q", resolved, testCase.expected)
-			}
-		})
-	}
-}
-
-func TestModalCanReduceExpressionBuilder(t *testing.T) {
-	tests := []struct {
-		name           string
-		sizePath       string
-		reachableSizes []string
-		expected       string
-	}{
-		{
-			"NotAtSmallestCanReduce",
-			"modalSize",
-			[]string{ModalSizeMd, ModalSizeLg, ModalSizeXl},
-			"modalSize !== 'md'",
-		},
-		{"SingleSizeCannotReduce", "modalSize", []string{ModalSizeXl}, ""},
-		{"EmptyCannotReduce", "modalSize", nil, ""},
-	}
-
-	for _, testCase := range tests {
-		t.Run(testCase.name, func(t *testing.T) {
-			resolved := modalCanReduceExpressionBuilder(testCase.sizePath, testCase.reachableSizes)
-
-			if resolved != testCase.expected {
-				t.Errorf("CanReduceExpressionMismatch: got %q, want %q", resolved, testCase.expected)
-			}
-		})
-	}
-}
-
 type modalSizeExpressionCase struct {
 	name           string
 	reachableSizes []string
@@ -346,6 +290,24 @@ func assertModalSizeExpressions(
 			}
 		})
 	}
+}
+
+func TestModalCanEnlargeExpressionBuilder(t *testing.T) {
+	assertModalSizeExpressions(t, "CanEnlargeExpressionMismatch", modalCanEnlargeExpressionBuilder, []modalSizeExpressionCase{
+		{name: "NotAtLargestCanEnlarge", reachableSizes: []string{ModalSizeMd, ModalSizeLg, ModalSizeXl}, expected: "modalSize !== 'xl'"},
+		{name: "TwoSizesCanEnlarge", reachableSizes: []string{ModalSizeMd, ModalSizeLg}, expected: "modalSize !== 'lg'"},
+		{name: "SingleSizeCannotEnlarge", reachableSizes: []string{ModalSizeXl}, expected: ""},
+		{name: "EmptyCannotEnlarge", reachableSizes: nil, expected: ""},
+	})
+}
+
+func TestModalCanReduceExpressionBuilder(t *testing.T) {
+	assertModalSizeExpressions(t, "CanReduceExpressionMismatch", modalCanReduceExpressionBuilder, []modalSizeExpressionCase{
+		{name: "NotAtSmallestCanReduce", reachableSizes: []string{ModalSizeMd, ModalSizeLg, ModalSizeXl}, expected: "modalSize !== 'md'"},
+		{name: "TwoSizesCanReduce", reachableSizes: []string{ModalSizeMd, ModalSizeLg}, expected: "modalSize !== 'md'"},
+		{name: "SingleSizeCannotReduce", reachableSizes: []string{ModalSizeXl}, expected: ""},
+		{name: "EmptyCannotReduce", reachableSizes: nil, expected: ""},
+	})
 }
 
 func TestModalEnlargeExpressionBuilder(t *testing.T) {

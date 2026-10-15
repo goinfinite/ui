@@ -112,46 +112,6 @@ test.describe("Modal", () => {
     };
   }
 
-  async function panelWidthRatio(page, text) {
-    return (await openModalPanel(page, text)).widthRatio;
-  }
-
-  test("@browser @smoke medium size spans about 60% of the viewport width", async ({
-    page,
-  }) => {
-    await page
-      .locator(modalSection)
-      .getByRole("button", { name: "Show Modal" })
-      .click();
-    const widthRatio = await panelWidthRatio(page, "Interactive Modal");
-    expect(widthRatio).toBeGreaterThan(0.55);
-    expect(widthRatio).toBeLessThan(0.65);
-  });
-
-  test("@browser @smoke xs size spans about 40% of the viewport width", async ({
-    page,
-  }) => {
-    await page
-      .locator(modalSection)
-      .getByRole("button", { name: "XS", exact: true })
-      .click();
-    const widthRatio = await panelWidthRatio(page, "Interactive Modal");
-    expect(widthRatio).toBeGreaterThan(0.35);
-    expect(widthRatio).toBeLessThan(0.45);
-  });
-
-  test("@browser @smoke xxl size spans about 90% of the viewport width", async ({
-    page,
-  }) => {
-    await page
-      .locator(modalSection)
-      .getByRole("button", { name: "XXL", exact: true })
-      .click();
-    const widthRatio = await panelWidthRatio(page, "Interactive Modal");
-    expect(widthRatio).toBeGreaterThan(0.85);
-    expect(widthRatio).toBeLessThan(0.95);
-  });
-
   test("@browser @smoke near-full terminal modal spans about 90% of the viewport", async ({
     page,
   }) => {

@@ -38,10 +38,10 @@ function tickMarksOf(slider) {
 
 async function writeExternalState(page, values) {
   await page.evaluate((state) => {
-    const dualModeRoot = document.querySelector(
-      '#range-slider-demo div[x-data^="{lowerValue"]',
+    const lowerSlider = document.querySelector(
+      '#range-slider-demo input[type=range][aria-label="Minimum price"]',
     );
-    const alpineData = window.Alpine.$data(dualModeRoot);
+    const alpineData = window.Alpine.$data(lowerSlider.closest("[x-data]"));
     for (const [property, value] of Object.entries(state)) {
       alpineData[property] = value;
     }
