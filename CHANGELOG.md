@@ -1,16 +1,6 @@
 # Changelog
 
 ```log
-0.3.1 - 2026/10/15
-test: add behavior specs for the Alert, the Tag, and the Sidebar
-test: cover the InlineRadioGroup selection and the JSON Ajax failure paths
-test: remove the geometry-only and duplicate specs, and assert exact output in the Minifier test
-test: add the Gremlins mutation runner with a per-feature efficacy and coverage floor
-test: kill the mutation survivors across the control, display, form, and structural packages
-test: add the fatal latency budget to the golden metrics
-chore: raise Go to 1.27.2 and the staticcheck and golangci-lint builds to match
-docs: record the mutation scope and the behavior-only specs
-
 0.3.0 - 2026/10/15
 feat: add the CronSchedule with a predefined-schedule dropdown, a five-field custom builder, per-field validation, and a plain-words preview
 feat: add the DualSelectInput, a select and a value input under one label and one border, where the select half opens the shared custom dropdown and the value half carries a darker background
@@ -20,7 +10,13 @@ fix: reserve the floating action width from the resolved button size, so a large
 fix: hide the TextArea clear action on a read-only field, so a read-only field never mutates its bound state
 fix: reset the TextArea negative top margin when it is the first child, so its legend is never clipped by a scroll container
 test: cover the new controls with unit and browser specs
+test: add behavior specs for the Alert, the Tag, the Sidebar, the InlineRadioGroup, and the JSON Ajax failure paths
+test: remove the geometry-only and duplicate specs, and assert exact output in the Minifier test
+test: add the Gremlins mutation runner with a per-feature efficacy and coverage floor, and kill the survivors across the control, display, form, and structural packages
+test: add the fatal latency budget to the golden metrics
+chore: raise Go to 1.27.2 and the staticcheck and golangci-lint builds to match
 docs: update the readmes, the contexts, the feature map, and the changelog
+docs: record the mutation scope and the behavior-only specs
 chore(docs): regenerate the demo page
 
 0.2.9 - 2026/10/14
