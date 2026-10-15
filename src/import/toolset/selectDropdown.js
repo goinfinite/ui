@@ -41,3 +41,55 @@ function selectDropdownOpenUpwardResolver(trigger, dropdown) {
   }
   return spaceAbove > spaceBelow;
 }
+
+const selectDropdownController = {
+  toggleDropdown() {
+    if (this.isOpen) {
+      this.closeDropdown();
+      return;
+    }
+    this.openWithOptionFocus();
+  },
+
+  openWithOptionFocus() {
+    const trigger = this.$refs.selectTrigger;
+    const dropdown = this.$refs.selectDropdown;
+    this.isOpen = true;
+    this.$nextTick(() => {
+      this.openUpward = selectDropdownOpenUpwardResolver(trigger, dropdown);
+      const checkedOption =
+        dropdown.querySelector("input:checked") ??
+        dropdown.querySelector("input");
+      if (checkedOption !== null) {
+        checkedOption.focus();
+      }
+    });
+  },
+
+  closeDropdown() {
+    this.isOpen = false;
+  },
+
+  closeWithFocusReturn() {
+    const wasOpen = this.isOpen;
+    this.isOpen = false;
+    if (!wasOpen) {
+      return;
+    }
+    this.$nextTick(() => this.$refs.selectTrigger.focus());
+  },
+
+  commitFocusedOption() {
+    const focusedOption = document.activeElement;
+    const isOptionFocused =
+      focusedOption !== null &&
+      this.$refs.selectDropdown.contains(focusedOption) &&
+      focusedOption.matches('input[type="radio"], input[type="checkbox"]');
+    if (!isOptionFocused) {
+      this.closeWithFocusReturn();
+      return;
+    }
+    focusedOption.click();
+    this.closeWithFocusReturn();
+  },
+};
