@@ -1,6 +1,16 @@
 # Changelog
 
 ```log
+0.3.1 - 2026/10/15
+test: add behavior specs for the Alert, the Tag, and the Sidebar
+test: cover the InlineRadioGroup selection and the JSON Ajax failure paths
+test: remove the geometry-only and duplicate specs, and assert exact output in the Minifier test
+test: add the Gremlins mutation runner with a per-feature efficacy and coverage floor
+test: kill the mutation survivors across the control, display, form, and structural packages
+test: add the fatal latency budget to the golden metrics
+chore: raise Go to 1.27.2 and the staticcheck and golangci-lint builds to match
+docs: record the mutation scope and the behavior-only specs
+
 0.3.0 - 2026/10/15
 feat: add the CronSchedule with a predefined-schedule dropdown, a five-field custom builder, per-field validation, and a plain-words preview
 feat: add the DualSelectInput, a select and a value input under one label and one border, where the select half opens the shared custom dropdown and the value half carries a darker background
