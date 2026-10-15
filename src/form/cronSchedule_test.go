@@ -151,6 +151,44 @@ func TestCronScheduleFieldDescriptorsBuilder(t *testing.T) {
 	}
 }
 
+func TestCronScheduleMonthAndWeekdayOrdinals(t *testing.T) {
+	expectedMonths := map[string]string{
+		"January": "1", "February": "2", "March": "3", "April": "4",
+		"May": "5", "June": "6", "July": "7", "August": "8",
+		"September": "9", "October": "10", "November": "11", "December": "12",
+	}
+	expectedWeekdays := map[string]string{
+		"Every Monday": "1", "Every Tuesday": "2", "Every Wednesday": "3",
+		"Every Thursday": "4", "Every Friday": "5", "Every Saturday": "6",
+		"Every Sunday": "7",
+	}
+
+	assertOrdinalOptions(t, cronScheduleMonthOptionsBuilder(), expectedMonths)
+	assertOrdinalOptions(t, cronScheduleWeekdayOptionsBuilder(), expectedWeekdays)
+}
+
+func assertOrdinalOptions(
+	t *testing.T, options []SelectLabelValueOption, expected map[string]string,
+) {
+	t.Helper()
+	matched := map[string]bool{}
+	for _, option := range options {
+		expectedValue, isOrdinal := expected[option.Label]
+		if !isOrdinal {
+			continue
+		}
+		matched[option.Label] = true
+		if option.Value != expectedValue {
+			t.Errorf("OrdinalValueMismatch(%s): got %q, want %q", option.Label, option.Value, expectedValue)
+		}
+	}
+	for label := range expected {
+		if !matched[label] {
+			t.Errorf("OrdinalOptionMissing(%s)", label)
+		}
+	}
+}
+
 func TestCronScheduleRendersFieldsAndBoundState(t *testing.T) {
 	var buffer bytes.Buffer
 	renderErr := CronSchedule(CronScheduleSettings{

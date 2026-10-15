@@ -1,5 +1,7 @@
 package uiForm
 
+import "strconv"
+
 type cronScheduleFieldDescriptor struct {
 	Label                  string
 	StatePath              string
@@ -26,101 +28,123 @@ func cronSchedulePredefinedOptionsBuilder() []SelectLabelValueOption {
 	}
 }
 
+func cronScheduleNumberedOptionsBuilder(
+	labelPrefix string, values []int,
+) []SelectLabelValueOption {
+	options := make([]SelectLabelValueOption, 0, len(values))
+	for _, value := range values {
+		valueText := strconv.Itoa(value)
+		options = append(options, SelectLabelValueOption{
+			Label: labelPrefix + valueText,
+			Value: valueText,
+		})
+	}
+	return options
+}
+
+func cronScheduleSteppedOptionsBuilder(
+	labelPrefix, labelSuffix string, steps []int,
+) []SelectLabelValueOption {
+	options := make([]SelectLabelValueOption, 0, len(steps))
+	for _, step := range steps {
+		stepText := strconv.Itoa(step)
+		options = append(options, SelectLabelValueOption{
+			Label: labelPrefix + stepText + labelSuffix,
+			Value: "*/" + stepText,
+		})
+	}
+	return options
+}
+
+func cronScheduleOrdinalOptionsBuilder(
+	labelPrefix string, names []string,
+) []SelectLabelValueOption {
+	options := make([]SelectLabelValueOption, 0, len(names))
+	for nameIndex, name := range names {
+		options = append(options, SelectLabelValueOption{
+			Label: labelPrefix + name,
+			Value: strconv.Itoa(nameIndex + 1),
+		})
+	}
+	return options
+}
+
+func cronScheduleMinuteOptionsBuilder() []SelectLabelValueOption {
+	options := cronScheduleNumberedOptionsBuilder("At minute ", []int{0, 5, 10, 15, 30, 45})
+	options = append(options, SelectLabelValueOption{Label: "Every minute", Value: "*"})
+	return append(options, cronScheduleSteppedOptionsBuilder(
+		"Every ", " minutes", []int{5, 10, 15, 30, 45},
+	)...)
+}
+
+func cronScheduleHourOptionsBuilder() []SelectLabelValueOption {
+	options := []SelectLabelValueOption{{Label: "Every hour", Value: "*"}}
+	options = append(options, cronScheduleSteppedOptionsBuilder(
+		"Every ", " hours", []int{2, 6, 12},
+	)...)
+	return append(options,
+		SelectLabelValueOption{Label: "At midnight", Value: "0"},
+		SelectLabelValueOption{Label: "At 2h00 AM", Value: "2"},
+		SelectLabelValueOption{Label: "At 6h00 AM", Value: "6"},
+		SelectLabelValueOption{Label: "At midday", Value: "12"},
+		SelectLabelValueOption{Label: "At 14h00 (2h00 PM)", Value: "14"},
+		SelectLabelValueOption{Label: "At 18h00 (6h00 PM)", Value: "18"},
+	)
+}
+
+func cronScheduleDayOptionsBuilder() []SelectLabelValueOption {
+	options := []SelectLabelValueOption{
+		{Label: "Every day", Value: "*"},
+		{Label: "Weekly", Value: "*/7"},
+		{Label: "Every 15 days", Value: "*/15"},
+		{Label: "Every 30 days", Value: "*/30"},
+	}
+	return append(options, cronScheduleNumberedOptionsBuilder(
+		"At day ", []int{1, 5, 10, 15, 20, 25, 30},
+	)...)
+}
+
+func cronScheduleMonthOptionsBuilder() []SelectLabelValueOption {
+	options := []SelectLabelValueOption{
+		{Label: "Every month", Value: "*"},
+		{Label: "Every 2 months", Value: "*/2"},
+		{Label: "Every 6 months", Value: "*/6"},
+		{Label: "Every year", Value: "*/12"},
+	}
+	return append(options, cronScheduleOrdinalOptionsBuilder("", []string{
+		"January", "February", "March", "April", "May", "June",
+		"July", "August", "September", "October", "November", "December",
+	})...)
+}
+
+func cronScheduleWeekdayOptionsBuilder() []SelectLabelValueOption {
+	options := []SelectLabelValueOption{
+		{Label: "Every day", Value: "*"},
+		{Label: "Monday to Friday", Value: "1-5"},
+		{Label: "Only weekends", Value: "6,0"},
+	}
+	return append(options, cronScheduleOrdinalOptionsBuilder("Every ", []string{
+		"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday",
+	})...)
+}
+
+func cronScheduleFieldDescriptorBuilder(
+	label, fieldName string, options []SelectLabelValueOption,
+) cronScheduleFieldDescriptor {
+	return cronScheduleFieldDescriptor{
+		Label:                  label,
+		StatePath:              "cronSchedule." + fieldName,
+		Options:                options,
+		InvalidStateExpression: "!cronFieldIsValid('" + fieldName + "', cronSchedule." + fieldName + ")",
+	}
+}
+
 func cronScheduleFieldDescriptorsBuilder() []cronScheduleFieldDescriptor {
 	return []cronScheduleFieldDescriptor{
-		{
-			Label:     "Minute",
-			StatePath: "cronSchedule.minute",
-			Options: []SelectLabelValueOption{
-				{Label: "At minute 0", Value: "0"},
-				{Label: "At minute 5", Value: "5"},
-				{Label: "At minute 10", Value: "10"},
-				{Label: "At minute 15", Value: "15"},
-				{Label: "At minute 30", Value: "30"},
-				{Label: "At minute 45", Value: "45"},
-				{Label: "Every minute", Value: "*"},
-				{Label: "Every 5 minutes", Value: "*/5"},
-				{Label: "Every 10 minutes", Value: "*/10"},
-				{Label: "Every 15 minutes", Value: "*/15"},
-				{Label: "Every 30 minutes", Value: "*/30"},
-				{Label: "Every 45 minutes", Value: "*/45"},
-			},
-			InvalidStateExpression: "!cronFieldIsValid('minute', cronSchedule.minute)",
-		},
-		{
-			Label:     "Hour",
-			StatePath: "cronSchedule.hour",
-			Options: []SelectLabelValueOption{
-				{Label: "Every hour", Value: "*"},
-				{Label: "Every 2 hours", Value: "*/2"},
-				{Label: "Every 6 hours", Value: "*/6"},
-				{Label: "Every 12 hours", Value: "*/12"},
-				{Label: "At midnight", Value: "0"},
-				{Label: "At 2h00 AM", Value: "2"},
-				{Label: "At 6h00 AM", Value: "6"},
-				{Label: "At midday", Value: "12"},
-				{Label: "At 14h00 (2h00 PM)", Value: "14"},
-				{Label: "At 18h00 (6h00 PM)", Value: "18"},
-			},
-			InvalidStateExpression: "!cronFieldIsValid('hour', cronSchedule.hour)",
-		},
-		{
-			Label:     "Day",
-			StatePath: "cronSchedule.day",
-			Options: []SelectLabelValueOption{
-				{Label: "Every day", Value: "*"},
-				{Label: "Weekly", Value: "*/7"},
-				{Label: "Every 15 days", Value: "*/15"},
-				{Label: "Every 30 days", Value: "*/30"},
-				{Label: "At day 1", Value: "1"},
-				{Label: "At day 5", Value: "5"},
-				{Label: "At day 10", Value: "10"},
-				{Label: "At day 15", Value: "15"},
-				{Label: "At day 20", Value: "20"},
-				{Label: "At day 25", Value: "25"},
-				{Label: "At day 30", Value: "30"},
-			},
-			InvalidStateExpression: "!cronFieldIsValid('day', cronSchedule.day)",
-		},
-		{
-			Label:     "Month",
-			StatePath: "cronSchedule.month",
-			Options: []SelectLabelValueOption{
-				{Label: "Every month", Value: "*"},
-				{Label: "Every 2 months", Value: "*/2"},
-				{Label: "Every 6 months", Value: "*/6"},
-				{Label: "Every year", Value: "*/12"},
-				{Label: "January", Value: "1"},
-				{Label: "February", Value: "2"},
-				{Label: "March", Value: "3"},
-				{Label: "April", Value: "4"},
-				{Label: "May", Value: "5"},
-				{Label: "June", Value: "6"},
-				{Label: "July", Value: "7"},
-				{Label: "August", Value: "8"},
-				{Label: "September", Value: "9"},
-				{Label: "October", Value: "10"},
-				{Label: "November", Value: "11"},
-				{Label: "December", Value: "12"},
-			},
-			InvalidStateExpression: "!cronFieldIsValid('month', cronSchedule.month)",
-		},
-		{
-			Label:     "Weekday",
-			StatePath: "cronSchedule.weekday",
-			Options: []SelectLabelValueOption{
-				{Label: "Every day", Value: "*"},
-				{Label: "Monday to Friday", Value: "1-5"},
-				{Label: "Only weekends", Value: "6,0"},
-				{Label: "Every Monday", Value: "1"},
-				{Label: "Every Tuesday", Value: "2"},
-				{Label: "Every Wednesday", Value: "3"},
-				{Label: "Every Thursday", Value: "4"},
-				{Label: "Every Friday", Value: "5"},
-				{Label: "Every Saturday", Value: "6"},
-				{Label: "Every Sunday", Value: "7"},
-			},
-			InvalidStateExpression: "!cronFieldIsValid('weekday', cronSchedule.weekday)",
-		},
+		cronScheduleFieldDescriptorBuilder("Minute", "minute", cronScheduleMinuteOptionsBuilder()),
+		cronScheduleFieldDescriptorBuilder("Hour", "hour", cronScheduleHourOptionsBuilder()),
+		cronScheduleFieldDescriptorBuilder("Day", "day", cronScheduleDayOptionsBuilder()),
+		cronScheduleFieldDescriptorBuilder("Month", "month", cronScheduleMonthOptionsBuilder()),
+		cronScheduleFieldDescriptorBuilder("Weekday", "weekday", cronScheduleWeekdayOptionsBuilder()),
 	}
 }
