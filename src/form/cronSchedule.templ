@@ -1,0 +1,154 @@
+package uiForm
+
+import (
+	_ "embed"
+
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+//go:embed cronScheduleState.js
+var cronScheduleAlpineState string
+
+var cronScheduleAlpineStateOnce = templ.NewOnceHandle(
+	templ.WithComponent(uiToolset.MinifierTemplateJs(&cronScheduleAlpineState)),
+)
+
+type CronScheduleDropdownStyle struct {
+	// OptionalFields
+	BackgroundColor string
+	BorderColor     string
+	BorderRadius    string
+}
+
+type CronScheduleFieldStyle struct {
+	// OptionalFields
+	BackgroundColor string
+	BorderColor     string
+	BorderRadius    string
+}
+
+type CronSchedulePreviewStyle struct {
+	// OptionalFields
+	CodeBackgroundColor string
+	CodeTextColor       string
+	TextColor           string
+}
+
+type CronScheduleSettings struct {
+	Label           string
+	TwoWayStatePath string
+
+	// OptionalFields
+	Dropdown   CronScheduleDropdownStyle
+	Field      CronScheduleFieldStyle
+	InputName  string
+	Preview    CronSchedulePreviewStyle
+	RadioStyle RadioInputStyle
+	Size       string
+	TextCase   string
+}
+
+templ CronSchedule(componentSettings CronScheduleSettings) {
+	<!-- CronSchedule -->
+	@cronScheduleAlpineStateOnce.Once()
+	{{ sizeTokens := inputFieldSizeTokensResolver(componentSettings.Size) }}
+	{{ textCaseClass := uiToolset.TextCaseClassResolver(componentSettings.TextCase) }}
+	{{ legendClasses := "ml-1 select-none px-1 font-bold leading-none text-neutral-50/80 " + sizeTokens.LegendTextSize }}
+	if textCaseClass != "" {
+		{{ legendClasses += " " + textCaseClass }}
+	}
+	{{ fieldStyle := componentSettings.Field }}
+	{{ fieldBackgroundClass := uiToolset.BackgroundColorClassResolver(fieldStyle.BackgroundColor, "bg-neutral-50/7.5") }}
+	{{ fieldBorderClass := uiToolset.BorderColorClassResolver(fieldStyle.BorderColor, "border-neutral-50/5") }}
+	{{ fieldBorderRadiusClass := uiToolset.BorderRadiusClassResolver(fieldStyle.BorderRadius, "rounded") }}
+	{{ previewStyle := componentSettings.Preview }}
+	{{ previewTextColorClass := uiToolset.TextColorClassResolver(previewStyle.TextColor, "text-neutral-300") }}
+	{{ previewCodeBackgroundClass := uiToolset.BackgroundColorClassResolver(previewStyle.CodeBackgroundColor, "bg-neutral-50/5") }}
+	{{ previewCodeTextColorClass := uiToolset.TextColorClassResolver(previewStyle.CodeTextColor, "text-neutral-400") }}
+	{{ statePath := componentSettings.TwoWayStatePath }}
+	<div
+		class="flex w-full flex-col"
+		x-data={ templ.JSFuncCall("cronScheduleInput", selectLabelValueOptionValuesResolver(cronSchedulePredefinedOptionsBuilder())) }
+		if statePath != "" {
+			x-init={ "cronScheduleInit(" + statePath + ")" }
+			x-effect={ statePath + " = cronExpression" }
+		}
+	>
+		<fieldset class={ fieldBackgroundClass + " relative -mt-1.5 w-full min-w-0 " + fieldBorderRadiusClass + " border " + fieldBorderClass + " transition-colors focus-within:border-neutral-50/30 hover:border-neutral-50/30" }>
+			<legend class={ legendClasses }>
+				{ componentSettings.Label }
+			</legend>
+			<div class="flex flex-row gap-4 px-2 pt-1">
+				@RadioInput(RadioInputSettings{
+					Label:           "Predefined",
+					StateValue:      "predefined",
+					TwoWayStatePath: "cronScheduleMode",
+					Size:            RadioInputSizeSm,
+					Style:           componentSettings.RadioStyle,
+					TextCase:        componentSettings.TextCase,
+				})
+				@RadioInput(RadioInputSettings{
+					Label:           "Custom",
+					StateValue:      "custom",
+					TwoWayStatePath: "cronScheduleMode",
+					Size:            RadioInputSizeSm,
+					Style:           componentSettings.RadioStyle,
+					TextCase:        componentSettings.TextCase,
+				})
+			</div>
+			<div class="flex flex-col px-2 pb-2 pt-4">
+				<div x-show="cronScheduleMode === 'predefined'">
+					@SelectInput(SelectInputSettings{
+						Label:                   "Predefined Schedule",
+						LabelValueOptions:       cronSchedulePredefinedOptionsBuilder(),
+						TwoWayStatePath:         "cronExpression",
+						Size:                    componentSettings.Size,
+						TextCase:                componentSettings.TextCase,
+						DropdownBackgroundColor: componentSettings.Dropdown.BackgroundColor,
+						DropdownBorderColor:     componentSettings.Dropdown.BorderColor,
+						DropdownBorderRadius:    componentSettings.Dropdown.BorderRadius,
+					})
+				</div>
+				<div
+					x-show="cronScheduleMode === 'custom'"
+					class="grid grid-cols-1 gap-3 sm:grid-cols-2"
+					x-effect="cronScheduleMode === 'custom' && (cronExpression = cronCustomExpressionBuilder())"
+				>
+					for _, fieldDescriptor := range cronScheduleFieldDescriptorsBuilder() {
+						@DualSelectInput(DualSelectInputSettings{
+							Label:                    fieldDescriptor.Label,
+							Options:                  fieldDescriptor.Options,
+							ValueTwoWayStatePath:     fieldDescriptor.StatePath,
+							Dropdown: DualSelectInputDropdownStyle{
+								BackgroundColor: componentSettings.Dropdown.BackgroundColor,
+								BorderColor:     componentSettings.Dropdown.BorderColor,
+								BorderRadius:    componentSettings.Dropdown.BorderRadius,
+							},
+							IsInvalidOneWayStatePath: fieldDescriptor.InvalidStateExpression,
+							Size:                     componentSettings.Size,
+							TextCase:                 componentSettings.TextCase,
+						})
+					}
+				</div>
+			</div>
+			<div class="flex flex-row items-center gap-2 border-t border-neutral-50/5 px-3 py-2">
+				<i
+					class={ "ph-bold ph-clock " + sizeTokens.TextSize }
+					:class={ "cronScheduleIsValid() ? '" + previewTextColorClass + "' : 'text-red-400'" }
+				></i>
+				<span
+					class={ sizeTokens.TextSize + " " + textCaseClass }
+					:class={ "cronScheduleIsValid() ? '" + previewTextColorClass + "' : 'text-red-400'" }
+					x-text="cronPreviewTextBuilder()"
+				></span>
+				<code
+					class={ "ml-auto rounded px-1.5 py-0.5 font-mono " + sizeTokens.TextSize + " " + previewCodeBackgroundClass + " " + previewCodeTextColorClass + " " + textCaseClass }
+					x-text="cronExpression || '—'"
+				></code>
+			</div>
+		</fieldset>
+		if componentSettings.InputName != "" {
+			<input type="hidden" name={ componentSettings.InputName } :value="cronExpression"/>
+		}
+	</div>
+}

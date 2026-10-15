@@ -1,0 +1,189 @@
+package main
+
+import (
+	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiForm "github.com/goinfinite/ui/src/form"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+templ CronScheduleValidationExample() {
+	{{
+		validationUsage := `@uiForm.CronSchedule(uiForm.CronScheduleSettings{
+	Label:           "Cron Schedule",
+	TwoWayStatePath: "schedule",
+})`
+	}}
+	@DemoExampleCard(
+		"Validation",
+		"Each field validates its cron syntax. Type an out-of-range value such as 99 in Minute: the field border turns red and the bound path clears until the schedule is valid again.",
+		"/form/cronSchedule.templ", validationUsage,
+	) {
+		<div class="flex w-full max-w-lg flex-col gap-3" x-data="{schedule: '0 0 * * *'}">
+			@uiForm.CronSchedule(uiForm.CronScheduleSettings{
+				Label:           "Cron Schedule",
+				TwoWayStatePath: "schedule",
+			})
+			<p class={ DemoLiveStateClasses }>
+				Value: <span x-text="schedule || '(empty until valid)'"></span>
+			</p>
+		</div>
+	}
+}
+
+templ CronScheduleSizesExample() {
+	{{
+		sizesUsage := `@uiForm.CronSchedule(uiForm.CronScheduleSettings{
+	Label:           "Cron Schedule",
+	TwoWayStatePath: "schedule",
+
+	// OptionalFields
+	Size: uiForm.InputFieldSizeLg,
+})`
+	}}
+	@DemoExampleCard(
+		"Sizes",
+		"Size takes an InputFieldSize constant and scales the label, the trigger, the five fields, and the preview together.",
+		"/form/cronSchedule.templ", sizesUsage,
+	) {
+		<div class="flex w-full max-w-lg flex-col gap-3" x-data="{schedule: '0 0 * * *'}">
+			for _, inputSize := range []string{
+				uiForm.InputFieldSizeSm,
+				uiForm.InputFieldSizeLg,
+			} {
+				@uiForm.CronSchedule(uiForm.CronScheduleSettings{
+					Label:           "Cron Schedule (" + inputSize + ")",
+					TwoWayStatePath: "schedule",
+					Size:            inputSize,
+				})
+			}
+		</div>
+	}
+}
+
+templ CronScheduleTextCaseExample() {
+	{{
+		textCaseUsage := `@uiForm.CronSchedule(uiForm.CronScheduleSettings{
+	Label:           "Cron Schedule",
+	TwoWayStatePath: "schedule",
+
+	// OptionalFields
+	TextCase: uiToolset.TextCaseUpper,
+})`
+	}}
+	@DemoExampleCard(
+		"Text Case",
+		"TextCase transforms the label, the field labels, and the preview.",
+		"/form/cronSchedule.templ", textCaseUsage,
+	) {
+		<div class="flex w-full max-w-lg flex-col gap-3" x-data="{schedule: '0 0 * * *'}">
+			@uiForm.CronSchedule(uiForm.CronScheduleSettings{
+				Label:           "Cron Schedule",
+				TwoWayStatePath: "schedule",
+				TextCase:        uiToolset.TextCaseUpper,
+			})
+		</div>
+	}
+}
+
+templ CronScheduleStyleExample() {
+	{{
+		styleUsage := `@uiForm.CronSchedule(uiForm.CronScheduleSettings{
+	Label:           "Cron Schedule",
+	TwoWayStatePath: "schedule",
+
+	// OptionalFields
+	Dropdown: uiForm.CronScheduleDropdownStyle{
+		BackgroundColor: "violet-900",
+		BorderColor:     "violet-500/40",
+		BorderRadius:    uiToolset.BorderRadiusLg,
+	},
+	Field: uiForm.CronScheduleFieldStyle{
+		BackgroundColor: "violet-950",
+		BorderColor:     "violet-500/40",
+		BorderRadius:    uiToolset.BorderRadiusLg,
+	},
+	Preview: uiForm.CronSchedulePreviewStyle{
+		TextColor:           "violet-100",
+		CodeBackgroundColor: "violet-500/20",
+		CodeTextColor:       "violet-200",
+	},
+	RadioStyle: uiForm.RadioInputStyle{
+		ActiveColor: "violet-400",
+		TextColor:   "violet-100",
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Style",
+		"Field repaints the outer surface and Dropdown repaints both option lists; Preview colors the plain-words line and the expression chip; RadioStyle colors the mode radios.",
+		"/form/cronSchedule.templ", styleUsage,
+	) {
+		<div class="flex w-full max-w-lg flex-col gap-3" x-data="{schedule: '0 0 * * *'}">
+			@uiForm.CronSchedule(uiForm.CronScheduleSettings{
+				Label:           "Cron Schedule",
+				TwoWayStatePath: "schedule",
+				Dropdown: uiForm.CronScheduleDropdownStyle{
+					BackgroundColor: "violet-900",
+					BorderColor:     "violet-500/40",
+					BorderRadius:    uiToolset.BorderRadiusLg,
+				},
+				Field: uiForm.CronScheduleFieldStyle{
+					BackgroundColor: "violet-950",
+					BorderColor:     "violet-500/40",
+					BorderRadius:    uiToolset.BorderRadiusLg,
+				},
+				Preview: uiForm.CronSchedulePreviewStyle{
+					TextColor:           "violet-100",
+					CodeBackgroundColor: "violet-500/20",
+					CodeTextColor:       "violet-200",
+				},
+				RadioStyle: uiForm.RadioInputStyle{
+					ActiveColor: "violet-400",
+					TextColor:   "violet-100",
+				},
+			})
+			<p class={ DemoLiveStateClasses }>
+				Value: <span x-text="schedule"></span>
+			</p>
+		</div>
+	}
+}
+
+templ CronScheduleDemo() {
+	{{
+		demoUsage := `@uiForm.CronSchedule(uiForm.CronScheduleSettings{
+	Label:           "Cron Schedule",
+	TwoWayStatePath: "schedule",
+
+	// OptionalFields
+	InputName: "schedule",
+})`
+	}}
+	<div class="flex flex-col gap-4" id="cron-schedule-demo">
+		@DemoComponentSection(DemoComponentSectionSettings{
+			ComponentPath:          "/form/cronSchedule.templ",
+			Description:            "A cron schedule control combines a predefined-schedule dropdown with a five-field custom builder. Both write one cron string to the bound path, each field validates its syntax, and a preview reads the resulting schedule in plain words.",
+			LiveExampleDescription: "A schedule bound to Alpine state. Pick Predefined for a preset or Custom for the five fields; the preview and the value update as you go.",
+			Title:                  ".CronSchedule",
+			UsageCode:              demoUsage,
+			AlpineStateCode:        `<div x-data="{schedule: '0 0 * * *'}"></div>`,
+		}) {
+			<div class="flex w-full max-w-lg flex-col gap-3" x-data="{schedule: '0 0 * * *'}">
+				@uiForm.CronSchedule(uiForm.CronScheduleSettings{
+					Label:           "Cron Schedule",
+					TwoWayStatePath: "schedule",
+					InputName:       "schedule",
+				})
+				<p class={ DemoLiveStateClasses }>
+					Value: <span x-text="schedule"></span>
+				</p>
+			</div>
+		}
+		@DemoAdvancedExamples("cron-schedule-demo", []uiDisplay.AccordionItemSettings{
+			{Title: "Validation", Icon: "ph-warning-circle", Content: CronScheduleValidationExample()},
+			{Title: "Sizes", Icon: "ph-ruler", Content: CronScheduleSizesExample()},
+			{Title: "Style", Icon: "ph-paint-brush", Content: CronScheduleStyleExample()},
+			{Title: "Text Case", Icon: "ph-text-t", Content: CronScheduleTextCaseExample()},
+		})
+	</div>
+}
