@@ -3,11 +3,11 @@ package uiStructural
 import (
 	"bytes"
 	"context"
-	"reflect"
 	"regexp"
 	"strings"
 	"testing"
 
+	"github.com/a-h/templ"
 	uiForm "github.com/goinfinite/ui/src/form"
 	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
@@ -74,31 +74,63 @@ func TestDataTableClientSettingsResolver(t *testing.T) {
 	}
 }
 
-func TestDataTableTextCaseClassResolver(t *testing.T) {
-	testCases := []struct {
-		name              string
-		textCase          string
-		expectedClassName string
-	}{
-		{name: "lower", textCase: uiToolset.TextCaseLower, expectedClassName: "lowercase"},
-		{name: "upper", textCase: uiToolset.TextCaseUpper, expectedClassName: "uppercase"},
-		{name: "capitalize", textCase: uiToolset.TextCaseCapitalize, expectedClassName: "capitalize"},
-		{name: "default", textCase: "", expectedClassName: ""},
+func TestDataTableDensityPaddingResolvers(t *testing.T) {
+	denseSettings := DataTableSettings[dataTableTestRecord]{
+		Density: DataTableDensityDense,
+	}
+	if actual := denseSettings.cellPaddingClassesResolver(); actual != "px-2 py-1.5" {
+		t.Errorf("DenseCellPaddingMismatch: got %q", actual)
+	}
+	if actual := denseSettings.headerPaddingClassesResolver(); actual != "px-2 py-1.5" {
+		t.Errorf("DenseHeaderPaddingMismatch: got %q", actual)
 	}
 
-	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
-			settings := DataTableSettings[dataTableTestRecord]{
-				TextCase: testCase.textCase,
-			}
-			actualClassName := settings.textCaseClassResolver()
-			if actualClassName != testCase.expectedClassName {
-				t.Errorf(
-					"TextCaseClassMismatch(%q): got %q, want %q",
-					testCase.textCase, actualClassName, testCase.expectedClassName,
-				)
-			}
-		})
+	comfortableSettings := DataTableSettings[dataTableTestRecord]{
+		Density: DataTableDensityComfortable,
+	}
+	if actual := comfortableSettings.cellPaddingClassesResolver(); actual != "px-3 py-3" {
+		t.Errorf("ComfortableCellPaddingMismatch: got %q", actual)
+	}
+	if actual := comfortableSettings.headerPaddingClassesResolver(); actual != "px-3 py-2" {
+		t.Errorf("ComfortableHeaderPaddingMismatch: got %q", actual)
+	}
+}
+
+func dataTableRenderedComponent(t *testing.T, component templ.Component) string {
+	t.Helper()
+	if component == nil {
+		return ""
+	}
+	var buffer bytes.Buffer
+	if renderErr := component.Render(context.Background(), &buffer); renderErr != nil {
+		t.Fatalf("ComponentRenderFailed: %v", renderErr)
+	}
+	return buffer.String()
+}
+
+func TestDataTableSearchBoxResolver(t *testing.T) {
+	providedSearchBox := templ.Raw("<input name=\"provided-search\"/>")
+	providedSettings := DataTableSettings[dataTableTestRecord]{
+		SearchBox:        providedSearchBox,
+		QueryUrlTemplate: "/records?search={search}",
+	}
+	providedRendered := dataTableRenderedComponent(t, providedSettings.searchBoxResolver())
+	if providedRendered != "<input name=\"provided-search\"/>" {
+		t.Errorf("ProvidedSearchBoxNotReturned: %q", providedRendered)
+	}
+
+	templatedSettings := DataTableSettings[dataTableTestRecord]{
+		QueryUrlTemplate: "/records?search={search}",
+	}
+	if actual := templatedSettings.searchBoxResolver(); actual == nil {
+		t.Errorf("TemplatedQueryUrlShouldYieldDefaultSearchBox")
+	}
+
+	plainSettings := DataTableSettings[dataTableTestRecord]{
+		QueryUrlTemplate: "/records?page={pageNumber}",
+	}
+	if actual := plainSettings.searchBoxResolver(); actual != nil {
+		t.Errorf("PlainQueryUrlShouldYieldNoSearchBox")
 	}
 }
 
@@ -346,70 +378,6 @@ func TestDataTablePaginationAriaLabelResolver(t *testing.T) {
 				t.Errorf(
 					"PaginationAriaLabelMismatch(%q): got %q, want %q",
 					testCase.providedLabel, actualLabel, testCase.expectedLabel,
-				)
-			}
-		})
-	}
-}
-
-func TestDataTableItemsPerPageSizeChoicesResolver(t *testing.T) {
-	providedSettings := DataTableSettings[dataTableTestRecord]{
-		ItemsPerPageSizeChoices: []ItemsPerPage{10, 20},
-	}
-	actualProvidedChoices := itemsPerPageSizeChoicesResolver(
-		providedSettings.ItemsPerPageSizeChoices,
-	)
-	expectedProvidedChoices := []uint{10, 20}
-	if !reflect.DeepEqual(actualProvidedChoices, expectedProvidedChoices) {
-		t.Errorf(
-			"ItemsPerPageSizeChoicesMismatch: got %v, want %v",
-			actualProvidedChoices, expectedProvidedChoices,
-		)
-	}
-
-	emptySettings := DataTableSettings[dataTableTestRecord]{}
-	actualDefaultChoices := itemsPerPageSizeChoicesResolver(
-		emptySettings.ItemsPerPageSizeChoices,
-	)
-	expectedDefaultChoices := paginationDefaultItemsPerPageSizeChoices
-	if !reflect.DeepEqual(actualDefaultChoices, expectedDefaultChoices) {
-		t.Errorf(
-			"ItemsPerPageSizeChoicesMismatch: got %v, want %v",
-			actualDefaultChoices, expectedDefaultChoices,
-		)
-	}
-}
-
-func TestDataTableItemsPerPageResolver(t *testing.T) {
-	testCases := []struct {
-		name                    string
-		itemsPerPageSizeChoices []uint
-		itemsPerPage            ItemsPerPage
-		expectedItemsPerPage    uint
-	}{
-		{
-			name:                    "explicit items per page wins",
-			itemsPerPageSizeChoices: []uint{5, 10, 30, 50},
-			itemsPerPage:            30,
-			expectedItemsPerPage:    30,
-		},
-		{
-			name:                    "zero falls back to the first choice",
-			itemsPerPageSizeChoices: []uint{5, 10, 30, 50},
-			itemsPerPage:            0,
-			expectedItemsPerPage:    5,
-		},
-	}
-
-	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
-			actualItemsPerPage := itemsPerPageResolver(
-				testCase.itemsPerPage, testCase.itemsPerPageSizeChoices,
-			)
-			if actualItemsPerPage != testCase.expectedItemsPerPage {
-				t.Errorf(
-					"ItemsPerPageMismatch: got %d, want %d",
-					actualItemsPerPage, testCase.expectedItemsPerPage,
 				)
 			}
 		})

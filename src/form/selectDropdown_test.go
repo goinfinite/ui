@@ -36,6 +36,17 @@ func TestSelectDropdownSurfaceClassesResolver(t *testing.T) {
 	}
 }
 
+func TestSelectDropdownMaxVisibleOptionsStyle(t *testing.T) {
+	if actual := selectDropdownMaxVisibleOptionsStyle(0, 2); actual != "" {
+		t.Errorf("ZeroOptionsShouldYieldNoStyle: %q", actual)
+	}
+
+	actualStyle := selectDropdownMaxVisibleOptionsStyle(3, 2)
+	if actualStyle != "max-height: 6.125rem" {
+		t.Errorf("MaxVisibleOptionsStyleMismatch: %q", actualStyle)
+	}
+}
+
 func TestSelectLabelValueOptionValuesResolver(t *testing.T) {
 	values := selectLabelValueOptionValuesResolver([]SelectLabelValueOption{
 		{Label: "seconds", Value: "seconds"},

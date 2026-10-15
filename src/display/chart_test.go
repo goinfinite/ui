@@ -6,6 +6,8 @@ import (
 	"slices"
 	"strings"
 	"testing"
+
+	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
 func TestChartConfigResolver(t *testing.T) {
@@ -46,7 +48,7 @@ func TestChartConfigResolver(t *testing.T) {
 		{
 			name: "PercentStackKeepsRawTooltipValues",
 			settings: ChartSettings{
-				Type: ChartTypeBar, XAxis: timeAxis, Series: cpuSeries,
+				Type: ChartTypeBar, XAxis: ChartXAxisSettings{RowKey: "time"}, Series: []ChartSeriesSettings{{RowKey: "cpu"}},
 				Cartesian: ChartCartesianSettings{StackMode: ChartStackModePercent},
 			},
 			expectedChartType:        ChartTypeBar,
@@ -77,7 +79,7 @@ func TestChartConfigResolver(t *testing.T) {
 		{
 			name: "UnknownStackModeFails",
 			settings: ChartSettings{
-				XAxis: timeAxis, Series: cpuSeries,
+				XAxis: ChartXAxisSettings{RowKey: "time"}, Series: []ChartSeriesSettings{{RowKey: "cpu"}},
 				Cartesian: ChartCartesianSettings{StackMode: "stream"},
 			},
 			expectedErrPrefix: "ChartInvalidStackMode",
@@ -93,7 +95,7 @@ func TestChartConfigResolver(t *testing.T) {
 		{
 			name: "InvalidYValueBoundFails",
 			settings: ChartSettings{
-				XAxis: timeAxis, Series: cpuSeries,
+				XAxis: ChartXAxisSettings{RowKey: "time"}, Series: []ChartSeriesSettings{{RowKey: "cpu"}},
 				Cartesian: ChartCartesianSettings{
 					YAxis: ChartYAxisSettings{MinValue: "zero"},
 				},
@@ -103,7 +105,7 @@ func TestChartConfigResolver(t *testing.T) {
 		{
 			name: "OversizedDonutHoleFails",
 			settings: ChartSettings{
-				Type: ChartTypeDonut, XAxis: timeAxis, Series: cpuSeries,
+				Type: ChartTypeDonut, XAxis: ChartXAxisSettings{RowKey: "time"}, Series: []ChartSeriesSettings{{RowKey: "cpu"}},
 				Donut: ChartDonutSettings{HolePercent: 95},
 			},
 			expectedErrPrefix: "ChartInvalidDonutHolePercent",
@@ -111,7 +113,7 @@ func TestChartConfigResolver(t *testing.T) {
 		{
 			name: "UnknownCenterLabelDisplayModeFails",
 			settings: ChartSettings{
-				Type: ChartTypeDonut, XAxis: timeAxis, Series: cpuSeries,
+				Type: ChartTypeDonut, XAxis: ChartXAxisSettings{RowKey: "time"}, Series: []ChartSeriesSettings{{RowKey: "cpu"}},
 				Donut: ChartDonutSettings{CenterLabelDisplayMode: "sometimes"},
 			},
 			expectedErrPrefix: "ChartInvalidDonutCenterLabelDisplayMode",
@@ -119,7 +121,7 @@ func TestChartConfigResolver(t *testing.T) {
 		{
 			name: "UnknownCenterLabelSizeFails",
 			settings: ChartSettings{
-				Type: ChartTypeDonut, XAxis: timeAxis, Series: cpuSeries,
+				Type: ChartTypeDonut, XAxis: ChartXAxisSettings{RowKey: "time"}, Series: []ChartSeriesSettings{{RowKey: "cpu"}},
 				Donut: ChartDonutSettings{CenterLabelSize: "huge"},
 			},
 			expectedErrPrefix: "ChartInvalidDonutCenterLabelSize",
@@ -157,6 +159,81 @@ func TestChartConfigResolver(t *testing.T) {
 				t.Errorf("TooltipFormatsMismatch: want %q, got %q", testCase.expectedTooltipFormats, resolvedTooltipFormats)
 			}
 		})
+	}
+}
+
+func TestChartYTickCountDefaults(t *testing.T) {
+	defaultedConfig, defaultedErr := ChartSettings{
+		XAxis: ChartXAxisSettings{RowKey: "time"}, Series: []ChartSeriesSettings{{RowKey: "cpu"}},
+	}.configResolver()
+	if defaultedErr != nil {
+		t.Fatalf("UnexpectedChartConfigError: %v", defaultedErr)
+	}
+	if defaultedConfig.Cartesian.YAxis.TickCount != chartDefaultYTickCount {
+		t.Errorf(
+			"DefaultTickCountMismatch: want %d, got %d",
+			chartDefaultYTickCount, defaultedConfig.Cartesian.YAxis.TickCount,
+		)
+	}
+
+	providedConfig, providedErr := ChartSettings{
+		XAxis: ChartXAxisSettings{RowKey: "time"}, Series: []ChartSeriesSettings{{RowKey: "cpu"}},
+		Cartesian: ChartCartesianSettings{YAxis: ChartYAxisSettings{TickCount: 8}},
+	}.configResolver()
+	if providedErr != nil {
+		t.Fatalf("UnexpectedChartConfigError: %v", providedErr)
+	}
+	if providedConfig.Cartesian.YAxis.TickCount != 8 {
+		t.Errorf("ProvidedTickCountMismatch: got %d", providedConfig.Cartesian.YAxis.TickCount)
+	}
+}
+
+func TestChartDonutHolePercentBoundary(t *testing.T) {
+	atMaxSettings := ChartSettings{
+		Type: ChartTypeDonut, XAxis: ChartXAxisSettings{RowKey: "time"}, Series: []ChartSeriesSettings{{RowKey: "cpu"}},
+		Donut: ChartDonutSettings{HolePercent: chartMaxDonutHolePercent},
+	}
+	if _, resolveErr := atMaxSettings.configResolver(); resolveErr != nil {
+		t.Errorf("AtMaxHolePercentShouldPass: %v", resolveErr)
+	}
+
+	overMaxSettings := ChartSettings{
+		Type: ChartTypeDonut, XAxis: ChartXAxisSettings{RowKey: "time"}, Series: []ChartSeriesSettings{{RowKey: "cpu"}},
+		Donut: ChartDonutSettings{HolePercent: chartMaxDonutHolePercent + 1},
+	}
+	_, overMaxErr := overMaxSettings.configResolver()
+	if overMaxErr == nil || !strings.HasPrefix(overMaxErr.Error(), "ChartInvalidDonutHolePercent") {
+		t.Errorf("OverMaxHolePercentShouldFail: %v", overMaxErr)
+	}
+}
+
+func TestChartInvalidLegendAlignmentFails(t *testing.T) {
+	invalidSettings := ChartSettings{
+		XAxis: ChartXAxisSettings{RowKey: "time"}, Series: []ChartSeriesSettings{{RowKey: "cpu"}},
+		Legend: ChartLegendSettings{Alignment: "middle"},
+	}
+	renderErr := Chart(invalidSettings).Render(context.Background(), &bytes.Buffer{})
+	if renderErr == nil || !strings.HasPrefix(renderErr.Error(), "ChartInvalidLegendAlignment") {
+		t.Errorf("InvalidLegendAlignmentShouldFail: %v", renderErr)
+	}
+}
+
+func TestChartTooltipRingClassDefaults(t *testing.T) {
+	defaultedSettings := ChartSettings{
+		XAxis: ChartXAxisSettings{RowKey: "time"}, Series: []ChartSeriesSettings{{RowKey: "cpu"}},
+	}
+	if actual := defaultedSettings.tooltipClassesResolver(); !strings.Contains(actual, "ring-1 ring-neutral-50/10") {
+		t.Errorf("DefaultTooltipRingMissing: %q", actual)
+	}
+
+	providedSettings := ChartSettings{
+		XAxis: ChartXAxisSettings{RowKey: "time"}, Series: []ChartSeriesSettings{{RowKey: "cpu"}},
+		Tooltip: ChartTooltipSettings{
+			RingColor: "sky-400", RingThickness: uiToolset.RingThicknessMd,
+		},
+	}
+	if actual := providedSettings.tooltipClassesResolver(); strings.Contains(actual, "ring-neutral-50/10") {
+		t.Errorf("ProvidedTooltipRingOverridden: %q", actual)
 	}
 }
 

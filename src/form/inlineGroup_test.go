@@ -55,6 +55,20 @@ func TestInlineGroupMaxVisibleOptionsStyle(t *testing.T) {
 	}
 }
 
+func TestInlineCheckboxGroupStatePathResolver(t *testing.T) {
+	if actual := inlineCheckboxGroupStatePathResolver(nil); actual != "" {
+		t.Errorf("EmptyInputShouldYieldEmptyPath: %q", actual)
+	}
+
+	inputSettings := []CheckboxInputSettings{
+		{Value: "apple", TwoWayStatePath: "selectedFruits"},
+		{Value: "banana", TwoWayStatePath: "otherFruits"},
+	}
+	if actual := inlineCheckboxGroupStatePathResolver(inputSettings); actual != "selectedFruits" {
+		t.Errorf("FirstInputStatePathMismatch: %q", actual)
+	}
+}
+
 func TestInlineCheckboxGroupValuesArrayLiteralBuilder(t *testing.T) {
 	testCases := []struct {
 		name          string
@@ -147,6 +161,13 @@ func TestInlineCheckboxGroupOptionRowClassesResolver(t *testing.T) {
 			hasFloatingButtons: true,
 			actionWidthRem:     2.5,
 			expectedWidthClass: "w-[calc(100%-2.5rem)]",
+		},
+		{
+			name:               "vertical rows keep the fractional action width precise",
+			orientation:        InlineCheckboxGroupOrientationVertical,
+			hasFloatingButtons: true,
+			actionWidthRem:     1.25,
+			expectedWidthClass: "w-[calc(100%-1.25rem)]",
 		},
 	}
 	for _, testCase := range testCases {

@@ -36,10 +36,12 @@ The entry point is `tests/tests.sh`. It serves `docs/` on a local port, runs the
 
 Exit codes: 0 pass, 1 test failure, 2 runner error. Levels are cumulative.
 
-UI tests are Playwright specs under `tests/ui/specs/`, organized by feature (`form`, `display`, `control`, `structural`, `toolset`, `a11y`, `performance`). They assert rendered behavior — geometry, visibility, computed styles, and rendered text — against the demo page. Install dependencies with `npm install` and browsers with `npx playwright install` inside `tests/`. WebKit is registered in `playwright.config.js` but disabled in `run.sh` because this host lacks its system libraries; enable it in CI containers that provide them.
+UI tests are Playwright specs under `tests/ui/specs/`, organized by feature (`form`, `display`, `control`, `structural`, `toolset`, `a11y`, `performance`). They assert user-observable behavior — state bindings, callbacks, visibility, and rendered text — against the demo page. Install dependencies with `npm install` and browsers with `npx playwright install` inside `tests/`. WebKit is registered in `playwright.config.js` but disabled in `run.sh` because this host lacks its system libraries; enable it in CI containers that provide them.
 
 The accessibility scope runs axe-core against the demo and fails on regressions past the counts recorded in `tests/ui/a11y-baseline.json`. Lower the baseline as components get fixed. Raise it only deliberately: `UPDATE_A11Y_BASELINE=1 ./tests/tests.sh --scope=accessibility`.
 
-The performance scope measures click-to-final-state latency and navigation LCP in `tests/ui/specs/performance/`, writes `tests/performance-results.json`, and compares it against `tests/golden.yaml`. Tiers: `info` and `warn` print only; `fatal_ms` fails the run. New budgets ship without `fatal_ms` — promoting one is a deliberate human edit. The runner never rewrites `golden.yaml`.
+The performance scope measures click-to-final-state latency and navigation LCP in `tests/ui/specs/performance/`, writes `tests/performance-results.json`, and compares it against `tests/golden.yaml`. Tiers: `info` and `warn` print only; `fatal_ms` fails the run. A promoted budget carries `fatal_ms`; adding or raising one is a deliberate human edit. The runner never rewrites `golden.yaml`.
+
+The mutation scope runs Gremlins over each feature's Go packages through `tests/mutate.sh`. It mutates non-generated source, runs the package tests against each mutant, and fails when test efficacy or mutant coverage drops below 80%. Generated `_templ.go` files are excluded. Run one feature at a time: `tests/mutate.sh structural`. Mutation is exhaustive-only, time-boxed to the 30-minute ceiling.
 
 New suites are registered in `tests/registry.yaml` with a feature, scope, and level. `tests.sh` executes registered `run` commands through `bash -c`, so treat `registry.yaml` as trusted input: only repo writers may change it, exactly like the scripts themselves.

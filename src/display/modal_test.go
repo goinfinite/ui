@@ -282,6 +282,12 @@ func TestModalCanEnlargeExpressionBuilder(t *testing.T) {
 			[]string{ModalSizeMd, ModalSizeLg, ModalSizeXl},
 			"modalSize !== 'xl'",
 		},
+		{
+			"TwoSizesCanEnlarge",
+			"modalSize",
+			[]string{ModalSizeMd, ModalSizeLg},
+			"modalSize !== 'lg'",
+		},
 		{"SingleSizeCannotEnlarge", "modalSize", []string{ModalSizeXl}, ""},
 		{"EmptyCannotEnlarge", "modalSize", nil, ""},
 	}
@@ -308,6 +314,12 @@ func TestModalCanReduceExpressionBuilder(t *testing.T) {
 			"NotAtSmallestCanReduce",
 			"modalSize",
 			[]string{ModalSizeMd, ModalSizeLg, ModalSizeXl},
+			"modalSize !== 'md'",
+		},
+		{
+			"TwoSizesCanReduce",
+			"modalSize",
+			[]string{ModalSizeMd, ModalSizeLg},
 			"modalSize !== 'md'",
 		},
 		{"SingleSizeCannotReduce", "modalSize", []string{ModalSizeXl}, ""},

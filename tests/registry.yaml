@@ -4,17 +4,25 @@ features:
   runner:
     - scope: unit
       level: fast
-      run: bash tests/tests_test.sh && bash tests/ui/run_test.sh && bash demo/serveDemo_test.sh
+      run: bash tests/tests_test.sh && bash tests/ui/run_test.sh && bash tests/mutate_test.sh && bash demo/serveDemo_test.sh
       requires_demo: false
   display:
     - scope: unit
       level: fast
       run: go test -p 3 ./src/display/...
       requires_demo: false
+    - scope: mutation
+      level: exhaustive
+      run: tests/mutate.sh display
+      requires_demo: false
   toolset:
     - scope: unit
       level: fast
       run: go test -p 3 ./src/toolset/...
+      requires_demo: false
+    - scope: mutation
+      level: exhaustive
+      run: tests/mutate.sh toolset
       requires_demo: false
     - scope: ui
       level: fast
@@ -28,6 +36,10 @@ features:
     - scope: unit
       level: fast
       run: go test -p 3 ./src/form/...
+      requires_demo: false
+    - scope: mutation
+      level: exhaustive
+      run: tests/mutate.sh form
       requires_demo: false
     - scope: ui
       level: fast
@@ -54,6 +66,10 @@ features:
       level: fast
       run: go test -p 3 ./src/control/...
       requires_demo: false
+    - scope: mutation
+      level: exhaustive
+      run: tests/mutate.sh control
+      requires_demo: false
     - scope: ui
       level: fast
       run: tests/ui/run.sh control
@@ -66,6 +82,10 @@ features:
     - scope: unit
       level: fast
       run: go test -p 3 ./src/structural/...
+      requires_demo: false
+    - scope: mutation
+      level: exhaustive
+      run: tests/mutate.sh structural
       requires_demo: false
     - scope: ui
       level: fast
