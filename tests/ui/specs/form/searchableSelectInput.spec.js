@@ -171,7 +171,6 @@ test.describe("SearchableSelectInput", () => {
     page,
   }) => {
     const panel = await openExamplePanel(page, section, "Disabled Binding");
-    const componentState = panel.locator('div[x-data^="{country:"]');
     const combobox = panel.locator("input[role=combobox]");
     const listbox = panel.locator("ul[role=listbox]");
 
@@ -180,15 +179,15 @@ test.describe("SearchableSelectInput", () => {
       panel.getByRole("button", { name: "Clear selection" }),
     ).toBeDisabled();
 
-    await componentState.evaluate((element) => {
-      window.Alpine.$data(element).isDisabled = false;
+    await combobox.evaluate((element) => {
+      window.Alpine.$data(element.closest("[x-data]")).isDisabled = false;
     });
     await combobox.click();
     const option = listbox.getByRole("option", { name: "Brazil" });
     await expect(option).toBeVisible();
 
-    await componentState.evaluate((element) => {
-      window.Alpine.$data(element).isDisabled = true;
+    await combobox.evaluate((element) => {
+      window.Alpine.$data(element.closest("[x-data]")).isDisabled = true;
     });
     await expect(option).toBeDisabled();
   });

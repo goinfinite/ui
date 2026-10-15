@@ -2,14 +2,12 @@ import { expect, test } from "../../fixture.js";
 
 const cronSection = "#cron-schedule-demo";
 const boundValue = `${cronSection} p span`;
-const previewText = `${cronSection} span[x-text="cronPreviewTextBuilder()"]`;
-const expressionChip = `${cronSection} fieldset code[x-text]`;
+const previewText = `${cronSection} .ph-clock + span`;
+const expressionChip = `${cronSection} fieldset code`;
 const hiddenInput = `${cronSection} input[type=hidden][name=schedule]`;
 
 function presetTrigger(page) {
-  return page.locator(
-    `${cronSection} div[x-show="cronScheduleMode === 'predefined'"] [x-ref=selectTrigger]`,
-  );
+  return page.locator(`${cronSection} [role=button]`).first();
 }
 
 function customModeLabel(page) {

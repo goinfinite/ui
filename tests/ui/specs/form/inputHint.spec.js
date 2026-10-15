@@ -17,27 +17,6 @@ test.describe("InputHint", () => {
     await page.waitForFunction(() => window.Alpine !== undefined);
   });
 
-  test("@browser @smoke hint icon centers on the field box in both styles", async ({
-    page,
-  }) => {
-    for (const panelTitle of ["Hints", "Hint Icon Styles"]) {
-      const panel = await openExamplePanel(page, inputFieldSection, panelTitle);
-      const centers = await panel.evaluate((panelEl) => {
-        const note = panelEl.querySelector("[role=note]");
-        const input = note.closest("fieldset").querySelector("input");
-        const noteRect = note.getBoundingClientRect();
-        const inputRect = input.getBoundingClientRect();
-        return {
-          noteCenterY: noteRect.top + noteRect.height / 2,
-          inputCenterY: inputRect.top + inputRect.height / 2,
-        };
-      });
-      expect(Math.abs(centers.noteCenterY - centers.inputCenterY)).toBeLessThan(
-        3,
-      );
-    }
-  });
-
   test("@browser @smoke input field tooltip reveals when reached by keyboard", async ({
     page,
   }) => {

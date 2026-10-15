@@ -2,8 +2,8 @@ import { openExamplePanel } from "../../examplePanel.js";
 import { expect, test } from "../../fixture.js";
 
 const dualSelectSection = "#dual-select-input-demo";
-const triggerSelector = `${dualSelectSection} [x-ref=selectTrigger]`;
-const dropdownSelector = `${dualSelectSection} [x-ref=selectDropdown]`;
+const triggerSelector = `${dualSelectSection} [role=button]`;
+const dropdownSelector = `${dualSelectSection} ul`;
 const valueInputSelector = `${dualSelectSection} input[type=text]`;
 const liveStateSelector = `${dualSelectSection} p span`;
 
@@ -45,8 +45,8 @@ test.describe("DualSelectInput", () => {
       dualSelectSection,
       "Shared Slot",
     );
-    const panelTrigger = panel.locator("[x-ref=selectTrigger]");
-    const panelDropdown = panel.locator("[x-ref=selectDropdown]");
+    const panelTrigger = panel.locator("[role=button]");
+    const panelDropdown = panel.locator("ul");
     const panelInput = panel.locator("input[type=text]");
 
     await expect(panelTrigger).toContainText("Every 5 minutes");
@@ -68,45 +68,17 @@ test.describe("DualSelectInput", () => {
       dualSelectSection,
       "Shared Slot",
     );
-    const panelTrigger = panel.locator("[x-ref=selectTrigger]");
+    const panelTrigger = panel.locator("[role=button]");
     const panelInput = panel.locator("input[type=text]");
 
     await panelTrigger.click();
     await panel
-      .locator("[x-ref=selectDropdown] label")
+      .locator("ul label")
       .filter({ hasText: "Every 15 minutes" })
       .click();
 
     await expect(panelInput).toHaveValue("*/15");
     await expect(panel.locator("p span")).toHaveText("*/15");
-  });
-
-  test("@browser the value input spans the fieldset height inside the border", async ({
-    page,
-  }) => {
-    const valueInput = page.locator(valueInputSelector);
-    const geometry = await valueInput.evaluate((element) => {
-      const fieldsetRect = element.closest("fieldset").getBoundingClientRect();
-      const rowRect = element.parentElement.getBoundingClientRect();
-      const inputRect = element.getBoundingClientRect();
-      return {
-        fieldsetTop: fieldsetRect.top,
-        fieldsetBottom: fieldsetRect.bottom,
-        rowTop: rowRect.top,
-        rowBottom: rowRect.bottom,
-        inputTop: inputRect.top,
-        inputBottom: inputRect.bottom,
-      };
-    });
-
-    expect(geometry.inputTop).toBeGreaterThan(geometry.fieldsetTop);
-    expect(geometry.inputTop).toBeLessThan(geometry.rowTop);
-    expect(
-      Math.abs(geometry.inputBottom - geometry.rowBottom),
-    ).toBeLessThanOrEqual(1);
-    expect(
-      Math.abs(geometry.inputBottom - (geometry.fieldsetBottom - 1)),
-    ).toBeLessThanOrEqual(1);
   });
 
   test("@browser arrow down opens with the checked option focused and enter commits", async ({

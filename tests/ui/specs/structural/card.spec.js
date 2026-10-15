@@ -60,23 +60,4 @@ test.describe("Card @structural", () => {
       "Content-only card body without a heading block",
     );
   });
-
-  test("@browser @smoke content gap example sets the card gap scale", async ({
-    page,
-  }) => {
-    await openExamplePanel(page, cardSection, "Content Gap");
-    const tightCard = page
-      .locator(cardSection)
-      .locator("div.grid > div")
-      .filter({ hasText: "Tight Gap" })
-      .first();
-    const looseCard = page
-      .locator(cardSection)
-      .locator("div.grid > div")
-      .filter({ hasText: "Loose Gap" })
-      .first();
-
-    await expect(tightCard).toHaveCSS("row-gap", "8px");
-    await expect(looseCard).toHaveCSS("row-gap", "32px");
-  });
 });

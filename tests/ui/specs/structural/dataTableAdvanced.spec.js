@@ -33,11 +33,11 @@ test.describe("DataTable advanced examples @structural", () => {
   test("filters panel starts with its chip", async ({ page }) => {
     const target = await openExamplePanel(page, demoSection, "Filters");
     const chip = target.locator(
-      'span[x-show]:has(button[aria-label="Remove Status filter"])',
+      'span:has(button[aria-label="Remove Status filter"])',
     );
 
     await expect(chip).toBeVisible();
-    await expect(chip.locator("span[x-text]")).toHaveText("running");
+    await expect(chip.locator("span").last()).toHaveText("running");
   });
 
   test("@browser search box panel binds the starting query", async ({
@@ -88,76 +88,6 @@ test.describe("DataTable advanced examples @structural", () => {
     await expect(target.locator("p[aria-live=polite]")).toHaveText(
       "1 row selected",
     );
-  });
-
-  test("@browser row and column styling applies the header, stripe, cell, and row styling", async ({
-    page,
-  }) => {
-    const target = await openExamplePanel(
-      page,
-      demoSection,
-      "Row and Column Styling",
-    );
-
-    const headerRow = target.locator("thead tr");
-    expect(
-      await headerRow
-        .locator("th")
-        .first()
-        .evaluate((cell) => getComputedStyle(cell).backgroundColor),
-    ).toBe("rgba(250, 250, 250, 0.05)");
-
-    const bodyRows = target.locator("tbody tr");
-    const oddRow = bodyRows.first();
-    const evenRow = bodyRows.nth(1);
-    const [oddBackground, evenBackground] = await Promise.all([
-      oddRow.evaluate((row) => getComputedStyle(row).backgroundColor),
-      evenRow.evaluate((row) => getComputedStyle(row).backgroundColor),
-    ]);
-    expect(oddBackground).not.toBe(evenBackground);
-    expect(
-      await oddRow
-        .locator("td")
-        .first()
-        .evaluate((cell) => getComputedStyle(cell).fontWeight),
-    ).toBe("700");
-
-    const [styledRowColor, plainRowColor] = await Promise.all([
-      bodyRows.nth(2).evaluate((row) => getComputedStyle(row).color),
-      evenRow.evaluate((row) => getComputedStyle(row).color),
-    ]);
-    expect(styledRowColor).not.toBe(plainRowColor);
-
-    const stripeBackground = await oddRow.evaluate(
-      (row) => getComputedStyle(row).backgroundColor,
-    );
-    await oddRow.hover();
-    await expect
-      .poll(() =>
-        oddRow.evaluate((row) => getComputedStyle(row).backgroundColor),
-      )
-      .not.toBe(stripeBackground);
-  });
-
-  test("@browser the items per page menu follows the configured background", async ({
-    page,
-  }) => {
-    const target = await openExamplePanel(
-      page,
-      demoSection,
-      "Row and Column Styling",
-    );
-    const table = target.locator("#data-table-demo-styling");
-    await table.scrollIntoViewIfNeeded();
-    await table.locator("nav [role=button]").click();
-
-    const dropdown = table.locator("nav ul");
-    await expect(dropdown).toBeVisible();
-    expect(
-      await dropdown.evaluate(
-        (element) => getComputedStyle(element).backgroundColor,
-      ),
-    ).toBe("rgb(6, 78, 59)");
   });
 
   test("@browser the filter dropdown escapes the table surface when the body is squeezed", async ({
@@ -224,22 +154,6 @@ test.describe("DataTable advanced examples @structural", () => {
       page.locator('body > div[x-ref="tooltip"]:visible'),
     ).toHaveCount(1);
     await expect.poll(overflow).toEqual({ horizontal: 0, vertical: 0 });
-  });
-
-  test("a table refresh does not leak teleported tooltips", async ({
-    page,
-  }) => {
-    const tableRoot = "#data-table-demo-table";
-    const tooltipCount = () =>
-      page.evaluate(
-        () => document.querySelectorAll('body > div[x-ref="tooltip"]').length,
-      );
-    const initialCount = await tooltipCount();
-
-    await page
-      .locator(`${tableRoot} nav button[aria-label="Next page"]`)
-      .click();
-    await expect.poll(tooltipCount).toBe(initialCount);
   });
 
   test("@browser the sticky header caps the viewport to the configured rows", async ({

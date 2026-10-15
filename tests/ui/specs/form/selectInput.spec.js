@@ -96,15 +96,27 @@ test.describe("SelectInput", () => {
     await expect(trigger).toBeFocused();
   });
 
-  test("@browser the Style example shows the checked row icon", async ({
+  test("@browser the Style example moves the checked row icon with the selection", async ({
     page,
   }) => {
     const panel = await openExamplePanel(page, selectSection, "Style");
-    const trigger = panel.locator("[x-ref=selectTrigger]");
+    const trigger = panel.locator("[role=button]").first();
     const options = panel.locator("ul").first();
 
     await trigger.click();
-    await expect(options.locator("i.ph-check-circle")).toHaveCount(1);
+    const selectedRow = options
+      .locator("li")
+      .filter({ has: page.locator("i.ph-check-circle") });
+    await expect(selectedRow).toHaveCount(1);
+    await expect(selectedRow).toContainText("Brazil");
+
+    await options.getByText("Chile", { exact: true }).click();
+    await trigger.click();
+    const newSelectedRow = options
+      .locator("li")
+      .filter({ has: page.locator("i.ph-check-circle") });
+    await expect(newSelectedRow).toHaveCount(1);
+    await expect(newSelectedRow).toContainText("Chile");
   });
 
   test("@browser @smoke arrow keys move through the named radio group and Escape closes", async ({
@@ -207,7 +219,14 @@ test.describe("SelectInput", () => {
   test("@smoke multi-select form submission carries one entry per selected value", async ({
     page,
   }) => {
-    await openExamplePanel(page, selectSection, "Multi-Select");
+    const panel = await openExamplePanel(page, selectSection, "Multi-Select");
+    const trigger = panel.locator(".group.flex").first();
+    const dropdown = panel.locator("ul").first();
+
+    await trigger.click();
+    await dropdown.getByText("Argentina", { exact: true }).click();
+    await dropdown.getByText("Chile", { exact: true }).click();
+
     const formEntries = await page.evaluate(() => {
       const checkedCheckbox = document.querySelector(
         "#select-input-demo input[type=checkbox][name=countries]:checked",
@@ -222,6 +241,14 @@ test.describe("SelectInput", () => {
       return entries;
     });
 
-    expect(formEntries).toEqual([["countries", "Brazil"]]);
+    expect(formEntries).toHaveLength(3);
+    expect(formEntries.map(([, value]) => value).sort()).toEqual([
+      "Argentina",
+      "Brazil",
+      "Chile",
+    ]);
+    expect(new Set(formEntries.map(([name]) => name))).toEqual(
+      new Set(["countries"]),
+    );
   });
 });

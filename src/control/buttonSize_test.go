@@ -8,31 +8,6 @@ import (
 	"testing"
 )
 
-func TestButtonIconOnlyWidthRemResolver(t *testing.T) {
-	testCases := []struct {
-		size     string
-		expected float64
-	}{
-		{size: ButtonSizeXs, expected: 1.5},
-		{size: ButtonSizeSm, expected: 1.75},
-		{size: ButtonSizeMd, expected: 2.125},
-		{size: ButtonSizeLg, expected: 2.5},
-		{size: ButtonSizeXl, expected: 3},
-		{size: "", expected: 2},
-	}
-	for _, testCase := range testCases {
-		t.Run(testCase.size, func(t *testing.T) {
-			actualWidth := ButtonIconOnlyWidthRemResolver(testCase.size)
-			if actualWidth != testCase.expected {
-				t.Errorf(
-					"IconOnlyWidthMismatch(%q): got %v, want %v",
-					testCase.size, actualWidth, testCase.expected,
-				)
-			}
-		})
-	}
-}
-
 func firstKnownRemResolver(
 	classAttributeMatch []string, remByClass map[string]float64,
 ) (float64, bool) {

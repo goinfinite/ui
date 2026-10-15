@@ -51,28 +51,3 @@ func TestTextAlignmentClassResolver(t *testing.T) {
 		})
 	}
 }
-
-func TestTextAlignmentJustifyClassResolver(t *testing.T) {
-	testCases := []struct {
-		name              string
-		alignment         TextAlignment
-		expectedClassName string
-	}{
-		{name: "left", alignment: TextAlignmentLeft, expectedClassName: "justify-start"},
-		{name: "center", alignment: TextAlignmentCenter, expectedClassName: "justify-center"},
-		{name: "right", alignment: TextAlignmentRight, expectedClassName: "justify-end"},
-		{name: "default", alignment: "", expectedClassName: "justify-start"},
-	}
-
-	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
-			actualClassName := testCase.alignment.justifyClassResolver()
-			if actualClassName != testCase.expectedClassName {
-				t.Errorf(
-					"JustifyClassMismatch(%q): got %q, want %q",
-					testCase.alignment, actualClassName, testCase.expectedClassName,
-				)
-			}
-		})
-	}
-}

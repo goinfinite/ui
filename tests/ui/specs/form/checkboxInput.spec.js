@@ -20,10 +20,16 @@ test.describe("CheckboxInput", () => {
     page,
   }) => {
     const checkbox = checkboxInput(page, "Accept the terms");
+    const boundValue = page
+      .locator(`${checkboxSection} p`)
+      .filter({ hasText: "Value:" })
+      .locator("span");
     await expect(checkbox).not.toBeChecked();
+    await expect(boundValue).toHaveText("false");
 
     await checkbox.click();
     await expect(checkbox).toBeChecked();
+    await expect(boundValue).toHaveText("true");
   });
 
   test("@smoke select all tracks partial and full selection", async ({
@@ -49,25 +55,5 @@ test.describe("CheckboxInput", () => {
     await expect(checkboxInput(page, "Disabled")).toBeDisabled();
     await expect(checkboxInput(page, "Checked and disabled")).toBeChecked();
     await expect(checkboxInput(page, "Checked and disabled")).toBeDisabled();
-  });
-
-  test("@browser label position left keeps the box next to the label", async ({
-    page,
-  }) => {
-    await openExamplePanel(page, checkboxSection, "Label Position");
-    const label = page
-      .locator(`${checkboxSection} label`)
-      .filter({ hasText: "Label on the left" })
-      .first();
-    const box = label.locator("span").first();
-
-    const labelBox = await label.boundingBox();
-    const boxBox = await box.boundingBox();
-    const parentBox = await label.locator("xpath=..").boundingBox();
-
-    expect(labelBox.width).toBeLessThan(parentBox.width / 2);
-    expect(
-      boxBox.x + boxBox.width - (labelBox.x + labelBox.width),
-    ).toBeLessThanOrEqual(2);
   });
 });

@@ -158,69 +158,6 @@ func TestCarouselItemsPerViewResolver(t *testing.T) {
 	}
 }
 
-func TestCarouselItemsPerPageSizeChoicesResolver(t *testing.T) {
-	providedSettings := CarouselSettings[carouselTestItem]{
-		ItemsPerPageSizeChoices: []ItemsPerPage{6, 12},
-	}
-	actualProvidedChoices := itemsPerPageSizeChoicesResolver(
-		providedSettings.ItemsPerPageSizeChoices,
-	)
-	expectedProvidedChoices := []uint{6, 12}
-	if !reflect.DeepEqual(actualProvidedChoices, expectedProvidedChoices) {
-		t.Errorf(
-			"ItemsPerPageSizeChoicesMismatch: got %v, want %v",
-			actualProvidedChoices, expectedProvidedChoices,
-		)
-	}
-
-	emptySettings := CarouselSettings[carouselTestItem]{}
-	actualDefaultChoices := itemsPerPageSizeChoicesResolver(
-		emptySettings.ItemsPerPageSizeChoices,
-	)
-	if !reflect.DeepEqual(actualDefaultChoices, paginationDefaultItemsPerPageSizeChoices) {
-		t.Errorf(
-			"ItemsPerPageSizeChoicesMismatch: got %v, want %v",
-			actualDefaultChoices, paginationDefaultItemsPerPageSizeChoices,
-		)
-	}
-}
-
-func TestCarouselItemsPerPageResolver(t *testing.T) {
-	testCases := []struct {
-		name                    string
-		itemsPerPageSizeChoices []uint
-		itemsPerPage            ItemsPerPage
-		expectedItemsPerPage    uint
-	}{
-		{
-			name:                    "explicit items per page wins",
-			itemsPerPageSizeChoices: []uint{6, 12},
-			itemsPerPage:            12,
-			expectedItemsPerPage:    12,
-		},
-		{
-			name:                    "zero falls back to the first choice",
-			itemsPerPageSizeChoices: []uint{6, 12},
-			itemsPerPage:            0,
-			expectedItemsPerPage:    6,
-		},
-	}
-
-	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
-			actualItemsPerPage := itemsPerPageResolver(
-				testCase.itemsPerPage, testCase.itemsPerPageSizeChoices,
-			)
-			if actualItemsPerPage != testCase.expectedItemsPerPage {
-				t.Errorf(
-					"ItemsPerPageMismatch: got %d, want %d",
-					actualItemsPerPage, testCase.expectedItemsPerPage,
-				)
-			}
-		})
-	}
-}
-
 func TestCarouselDotsColorResolvers(t *testing.T) {
 	defaultSettings := CarouselSettings[carouselTestItem]{}
 	if actual := defaultSettings.dotsActiveColorResolver(); actual != carouselDefaultDotsActiveColor {

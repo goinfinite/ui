@@ -15,22 +15,6 @@ function trackRefreshUrls(page) {
   return refreshUrls;
 }
 
-function carouselData(page, rootSelector) {
-  return page.evaluate((selector) => {
-    const root = document.querySelector(selector);
-    const data = Alpine.$data(root);
-    return {
-      canSlideNext: data.canSlideNext,
-      canSlidePrevious: data.canSlidePrevious,
-      dotCount: data.dotIndexes.length,
-      itemsCount: data.itemsCount,
-      itemsPerView: data.itemsPerView,
-      pageNumber: data.pageNumber,
-      windowStart: data.windowStart,
-    };
-  }, rootSelector);
-}
-
 async function visibleItemCount(page, rootSelector) {
   return page.evaluate((selector) => {
     const root = document.querySelector(selector);
@@ -63,7 +47,6 @@ test.describe("Carousel @structural", () => {
     await expect(
       page.locator(`${carouselRoot} [data-ui-carousel-track] > div`),
     ).toHaveCount(6);
-    expect((await carouselData(page, carouselRoot)).itemsPerView).toBe(3);
     expect(await visibleItemCount(page, carouselRoot)).toBe(3);
     await expect(page.locator(`${carouselRoot} nav p`)).toHaveText("1–6 of 6");
   });
@@ -78,25 +61,20 @@ test.describe("Carousel @structural", () => {
     await page
       .locator(`${carouselRoot} button[aria-label="Next items"]`)
       .click();
-    expect((await carouselData(page, carouselRoot)).windowStart).toBe(1);
+    await expect(
+      page.locator(`${carouselRoot} [aria-label="Go to item 2"]`),
+    ).toHaveAttribute("aria-current", "true");
 
     await page
       .locator(`${carouselRoot} button[aria-label="Previous items"]`)
       .click();
-    expect((await carouselData(page, carouselRoot)).windowStart).toBe(0);
+    await expect(
+      page.locator(`${carouselRoot} [aria-label="Go to item 1"]`),
+    ).toHaveAttribute("aria-current", "true");
   });
 
   test("@smoke the last window disables next", async ({ page }) => {
-    const carouselState = await carouselData(page, carouselRoot);
-    const lastWindowStart =
-      carouselState.itemsCount - carouselState.itemsPerView;
-
-    await page.evaluate(
-      ({ selector, start }) => {
-        Alpine.$data(document.querySelector(selector)).goToWindow(start);
-      },
-      { selector: carouselRoot, start: lastWindowStart },
-    );
+    await page.locator(`${carouselRoot} [aria-label="Go to item 4"]`).click();
 
     await expect(
       page.locator(`${carouselRoot} button[aria-label="Next items"]`),
@@ -109,10 +87,11 @@ test.describe("Carousel @structural", () => {
   test("@smoke the dots jump to a window and mark the current one", async ({
     page,
   }) => {
-    expect((await carouselData(page, carouselRoot)).dotCount).toBe(4);
+    await expect(
+      page.locator(`${carouselRoot} [aria-label^="Go to item "]`),
+    ).toHaveCount(4);
 
     await page.locator(`${carouselRoot} [aria-label="Go to item 3"]`).click();
-    expect((await carouselData(page, carouselRoot)).windowStart).toBe(2);
     await expect(
       page.locator(`${carouselRoot} [aria-label="Go to item 3"]`),
     ).toHaveAttribute("aria-current", "true");
@@ -135,10 +114,14 @@ test.describe("Carousel @structural", () => {
     };
 
     await swipe(0.85, 0.15);
-    expect((await carouselData(page, carouselRoot)).windowStart).toBe(1);
+    await expect(
+      page.locator(`${carouselRoot} [aria-label="Go to item 2"]`),
+    ).toHaveAttribute("aria-current", "true");
 
     await swipe(0.15, 0.85);
-    expect((await carouselData(page, carouselRoot)).windowStart).toBe(0);
+    await expect(
+      page.locator(`${carouselRoot} [aria-label="Go to item 1"]`),
+    ).toHaveAttribute("aria-current", "true");
   });
 
   test("@browser @smoke a touch pointer swipe moves the window", async ({
@@ -170,37 +153,26 @@ test.describe("Carousel @structural", () => {
       );
 
     await touchSwipe(0.85, 0.15);
-    expect((await carouselData(page, carouselRoot)).windowStart).toBe(1);
+    await expect(
+      page.locator(`${carouselRoot} [aria-label="Go to item 2"]`),
+    ).toHaveAttribute("aria-current", "true");
 
     await touchSwipe(0.15, 0.85);
-    expect((await carouselData(page, carouselRoot)).windowStart).toBe(0);
+    await expect(
+      page.locator(`${carouselRoot} [aria-label="Go to item 1"]`),
+    ).toHaveAttribute("aria-current", "true");
   });
 
   test("@browser @smoke the named breakpoints change the visible item count", async ({
     page,
   }) => {
     await page.setViewportSize({ width: 500, height: 900 });
-    await expect
-      .poll(() =>
-        carouselData(page, carouselRoot).then((data) => data.itemsPerView),
-      )
-      .toBe(1);
     await expect.poll(() => visibleItemCount(page, carouselRoot)).toBe(1);
 
     await page.setViewportSize({ width: 700, height: 900 });
-    await expect
-      .poll(() =>
-        carouselData(page, carouselRoot).then((data) => data.itemsPerView),
-      )
-      .toBe(2);
     await expect.poll(() => visibleItemCount(page, carouselRoot)).toBe(2);
 
     await page.setViewportSize({ width: 1280, height: 900 });
-    await expect
-      .poll(() =>
-        carouselData(page, carouselRoot).then((data) => data.itemsPerView),
-      )
-      .toBe(3);
     await expect.poll(() => visibleItemCount(page, carouselRoot)).toBe(3);
   });
 
@@ -209,20 +181,19 @@ test.describe("Carousel @structural", () => {
   }) => {
     await openExamplePanel(page, carouselSection, "Autoplay");
     const autoplayRoot = "#carousel-demo-autoplay-carousel";
+    const currentDot = () =>
+      page
+        .locator(
+          `${autoplayRoot} [aria-label^="Go to item "][aria-current=true]`,
+        )
+        .getAttribute("aria-label");
 
-    await expect
-      .poll(
-        () => carouselData(page, autoplayRoot).then((data) => data.windowStart),
-        { timeout: 6000 },
-      )
-      .toBeGreaterThan(0);
+    await expect.poll(currentDot, { timeout: 6000 }).not.toBe("Go to item 1");
 
-    const pausedStart = (await carouselData(page, autoplayRoot)).windowStart;
+    const pausedDot = await currentDot();
     await page.locator(autoplayRoot).hover();
     await page.waitForTimeout(3500);
-    expect((await carouselData(page, autoplayRoot)).windowStart).toBe(
-      pausedStart,
-    );
+    expect(await currentDot()).toBe(pausedDot);
   });
 
   test("@smoke a page change refreshes the chunk from the server", async ({

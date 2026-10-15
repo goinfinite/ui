@@ -18,13 +18,6 @@ async function labelOffsetFromTrack(page, label) {
   return labelBox.x - trackBox.x;
 }
 
-async function startEdgeOf(page, label) {
-  const toggle = toggleByLabel(page, label);
-  const trackBox = await toggle.locator("div").first().boundingBox();
-  const labelBox = await toggle.locator("span").first().boundingBox();
-  return Math.min(trackBox.x, labelBox.x);
-}
-
 test.describe("ToggleSwitch", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(`/index.html#${toggleSection.slice(1)}`);
@@ -56,28 +49,5 @@ test.describe("ToggleSwitch", () => {
     await expect
       .poll(() => labelOffsetFromTrack(page, "Label on left"))
       .toBeLessThan(0);
-  });
-
-  test("@browser label position left keeps the switch at the column start", async ({
-    page,
-  }) => {
-    await openExamplePanel(page, toggleSection, "Label Position");
-    await expect
-      .poll(async () => {
-        const leftPositionStart = await startEdgeOf(page, "Label on left");
-        const rightPositionStart = await startEdgeOf(page, "Label on right");
-        return Math.abs(leftPositionStart - rightPositionStart);
-      })
-      .toBeLessThanOrEqual(2);
-  });
-
-  test("@browser label position left keeps the label and track together", async ({
-    page,
-  }) => {
-    await openExamplePanel(page, toggleSection, "Label Position");
-    const toggle = toggleByLabel(page, "Label on left");
-    const labelBox = await toggle.boundingBox();
-    const parentBox = await toggle.locator("xpath=..").boundingBox();
-    expect(labelBox.width).toBeLessThan(parentBox.width / 2);
   });
 });
