@@ -86,10 +86,7 @@ func FloatingButton(componentSettings FloatingButtonSettings) templ.Component {
 		if style.TextColorHover != "" {
 			textColorHover = style.TextColorHover
 		}
-		size := uiControl.ButtonSizeXs
-		if style.Size != "" {
-			size = style.Size
-		}
+		size := floatingButtonSizeResolver(style)
 		shape := uiToolset.ShapeRounded
 		if style.Shape != "" {
 			shape = style.Shape

@@ -1,6 +1,10 @@
 package uiForm
 
-import uiToolset "github.com/goinfinite/ui/src/toolset"
+import (
+	"strconv"
+
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
 
 const (
 	TextAreaSizeXs = "xs"
@@ -9,6 +13,8 @@ const (
 	TextAreaSizeLg = "lg"
 	TextAreaSizeXl = "xl"
 )
+
+const textAreaActionColumnInsetRem = 1.25
 
 type TextAreaSettings struct {
 	Label string
@@ -62,9 +68,9 @@ templ TextArea(componentSettings TextAreaSettings) {
 			}
 		</legend>
 		{{ textAreaHasHintTooltip := shouldRenderInputHintTooltip(componentSettings.HintDisplay, componentSettings.HintValue, componentSettings.HintStatePath) }}
-		{{ textAreaClasses := "placeholder-text-opacity-80" }}
+		{{ textAreaClasses := "placeholder:opacity-80" }}
 		if componentSettings.TwoWayStatePath == "" && componentSettings.Value == "" {
-			{{ textAreaClasses = "placeholder-text-opacity-0" }}
+			{{ textAreaClasses = "placeholder:opacity-0" }}
 		}
 		{{ textAreaHeightClasses := "h-36" }}
 		{{ textAreaExpandedHeightClasses := "h-108" }}
@@ -95,7 +101,11 @@ templ TextArea(componentSettings TextAreaSettings) {
 		if componentSettings.ShouldHideFloatingButtons && !textAreaHasHintTooltip {
 			{{ textAreaRightPaddingClass = "pr-2" }}
 		}
-		{{ textAreaClasses += " " + textAreaFontClasses + " placeholder-text-neutral-50 peer w-full resize-none overflow-y-scroll bg-transparent pl-2 " + textAreaRightPaddingClass + " outline-none focus:outline-none transition-all" }}
+		if !componentSettings.ShouldHideFloatingButtons {
+			{{ actionColumnWidthRem := floatingActionWidthRemResolver(componentSettings.FloatingButtonStyle) + textAreaActionColumnInsetRem }}
+			{{ textAreaRightPaddingClass = "pr-[" + strconv.FormatFloat(actionColumnWidthRem, 'f', -1, 64) + "rem]" }}
+		}
+		{{ textAreaClasses += " " + textAreaFontClasses + " placeholder:text-neutral-50 peer w-full resize-none overflow-y-scroll bg-transparent pl-2 " + textAreaRightPaddingClass + " outline-none focus:outline-none transition-all" }}
 		if textCaseClass != "" {
 			{{ textAreaClasses += " placeholder:" + textCaseClass }}
 		}

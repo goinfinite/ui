@@ -58,7 +58,8 @@ func InlineCheckboxGroup(componentSettings InlineCheckboxGroupSettings) templ.Co
 		groupStatePath := inlineCheckboxGroupStatePathResolver(componentSettings.InputSettings)
 		groupValuesArrayLiteral := inlineCheckboxGroupValuesArrayLiteralBuilder(componentSettings.InputSettings)
 		shouldRenderFloatingButtons := groupStatePath != "" && !componentSettings.ShouldHideFloatingButtons
-		optionRowClasses := inlineCheckboxGroupOptionRowClassesResolver(componentSettings.Orientation, shouldRenderFloatingButtons)
+		actionWidthRem := floatingActionWidthRemResolver(componentSettings.FloatingButtonStyle)
+		optionRowClasses := inlineCheckboxGroupOptionRowClassesResolver(componentSettings.Orientation, shouldRenderFloatingButtons, actionWidthRem)
 		floatingButtonsClasses := "absolute right-2 hidden gap-1 group-hover/checkboxGroup:flex group-focus-within/checkboxGroup:flex"
 		if componentSettings.Orientation == InlineCheckboxGroupOrientationVertical {
 			floatingButtonsClasses += " top-0 flex-col"
@@ -94,7 +95,7 @@ func InlineCheckboxGroup(componentSettings InlineCheckboxGroupSettings) templ.Co
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(componentSettings.Label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inlineCheckboxGroup.templ`, Line: 40, Col: 29}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inlineCheckboxGroup.templ`, Line: 41, Col: 29}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -134,7 +135,7 @@ func InlineCheckboxGroup(componentSettings InlineCheckboxGroupSettings) templ.Co
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(maxVisibleOptionsStyle)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inlineCheckboxGroup.templ`, Line: 45, Col: 35}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/inlineCheckboxGroup.templ`, Line: 46, Col: 35}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {

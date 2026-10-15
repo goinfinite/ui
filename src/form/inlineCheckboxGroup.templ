@@ -27,7 +27,8 @@ templ InlineCheckboxGroup(componentSettings InlineCheckboxGroupSettings) {
 	{{ groupStatePath := inlineCheckboxGroupStatePathResolver(componentSettings.InputSettings) }}
 	{{ groupValuesArrayLiteral := inlineCheckboxGroupValuesArrayLiteralBuilder(componentSettings.InputSettings) }}
 	{{ shouldRenderFloatingButtons := groupStatePath != "" && !componentSettings.ShouldHideFloatingButtons }}
-	{{ optionRowClasses := inlineCheckboxGroupOptionRowClassesResolver(componentSettings.Orientation, shouldRenderFloatingButtons) }}
+	{{ actionWidthRem := floatingActionWidthRemResolver(componentSettings.FloatingButtonStyle) }}
+	{{ optionRowClasses := inlineCheckboxGroupOptionRowClassesResolver(componentSettings.Orientation, shouldRenderFloatingButtons, actionWidthRem) }}
 	{{ floatingButtonsClasses := "absolute right-2 hidden gap-1 group-hover/checkboxGroup:flex group-focus-within/checkboxGroup:flex" }}
 	if componentSettings.Orientation == InlineCheckboxGroupOrientationVertical {
 		{{ floatingButtonsClasses += " top-0 flex-col" }}
