@@ -2,22 +2,26 @@ demo.navigation-lcp:
   baseline_p50_ms: 260
   info_ms: 600
   warn_ms: 1500
+  fatal_ms: 520
   relative_warn_percent: 50
 
 form.textarea-expand:
   baseline_p50_ms: 165
   info_ms: 250
   warn_ms: 400
+  fatal_ms: 330
   relative_warn_percent: 20
 
 form.select-dropdown-open:
   baseline_p50_ms: 50
   info_ms: 60
   warn_ms: 150
+  fatal_ms: 100
   relative_warn_percent: 50
 
 form.searchable-select-filter:
   baseline_p50_ms: 50
   info_ms: 60
   warn_ms: 150
+  fatal_ms: 100
   relative_warn_percent: 50
