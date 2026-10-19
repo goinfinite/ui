@@ -167,11 +167,35 @@ UiToolset.RegisterAlpineState(() => {
         return days;
       },
 
+      boundedDraftResolver(candidateDraft) {
+        if (this.mode !== "datetime") {
+          return candidateDraft;
+        }
+        const candidateText = this.boundComparisonTextResolver(candidateDraft);
+        const minimumText = this.fullDayBoundComparisonTextResolver(
+          this.minValue,
+          "00:00",
+        );
+        const maximumText = this.fullDayBoundComparisonTextResolver(
+          this.maxValue,
+          "23:59",
+        );
+        if (minimumText !== "" && candidateText < minimumText) {
+          return this.dateTimezoneComposer(minimumText);
+        }
+        if (maximumText !== "" && candidateText > maximumText) {
+          return this.dateTimezoneComposer(maximumText);
+        }
+        return candidateDraft;
+      },
+
       selectDay(day) {
         if (day.isDisabled) {
           return;
         }
-        const candidateDraft = this.composeDateDraft(day.iso);
+        const candidateDraft = this.boundedDraftResolver(
+          this.composeDateDraft(day.iso),
+        );
         if (this.valueIsOutOfBounds(candidateDraft)) {
           return;
         }
@@ -205,11 +229,14 @@ UiToolset.RegisterAlpineState(() => {
           this.syncTypedValues();
           return;
         }
-        const dateText =
-          this.datePartExtractor(this.activeDraft) ||
-          this.isoFromDateObject(new Date());
-        const candidateDraft = this.composeDateDraft(dateText);
+        const draftDateText = this.datePartExtractor(this.activeDraft);
+        const candidateDateText =
+          draftDateText || this.isoFromDateObject(new Date());
+        const candidateDraft = this.composeDateDraft(candidateDateText);
         if (this.valueIsOutOfBounds(candidateDraft)) {
+          if (draftDateText === "") {
+            return;
+          }
           this.syncTimeSelectsFromDraft();
           return;
         }
