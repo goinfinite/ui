@@ -37,7 +37,10 @@ UiToolset.RegisterAlpineState(() => {
           return defaultRow;
         }
         for (const column of this.columns) {
-          if (Object.hasOwn(generatedRow, column.id)) {
+          if (
+            Object.hasOwn(generatedRow, column.id) &&
+            generatedRow[column.id] !== undefined
+          ) {
             defaultRow[column.id] = generatedRow[column.id];
           }
         }
