@@ -173,6 +173,9 @@ UiToolset.RegisterAlpineState(() => {
         if (cutIndex >= this.fullText.length) {
           return rawCut;
         }
+        if (collapsibleTextIsWhitespace(this.fullText[cutIndex])) {
+          return rawCut;
+        }
         let trailingWordStart = rawCut.length;
         while (
           trailingWordStart > 0 &&
