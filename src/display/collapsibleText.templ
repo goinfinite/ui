@@ -1,0 +1,127 @@
+package uiDisplay
+
+import (
+	_ "embed"
+
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+//go:embed collapsibleTextState.js
+var collapsibleTextAlpineState string
+
+var collapsibleTextAlpineStateOnce = templ.NewOnceHandle(
+	templ.WithComponent(uiToolset.MinifierTemplateJs(&collapsibleTextAlpineState)),
+)
+
+const (
+	CollapsibleTextSizeXs string = "xs"
+	CollapsibleTextSizeSm string = "sm"
+	CollapsibleTextSizeMd string = "md"
+	CollapsibleTextSizeLg string = "lg"
+)
+
+type CollapsibleTextSettings struct {
+	Text string
+
+	// OptionalFields
+	CollapseIcon    string
+	CollapseLabel   string
+	ExpandIcon      string
+	ExpandLabel     string
+	FlankIconLeft   string
+	FlankIconRight  string
+	IconColor       string
+	MaxVisibleLines int
+	Size            string
+	TextColor       string
+	ToggleColor     string
+}
+
+var collapsibleTextIdPrefixGenerator = uiToolset.NewComponentIdPrefixGenerator(
+	"ui-collapsible-text",
+)
+
+func collapsibleTextMaxLinesResolver(maxVisibleLines int) int {
+	if maxVisibleLines < 1 {
+		return 3
+	}
+	return maxVisibleLines
+}
+
+func collapsibleTextSizeClassResolver(size string) string {
+	switch size {
+	case CollapsibleTextSizeXs:
+		return "text-xs"
+	case CollapsibleTextSizeSm:
+		return "text-sm"
+	case CollapsibleTextSizeMd:
+		return "text-base"
+	case CollapsibleTextSizeLg:
+		return "text-lg"
+	}
+	return "text-sm"
+}
+
+func collapsibleTextLabelsResolver(expandLabel, collapseLabel string) (string, string) {
+	if expandLabel == "" {
+		expandLabel = "show more"
+	}
+	if collapseLabel == "" {
+		collapseLabel = "show less"
+	}
+	return expandLabel, collapseLabel
+}
+
+func collapsibleTextToggleIconsResolver(expandIcon, collapseIcon string) (string, string) {
+	if expandIcon == "" {
+		expandIcon = "ph-caret-down"
+	}
+	if collapseIcon == "" {
+		collapseIcon = "ph-caret-up"
+	}
+	return expandIcon, collapseIcon
+}
+
+templ CollapsibleText(componentSettings CollapsibleTextSettings) {
+	{{ maxVisibleLines := collapsibleTextMaxLinesResolver(componentSettings.MaxVisibleLines) }}
+	{{ sizeClass := collapsibleTextSizeClassResolver(componentSettings.Size) }}
+	{{ textColorClass := uiToolset.TextColorClassResolver(componentSettings.TextColor, "text-neutral-300") }}
+	{{ toggleColorClass := uiToolset.TextColorClassResolver(componentSettings.ToggleColor, "text-secondary-400") }}
+	{{ iconColorClass := uiToolset.TextColorClassResolver(componentSettings.IconColor, "text-neutral-400") }}
+	{{ expandLabel, collapseLabel := collapsibleTextLabelsResolver(componentSettings.ExpandLabel, componentSettings.CollapseLabel) }}
+	{{ expandIcon, collapseIcon := collapsibleTextToggleIconsResolver(componentSettings.ExpandIcon, componentSettings.CollapseIcon) }}
+	{{ textId := collapsibleTextIdPrefixGenerator.GenerateNext() }}
+	@collapsibleTextAlpineStateOnce.Once()
+	<!-- CollapsibleText -->
+	<div
+		class="flex w-full items-start gap-2"
+		x-data={ templ.JSFuncCall("collapsibleText", componentSettings.Text, maxVisibleLines, expandLabel, collapseLabel) }
+	>
+		if componentSettings.FlankIconLeft != "" {
+			<i class={ "ph-bold shrink-0 " + componentSettings.FlankIconLeft + " " + sizeClass + " " + iconColorClass } aria-hidden="true"></i>
+		}
+		<div
+			id={ textId }
+			x-ref="textContent"
+			class={ "min-w-0 flex-1 whitespace-pre-wrap break-words " + sizeClass + " " + textColorClass }
+		>
+			<span x-ref="textSpan" x-text="displayText">{ componentSettings.Text }</span>
+			<button
+				type="button"
+				x-ref="toggleButton"
+				x-show="hasToggle"
+				:aria-expanded="isExpanded ? 'true' : 'false'"
+				aria-controls={ textId }
+				@click="toggleTextDisplay()"
+				class={ "ml-1 inline-flex cursor-pointer items-center gap-1 border-0 bg-transparent p-0 font-bold align-baseline hover:opacity-80 " + sizeClass + " " + toggleColorClass }
+			>
+				<span x-text="toggleLabel"></span>
+				<i class={ "ph-bold " + expandIcon + " " + sizeClass } x-show="!isExpanded" aria-hidden="true"></i>
+				<i class={ "ph-bold " + collapseIcon + " " + sizeClass } x-show="isExpanded" aria-hidden="true"></i>
+			</button>
+		</div>
+		if componentSettings.FlankIconRight != "" {
+			<i class={ "ph-bold shrink-0 " + componentSettings.FlankIconRight + " " + sizeClass + " " + iconColorClass } aria-hidden="true"></i>
+		}
+	</div>
+}

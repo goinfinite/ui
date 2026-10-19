@@ -28,12 +28,15 @@ UiToolset.RegisterAlpineState(() => {
   const chartFallbackCrosshairColor = "rgba(250, 250, 250, 0.3)";
   const chartFallbackCenterLabelSliceColor = "#a3a3a3";
   const chartFallbackCenterLabelValueColor = "#fafafa";
+  const chartFallbackSliceLabelPillColor = "rgba(10, 10, 10, 0.7)";
+  const chartPercentFormat = ".0%";
   const chartFallbackColorByToken = {
     "neutral-900": chartFallbackGapColor,
     "neutral-400": chartFallbackTickLabelColor,
     "neutral-300": chartFallbackTitleColor,
     "neutral-50/8": chartFallbackLineColor,
     "neutral-50/30": chartFallbackCrosshairColor,
+    "neutral-950/70": chartFallbackSliceLabelPillColor,
   };
 
   const chartColorNormalizationCanvas = document.createElement("canvas");
@@ -81,6 +84,60 @@ UiToolset.RegisterAlpineState(() => {
       return "chartRowOrder";
     }
     return "chartX";
+  }
+
+  function chartIsBarType(chartConfig) {
+    return (
+      chartConfig.chartType === "bar" ||
+      chartConfig.chartType === "horizontalBar"
+    );
+  }
+
+  function chartIsCategoryColorType(chartConfig) {
+    return (
+      chartConfig.chartType === "donut" ||
+      chartConfig.chartType === "parliament" ||
+      chartConfig.chartType === "pie" ||
+      chartConfig.chartType === "radialBar" ||
+      chartConfig.chartType === "sunburst" ||
+      chartConfig.chartType === "waffle"
+    );
+  }
+
+  function chartIsDonutType(chartConfig) {
+    return chartConfig.chartType === "donut" || chartConfig.chartType === "pie";
+  }
+
+  function chartIsHorizontalBar(chartConfig) {
+    return chartConfig.chartType === "horizontalBar";
+  }
+
+  function chartCategoryScaleNameResolver(chartConfig) {
+    if (chartIsHorizontalBar(chartConfig)) {
+      return "y";
+    }
+    return "x";
+  }
+
+  function chartValueScaleNameResolver(chartConfig) {
+    if (chartIsHorizontalBar(chartConfig)) {
+      return "x";
+    }
+    return "y";
+  }
+
+  function chartCategoryScaleRangeResolver(chartConfig) {
+    if (chartIsHorizontalBar(chartConfig)) {
+      return "height";
+    }
+    return "width";
+  }
+
+  function chartValueScaleRangeResolver(chartConfig) {
+    if (chartIsHorizontalBar(chartConfig)) {
+      return "width";
+    }
+    return "height";
   }
 
   function chartStackTransformsBuilder(chartConfig, seriesRowKeys) {
@@ -161,18 +218,18 @@ UiToolset.RegisterAlpineState(() => {
     ];
   }
 
-  function chartXScaleBuilder(chartConfig) {
+  function chartCategoryScaleBuilder(chartConfig) {
     const rowOrderedDomain = {
       data: "rows",
       field: "chartX",
       sort: { field: chartRowSortFieldResolver(chartConfig.xAxis), op: "min" },
     };
-    if (chartConfig.chartType === "bar") {
+    if (chartIsBarType(chartConfig)) {
       return {
-        name: "x",
+        name: chartCategoryScaleNameResolver(chartConfig),
         type: "band",
         domain: rowOrderedDomain,
-        range: "width",
+        range: chartCategoryScaleRangeResolver(chartConfig),
         paddingInner: 0.2,
         paddingOuter: 0.1,
       };
@@ -204,25 +261,25 @@ UiToolset.RegisterAlpineState(() => {
     };
   }
 
-  function chartYScaleBuilder(chartConfig) {
-    const yScale = {
-      name: "y",
+  function chartValueScaleBuilder(chartConfig) {
+    const valueScale = {
+      name: chartValueScaleNameResolver(chartConfig),
       type: "linear",
       domain: { data: "points", fields: ["chartYBase", "chartYTop"] },
-      range: "height",
+      range: chartValueScaleRangeResolver(chartConfig),
       zero: true,
       nice: true,
     };
     const yAxis = chartConfig.cartesian.yAxis;
     if (yAxis.minValue !== "") {
-      yScale.domainMin = Number(yAxis.minValue);
-      yScale.nice = false;
+      valueScale.domainMin = Number(yAxis.minValue);
+      valueScale.nice = false;
     }
     if (yAxis.maxValue !== "") {
-      yScale.domainMax = Number(yAxis.maxValue);
-      yScale.nice = false;
+      valueScale.domainMax = Number(yAxis.maxValue);
+      valueScale.nice = false;
     }
-    return yScale;
+    return valueScale;
   }
 
   function chartPaletteColorResolver(colorIndex) {
@@ -252,8 +309,8 @@ UiToolset.RegisterAlpineState(() => {
     colorByToken,
   ) {
     return [
-      chartXScaleBuilder(chartConfig),
-      chartYScaleBuilder(chartConfig),
+      chartCategoryScaleBuilder(chartConfig),
+      chartValueScaleBuilder(chartConfig),
       {
         name: "color",
         type: "ordinal",
@@ -329,11 +386,29 @@ UiToolset.RegisterAlpineState(() => {
     };
   }
 
-  function chartXAxisBuilder(chartConfig, colorByToken) {
+  function chartCategoryAxisOrientResolver(chartConfig) {
+    if (chartIsHorizontalBar(chartConfig)) {
+      return "left";
+    }
+    return "bottom";
+  }
+
+  function chartValueAxisOrientResolver(chartConfig) {
+    if (!chartIsHorizontalBar(chartConfig)) {
+      return chartConfig.cartesian.yAxis.position;
+    }
+    if (chartConfig.cartesian.yAxis.position === "right") {
+      return "top";
+    }
+    return "bottom";
+  }
+
+  function chartCategoryAxisBuilder(chartConfig, colorByToken) {
     const xAxisSettings = chartConfig.xAxis;
-    const xAxis = {
-      orient: "bottom",
-      scale: "x",
+    const categoryScaleName = chartCategoryScaleNameResolver(chartConfig);
+    const categoryAxis = {
+      orient: chartCategoryAxisOrientResolver(chartConfig),
+      scale: categoryScaleName,
       tickCount: 6,
       grid: xAxisSettings.isGridLineVisible,
       ...chartAxisAppearanceBuilder(xAxisSettings, colorByToken),
@@ -341,36 +416,35 @@ UiToolset.RegisterAlpineState(() => {
     const isContinuousScale = xAxisSettings.scaleType !== "category";
     const tickLabelFormat = xAxisSettings.tickLabelFormat;
     if (isContinuousScale && tickLabelFormat !== "") {
-      xAxis.format = tickLabelFormat;
-      xAxis.formatType = xAxisSettings.scaleType;
+      categoryAxis.format = tickLabelFormat;
+      categoryAxis.formatType = xAxisSettings.scaleType;
     }
     const bandLabelFormat = tickLabelFormat || chartConfig.tooltip.titleFormat;
     const isFormattedBand =
-      chartConfig.chartType === "bar" &&
+      chartIsBarType(chartConfig) &&
       isContinuousScale &&
       bandLabelFormat !== "";
     if (isFormattedBand) {
-      delete xAxis.format;
-      delete xAxis.formatType;
-      xAxis.encode = chartBandLabelEncodingBuilder(
+      delete categoryAxis.format;
+      delete categoryAxis.formatType;
+      categoryAxis.encode = chartBandLabelEncodingBuilder(
         xAxisSettings,
         bandLabelFormat,
       );
     }
     if (xAxisSettings.isTickStartEndOnly) {
-      xAxis.values = {
-        signal:
-          "length(domain('x')) ? [domain('x')[0], peek(domain('x'))] : []",
+      categoryAxis.values = {
+        signal: `length(domain('${categoryScaleName}')) ? [domain('${categoryScaleName}')[0], peek(domain('${categoryScaleName}'))] : []`,
       };
     }
-    return xAxis;
+    return categoryAxis;
   }
 
-  function chartYAxisBuilder(chartConfig, colorByToken) {
+  function chartValueAxisBuilder(chartConfig, colorByToken) {
     const yAxisSettings = chartConfig.cartesian.yAxis;
     return {
-      orient: yAxisSettings.position,
-      scale: "y",
+      orient: chartValueAxisOrientResolver(chartConfig),
+      scale: chartValueScaleNameResolver(chartConfig),
       grid: !yAxisSettings.isGridLineHidden,
       domain: false,
       ticks: false,
@@ -397,17 +471,18 @@ UiToolset.RegisterAlpineState(() => {
     };
   }
 
-  function chartClampedBaselineResolver(baselineValueExpression) {
+  function chartClampedBaselineResolver(chartConfig, baselineValueExpression) {
+    const valueScaleName = chartValueScaleNameResolver(chartConfig);
     return {
-      signal: `scale('y', clamp(${baselineValueExpression}, domain('y')[0], domain('y')[1]))`,
+      signal: `scale('${valueScaleName}', clamp(${baselineValueExpression}, domain('${valueScaleName}')[0], domain('${valueScaleName}')[1]))`,
     };
   }
 
   function chartAreaBaselineResolver(chartConfig) {
     if (chartConfig.cartesian.stackMode === "none") {
-      return chartClampedBaselineResolver("0");
+      return chartClampedBaselineResolver(chartConfig, "0");
     }
-    return chartClampedBaselineResolver("datum.chartYBase");
+    return chartClampedBaselineResolver(chartConfig, "datum.chartYBase");
   }
 
   function chartSeriesMarksBuilder(chartConfig, pointPosition) {
@@ -622,6 +697,32 @@ UiToolset.RegisterAlpineState(() => {
     return `{title: ${titleExpression}, row: datum, rows: [{label: scale('seriesLabel', datum.chartSeriesRowKey), color: scale('color', datum.chartSeriesRowKey), value: ${valueText}}]}`;
   }
 
+  function chartStackedBarUpdateResolver(chartConfig) {
+    const valueScaleName = chartValueScaleNameResolver(chartConfig);
+    const baselineResolver = chartClampedBaselineResolver(
+      chartConfig,
+      "datum.chartYBase",
+    );
+    if (chartIsHorizontalBar(chartConfig)) {
+      return {
+        yc: { scale: "y", field: "chartX", band: 0.5 },
+        height: {
+          signal: `min(bandwidth('y'), ${chartStackedBarMaxThicknessPx})`,
+        },
+        x: { scale: valueScaleName, field: "chartYTop" },
+        x2: baselineResolver,
+      };
+    }
+    return {
+      xc: { scale: "x", field: "chartX", band: 0.5 },
+      width: {
+        signal: `min(bandwidth('x'), ${chartStackedBarMaxThicknessPx})`,
+      },
+      y: { scale: valueScaleName, field: "chartYTop" },
+      y2: baselineResolver,
+    };
+  }
+
   function chartStackedBarMarksBuilder(chartConfig, colorByToken) {
     return [
       {
@@ -641,12 +742,7 @@ UiToolset.RegisterAlpineState(() => {
             cornerRadius: { value: 4 },
           },
           update: {
-            xc: { scale: "x", field: "chartX", band: 0.5 },
-            width: {
-              signal: `min(bandwidth('x'), ${chartStackedBarMaxThicknessPx})`,
-            },
-            y: { scale: "y", field: "chartYTop" },
-            y2: chartClampedBaselineResolver("datum.chartYBase"),
+            ...chartStackedBarUpdateResolver(chartConfig),
             fillOpacity: { value: 1 },
             tooltip: { signal: chartBarTooltipExpressionBuilder(chartConfig) },
           },
@@ -654,6 +750,62 @@ UiToolset.RegisterAlpineState(() => {
         },
       },
     ];
+  }
+
+  function chartGroupedBarGroupEncodingResolver(chartConfig) {
+    if (chartIsHorizontalBar(chartConfig)) {
+      return {
+        y: { scale: "y", field: "chartX" },
+        height: { scale: "y", band: 1 },
+      };
+    }
+    return {
+      x: { scale: "x", field: "chartX" },
+      width: { scale: "x", band: 1 },
+    };
+  }
+
+  function chartSeriesOffsetRangeResolver(chartConfig) {
+    if (chartIsHorizontalBar(chartConfig)) {
+      return { signal: "[0, bandwidth('y')]" };
+    }
+    return { signal: "[0, bandwidth('x')]" };
+  }
+
+  function chartBarEndCornerRadiiResolver(chartConfig) {
+    if (chartIsHorizontalBar(chartConfig)) {
+      return {
+        cornerRadiusTopRight: { value: 4 },
+        cornerRadiusBottomRight: { value: 4 },
+      };
+    }
+    return {
+      cornerRadiusTopLeft: { value: 4 },
+      cornerRadiusTopRight: { value: 4 },
+    };
+  }
+
+  function chartGroupedBarUpdateResolver(chartConfig) {
+    const valueScaleName = chartValueScaleNameResolver(chartConfig);
+    const baselineResolver = chartClampedBaselineResolver(chartConfig, "0");
+    if (chartIsHorizontalBar(chartConfig)) {
+      return {
+        yc: { scale: "seriesOffset", field: "chartSeriesRowKey", band: 0.5 },
+        height: {
+          signal: `min(bandwidth('seriesOffset'), ${chartBarMaxThicknessPx})`,
+        },
+        x: { scale: valueScaleName, field: "chartYTop" },
+        x2: baselineResolver,
+      };
+    }
+    return {
+      xc: { scale: "seriesOffset", field: "chartSeriesRowKey", band: 0.5 },
+      width: {
+        signal: `min(bandwidth('seriesOffset'), ${chartBarMaxThicknessPx})`,
+      },
+      y: { scale: valueScaleName, field: "chartYTop" },
+      y2: baselineResolver,
+    };
   }
 
   function chartGroupedBarMarksBuilder(chartConfig, seriesRowKeys) {
@@ -664,17 +816,14 @@ UiToolset.RegisterAlpineState(() => {
           facet: { name: "barGroup", data: "validPoints", groupby: "chartX" },
         },
         encode: {
-          update: {
-            x: { scale: "x", field: "chartX" },
-            width: { scale: "x", band: 1 },
-          },
+          update: chartGroupedBarGroupEncodingResolver(chartConfig),
         },
         scales: [
           {
             name: "seriesOffset",
             type: "band",
             domain: seriesRowKeys,
-            range: { signal: "[0, bandwidth('x')]" },
+            range: chartSeriesOffsetRangeResolver(chartConfig),
             paddingInner: 0.15,
           },
         ],
@@ -685,20 +834,10 @@ UiToolset.RegisterAlpineState(() => {
             encode: {
               enter: {
                 fill: { scale: "color", field: "chartSeriesRowKey" },
-                cornerRadiusTopLeft: { value: 4 },
-                cornerRadiusTopRight: { value: 4 },
+                ...chartBarEndCornerRadiiResolver(chartConfig),
               },
               update: {
-                xc: {
-                  scale: "seriesOffset",
-                  field: "chartSeriesRowKey",
-                  band: 0.5,
-                },
-                width: {
-                  signal: `min(bandwidth('seriesOffset'), ${chartBarMaxThicknessPx})`,
-                },
-                y: { scale: "y", field: "chartYTop" },
-                y2: chartClampedBaselineResolver("0"),
+                ...chartGroupedBarUpdateResolver(chartConfig),
                 fillOpacity: { value: 1 },
                 tooltip: {
                   signal: chartBarTooltipExpressionBuilder(chartConfig),
@@ -721,7 +860,7 @@ UiToolset.RegisterAlpineState(() => {
       chartConfig.series,
       colorByToken,
     );
-    if (chartConfig.chartType !== "bar") {
+    if (!chartIsBarType(chartConfig)) {
       return chartLineMarksBuilder(chartConfig, colorByToken, seriesColors);
     }
     if (chartConfig.cartesian.stackMode === "none") {
@@ -775,8 +914,8 @@ UiToolset.RegisterAlpineState(() => {
       colorByToken,
     );
     chartSpec.axes = [
-      chartXAxisBuilder(chartConfig, colorByToken),
-      chartYAxisBuilder(chartConfig, colorByToken),
+      chartCategoryAxisBuilder(chartConfig, colorByToken),
+      chartValueAxisBuilder(chartConfig, colorByToken),
     ];
     chartSpec.marks = chartCartesianMarksBuilder(
       chartConfig,
@@ -786,22 +925,148 @@ UiToolset.RegisterAlpineState(() => {
     return chartSpec;
   }
 
-  function chartDonutSpecBuilder(chartConfig, fontFamily, colorByToken) {
+  function chartCategoryTooltipExpressionBuilder(
+    chartConfig,
+    tooltipFieldExpressions,
+  ) {
     const valueSeries = chartConfig.series[0];
-    const valueText = chartValueTextExpressionBuilder(
-      chartConfig,
-      "datum.chartValue",
-    );
-    const donutTooltipExpression = `{title: datum.chartCategory, row: datum, rows: [{label: ${expressionStringQuoter(valueSeries.label)}, color: scale('color', datum.chartCategory), value: ${valueText}}]}`;
-    const holeRatio = chartConfig.donut.holePercent / 100;
-    const donutConfig = chartConfig.donut;
-    const isCenterLabelShown = donutConfig.centerLabelDisplayMode !== "hidden";
+    return `{title: ${tooltipFieldExpressions.title}, row: datum, rows: [{label: ${expressionStringQuoter(valueSeries.label)}, color: scale('color', ${tooltipFieldExpressions.color}), value: ${tooltipFieldExpressions.value}}]}`;
+  }
 
+  function chartCategoryBaseSpecBuilder(
+    chartConfig,
+    fontFamily,
+    rowTransforms,
+  ) {
+    const valueSeries = chartConfig.series[0];
     const chartSpec = chartBaseSpecBuilder(fontFamily);
     chartSpec.signals = [
       { name: "chartCategories", value: [] },
       { name: "chartCategoryColors", value: [] },
     ];
+    chartSpec.data = [
+      {
+        name: "rows",
+        values: [],
+        transform: [
+          {
+            type: "formula",
+            as: "chartCategory",
+            expr: `${chartRowKeyAccessBuilder(chartConfig.xAxis.rowKey)} + ''`,
+          },
+          {
+            type: "formula",
+            as: "chartValue",
+            expr: `toNumber(${chartRowKeyAccessBuilder(valueSeries.rowKey)})`,
+          },
+          ...rowTransforms,
+        ],
+      },
+    ];
+    chartSpec.scales = [
+      {
+        name: "color",
+        type: "ordinal",
+        domain: { signal: "chartCategories" },
+        range: { signal: "chartCategoryColors" },
+      },
+    ];
+    return chartSpec;
+  }
+
+  function chartGapStrokeEncodingBuilder(chartConfig, colorByToken) {
+    return {
+      stroke: {
+        value: chartTokenColorResolver(
+          colorByToken,
+          chartConfig.gapColor,
+          chartFallbackGapColor,
+        ),
+      },
+      strokeWidth: { value: 2 },
+    };
+  }
+
+  function chartLabelTextWidthExpression(textExpression, fontSize) {
+    const characterWidthRatio = 0.62;
+    const horizontalPaddingPx = 12;
+    return `length(toString(${textExpression})) * ${fontSize * characterWidthRatio} + ${horizontalPaddingPx}`;
+  }
+
+  function chartInFillLabelMarksBuilder(labelMarks) {
+    const {
+      dataName,
+      xExpression,
+      yExpression,
+      textExpression,
+      fontSize,
+      textColor,
+      pillColor,
+      opacityExpression,
+    } = labelMarks;
+    const pillHeight = fontSize + 8;
+    const widthExpression = chartLabelTextWidthExpression(
+      textExpression,
+      fontSize,
+    );
+    const pillEncode = {
+      x: { signal: `(${xExpression}) - (${widthExpression}) / 2` },
+      y: { signal: `(${yExpression}) - ${pillHeight} / 2` },
+      width: { signal: widthExpression },
+      height: { value: pillHeight },
+      cornerRadius: { value: pillHeight / 2 },
+      fill: { value: pillColor },
+    };
+    const textEncode = {
+      x: { signal: xExpression },
+      y: { signal: yExpression },
+      align: { value: "center" },
+      baseline: { value: "middle" },
+      text: { signal: textExpression },
+      fill: { value: textColor },
+      fontSize: { value: fontSize },
+      fontWeight: { value: "bold" },
+    };
+    if (opacityExpression) {
+      pillEncode.opacity = { signal: opacityExpression };
+      textEncode.opacity = { signal: opacityExpression };
+    }
+    return [
+      {
+        type: "rect",
+        from: { data: dataName },
+        interactive: false,
+        encode: { update: pillEncode },
+      },
+      {
+        type: "text",
+        from: { data: dataName },
+        interactive: false,
+        encode: { update: textEncode },
+      },
+    ];
+  }
+
+  function chartSliceSpecBuilder(chartConfig, fontFamily, colorByToken) {
+    const valueText = chartValueTextExpressionBuilder(
+      chartConfig,
+      "datum.chartValue",
+    );
+    const donutTooltipExpression = chartCategoryTooltipExpressionBuilder(
+      chartConfig,
+      {
+        title: "datum.chartCategory",
+        color: "datum.chartCategory",
+        value: valueText,
+      },
+    );
+    const holeRatio = chartConfig.slices.holePercent / 100;
+    const slicesConfig = chartConfig.slices;
+    const isCenterLabelShown = slicesConfig.centerLabelDisplayMode !== "hidden";
+
+    const chartSpec = chartCategoryBaseSpecBuilder(chartConfig, fontFamily, [
+      { type: "pie", field: "chartValue", sort: false },
+    ]);
     if (isCenterLabelShown) {
       chartSpec.signals.push(
         { name: "centerLabelAlwaysSlice", value: "" },
@@ -821,33 +1086,6 @@ UiToolset.RegisterAlpineState(() => {
         },
       );
     }
-    chartSpec.data = [
-      {
-        name: "rows",
-        values: [],
-        transform: [
-          {
-            type: "formula",
-            as: "chartCategory",
-            expr: `${chartRowKeyAccessBuilder(chartConfig.xAxis.rowKey)} + ''`,
-          },
-          {
-            type: "formula",
-            as: "chartValue",
-            expr: `toNumber(${chartRowKeyAccessBuilder(valueSeries.rowKey)})`,
-          },
-          { type: "pie", field: "chartValue", sort: false },
-        ],
-      },
-    ];
-    chartSpec.scales = [
-      {
-        name: "color",
-        type: "ordinal",
-        domain: { signal: "chartCategories" },
-        range: { signal: "chartCategoryColors" },
-      },
-    ];
     chartSpec.marks = [
       {
         name: "donutArcs",
@@ -856,14 +1094,7 @@ UiToolset.RegisterAlpineState(() => {
         encode: {
           enter: {
             fill: { scale: "color", field: "chartCategory" },
-            stroke: {
-              value: chartTokenColorResolver(
-                colorByToken,
-                chartConfig.gapColor,
-                chartFallbackGapColor,
-              ),
-            },
-            strokeWidth: { value: 2 },
+            ...chartGapStrokeEncodingBuilder(chartConfig, colorByToken),
             cornerRadius: { value: 4 },
           },
           update: {
@@ -880,10 +1111,35 @@ UiToolset.RegisterAlpineState(() => {
         },
       },
     ];
+    if (chartConfig.chartType === "pie" && !slicesConfig.isSliceLabelHidden) {
+      const pieMidAngleExpression = "(datum.startAngle + datum.endAngle) / 2";
+      const pieMidRadiusExpression = "min(width, height) / 2 * 0.62";
+      const piePercentExpression = `format((datum.endAngle - datum.startAngle) / (2 * PI), '${chartPercentFormat}')`;
+      chartSpec.marks.push(
+        ...chartInFillLabelMarksBuilder({
+          dataName: "rows",
+          xExpression: `width / 2 + ${pieMidRadiusExpression} * sin(${pieMidAngleExpression})`,
+          yExpression: `height / 2 - ${pieMidRadiusExpression} * cos(${pieMidAngleExpression})`,
+          textExpression: piePercentExpression,
+          fontSize: 12,
+          textColor: chartTokenColorResolver(
+            colorByToken,
+            slicesConfig.sliceLabelColor,
+            chartFallbackCenterLabelValueColor,
+          ),
+          pillColor: chartTokenColorResolver(
+            colorByToken,
+            slicesConfig.sliceLabelPillBackgroundColor,
+            chartFallbackSliceLabelPillColor,
+          ),
+          opacityExpression: "datum.endAngle - datum.startAngle > 0.25 ? 1 : 0",
+        }),
+      );
+    }
     if (isCenterLabelShown) {
-      const centerLabelScale = `min(width, height) / 2 * ${holeRatio} * ${donutConfig.centerLabelSizeMultiplier}`;
+      const centerLabelScale = `min(width, height) / 2 * ${holeRatio} * ${slicesConfig.centerLabelSizeMultiplier}`;
       const valueSuffixLiteral = expressionStringQuoter(
-        donutConfig.centerLabelValueSuffix,
+        slicesConfig.centerLabelValueSuffix,
       );
       const centerLabelValueText = chartValueTextExpressionBuilder(
         chartConfig,
@@ -907,7 +1163,7 @@ UiToolset.RegisterAlpineState(() => {
               fill: {
                 value: chartTokenColorResolver(
                   colorByToken,
-                  donutConfig.centerLabelSliceColor,
+                  slicesConfig.centerLabelSliceColor,
                   chartFallbackCenterLabelSliceColor,
                 ),
               },
@@ -935,7 +1191,7 @@ UiToolset.RegisterAlpineState(() => {
               fill: {
                 value: chartTokenColorResolver(
                   colorByToken,
-                  donutConfig.centerLabelValueColor,
+                  slicesConfig.centerLabelValueColor,
                   chartFallbackCenterLabelValueColor,
                 ),
               },
@@ -952,35 +1208,573 @@ UiToolset.RegisterAlpineState(() => {
     return chartSpec;
   }
 
-  function chartDonutCategoriesReader(chartConfig, chartRows) {
-    const donutCategories = new Set();
-    for (const chartRow of chartRows) {
-      donutCategories.add(String(chartRow[chartConfig.xAxis.rowKey]));
+  function chartRadialBarSpecBuilder(chartConfig, fontFamily, colorByToken) {
+    const valueText = chartValueTextExpressionBuilder(
+      chartConfig,
+      "datum.chartValue",
+    );
+    const radialBarTooltipExpression = chartCategoryTooltipExpressionBuilder(
+      chartConfig,
+      {
+        title: "datum.chartCategory",
+        color: "datum.chartCategory",
+        value: valueText,
+      },
+    );
+    const holeRatio = chartConfig.slices.holePercent / 100;
+    const slicesConfig = chartConfig.slices;
+
+    const chartSpec = chartCategoryBaseSpecBuilder(chartConfig, fontFamily, [
+      {
+        type: "joinaggregate",
+        fields: ["chartValue"],
+        ops: ["max"],
+        as: ["chartValueMax"],
+      },
+    ]);
+    chartSpec.scales.push(
+      {
+        name: "categoryTheta",
+        type: "band",
+        domain: { data: "rows", field: "chartCategory" },
+        range: { signal: "[0, 2 * PI]" },
+        paddingInner: 0.15,
+      },
+      {
+        name: "valueRadius",
+        type: "linear",
+        domain: { data: "rows", field: "chartValue" },
+        range: {
+          signal: `[min(width, height) / 2 * ${holeRatio}, min(width, height) / 2]`,
+        },
+        zero: true,
+      },
+    );
+    chartSpec.marks = [
+      {
+        name: "radialBars",
+        type: "arc",
+        from: { data: "rows" },
+        encode: {
+          enter: {
+            fill: { scale: "color", field: "chartCategory" },
+            ...chartGapStrokeEncodingBuilder(chartConfig, colorByToken),
+            cornerRadius: { value: 4 },
+          },
+          update: {
+            x: { signal: "width / 2" },
+            y: { signal: "height / 2" },
+            startAngle: { scale: "categoryTheta", field: "chartCategory" },
+            endAngle: {
+              scale: "categoryTheta",
+              field: "chartCategory",
+              band: 1,
+            },
+            innerRadius: { signal: `min(width, height) / 2 * ${holeRatio}` },
+            outerRadius: { scale: "valueRadius", field: "chartValue" },
+            fillOpacity: { value: 1 },
+            tooltip: { signal: radialBarTooltipExpression },
+          },
+          hover: { fillOpacity: { value: 0.8 } },
+        },
+      },
+    ];
+    if (!slicesConfig.isSliceLabelHidden) {
+      const radialMidAngleExpression =
+        "scale('categoryTheta', datum.chartCategory) + bandwidth('categoryTheta') / 2";
+      const radialMidRadiusExpression = `(min(width, height) / 2 * ${holeRatio} + scale('valueRadius', datum.chartValue)) / 2`;
+      const radialPercentExpression =
+        "datum.chartValueMax > 0 ? datum.chartValue / datum.chartValueMax : 0";
+      chartSpec.marks.push(
+        ...chartInFillLabelMarksBuilder({
+          dataName: "rows",
+          xExpression: `width / 2 + ${radialMidRadiusExpression} * sin(${radialMidAngleExpression})`,
+          yExpression: `height / 2 - ${radialMidRadiusExpression} * cos(${radialMidAngleExpression})`,
+          textExpression: `format(${radialPercentExpression}, '${chartPercentFormat}')`,
+          fontSize: 11,
+          textColor: chartTokenColorResolver(
+            colorByToken,
+            slicesConfig.sliceLabelColor,
+            chartFallbackCenterLabelValueColor,
+          ),
+          pillColor: chartTokenColorResolver(
+            colorByToken,
+            slicesConfig.sliceLabelPillBackgroundColor,
+            chartFallbackSliceLabelPillColor,
+          ),
+        }),
+      );
     }
-    return Array.from(donutCategories);
+    return chartSpec;
   }
 
-  function chartDonutAlwaysSliceResolver(chartConfig, donutCategories) {
-    const alwaysSlice = chartConfig.donut.centerLabelAlwaysSlice;
-    if (alwaysSlice === "") {
-      return donutCategories.length > 0 ? donutCategories[0] : "";
+  function chartWaffleSpecBuilder(chartConfig, fontFamily, colorByToken) {
+    const valueText = chartValueTextExpressionBuilder(
+      chartConfig,
+      "datum.chartValue",
+    );
+    const waffleTooltipExpression = chartCategoryTooltipExpressionBuilder(
+      chartConfig,
+      {
+        title: "datum.chartCategory",
+        color: "datum.chartCategory",
+        value: valueText,
+      },
+    );
+    const waffleConfig = chartConfig.waffle;
+    const waffleRowCount = Math.ceil(
+      waffleConfig.cellCount / waffleConfig.columnCount,
+    );
+    const waffleCellInnerRatio = 1 - waffleConfig.cellGapPercent / 100;
+
+    const chartSpec = chartCategoryBaseSpecBuilder(chartConfig, fontFamily, [
+      {
+        type: "joinaggregate",
+        fields: ["chartValue"],
+        ops: ["sum"],
+        as: ["chartTotal"],
+      },
+      {
+        type: "window",
+        ops: ["sum"],
+        fields: ["chartValue"],
+        as: ["chartCumulative"],
+      },
+      {
+        type: "formula",
+        as: "chartCellEnd",
+        expr: `datum.chartTotal > 0 ? round(datum.chartCumulative / datum.chartTotal * ${waffleConfig.cellCount}) : 0`,
+      },
+      {
+        type: "window",
+        ops: ["lag"],
+        fields: ["chartCellEnd"],
+        as: ["chartPreviousCellEnd"],
+      },
+      {
+        type: "formula",
+        as: "chartCellStart",
+        expr: "isNumber(datum.chartPreviousCellEnd) ? datum.chartPreviousCellEnd : 0",
+      },
+      {
+        type: "formula",
+        as: "chartCells",
+        expr: "sequence(datum.chartCellStart, datum.chartCellEnd)",
+      },
+      { type: "flatten", fields: ["chartCells"], as: ["chartCellIndex"] },
+      {
+        type: "formula",
+        as: "chartCellColumn",
+        expr: `datum.chartCellIndex % ${waffleConfig.columnCount}`,
+      },
+      {
+        type: "formula",
+        as: "chartCellRow",
+        expr: `floor(datum.chartCellIndex / ${waffleConfig.columnCount})`,
+      },
+    ]);
+    chartSpec.signals.push(
+      {
+        name: "waffleCellSize",
+        update: `min(width / ${waffleConfig.columnCount}, height / ${waffleRowCount})`,
+      },
+      {
+        name: "waffleCellInner",
+        update: `waffleCellSize * ${waffleCellInnerRatio}`,
+      },
+      {
+        name: "waffleCellInset",
+        update: "(waffleCellSize - waffleCellInner) / 2",
+      },
+      {
+        name: "waffleGridWidth",
+        update: `waffleCellSize * ${waffleConfig.columnCount}`,
+      },
+      {
+        name: "waffleGridHeight",
+        update: `waffleCellSize * ${waffleRowCount}`,
+      },
+      { name: "waffleGridLeft", update: "(width - waffleGridWidth) / 2" },
+      { name: "waffleGridTop", update: "(height - waffleGridHeight) / 2" },
+    );
+    const waffleCellCornerRadius =
+      waffleConfig.cellShape === "circle"
+        ? { signal: "waffleCellInner / 2" }
+        : { value: 0 };
+    chartSpec.marks = [
+      {
+        name: "waffleCells",
+        type: "rect",
+        from: { data: "rows" },
+        encode: {
+          enter: {
+            fill: { scale: "color", field: "chartCategory" },
+            ...chartGapStrokeEncodingBuilder(chartConfig, colorByToken),
+          },
+          update: {
+            x: {
+              signal:
+                "waffleGridLeft + datum.chartCellColumn * waffleCellSize + waffleCellInset",
+            },
+            y: {
+              signal:
+                "waffleGridTop + datum.chartCellRow * waffleCellSize + waffleCellInset",
+            },
+            width: { signal: "waffleCellInner" },
+            height: { signal: "waffleCellInner" },
+            cornerRadius: waffleCellCornerRadius,
+            fillOpacity: { value: 1 },
+            tooltip: { signal: waffleTooltipExpression },
+          },
+          hover: { fillOpacity: { value: 0.8 } },
+        },
+      },
+    ];
+    return chartSpec;
+  }
+
+  function chartSunburstSpecBuilder(chartConfig, fontFamily, colorByToken) {
+    const valueText = chartValueTextExpressionBuilder(
+      chartConfig,
+      "datum.depth === 1 ? datum.chartNodeTotal : datum.chartNodeValue",
+    );
+    const sunburstTooltipExpression = chartCategoryTooltipExpressionBuilder(
+      chartConfig,
+      {
+        title:
+          "datum.chartNodeChild ? datum.chartNodeChild : datum.chartNodeKey",
+        color: "datum.chartNodeCategory",
+        value: valueText,
+      },
+    );
+    const childText = `(${chartRowKeyAccessBuilder(chartConfig.sunburst.childRowKey)} == null ? '' : ${chartRowKeyAccessBuilder(chartConfig.sunburst.childRowKey)} + '')`;
+    const rootKeyLiteral = expressionStringQuoter("chart-sunburst-root");
+
+    const chartSpec = chartCategoryBaseSpecBuilder(chartConfig, fontFamily, [
+      {
+        type: "formula",
+        as: "chartNodeList",
+        expr:
+          `[{chartNodeKey: ${rootKeyLiteral}, chartNodeParent: '', chartNodeChild: '', chartNodeValue: 0, chartNodeIsLeaf: 0}, ` +
+          `{chartNodeKey: datum.chartCategory, chartNodeParent: ${rootKeyLiteral}, chartNodeChild: '', chartNodeValue: 0, chartNodeIsLeaf: 0}, ` +
+          `${childText} === '' ` +
+          `? {chartNodeKey: datum.chartCategory, chartNodeParent: ${rootKeyLiteral}, chartNodeChild: '', chartNodeValue: datum.chartValue, chartNodeIsLeaf: 0} ` +
+          `: {chartNodeKey: datum.chartCategory.length + ':' + datum.chartCategory + (${childText}).length + ':' + ${childText}, chartNodeParent: datum.chartCategory, chartNodeChild: ${childText}, chartNodeValue: datum.chartValue, chartNodeIsLeaf: 1}]`,
+      },
+      { type: "flatten", fields: ["chartNodeList"], as: ["chartNode"] },
+      {
+        type: "formula",
+        as: "chartNodeKey",
+        expr: "datum.chartNode.chartNodeKey",
+      },
+      {
+        type: "formula",
+        as: "chartNodeParent",
+        expr: "datum.chartNode.chartNodeParent",
+      },
+      {
+        type: "formula",
+        as: "chartNodeChild",
+        expr: "datum.chartNode.chartNodeChild",
+      },
+      {
+        type: "formula",
+        as: "chartNodeValue",
+        expr: "datum.chartNode.chartNodeValue",
+      },
+      {
+        type: "formula",
+        as: "chartNodeIsLeaf",
+        expr: "datum.chartNode.chartNodeIsLeaf",
+      },
+      {
+        type: "aggregate",
+        groupby: ["chartNodeKey"],
+        fields: [
+          "chartNodeParent",
+          "chartNodeChild",
+          "chartNodeValue",
+          "chartNodeIsLeaf",
+        ],
+        ops: ["min", "min", "sum", "max"],
+        as: [
+          "chartNodeParent",
+          "chartNodeChild",
+          "chartNodeValue",
+          "chartNodeIsLeaf",
+        ],
+      },
+      {
+        type: "formula",
+        as: "chartNodeCategory",
+        expr: "datum.chartNodeIsLeaf > 0 ? datum.chartNodeParent : datum.chartNodeKey",
+      },
+      {
+        type: "window",
+        groupby: ["chartNodeCategory"],
+        ops: ["sum"],
+        fields: ["chartNodeValue"],
+        frame: [null, null],
+        as: ["chartNodeTotal"],
+      },
+      { type: "stratify", key: "chartNodeKey", parentKey: "chartNodeParent" },
+      {
+        type: "partition",
+        field: "chartNodeValue",
+        size: [{ signal: "2 * PI" }, { signal: "sunburstRadius" }],
+      },
+    ]);
+    chartSpec.signals.push(
+      {
+        name: "sunburstRadius",
+        update: "min(width, height) / 2 - 4",
+      },
+      { name: "sunburstTotal", value: 0 },
+    );
+    chartSpec.data.push({
+      name: "arcs",
+      source: "rows",
+      transform: [{ type: "filter", expr: "datum.depth > 0" }],
+    });
+    chartSpec.marks = [
+      {
+        name: "sunburstArcs",
+        type: "arc",
+        from: { data: "arcs" },
+        encode: {
+          enter: {
+            fill: { scale: "color", field: "chartNodeCategory" },
+            ...chartGapStrokeEncodingBuilder(chartConfig, colorByToken),
+            cornerRadius: { value: 4 },
+          },
+          update: {
+            x: { signal: "width / 2" },
+            y: { signal: "height / 2" },
+            startAngle: { field: "x0" },
+            endAngle: { field: "x1" },
+            innerRadius: { field: "y0" },
+            outerRadius: { field: "y1" },
+            fillOpacity: { signal: "datum.depth === 1 ? 1 : 0.6" },
+            tooltip: { signal: sunburstTooltipExpression },
+          },
+          hover: { fillOpacity: { value: 0.8 } },
+        },
+      },
+    ];
+    if (!chartConfig.slices.isSliceLabelHidden) {
+      const sunburstPercentExpression =
+        "datum.depth === 1 ? (sunburstTotal > 0 ? datum.chartNodeTotal / sunburstTotal : 0) : (datum.chartNodeTotal > 0 ? datum.chartNodeValue / datum.chartNodeTotal : 0)";
+      chartSpec.marks.push(
+        ...chartInFillLabelMarksBuilder({
+          dataName: "arcs",
+          xExpression:
+            "width / 2 + ((datum.y0 + datum.y1) / 2) * sin((datum.x0 + datum.x1) / 2)",
+          yExpression:
+            "height / 2 - ((datum.y0 + datum.y1) / 2) * cos((datum.x0 + datum.x1) / 2)",
+          textExpression: `format(${sunburstPercentExpression}, '${chartPercentFormat}')`,
+          fontSize: 10,
+          textColor: chartTokenColorResolver(
+            colorByToken,
+            chartConfig.slices.sliceLabelColor,
+            chartFallbackCenterLabelValueColor,
+          ),
+          pillColor: chartTokenColorResolver(
+            colorByToken,
+            chartConfig.slices.sliceLabelPillBackgroundColor,
+            chartFallbackSliceLabelPillColor,
+          ),
+          opacityExpression: "datum.x1 - datum.x0 > 0.25 ? 1 : 0",
+        }),
+      );
     }
-    if (donutCategories.includes(alwaysSlice)) {
+    return chartSpec;
+  }
+
+  function chartParliamentSpecBuilder(chartConfig, fontFamily, _colorByToken) {
+    const valueText = chartValueTextExpressionBuilder(
+      chartConfig,
+      "datum.chartValue",
+    );
+    const parliamentTooltipExpression = chartCategoryTooltipExpressionBuilder(
+      chartConfig,
+      {
+        title: "datum.chartCategory",
+        color: "datum.chartCategory",
+        value: valueText,
+      },
+    );
+    const rowCount = chartConfig.parliament.rowCount;
+    const parliamentDotDiameterRatio =
+      (1 - chartConfig.parliament.dotGapPercent / 100) *
+      (chartConfig.parliament.dotSizePercent / 100);
+    const seatRowBoundaryExpression = (rowIndex) =>
+      `round(datum.chartSeatsTotal * ${(rowIndex + 1) * (rowIndex + 1)} / ${rowCount * rowCount})`;
+    const seatRowExpression = [
+      ...[...Array(rowCount - 1).keys()].map(
+        (rowIndex) =>
+          `datum.chartSeatOrdinal < ${seatRowBoundaryExpression(rowIndex)} ? ${rowIndex} :`,
+      ),
+      `${rowCount - 1}`,
+    ].join(" ");
+    const seatRowStartExpression = [
+      ...[...Array(rowCount - 1).keys()].map(
+        (rowIndex) =>
+          `datum.chartSeatOrdinal < ${seatRowBoundaryExpression(rowIndex)} ? ${rowIndex === 0 ? "0" : seatRowBoundaryExpression(rowIndex - 1)} :`,
+      ),
+      seatRowBoundaryExpression(rowCount - 2),
+    ].join(" ");
+    const seatRowEndExpression = [
+      ...[...Array(rowCount - 1).keys()].map(
+        (rowIndex) =>
+          `datum.chartSeatRow === ${rowIndex} ? ${seatRowBoundaryExpression(rowIndex)} :`,
+      ),
+      "datum.chartSeatsTotal",
+    ].join(" ");
+
+    const chartSpec = chartCategoryBaseSpecBuilder(chartConfig, fontFamily, [
+      {
+        type: "joinaggregate",
+        fields: ["chartValue"],
+        ops: ["sum"],
+        as: ["chartTotal"],
+      },
+      {
+        type: "formula",
+        as: "chartSeatsTotal",
+        expr: "max(1, round(datum.chartTotal))",
+      },
+      {
+        type: "window",
+        ops: ["sum"],
+        fields: ["chartValue"],
+        as: ["chartCumulative"],
+      },
+      {
+        type: "formula",
+        as: "chartSeatEnd",
+        expr: "datum.chartTotal > 0 ? round(datum.chartCumulative / datum.chartTotal * datum.chartSeatsTotal) : 0",
+      },
+      {
+        type: "window",
+        ops: ["lag"],
+        fields: ["chartSeatEnd"],
+        as: ["chartPreviousSeatEnd"],
+      },
+      {
+        type: "formula",
+        as: "chartSeatStart",
+        expr: "isNumber(datum.chartPreviousSeatEnd) ? datum.chartPreviousSeatEnd : 0",
+      },
+      {
+        type: "formula",
+        as: "chartSeatOrdinals",
+        expr: "sequence(datum.chartSeatStart, datum.chartSeatEnd)",
+      },
+      {
+        type: "flatten",
+        fields: ["chartSeatOrdinals"],
+        as: ["chartSeatOrdinal"],
+      },
+      { type: "formula", as: "chartSeatRow", expr: seatRowExpression },
+      {
+        type: "formula",
+        as: "chartSeatRowStart",
+        expr: seatRowStartExpression,
+      },
+      { type: "formula", as: "chartSeatRowEnd", expr: seatRowEndExpression },
+      {
+        type: "formula",
+        as: "chartSeatAngle",
+        expr: "PI * (datum.chartSeatOrdinal - datum.chartSeatRowStart + 0.5) / (datum.chartSeatRowEnd - datum.chartSeatRowStart)",
+      },
+      {
+        type: "formula",
+        as: "chartSeatRadiusFraction",
+        expr: `(2 * datum.chartSeatRow + 1) / ${2 * rowCount}`,
+      },
+      {
+        type: "formula",
+        as: "chartSeatRowSeats",
+        expr: "max(1, datum.chartSeatRowEnd - datum.chartSeatRowStart)",
+      },
+      {
+        type: "formula",
+        as: "chartSeatSpacing",
+        expr: `min(parliamentRadius / ${rowCount}, datum.chartSeatRadiusFraction * parliamentRadius * PI / datum.chartSeatRowSeats)`,
+      },
+      {
+        type: "formula",
+        as: "chartSeatDotArea",
+        expr: `PI / 4 * pow(datum.chartSeatSpacing * ${parliamentDotDiameterRatio}, 2)`,
+      },
+    ]);
+    const parliamentDotShape = chartConfig.parliament.dotShape;
+    chartSpec.signals.push(
+      { name: "parliamentCenterX", update: "width / 2" },
+      { name: "parliamentCenterY", update: "height - 4" },
+      { name: "parliamentRadius", update: "min(width / 2, height - 8) - 4" },
+    );
+    chartSpec.marks = [
+      {
+        name: "parliamentSeats",
+        type: "symbol",
+        from: { data: "rows" },
+        encode: {
+          enter: {
+            fill: { scale: "color", field: "chartCategory" },
+            shape: { value: parliamentDotShape },
+          },
+          update: {
+            x: {
+              signal:
+                "parliamentCenterX - parliamentRadius * datum.chartSeatRadiusFraction * cos(datum.chartSeatAngle)",
+            },
+            y: {
+              signal:
+                "parliamentCenterY - parliamentRadius * datum.chartSeatRadiusFraction * sin(datum.chartSeatAngle)",
+            },
+            size: {
+              signal: "datum.chartSeatDotArea",
+            },
+            fillOpacity: { value: 1 },
+            tooltip: { signal: parliamentTooltipExpression },
+          },
+          hover: { fillOpacity: { value: 0.8 } },
+        },
+      },
+    ];
+    return chartSpec;
+  }
+
+  function chartCategoryNamesReader(chartConfig, chartRows) {
+    const categoryNames = new Set();
+    for (const chartRow of chartRows) {
+      categoryNames.add(String(chartRow[chartConfig.xAxis.rowKey]));
+    }
+    return Array.from(categoryNames);
+  }
+
+  function chartCenterLabelAlwaysSliceResolver(chartConfig, sliceNames) {
+    const alwaysSlice = chartConfig.slices.centerLabelAlwaysSlice;
+    if (alwaysSlice === "") {
+      return sliceNames.length > 0 ? sliceNames[0] : "";
+    }
+    if (sliceNames.includes(alwaysSlice)) {
       return alwaysSlice;
     }
-    console.error(`ChartDonutCenterLabelSliceNotFound: ${alwaysSlice}`);
-    return donutCategories.length > 0 ? donutCategories[0] : "";
+    console.error(`ChartCenterLabelSliceNotFound: ${alwaysSlice}`);
+    return sliceNames.length > 0 ? sliceNames[0] : "";
   }
 
   function chartCategoryColorsResolver(
     chartConfig,
-    donutCategories,
+    categoryNames,
     colorByToken,
   ) {
-    return donutCategories.map((donutCategory, categoryIndex) =>
+    return categoryNames.map((categoryName, categoryIndex) =>
       chartTokenColorResolver(
         colorByToken,
-        chartConfig.donut.sliceIdentityColors[donutCategory],
+        chartConfig.slices.sliceIdentityColors[categoryName],
         chartPaletteColorResolver(categoryIndex),
       ),
     );
@@ -1031,7 +1825,15 @@ UiToolset.RegisterAlpineState(() => {
     return { ...chartFallbackColorByToken, ...probeResult.colorByToken };
   }
 
-  const chartSpecBuilderByType = { donut: chartDonutSpecBuilder };
+  const chartSpecBuilderByType = {
+    donut: chartSliceSpecBuilder,
+    horizontalBar: chartCartesianSpecBuilder,
+    parliament: chartParliamentSpecBuilder,
+    pie: chartSliceSpecBuilder,
+    radialBar: chartRadialBarSpecBuilder,
+    sunburst: chartSunburstSpecBuilder,
+    waffle: chartWaffleSpecBuilder,
+  };
 
   Alpine.data("chart", (configScriptId) => {
     let chartView = null;
@@ -1148,8 +1950,8 @@ UiToolset.RegisterAlpineState(() => {
           this.chartConfig.series,
           chartColorByToken,
         );
-        if (this.chartConfig.chartType === "donut") {
-          legendLabels = chartDonutCategoriesReader(
+        if (chartIsCategoryColorType(this.chartConfig)) {
+          legendLabels = chartCategoryNamesReader(
             this.chartConfig,
             this.chartRows,
           );
@@ -1167,35 +1969,56 @@ UiToolset.RegisterAlpineState(() => {
         return legendEntries;
       },
 
+      chartSunburstTotalResolver() {
+        const valueSeriesRowKey = this.chartConfig.series[0].rowKey;
+        let totalValue = 0;
+        for (const chartRow of this.chartRows) {
+          const rowValue = Number(chartRow[valueSeriesRowKey]);
+          if (!Number.isNaN(rowValue)) {
+            totalValue += rowValue;
+          }
+        }
+        return totalValue;
+      },
+
       renderChartRows() {
         const vegaRows = this.chartRows.map((chartRow, rowIndex) => ({
           ...chartRow,
           chartRowOrder: rowIndex,
         }));
-        if (this.chartConfig.chartType === "donut") {
-          const donutCategories = chartDonutCategoriesReader(
+        if (chartIsCategoryColorType(this.chartConfig)) {
+          const categoryNames = chartCategoryNamesReader(
             this.chartConfig,
             vegaRows,
           );
-          chartView.signal("chartCategories", donutCategories);
+          chartView.signal("chartCategories", categoryNames);
           chartView.signal(
             "chartCategoryColors",
             chartCategoryColorsResolver(
               this.chartConfig,
-              donutCategories,
+              categoryNames,
               chartColorByToken,
             ),
           );
-          if (this.chartConfig.donut.centerLabelDisplayMode !== "hidden") {
+          if (
+            this.chartConfig.slices.centerLabelDisplayMode !== "hidden" &&
+            chartIsDonutType(this.chartConfig)
+          ) {
             let alwaysSlice = "";
-            if (this.chartConfig.donut.centerLabelDisplayMode === "always") {
-              alwaysSlice = chartDonutAlwaysSliceResolver(
+            if (this.chartConfig.slices.centerLabelDisplayMode === "always") {
+              alwaysSlice = chartCenterLabelAlwaysSliceResolver(
                 this.chartConfig,
-                donutCategories,
+                categoryNames,
               );
             }
             chartView.signal("centerLabelAlwaysSlice", alwaysSlice);
             chartView.signal("centerLabelSlice", alwaysSlice);
+          }
+          if (this.chartConfig.chartType === "sunburst") {
+            chartView.signal(
+              "sunburstTotal",
+              this.chartSunburstTotalResolver(),
+            );
           }
         }
         const replacedRows = vega
@@ -1203,7 +2026,7 @@ UiToolset.RegisterAlpineState(() => {
           .remove(() => true)
           .insert(vegaRows);
         chartView.change("rows", replacedRows);
-        if (this.chartConfig.chartType !== "donut") {
+        if (!chartIsCategoryColorType(this.chartConfig)) {
           chartView.signal("hoveredX", null);
         }
         this.chartTooltip.isVisible = false;
@@ -1275,4 +2098,64 @@ UiToolset.RegisterAlpineState(() => {
       },
     };
   });
+
+  Alpine.data(
+    "chartProgress",
+    (
+      initialValue,
+      minValue,
+      maxValue,
+      thresholds,
+      defaultColor,
+      labelPrefix,
+      labelSuffix,
+    ) => ({
+      progressValue: Number(initialValue) || 0,
+      minValue: Number(minValue) || 0,
+      maxValue: Number.isFinite(Number(maxValue)) ? Number(maxValue) : 100,
+      thresholds: Array.isArray(thresholds) ? thresholds : [],
+      defaultColor,
+      labelPrefix: typeof labelPrefix === "string" ? labelPrefix : "",
+      labelSuffix: typeof labelSuffix === "string" ? labelSuffix : "",
+
+      get percent() {
+        const valueSpan = this.maxValue - this.minValue;
+        if (!(valueSpan > 0)) {
+          return 0;
+        }
+        const ratio = (this.progressValue - this.minValue) / valueSpan;
+        return Math.min(Math.max(ratio, 0), 1) * 100;
+      },
+
+      get valueAriaText() {
+        const clampedValue = Math.min(
+          Math.max(this.progressValue, this.minValue),
+          this.maxValue,
+        );
+        return (Math.round(clampedValue * 100) / 100).toFixed(2);
+      },
+
+      get percentWidth() {
+        return `${Math.round(this.percent * 10) / 10}%`;
+      },
+
+      get percentLabel() {
+        return `${this.labelPrefix}${this.percentWidth}${this.labelSuffix}`;
+      },
+
+      get fillColorClass() {
+        for (const threshold of this.thresholds) {
+          if (this.percent >= threshold.minimumPercent) {
+            return `bg-${threshold.backgroundColor}`;
+          }
+        }
+        return `bg-${this.defaultColor}`;
+      },
+
+      syncValueFromPath(boundValue) {
+        const numericValue = Number(boundValue);
+        this.progressValue = Number.isNaN(numericValue) ? 0 : numericValue;
+      },
+    }),
+  );
 });

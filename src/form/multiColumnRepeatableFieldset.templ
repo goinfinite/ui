@@ -1,0 +1,270 @@
+package uiForm
+
+import (
+	_ "embed"
+	"encoding/json"
+	"log/slog"
+	"strconv"
+
+	uiControl "github.com/goinfinite/ui/src/control"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+//go:embed multiColumnRepeatableFieldsetState.js
+var multiColumnRepeatableFieldsetAlpineState string
+
+var multiColumnRepeatableFieldsetAlpineStateOnce = templ.NewOnceHandle(
+	templ.WithComponent(uiToolset.MinifierTemplateJs(&multiColumnRepeatableFieldsetAlpineState)),
+)
+
+const (
+	MultiColumnRepeatableFieldsetColumnTypeText     string = "text"
+	MultiColumnRepeatableFieldsetColumnTypeNumber   string = "number"
+	MultiColumnRepeatableFieldsetColumnTypeSelect   string = "select"
+	MultiColumnRepeatableFieldsetColumnTypeCheckbox string = "checkbox"
+)
+
+type MultiColumnRepeatableFieldsetDropdownStyle struct {
+	// OptionalFields
+	BackgroundColor string
+	BorderColor     string
+	BorderRadius    string
+}
+
+type MultiColumnRepeatableFieldsetCheckboxStyle struct {
+	// OptionalFields
+	CheckedColor   string
+	FocusRingColor string
+	Shape          string
+	UncheckedColor string
+}
+
+type MultiColumnRepeatableFieldsetSelectStyle struct {
+	// OptionalFields
+	SelectedIconColor string
+	Trigger           SelectInputTriggerStyle
+}
+
+type MultiColumnRepeatableFieldsetColumn struct {
+	Id        string
+	Label     string
+	InputType string
+
+	// OptionalFields
+	IsRequired bool
+	Max        string
+	Min        string
+	Options    []SelectLabelValueOption
+	Step       string
+}
+
+type MultiColumnRepeatableFieldsetSettings struct {
+	Columns         []MultiColumnRepeatableFieldsetColumn
+	TwoWayStatePath string
+
+	// OptionalFields
+	AddRowLabel     string
+	Checkbox        MultiColumnRepeatableFieldsetCheckboxStyle
+	Dropdown        MultiColumnRepeatableFieldsetDropdownStyle
+	EmptyStateLabel string
+	InputName       string
+	NewRowFunc      string
+	Select          MultiColumnRepeatableFieldsetSelectStyle
+	Size            string
+	TextCase        string
+}
+
+type multiColumnRepeatableFieldsetColumnMetadata struct {
+	Id         string `json:"id"`
+	InputType  string `json:"inputType"`
+	IsRequired bool   `json:"isRequired"`
+}
+
+func multiColumnRepeatableFieldsetColumnMetadataJsonBuilder(
+	columns []MultiColumnRepeatableFieldsetColumn,
+) string {
+	metadata := make([]multiColumnRepeatableFieldsetColumnMetadata, 0, len(columns))
+	for _, column := range columns {
+		metadata = append(metadata, multiColumnRepeatableFieldsetColumnMetadata{
+			Id:         column.Id,
+			InputType:  column.InputType,
+			IsRequired: column.IsRequired,
+		})
+	}
+	encodedMetadata, marshalErr := json.Marshal(metadata)
+	if marshalErr != nil {
+		slog.Debug(
+			"MultiColumnRepeatableFieldsetMetadataMarshalFailure",
+			slog.String("err", marshalErr.Error()),
+		)
+		return "[]"
+	}
+	return string(encodedMetadata)
+}
+
+func multiColumnRepeatableFieldsetAddRowLabelResolver(
+	componentSettings MultiColumnRepeatableFieldsetSettings,
+) string {
+	if componentSettings.AddRowLabel != "" {
+		return componentSettings.AddRowLabel
+	}
+	return "Add row"
+}
+
+func multiColumnRepeatableFieldsetEmptyStateLabelResolver(
+	componentSettings MultiColumnRepeatableFieldsetSettings,
+) string {
+	if componentSettings.EmptyStateLabel != "" {
+		return componentSettings.EmptyStateLabel
+	}
+	return "No rows yet"
+}
+
+func multiColumnRepeatableFieldsetInputTypeResolver(
+	column MultiColumnRepeatableFieldsetColumn,
+) string {
+	if column.InputType == MultiColumnRepeatableFieldsetColumnTypeNumber {
+		return MultiColumnRepeatableFieldsetColumnTypeNumber
+	}
+	return MultiColumnRepeatableFieldsetColumnTypeText
+}
+
+templ multiColumnRepeatableFieldsetCell(
+	column MultiColumnRepeatableFieldsetColumn,
+	componentSettings MultiColumnRepeatableFieldsetSettings,
+) {
+	{{ rowExpression := "row[" + strconv.Quote(column.Id) + "]" }}
+	{{ invalidExpression := "columnIsInvalid(row, " + strconv.Quote(column.Id) + ")" }}
+	switch column.InputType {
+		case MultiColumnRepeatableFieldsetColumnTypeCheckbox:
+			@CheckboxInput(CheckboxInputSettings{
+				AriaLabel:                column.Label,
+				CheckedColor:             componentSettings.Checkbox.CheckedColor,
+				FocusRingColor:           componentSettings.Checkbox.FocusRingColor,
+				IsInvalidOneWayStatePath: invalidExpression,
+				IsRequired:               column.IsRequired,
+				Shape:                    componentSettings.Checkbox.Shape,
+				Size:                     componentSettings.Size,
+				TwoWayStatePath:          rowExpression,
+				UncheckedColor:           componentSettings.Checkbox.UncheckedColor,
+			})
+		case MultiColumnRepeatableFieldsetColumnTypeSelect:
+			@SelectInput(SelectInputSettings{
+				Label:                    column.Label,
+				LabelValueOptions:        column.Options,
+				ShouldIncludeBlankOption: true,
+				IsInvalidOneWayStatePath: invalidExpression,
+				IsRequired:               column.IsRequired,
+				Size:                     componentSettings.Size,
+				TextCase:                 componentSettings.TextCase,
+				TwoWayStatePath:          rowExpression,
+				DropdownBackgroundColor:  componentSettings.Dropdown.BackgroundColor,
+				DropdownBorderColor:      componentSettings.Dropdown.BorderColor,
+				DropdownBorderRadius:     componentSettings.Dropdown.BorderRadius,
+				SelectedIconColor:        componentSettings.Select.SelectedIconColor,
+				Trigger:                  componentSettings.Select.Trigger,
+			})
+		default:
+			@InputField(InputFieldSettings{
+				InputType:                multiColumnRepeatableFieldsetInputTypeResolver(column),
+				Label:                    column.Label,
+				InputNumberMax:           column.Max,
+				InputNumberMin:           column.Min,
+				InputNumberStep:          column.Step,
+				IsInvalidOneWayStatePath: invalidExpression,
+				IsRequired:               column.IsRequired,
+				Size:                     componentSettings.Size,
+				TextCase:                 componentSettings.TextCase,
+				TwoWayStatePath:          rowExpression,
+			})
+	}
+}
+
+templ MultiColumnRepeatableFieldset(componentSettings MultiColumnRepeatableFieldsetSettings) {
+	{{ statePath := componentSettings.TwoWayStatePath }}
+	{{ columnMetadataJson := multiColumnRepeatableFieldsetColumnMetadataJsonBuilder(componentSettings.Columns) }}
+	{{ addRowLabel := multiColumnRepeatableFieldsetAddRowLabelResolver(componentSettings) }}
+	{{ emptyStateLabel := multiColumnRepeatableFieldsetEmptyStateLabelResolver(componentSettings) }}
+	@multiColumnRepeatableFieldsetAlpineStateOnce.Once()
+	<!-- MultiColumnRepeatableFieldset -->
+	<div
+		class="w-full"
+		x-data={ templ.JSFuncCall("multiColumnRepeatableFieldset", templ.JSExpression(columnMetadataJson), componentSettings.NewRowFunc) }
+	>
+		<table class="w-full border-collapse text-sm">
+			<thead>
+				<tr class="border-b border-neutral-50/10 text-left text-xs text-neutral-400">
+					for _, column := range componentSettings.Columns {
+						<th scope="col" class="px-2 py-2 font-medium">{ column.Label }</th>
+					}
+					<th scope="col" class="w-0 px-2 py-2">
+						<span class="sr-only">Row actions</span>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<template x-for={ "(row, rowIndex) in " + statePath } :key="rowKeyResolver(row)">
+					<tr class="border-b border-neutral-50/5">
+						for _, column := range componentSettings.Columns {
+							<td class="px-2 py-2">
+								@multiColumnRepeatableFieldsetCell(column, componentSettings)
+							</td>
+						}
+						<td class="w-0 whitespace-nowrap px-2 py-2">
+							<div class="flex items-center justify-end gap-1">
+								<span :class={ "rowIndex === 0 ? 'pointer-events-none opacity-30' : ''" }>
+									@uiControl.Button(uiControl.ButtonSettings{
+										AriaLabel:                 "Move row up",
+										IconLeft:                  "ph-arrow-up",
+										IsDisabledOneWayStatePath: "rowIndex === 0",
+										OnClickFunc:               "moveRow(" + statePath + ", rowIndex, -1)",
+										Size:                      uiControl.ButtonSizeXs,
+									})
+								</span>
+								<span :class={ "rowIndex === " + statePath + ".length - 1 ? 'pointer-events-none opacity-30' : ''" }>
+									@uiControl.Button(uiControl.ButtonSettings{
+										AriaLabel:                 "Move row down",
+										IconLeft:                  "ph-arrow-down",
+										IsDisabledOneWayStatePath: "rowIndex === " + statePath + ".length - 1",
+										OnClickFunc:               "moveRow(" + statePath + ", rowIndex, 1)",
+										Size:                      uiControl.ButtonSizeXs,
+									})
+								</span>
+								@uiControl.Button(uiControl.ButtonSettings{
+									AriaLabel:   "Duplicate row",
+									IconLeft:    "ph-copy",
+									OnClickFunc: "duplicateRow(" + statePath + ", rowIndex)",
+									Size:        uiControl.ButtonSizeXs,
+								})
+								@uiControl.Button(uiControl.ButtonSettings{
+									AriaLabel:      "Remove row",
+									IconLeft:       "ph-trash",
+									OnClickFunc:    "removeRow(" + statePath + ", rowIndex)",
+									Size:           uiControl.ButtonSizeXs,
+									TextColor:      "red-400",
+									TextColorHover: "red-300",
+								})
+							</div>
+						</td>
+					</tr>
+				</template>
+				<tr x-show={ statePath + ".length === 0" }>
+					<td class="px-2 py-3 text-sm text-neutral-500" colspan={ strconv.Itoa(len(componentSettings.Columns) + 1) }>
+						{ emptyStateLabel }
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="mt-3">
+			@uiControl.Button(uiControl.ButtonSettings{
+				IconLeft:    "ph-plus",
+				Label:       addRowLabel,
+				OnClickFunc: "appendRow(" + statePath + ")",
+				Size:        uiControl.ButtonSizeSm,
+			})
+		</div>
+		if componentSettings.InputName != "" {
+			<input type="hidden" name={ componentSettings.InputName } :value={ "JSON.stringify(" + statePath + ")" }/>
+		}
+	</div>
+}

@@ -1,0 +1,262 @@
+package main
+
+import (
+	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiForm "github.com/goinfinite/ui/src/form"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+func multiColumnRepeatableFieldsetDemoColumns() []uiForm.MultiColumnRepeatableFieldsetColumn {
+	return []uiForm.MultiColumnRepeatableFieldsetColumn{
+		{
+			Id: "name", Label: "Name", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeText, IsRequired: true,
+		},
+		{
+			Id: "role", Label: "Role", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeSelect,
+			Options: []uiForm.SelectLabelValueOption{
+				{Label: "Owner", Value: "owner"},
+				{Label: "Maintainer", Value: "maintainer"},
+				{Label: "Member", Value: "member"},
+			},
+		},
+		{
+			Id: "age", Label: "Age", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeNumber,
+			Min: "0", Max: "120", Step: "1",
+		},
+		{
+			Id: "active", Label: "Active", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeCheckbox,
+		},
+	}
+}
+
+templ MultiColumnRepeatableFieldsetValidationExample() {
+	{{
+		validationUsage := `@uiForm.MultiColumnRepeatableFieldset(uiForm.MultiColumnRepeatableFieldsetSettings{
+	Columns: []uiForm.MultiColumnRepeatableFieldsetColumn{
+		{Id: "name", Label: "Name", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeText, IsRequired: true},
+		{Id: "email", Label: "Email", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeText, IsRequired: true},
+	},
+	TwoWayStatePath: "contactRows",
+})`
+	}}
+	@DemoExampleCard(
+		"Per-Row Validation",
+		"Each row validates on its own. A required cell with an empty value paints a red border and sets aria-invalid until the user fills it.",
+		"/form/multiColumnRepeatableFieldset.templ", validationUsage,
+	) {
+		<div x-data="{contactRows: [{name: '', email: ''}, {name: 'Ana Souza', email: 'ana@example.com'}]}">
+			@uiForm.MultiColumnRepeatableFieldset(uiForm.MultiColumnRepeatableFieldsetSettings{
+				Columns: []uiForm.MultiColumnRepeatableFieldsetColumn{
+					{
+						Id: "name", Label: "Name", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeText,
+						IsRequired: true,
+					},
+					{
+						Id: "email", Label: "Email", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeText,
+						IsRequired: true,
+					},
+				},
+				TwoWayStatePath: "contactRows",
+			})
+		</div>
+	}
+}
+
+templ MultiColumnRepeatableFieldsetEmptyStateExample() {
+	{{
+		emptyStateUsage := `@uiForm.MultiColumnRepeatableFieldset(uiForm.MultiColumnRepeatableFieldsetSettings{
+	Columns: []uiForm.MultiColumnRepeatableFieldsetColumn{
+		{Id: "hostPort", Label: "Host port", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeNumber, Min: "1", Max: "65535"},
+		{Id: "protocol", Label: "Protocol", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeSelect, Options: protocolOptions},
+	},
+	TwoWayStatePath: "portRows",
+
+	// OptionalFields
+	AddRowLabel:     "Add port mapping",
+	EmptyStateLabel: "No port mappings yet",
+})`
+	}}
+	@DemoExampleCard(
+		"Empty State",
+		"With no rows the table shows the empty-state row. AddRowLabel and EmptyStateLabel replace the default Add row and No rows yet texts.",
+		"/form/multiColumnRepeatableFieldset.templ", emptyStateUsage,
+	) {
+		<div x-data="{portRows: []}">
+			@uiForm.MultiColumnRepeatableFieldset(uiForm.MultiColumnRepeatableFieldsetSettings{
+				Columns: []uiForm.MultiColumnRepeatableFieldsetColumn{
+					{
+						Id: "hostPort", Label: "Host port", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeNumber,
+						Min: "1", Max: "65535", Step: "1",
+					},
+					{
+						Id: "protocol", Label: "Protocol", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeSelect,
+						Options: []uiForm.SelectLabelValueOption{
+							{Label: "TCP", Value: "tcp"},
+							{Label: "UDP", Value: "udp"},
+						},
+					},
+				},
+				TwoWayStatePath: "portRows",
+				AddRowLabel:     "Add port mapping",
+				EmptyStateLabel: "No port mappings yet",
+			})
+		</div>
+	}
+}
+
+templ MultiColumnRepeatableFieldsetSizesExample() {
+	{{
+		sizesUsage := `@uiForm.MultiColumnRepeatableFieldset(uiForm.MultiColumnRepeatableFieldsetSettings{
+	Columns: []uiForm.MultiColumnRepeatableFieldsetColumn{
+		{Id: "hostPort", Label: "Host port", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeNumber, Min: "1", Max: "65535"},
+		{Id: "protocol", Label: "Protocol", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeSelect, Options: protocolOptions},
+	},
+	TwoWayStatePath: "portRows",
+
+	// OptionalFields
+	Size: uiForm.InputFieldSizeXs,
+})`
+	}}
+	@DemoExampleCard(
+		"Sizes",
+		"Size takes an InputFieldSize* constant and applies it to every cell: the text and number fields, the select, and the checkbox. The select dropdown surface follows the Dropdown style group.",
+		"/form/multiColumnRepeatableFieldset.templ", sizesUsage,
+	) {
+		<div x-data="{portRows: [{hostPort: '8080', protocol: 'tcp'}]}">
+			@uiForm.MultiColumnRepeatableFieldset(uiForm.MultiColumnRepeatableFieldsetSettings{
+				Columns: []uiForm.MultiColumnRepeatableFieldsetColumn{
+					{
+						Id: "hostPort", Label: "Host port", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeNumber,
+						Min: "1", Max: "65535", Step: "1",
+					},
+					{
+						Id: "protocol", Label: "Protocol", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeSelect,
+						Options: []uiForm.SelectLabelValueOption{
+							{Label: "TCP", Value: "tcp"},
+							{Label: "UDP", Value: "udp"},
+						},
+					},
+				},
+				TwoWayStatePath: "portRows",
+				Size:            uiForm.InputFieldSizeXs,
+			})
+		</div>
+	}
+}
+
+templ MultiColumnRepeatableFieldsetAppearanceExample() {
+	{{
+		appearanceUsage := `@uiForm.MultiColumnRepeatableFieldset(uiForm.MultiColumnRepeatableFieldsetSettings{
+	Columns: []uiForm.MultiColumnRepeatableFieldsetColumn{
+		{Id: "host", Label: "Host", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeText},
+		{Id: "protocol", Label: "Protocol", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeSelect, Options: protocolOptions},
+		{Id: "enabled", Label: "Enabled", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeCheckbox},
+	},
+	TwoWayStatePath: "endpointRows",
+
+	// OptionalFields
+	Checkbox: uiForm.MultiColumnRepeatableFieldsetCheckboxStyle{
+		CheckedColor: "emerald-500",
+		Shape:        uiToolset.ShapeCircular,
+	},
+	Dropdown: uiForm.MultiColumnRepeatableFieldsetDropdownStyle{
+		BackgroundColor: "neutral-900",
+		BorderColor:     "neutral-50/20",
+	},
+	Select: uiForm.MultiColumnRepeatableFieldsetSelectStyle{
+		SelectedIconColor: "emerald-400",
+		Trigger: uiForm.SelectInputTriggerStyle{
+			BackgroundColor: "neutral-50/5",
+			BorderColor:     "neutral-50/10",
+		},
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Appearance",
+		"Each cell type carries its own style group. Checkbox sets the checked and unchecked colors, the focus ring, and the shape. Select sets the trigger surface and the checked-option icon color, and Dropdown paints the option list.",
+		"/form/multiColumnRepeatableFieldset.templ", appearanceUsage,
+	) {
+		<div x-data="{endpointRows: [{host: 'api.internal', protocol: 'https', enabled: true}]}">
+			@uiForm.MultiColumnRepeatableFieldset(uiForm.MultiColumnRepeatableFieldsetSettings{
+				Columns: []uiForm.MultiColumnRepeatableFieldsetColumn{
+					{
+						Id: "host", Label: "Host", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeText,
+					},
+					{
+						Id: "protocol", Label: "Protocol", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeSelect,
+						Options: []uiForm.SelectLabelValueOption{
+							{Label: "HTTPS", Value: "https"},
+							{Label: "HTTP", Value: "http"},
+						},
+					},
+					{
+						Id: "enabled", Label: "Enabled", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeCheckbox,
+					},
+				},
+				TwoWayStatePath: "endpointRows",
+				Checkbox: uiForm.MultiColumnRepeatableFieldsetCheckboxStyle{
+					CheckedColor: "emerald-500",
+					Shape:        uiToolset.ShapeCircular,
+				},
+				Dropdown: uiForm.MultiColumnRepeatableFieldsetDropdownStyle{
+					BackgroundColor: "neutral-900",
+					BorderColor:     "neutral-50/20",
+				},
+				Select: uiForm.MultiColumnRepeatableFieldsetSelectStyle{
+					SelectedIconColor: "emerald-400",
+					Trigger: uiForm.SelectInputTriggerStyle{
+						BackgroundColor: "neutral-50/5",
+						BorderColor:     "neutral-50/10",
+					},
+				},
+			})
+		</div>
+	}
+}
+
+templ MultiColumnRepeatableFieldsetDemo() {
+	{{
+		demoUsage := `@uiForm.MultiColumnRepeatableFieldset(uiForm.MultiColumnRepeatableFieldsetSettings{
+	Columns: []uiForm.MultiColumnRepeatableFieldsetColumn{
+		{Id: "name", Label: "Name", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeText, IsRequired: true},
+		{Id: "role", Label: "Role", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeSelect, Options: roleOptions},
+		{Id: "age", Label: "Age", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeNumber, Min: "0", Max: "120"},
+		{Id: "active", Label: "Active", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeCheckbox},
+	},
+	TwoWayStatePath: "teamMemberRows",
+
+	// OptionalFields
+	InputName:  "teamMembers",
+	NewRowFunc: "multiColumnRepeatableFieldsetDemoRandomRow()",
+})`
+	}}
+	<div class="flex flex-col gap-4" id="multi-column-repeatable-fieldset-demo">
+		@DemoComponentSection(DemoComponentSectionSettings{
+			ComponentPath:          "/form/multiColumnRepeatableFieldset.templ",
+			Description:            "A repeatable fieldset renders one editable row per item, each cell rendered through the matching input component: InputField, SelectInput, or CheckboxInput. Rows live in an Alpine array path: add, duplicate, move, and remove actions operate on that path. NewRowFunc names the expression that fills a new row, so different rows stay tellable apart.",
+			LiveExampleDescription: "A team member table bound to teamMemberRows. Add row appends a random member, so moving a row up or down is visible. The bound array is shown live.",
+			Title:                  ".MultiColumnRepeatableFieldset",
+			UsageCode:              demoUsage,
+		}) {
+			@uiToolset.MinifierTemplateJs(&multiColumnRepeatableFieldsetDemoAlpineState)
+			<div x-data="{teamMemberRows: [{name: 'Ana Souza', role: 'owner', age: '38', active: true}]}" class="flex flex-col gap-3">
+				@uiForm.MultiColumnRepeatableFieldset(uiForm.MultiColumnRepeatableFieldsetSettings{
+					Columns:         multiColumnRepeatableFieldsetDemoColumns(),
+					TwoWayStatePath: "teamMemberRows",
+					InputName:       "teamMembers",
+					NewRowFunc:      "multiColumnRepeatableFieldsetDemoRandomRow()",
+				})
+				<p class={ DemoLiveStateClasses }>
+					teamMemberRows: <span x-text="JSON.stringify(teamMemberRows)"></span>
+				</p>
+			</div>
+		}
+		@DemoAdvancedExamples("multi-column-repeatable-fieldset-demo", []uiDisplay.AccordionItemSettings{
+			{Title: "Per-Row Validation", Icon: "ph-warning-circle", Content: MultiColumnRepeatableFieldsetValidationExample()},
+			{Title: "Empty State", Icon: "ph-empty", Content: MultiColumnRepeatableFieldsetEmptyStateExample()},
+			{Title: "Sizes", Icon: "ph-ruler", Content: MultiColumnRepeatableFieldsetSizesExample()},
+			{Title: "Appearance", Icon: "ph-palette", Content: MultiColumnRepeatableFieldsetAppearanceExample()},
+		})
+	</div>
+}

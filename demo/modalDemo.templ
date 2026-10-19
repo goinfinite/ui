@@ -219,7 +219,7 @@ templ ModalHeaderFooterExample() {
 	}
 }
 
-templ ModalCustomSurfaceExample() {
+templ ModalAppearanceExample() {
 	{{
 		surfaceUsage := `@uiDisplay.Modal(uiDisplay.ModalSettings{
 	MiddleContent: ModalDemoContent(),
@@ -237,7 +237,7 @@ templ ModalCustomSurfaceExample() {
 })`
 	}}
 	@DemoExampleCardStacked(
-		"Custom Surface",
+		"Appearance",
 		"Backdrop, background, ring, radius, shadow, and text colors accept Tailwind tokens.",
 		"/display/modal.templ", surfaceUsage,
 	) {
@@ -711,7 +711,7 @@ templ ModalDemo() {
 			{Title: "Uncloseable", Icon: "ph-lock", Content: ModalUncloseableExample()},
 			{Title: "Unresizable & OnResize", Icon: "ph-arrows-out", Content: ModalUnresizableExample()},
 			{Title: "Header & Footer Slots", Icon: "ph-columns", Content: ModalHeaderFooterExample()},
-			{Title: "Custom Surface", Icon: "ph-palette", Content: ModalCustomSurfaceExample()},
+			{Title: "Appearance", Icon: "ph-palette", Content: ModalAppearanceExample()},
 			{Title: "Near-Full Size", Icon: "ph-terminal", Content: ModalNearFullSizeExample()},
 			{Title: "Custom Dimensions", Icon: "ph-arrows-out", Content: ModalCustomDimensionsExample()},
 			{Title: "Size Slice", Icon: "ph-ruler", Content: ModalSizeSliceExample()},

@@ -99,7 +99,7 @@ test.describe("SelectInput", () => {
   test("@browser the Style example moves the checked row icon with the selection", async ({
     page,
   }) => {
-    const panel = await openExamplePanel(page, selectSection, "Style");
+    const panel = await openExamplePanel(page, selectSection, "Appearance");
     const trigger = panel.locator("[role=button]").first();
     const options = panel.locator("ul").first();
 

@@ -19,7 +19,8 @@ A button with an optional label, icons, tooltip, ring, and shape.
 - `MinWidthClass`, `MaxWidthClass`, `MinHeightClass`, and `MaxHeightClass` take Tailwind classes that limit the button box.
 - `Shape` takes `uiToolset.ShapeCircular`, `uiToolset.ShapeRounded`, or `uiToolset.ShapeSquare`. The default is `rounded-md`.
 - The icons use the `ph-bold` weight. Give the icon name only, for example `"ph-floppy-disk"`.
-- `AriaLabel` sets a static accessible name. `AriaLabelOneWayStatePath` binds the name to Alpine state.
+- `IconSizeClass` and `TextSizeClass` take a Tailwind text size class and size the icons and the label on their own, replacing the `Size` tokens.
+- `AriaLabel` sets a static accessible name. `AriaLabelOneWayStatePath` binds the name to Alpine state. `AriaExpandedOneWayStatePath` binds `aria-expanded`, for a button that opens a controlled region.
 - `IsDisabled` disables the button. `IsDisabledOneWayStatePath` disables and dims it while the path is truthy.
 - `IsVisibleOneWayStatePath` hides the button while the path is falsy.
 - Every button has a `type`. The default is `button`, so a button in a form does not submit it. `IsSubmit` sets `type="submit"`.

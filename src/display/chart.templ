@@ -76,7 +76,268 @@ templ chartScreenReaderTable(resolvedConfig chartConfig, ariaLabel string) {
 	</table>
 }
 
+templ chartProgress(componentSettings ChartSettings) {
+	{{ progressSettings := componentSettings.Progress }}
+	{{ progressBounds := progressSettings.boundsResolver() }}
+	{{ percent := progressSettings.percentResolver() }}
+	{{ clampedValue := progressSettings.clampedValueResolver() }}
+	{{ fillColorClass := progressSettings.fillColorResolver(percent) }}
+	{{ defaultColor := progressSettings.defaultColorResolver() }}
+	{{ resolvedThresholds := progressSettings.thresholdsResolver() }}
+	{{ sizeTokens := chartProgressSizeTokensResolver(progressSettings.Size) }}
+	{{ trackColorClass := uiToolset.BackgroundColorClassResolver(progressSettings.TrackBackgroundColor, "bg-neutral-50/15") }}
+	{{ labelBackgroundColorClass := uiToolset.BackgroundColorClassResolver(progressSettings.LabelBackgroundColor, "bg-neutral-950/70") }}
+	{{ labelTextColorClass := uiToolset.TextColorClassResolver(progressSettings.LabelTextColor, "text-neutral-100") }}
+	{{ labelTextSizeClass := chartProgressLabelTextSizeResolver(progressSettings.LabelTextSizeClass, progressSettings.Size) }}
+	{{ stripeColorClass := uiToolset.TextColorClassResolver(progressSettings.StripeColor, "text-neutral-50/20") }}
+	{{ widthClasses := uiToolset.NonEmptyClassJoiner([]string{"w-full", chartTextDefaulter(progressSettings.MinWidthClass, "min-w-20"), progressSettings.MaxWidthClass}) }}
+	{{ heightClasses := uiToolset.NonEmptyClassJoiner([]string{sizeTokens.TrackHeight, progressSettings.MinHeightClass, progressSettings.MaxHeightClass}) }}
+	{{ stripeBackgroundStyle := "" }}
+	if progressSettings.IsStriped {
+		{{ stripeBackgroundStyle = "background-image: repeating-linear-gradient(135deg, currentColor 0 0.375rem, transparent 0.375rem 0.75rem)" }}
+	}
+	{{ fillStripeClasses := "" }}
+	{{ indeterminateFillStyle := "animation: ui-progress-bar-indeterminate 1.5s ease-in-out infinite" }}
+	{{ isBoundValue := progressSettings.ValueOneWayStatePath != "" && !progressSettings.IsIndeterminate }}
+	{{ hasLabel := progressSettings.Label != "" || progressSettings.LabelOneWayStatePath != "" || (progressSettings.ShouldShowPercentLabel && !progressSettings.IsIndeterminate) }}
+	{{ percentWidthText := chartProgressPercentTextResolver(percent) }}
+	{{ percentText := progressSettings.LabelPrefix + percentWidthText + progressSettings.LabelSuffix }}
+	{{ staticFillStyle := "width: " + percentWidthText }}
+	{{ boundFillWidthExpression := "'width: ' + percentWidth" }}
+	if progressSettings.IsStriped {
+		{{ fillStripeClasses = " " + stripeColorClass }}
+		{{ indeterminateFillStyle += "; " + stripeBackgroundStyle }}
+		{{ staticFillStyle += "; " + stripeBackgroundStyle }}
+		{{ boundFillWidthExpression += " + '; " + stripeBackgroundStyle + "'" }}
+	}
+	if progressSettings.IsIndeterminate {
+		@chartProgressIndeterminateStyleOnce.Once()
+	}
+	if isBoundValue {
+		@chartAlpineStateOnce.Once()
+	}
+	<!-- ChartProgress -->
+	<div
+		class={ "relative shrink-0 overflow-hidden rounded-full " + widthClasses + " " + heightClasses + " " + trackColorClass }
+		role="progressbar"
+		if componentSettings.AriaLabel != "" {
+			aria-label={ componentSettings.AriaLabel }
+		}
+		if !progressSettings.IsIndeterminate {
+			aria-valuemin={ strconv.FormatFloat(progressBounds.Min, 'f', -1, 64) }
+			aria-valuemax={ strconv.FormatFloat(progressBounds.Max, 'f', -1, 64) }
+			if isBoundValue {
+				:aria-valuenow="valueAriaText"
+			} else {
+				aria-valuenow={ strconv.FormatFloat(clampedValue, 'f', 2, 64) }
+			}
+		}
+		if isBoundValue {
+			x-data={ templ.JSFuncCall("chartProgress", progressSettings.Value, progressBounds.Min, progressBounds.Max, resolvedThresholds, defaultColor, progressSettings.LabelPrefix, progressSettings.LabelSuffix) }
+			x-effect={ "syncValueFromPath(" + progressSettings.ValueOneWayStatePath + ")" }
+		}
+	>
+		if progressSettings.IsIndeterminate {
+			<div
+				class={ "absolute h-full w-2/5 rounded-full " + fillColorClass + fillStripeClasses }
+				style={ indeterminateFillStyle }
+			></div>
+		} else if isBoundValue {
+			<div
+				class={ "h-full rounded-full transition-all " + fillStripeClasses }
+				:class="fillColorClass"
+				:style={ boundFillWidthExpression }
+			></div>
+		} else {
+			<div
+				class={ "h-full rounded-full transition-all " + fillColorClass + fillStripeClasses }
+				style={ staticFillStyle }
+			></div>
+		}
+		if hasLabel {
+			<div class="absolute inset-0 flex items-center justify-center">
+				<span
+					class={ uiToolset.NonEmptyClassJoiner([]string{"whitespace-nowrap rounded-full px-1.5 py-0.5 font-bold leading-none", labelTextSizeClass, labelBackgroundColorClass, labelTextColorClass}) }
+				>
+					if progressSettings.LabelOneWayStatePath != "" {
+						<span x-text={ progressSettings.LabelOneWayStatePath }></span>
+					} else if progressSettings.Label != "" {
+						{ progressSettings.Label }
+					} else if isBoundValue {
+						<span x-text="percentLabel"></span>
+					} else {
+						{ percentText }
+					}
+				</span>
+			</div>
+		}
+	</div>
+}
+
+templ chartGaugeArcShape(
+	band chartGaugeBand,
+	strokeClass string,
+	arcThicknessText string,
+	arcRadiusText string,
+) {
+	if band.IsFullCircle {
+		<circle
+			cx="100"
+			cy="100"
+			r={ arcRadiusText }
+			fill="none"
+			stroke-width={ arcThicknessText }
+			class={ strokeClass }
+		></circle>
+	} else {
+		<path
+			d={ band.ArcPath }
+			fill="none"
+			stroke-width={ arcThicknessText }
+			class={ strokeClass }
+		></path>
+	}
+}
+
+templ chartGauge(componentSettings ChartSettings) {
+	{{ gaugeSettings := componentSettings.Gauge }}
+	{{ gaugeBounds := gaugeSettings.boundsResolver() }}
+	{{ percent := gaugeSettings.percentResolver() }}
+	{{ clampedValue := gaugeSettings.clampedValueResolver() }}
+	{{ gaugeLayout, layoutErr := gaugeSettings.layoutResolver() }}
+	if layoutErr != nil {
+		{{ return layoutErr }}
+	}
+	{{ resolvedBands, bandsErr := gaugeSettings.bandsResolver(gaugeLayout) }}
+	if bandsErr != nil {
+		{{ return bandsErr }}
+	}
+	{{ tickPosition, tickPositionErr := gaugeSettings.tickPositionResolver() }}
+	if tickPositionErr != nil {
+		{{ return tickPositionErr }}
+	}
+	{{ resolvedTicks := gaugeSettings.ticksResolver(gaugeLayout, tickPosition) }}
+	{{ hasOutsideTicks := tickPosition == ChartGaugeTickPositionOutside && len(resolvedTicks) > 0 }}
+	{{ textSettings, textSettingsErr := gaugeSettings.textSettingsResolver() }}
+	if textSettingsErr != nil {
+		{{ return textSettingsErr }}
+	}
+	{{ trackBand := gaugeSettings.trackResolver(gaugeLayout) }}
+	{{ trackStrokeClass := "stroke-" + chartTextDefaulter(gaugeSettings.TrackColor, "neutral-50/15") }}
+	{{ needleColor := chartTextDefaulter(gaugeSettings.NeedleColor, "neutral-50") }}
+	{{ valueColor := chartTextDefaulter(gaugeSettings.ValueColor, "neutral-50") }}
+	{{ labelColor := chartTextDefaulter(gaugeSettings.LabelColor, "neutral-400") }}
+	{{ tickColor := chartTextDefaulter(gaugeSettings.TickColor, "neutral-50/40") }}
+	{{ tickLabelColor := chartTextDefaulter(gaugeSettings.TickLabelColor, "neutral-400") }}
+	{{ arcThicknessText := chartGaugeCoordinateTextResolver(gaugeLayout.ArcThickness) }}
+	{{ arcRadiusText := chartGaugeCoordinateTextResolver(gaugeLayout.ArcRadius) }}
+	{{ needleThicknessText := chartGaugeCoordinateTextResolver(gaugeLayout.NeedleThickness) }}
+	{{ needleTipY := chartGaugeCoordinateTextResolver(100 - gaugeLayout.NeedleLength) }}
+	{{ pivotRadiusText := chartGaugeCoordinateTextResolver(gaugeLayout.PivotRadius) }}
+	{{ needleTransform := chartGaugeNeedleTransformResolver(percent, gaugeSettings.IsSemicircle) }}
+	{{ hasLabel := gaugeSettings.Label != "" }}
+	{{ textLayout := chartGaugeTextLayoutResolver(hasLabel, gaugeSettings.IsSemicircle, textSettings) }}
+	{{ valueTextSize := chartGaugeCoordinateTextResolver(textSettings.ValueSize) }}
+	{{ labelTextSize := chartGaugeCoordinateTextResolver(textSettings.LabelSize) }}
+	{{ valueText := chartRoundedValueTextResolver(clampedValue) }}
+	{{ textWidth := chartGaugeTextWidthResolver(valueText, gaugeSettings.Label, hasLabel, textSettings) }}
+	<!-- ChartGauge -->
+	<div
+		class={ "relative w-full " + chartTextDefaulter(componentSettings.HeightClass, "h-64") }
+		role="meter"
+		if componentSettings.AriaLabel != "" {
+			aria-label={ componentSettings.AriaLabel }
+		}
+		aria-valuemin={ strconv.FormatFloat(gaugeBounds.Min, 'f', -1, 64) }
+		aria-valuemax={ strconv.FormatFloat(gaugeBounds.Max, 'f', -1, 64) }
+		aria-valuenow={ strconv.FormatFloat(clampedValue, 'f', 2, 64) }
+	>
+		<svg viewBox={ chartGaugeViewBoxResolver(gaugeSettings.IsSemicircle, hasOutsideTicks, textLayout.Bottom, textWidth) } class="h-full w-full" aria-hidden="true">
+			@chartGaugeArcShape(trackBand, trackStrokeClass, arcThicknessText, arcRadiusText)
+			for _, band := range resolvedBands {
+				@chartGaugeArcShape(band, "stroke-"+band.Color, arcThicknessText, arcRadiusText)
+			}
+			for _, tick := range resolvedTicks {
+				<line
+					x1={ tick.LineX1 }
+					y1={ tick.LineY1 }
+					x2={ tick.LineX2 }
+					y2={ tick.LineY2 }
+					stroke-width="1.5"
+					stroke-linecap="round"
+					class={ "stroke-" + tickColor }
+				></line>
+			}
+			<line
+				x1="100"
+				y1="100"
+				x2="100"
+				y2={ needleTipY }
+				stroke-width={ needleThicknessText }
+				stroke-linecap="round"
+				class={ "stroke-" + needleColor }
+				transform={ needleTransform }
+			></line>
+			<circle
+				cx="100"
+				cy="100"
+				r={ pivotRadiusText }
+				class={ "fill-" + needleColor }
+			></circle>
+			for _, tick := range resolvedTicks {
+				if chartGaugeTickLabelShouldRender(tick, tickPosition, gaugeSettings.IsSemicircle) {
+					<text
+						x={ tick.LabelX }
+						y={ tick.LabelY }
+						text-anchor="middle"
+						dominant-baseline="middle"
+						font-size="10"
+						class={ "fill-" + tickLabelColor }
+					>
+						{ tick.Label }
+					</text>
+				}
+			}
+			<text
+				x="100"
+				y={ textLayout.ValueY }
+				text-anchor="middle"
+				dominant-baseline="middle"
+				font-size={ valueTextSize }
+				font-weight="600"
+				class={ "fill-" + valueColor }
+			>
+				{ valueText }
+			</text>
+			if hasLabel {
+				<text
+					x="100"
+					y={ textLayout.LabelY }
+					text-anchor="middle"
+					dominant-baseline="middle"
+					font-size={ labelTextSize }
+					class={ "fill-" + labelColor }
+				>
+					{ gaugeSettings.Label }
+				</text>
+			}
+		</svg>
+	</div>
+}
+
 templ Chart(componentSettings ChartSettings) {
+	{{ chartType, chartTypeErr := componentSettings.chartTypeResolver() }}
+	if chartTypeErr != nil {
+		{{ return chartTypeErr }}
+	}
+	if chartType == ChartTypeProgress {
+		@chartProgress(componentSettings)
+		{{ return }}
+	}
+	if chartType == ChartTypeGauge {
+		@chartGauge(componentSettings)
+		{{ return }}
+	}
 	<!-- Chart -->
 	{{ resolvedConfig, configErr := componentSettings.configResolver() }}
 	if configErr != nil {

@@ -52,7 +52,7 @@ templ AccordionItemIconsExample() {
 	}
 }
 
-templ AccordionSurfacePaddingExample() {
+templ AccordionAppearanceExample() {
 	{{
 		surfaceUsage := `@uiDisplay.Accordion(uiDisplay.AccordionSettings{
 	Items: []uiDisplay.AccordionItemSettings{
@@ -71,7 +71,7 @@ templ AccordionSurfacePaddingExample() {
 })`
 	}}
 	@DemoExampleCardStacked(
-		"Surface & Padding",
+		"Appearance",
 		"Background, open background, content background, title color, border, and radius style the item surface. PaddingSize and ContentPaddingSize scale the paddings.",
 		"/display/accordion.templ", surfaceUsage,
 	) {
@@ -247,7 +247,7 @@ templ AccordionDemo() {
 		}
 		@DemoAdvancedExamples("accordion-demo", []uiDisplay.AccordionItemSettings{
 			{Title: "Item Icons", Icon: "ph-star", Content: AccordionItemIconsExample()},
-			{Title: "Surface & Padding", Icon: "ph-palette", Content: AccordionSurfacePaddingExample()},
+			{Title: "Appearance", Icon: "ph-palette", Content: AccordionAppearanceExample()},
 			{Title: "Single Open", Icon: "ph-rows", Content: AccordionSingleOpenExample()},
 			{Title: "First Item Open", Icon: "ph-caret-down", Content: AccordionFirstItemOpenExample()},
 			{Title: "Text Case", Icon: "ph-text-t", Content: AccordionTextCaseExample()},

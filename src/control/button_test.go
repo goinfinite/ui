@@ -33,6 +33,29 @@ func TestButtonRendersPaddingAndSizeConstraints(t *testing.T) {
 	}
 }
 
+func TestButtonRendersAriaExpanded(t *testing.T) {
+	var buffer bytes.Buffer
+	renderErr := Button(ButtonSettings{
+		AriaExpandedOneWayStatePath: "isOpen",
+		AriaLabel:                   "Toggle date picker",
+		IconLeft:                    "ph-calendar-blank",
+		OnClickFunc:                 "togglePopover()",
+	}).Render(context.Background(), &buffer)
+	if renderErr != nil {
+		t.Fatalf("ButtonRenderFailed: %v", renderErr)
+	}
+	renderedHtml := buffer.String()
+	for _, expectedFragment := range []string{
+		`:aria-expanded="isOpen"`,
+		`aria-label="Toggle date picker"`,
+		`@click="togglePopover()"`,
+	} {
+		if !strings.Contains(renderedHtml, expectedFragment) {
+			t.Errorf("RenderedHtmlMissingFragment: %q", expectedFragment)
+		}
+	}
+}
+
 func TestButtonRendersActionDisplay(t *testing.T) {
 	testCases := []struct {
 		name               string

@@ -1,6 +1,7 @@
 package main
 
 import (
+	uiControl "github.com/goinfinite/ui/src/control"
 	uiDisplay "github.com/goinfinite/ui/src/display"
 	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
@@ -58,8 +59,8 @@ templ ChartLineExample() {
 				YAxis:             uiDisplay.ChartYAxisSettings{Title: "GiB", TickLabelFormat: ",.0f"},
 				MarkerDisplayMode: uiDisplay.ChartMarkerDisplayModeAlways,
 			},
-			Rows:              chartDemoMonthlyTrafficRows(),
-			AriaLabel:         "Monthly network traffic",
+			Rows:      chartDemoMonthlyTrafficRows(),
+			AriaLabel: "Monthly network traffic",
 		})
 	}
 }
@@ -88,6 +89,44 @@ templ ChartBarExample() {
 	) {
 		@uiDisplay.Chart(uiDisplay.ChartSettings{
 			Type:  uiDisplay.ChartTypeBar,
+			XAxis: uiDisplay.ChartXAxisSettings{RowKey: "month"},
+			Series: []uiDisplay.ChartSeriesSettings{
+				{RowKey: "received", Label: "Received (GiB)"},
+				{RowKey: "transmitted", Label: "Transmitted (GiB)"},
+			},
+			Cartesian: uiDisplay.ChartCartesianSettings{
+				YAxis: uiDisplay.ChartYAxisSettings{TickLabelFormat: ",.0f"},
+			},
+			Rows:      chartDemoMonthlyTrafficRows(),
+			AriaLabel: "Monthly network traffic",
+		})
+	}
+}
+
+templ ChartHorizontalBarExample() {
+	{{
+		horizontalBarUsage := `@uiDisplay.Chart(uiDisplay.ChartSettings{
+	Type:  uiDisplay.ChartTypeHorizontalBar,
+	XAxis: uiDisplay.ChartXAxisSettings{RowKey: "month"},
+	Series: []uiDisplay.ChartSeriesSettings{
+		{RowKey: "received", Label: "Received (GiB)"},
+		{RowKey: "transmitted", Label: "Transmitted (GiB)"},
+	},
+
+	// OptionalFields
+	Cartesian: uiDisplay.ChartCartesianSettings{
+		YAxis: uiDisplay.ChartYAxisSettings{TickLabelFormat: ",.0f"},
+	},
+	Rows: chartDemoMonthlyTrafficRows(),
+})`
+	}}
+	@DemoExampleCard(
+		"Horizontal Bar",
+		"HorizontalBar draws the bars sideways: the category axis runs down the left edge and the value axis runs along the bottom. XAxis keeps naming the category, and Cartesian.YAxis keeps naming the value axis, whatever the orientation.",
+		"/display/chart.templ", horizontalBarUsage,
+	) {
+		@uiDisplay.Chart(uiDisplay.ChartSettings{
+			Type:  uiDisplay.ChartTypeHorizontalBar,
 			XAxis: uiDisplay.ChartXAxisSettings{RowKey: "month"},
 			Series: []uiDisplay.ChartSeriesSettings{
 				{RowKey: "received", Label: "Received (GiB)"},
@@ -147,9 +186,13 @@ templ ChartDonutExample() {
 
 	// OptionalFields
 	Tooltip: uiDisplay.ChartTooltipSettings{ValueFormat: ",.1f"},
-	Donut: uiDisplay.ChartDonutSettings{
-		SliceIdentityColors: map[string]string{"mariadb": "sky-500"},
-		HolePercent:         70,
+	Slices: uiDisplay.ChartSliceSettings{
+		CenterLabelDisplayMode: uiDisplay.ChartCenterLabelDisplayModeAlways,
+		CenterLabelAlwaysSlice: "mariadb",
+		CenterLabelSize:        uiDisplay.ChartCenterLabelSizeLg,
+		CenterLabelValueSuffix: " GiB",
+		HolePercent:            70,
+		SliceIdentityColors:    map[string]string{"mariadb": "sky-500"},
 	},
 	Rows: []map[string]any{
 		{"service": "mariadb", "usedGib": 42.5},
@@ -161,35 +204,59 @@ templ ChartDonutExample() {
 	}}
 	@DemoExampleCard(
 		"Donut",
-		"Donut reads one value per row from the first series. XAxis.RowKey names the slice, and the legend lists the slices in row order. Donut.SliceIdentityColors sets the color of a slice by its name.",
+		"Donut reads one value per row from the first series. XAxis.RowKey names the slice, and the legend lists the slices in row order. Slices.SliceIdentityColors sets the color of a slice by its name. The first donut leaves the center label hidden; the second turns it on. Slices.CenterLabelDisplayMode shows the slice name and its value in the hole: Always keeps the CenterLabelAlwaysSlice value, or the first slice when it is empty, until a hover replaces it, and Hover shows the label only while a slice is hovered. CenterLabelSize scales both lines, and CenterLabelValueSuffix follows the value.",
 		"/display/chart.templ", donutUsage,
 	) {
-		@uiDisplay.Chart(uiDisplay.ChartSettings{
-			Type:  uiDisplay.ChartTypeDonut,
-			XAxis: uiDisplay.ChartXAxisSettings{RowKey: "service"},
-			Series: []uiDisplay.ChartSeriesSettings{
-				{RowKey: "usedGib", Label: "Storage (GiB)"},
-			},
-			Rows: []map[string]any{
-				{"service": "mariadb", "usedGib": 42.5},
-				{"service": "nginx", "usedGib": 3.2},
-				{"service": "php-webserver", "usedGib": 18.9},
-				{"service": "redis", "usedGib": 6.4},
-			},
-			Tooltip: uiDisplay.ChartTooltipSettings{ValueFormat: ",.1f"},
-			Donut: uiDisplay.ChartDonutSettings{
-				SliceIdentityColors: map[string]string{"mariadb": "sky-500"},
-				HolePercent:         70,
-			},
-			AriaLabel: "Storage by service",
-		})
+		<div class="flex flex-col gap-4">
+			@uiDisplay.Chart(uiDisplay.ChartSettings{
+				Type:  uiDisplay.ChartTypeDonut,
+				XAxis: uiDisplay.ChartXAxisSettings{RowKey: "service"},
+				Series: []uiDisplay.ChartSeriesSettings{
+					{RowKey: "usedGib", Label: "Storage (GiB)"},
+				},
+				Rows: []map[string]any{
+					{"service": "mariadb", "usedGib": 42.5},
+					{"service": "nginx", "usedGib": 3.2},
+					{"service": "php-webserver", "usedGib": 18.9},
+					{"service": "redis", "usedGib": 6.4},
+				},
+				Tooltip: uiDisplay.ChartTooltipSettings{ValueFormat: ",.1f"},
+				Slices: uiDisplay.ChartSliceSettings{
+					SliceIdentityColors: map[string]string{"mariadb": "sky-500"},
+					HolePercent:         70,
+				},
+				AriaLabel: "Storage by service",
+			})
+			@uiDisplay.Chart(uiDisplay.ChartSettings{
+				Type:  uiDisplay.ChartTypeDonut,
+				XAxis: uiDisplay.ChartXAxisSettings{RowKey: "service"},
+				Series: []uiDisplay.ChartSeriesSettings{
+					{RowKey: "usedGib", Label: "Storage (GiB)"},
+				},
+				Rows: []map[string]any{
+					{"service": "mariadb", "usedGib": 42.5},
+					{"service": "nginx", "usedGib": 3.2},
+					{"service": "php-webserver", "usedGib": 18.9},
+					{"service": "redis", "usedGib": 6.4},
+				},
+				Tooltip: uiDisplay.ChartTooltipSettings{ValueFormat: ",.1f"},
+				Slices: uiDisplay.ChartSliceSettings{
+					CenterLabelDisplayMode: uiDisplay.ChartCenterLabelDisplayModeAlways,
+					CenterLabelAlwaysSlice: "mariadb",
+					CenterLabelSize:        uiDisplay.ChartCenterLabelSizeLg,
+					CenterLabelValueSuffix: " GiB",
+					HolePercent:            70,
+				},
+				AriaLabel: "Storage by service with center label",
+			})
+		</div>
 	}
 }
 
-templ ChartDonutCenterLabelExample() {
+templ ChartPieExample() {
 	{{
-		centerLabelUsage := `@uiDisplay.Chart(uiDisplay.ChartSettings{
-	Type:  uiDisplay.ChartTypeDonut,
+		pieUsage := `@uiDisplay.Chart(uiDisplay.ChartSettings{
+	Type:  uiDisplay.ChartTypePie,
 	XAxis: uiDisplay.ChartXAxisSettings{RowKey: "service"},
 	Series: []uiDisplay.ChartSeriesSettings{
 		{RowKey: "usedGib", Label: "Storage (GiB)"},
@@ -197,12 +264,9 @@ templ ChartDonutCenterLabelExample() {
 
 	// OptionalFields
 	Tooltip: uiDisplay.ChartTooltipSettings{ValueFormat: ",.1f"},
-	Donut: uiDisplay.ChartDonutSettings{
-		CenterLabelDisplayMode: uiDisplay.ChartDonutCenterLabelDisplayModeAlways,
-		CenterLabelAlwaysSlice: "mariadb",
-		CenterLabelSize:        uiDisplay.ChartDonutCenterLabelSizeLg,
-		CenterLabelValueSuffix: " GiB",
-		HolePercent:            70,
+	Slices: uiDisplay.ChartSliceSettings{
+		SliceIdentityColors:           map[string]string{"mariadb": "sky-500"},
+		SliceLabelPillBackgroundColor: "neutral-950/80",
 	},
 	Rows: []map[string]any{
 		{"service": "mariadb", "usedGib": 42.5},
@@ -213,12 +277,12 @@ templ ChartDonutCenterLabelExample() {
 })`
 	}}
 	@DemoExampleCard(
-		"Donut Center Label",
-		"Donut.CenterLabelDisplayMode shows the slice name and its value in the donut hole. Always keeps the CenterLabelAlwaysSlice value, or the first slice when it is empty, until a hover replaces it. Hover shows the label only while a slice is hovered. CenterLabelSize scales both lines, and CenterLabelValueSuffix follows the value.",
-		"/display/chart.templ", centerLabelUsage,
+		"Pie",
+		"Pie is a donut with no hole. It reads the same rows as the donut, ignores Slices.HolePercent, and hides the center label. Each slice shows its share of the total on a rounded pill, so the label stays readable on a small slice; Slices.SliceLabelPillBackgroundColor paints the pill, Slices.SliceLabelColor paints the text, and Slices.IsSliceLabelHidden removes both.",
+		"/display/chart.templ", pieUsage,
 	) {
 		@uiDisplay.Chart(uiDisplay.ChartSettings{
-			Type:  uiDisplay.ChartTypeDonut,
+			Type:  uiDisplay.ChartTypePie,
 			XAxis: uiDisplay.ChartXAxisSettings{RowKey: "service"},
 			Series: []uiDisplay.ChartSeriesSettings{
 				{RowKey: "usedGib", Label: "Storage (GiB)"},
@@ -230,14 +294,341 @@ templ ChartDonutCenterLabelExample() {
 				{"service": "redis", "usedGib": 6.4},
 			},
 			Tooltip: uiDisplay.ChartTooltipSettings{ValueFormat: ",.1f"},
-			Donut: uiDisplay.ChartDonutSettings{
-				CenterLabelDisplayMode: uiDisplay.ChartDonutCenterLabelDisplayModeAlways,
-				CenterLabelAlwaysSlice: "mariadb",
-				CenterLabelSize:        uiDisplay.ChartDonutCenterLabelSizeLg,
-				CenterLabelValueSuffix: " GiB",
-				HolePercent:            70,
+			Slices: uiDisplay.ChartSliceSettings{
+				SliceIdentityColors:           map[string]string{"mariadb": "sky-500"},
+				SliceLabelPillBackgroundColor: "neutral-950/80",
 			},
 			AriaLabel: "Storage by service",
+		})
+	}
+}
+
+templ ChartRadialBarExample() {
+	{{
+		radialBarUsage := `@uiDisplay.Chart(uiDisplay.ChartSettings{
+	Type:  uiDisplay.ChartTypeRadialBar,
+	XAxis: uiDisplay.ChartXAxisSettings{RowKey: "service"},
+	Series: []uiDisplay.ChartSeriesSettings{
+		{RowKey: "usedGib", Label: "Storage (GiB)"},
+	},
+
+	// OptionalFields
+	Tooltip: uiDisplay.ChartTooltipSettings{ValueFormat: ",.1f"},
+	Slices: uiDisplay.ChartSliceSettings{
+		CenterLabelDisplayMode: uiDisplay.ChartCenterLabelDisplayModeAlways,
+		HolePercent:            40,
+		SliceIdentityColors:    map[string]string{"mariadb": "sky-500"},
+	},
+	Rows: []map[string]any{
+		{"service": "mariadb", "usedGib": 42.5},
+		{"service": "nginx", "usedGib": 3.2},
+		{"service": "php-webserver", "usedGib": 18.9},
+		{"service": "redis", "usedGib": 6.4},
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Radial Bar",
+		"Radial Bar is a circular bar chart. It reads the same rows as the donut, and each category gets one bar that grows outward from Slices.HolePercent to the outer edge. Each bar shows its share of the largest value at its midpoint on a rounded pill; Slices.IsSliceLabelHidden removes that label, Slices.SliceLabelColor paints it, and Slices.SliceLabelPillBackgroundColor paints the pill. The legend lists the categories in row order. CenterLabelDisplayMode has no effect on a radial bar.",
+		"/display/chart.templ", radialBarUsage,
+	) {
+		@uiDisplay.Chart(uiDisplay.ChartSettings{
+			Type:  uiDisplay.ChartTypeRadialBar,
+			XAxis: uiDisplay.ChartXAxisSettings{RowKey: "service"},
+			Series: []uiDisplay.ChartSeriesSettings{
+				{RowKey: "usedGib", Label: "Storage (GiB)"},
+			},
+			Rows: []map[string]any{
+				{"service": "mariadb", "usedGib": 42.5},
+				{"service": "nginx", "usedGib": 3.2},
+				{"service": "php-webserver", "usedGib": 18.9},
+				{"service": "redis", "usedGib": 6.4},
+			},
+			Tooltip: uiDisplay.ChartTooltipSettings{ValueFormat: ",.1f"},
+			Slices: uiDisplay.ChartSliceSettings{
+				CenterLabelDisplayMode: uiDisplay.ChartCenterLabelDisplayModeAlways,
+				HolePercent:            40,
+				SliceIdentityColors:    map[string]string{"mariadb": "sky-500"},
+			},
+			AriaLabel: "Storage by service",
+		})
+	}
+}
+
+templ ChartWaffleExample() {
+	{{
+		waffleUsage := `@uiDisplay.Chart(uiDisplay.ChartSettings{
+	Type:  uiDisplay.ChartTypeWaffle,
+	XAxis: uiDisplay.ChartXAxisSettings{RowKey: "service"},
+	Series: []uiDisplay.ChartSeriesSettings{
+		{RowKey: "usedGib", Label: "Storage (GiB)"},
+	},
+
+	// OptionalFields
+	Tooltip: uiDisplay.ChartTooltipSettings{ValueFormat: ",.1f"},
+	Slices: uiDisplay.ChartSliceSettings{
+		SliceIdentityColors: map[string]string{"mariadb": "sky-500"},
+	},
+	Waffle: uiDisplay.ChartWaffleSettings{CellCount: 100, ColumnCount: 10},
+	Rows: []map[string]any{
+		{"service": "mariadb", "usedGib": 42.5},
+		{"service": "nginx", "usedGib": 3.2},
+		{"service": "php-webserver", "usedGib": 18.9},
+		{"service": "redis", "usedGib": 6.4},
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Waffle",
+		"Waffle shows the parts of a whole as a grid of equal cells. Each category gets as many cells as its share of the total. Waffle.CellCount sets the cell total (default 100), Waffle.ColumnCount the grid width (default 10), Waffle.CellShape draws squares or circles, and Waffle.CellGapPercent sets the space between cells (default 4). Colors come from Slices.SliceIdentityColors and the palette.",
+		"/display/chart.templ", waffleUsage,
+	) {
+		@uiDisplay.Chart(uiDisplay.ChartSettings{
+			Type:  uiDisplay.ChartTypeWaffle,
+			XAxis: uiDisplay.ChartXAxisSettings{RowKey: "service"},
+			Series: []uiDisplay.ChartSeriesSettings{
+				{RowKey: "usedGib", Label: "Storage (GiB)"},
+			},
+			Rows: []map[string]any{
+				{"service": "mariadb", "usedGib": 42.5},
+				{"service": "nginx", "usedGib": 3.2},
+				{"service": "php-webserver", "usedGib": 18.9},
+				{"service": "redis", "usedGib": 6.4},
+			},
+			Tooltip: uiDisplay.ChartTooltipSettings{ValueFormat: ",.1f"},
+			Slices: uiDisplay.ChartSliceSettings{
+				SliceIdentityColors: map[string]string{"mariadb": "sky-500"},
+			},
+			Waffle:    uiDisplay.ChartWaffleSettings{CellCount: 100, ColumnCount: 10},
+			AriaLabel: "Storage by service",
+		})
+	}
+}
+
+templ ChartWaffleCellShapeExample() {
+	{{
+		cellShapeUsage := `@uiDisplay.Chart(uiDisplay.ChartSettings{
+	Type:  uiDisplay.ChartTypeWaffle,
+	XAxis: uiDisplay.ChartXAxisSettings{RowKey: "service"},
+	Series: []uiDisplay.ChartSeriesSettings{
+		{RowKey: "usedGib", Label: "Storage (GiB)"},
+	},
+
+	// OptionalFields
+	Waffle: uiDisplay.ChartWaffleSettings{
+		CellCount:      100,
+		CellGapPercent: 25,
+		CellShape:      uiDisplay.ChartWaffleCellShapeCircle,
+		ColumnCount:    10,
+	},
+	Rows: []map[string]any{
+		{"service": "mariadb", "usedGib": 42.5},
+		{"service": "nginx", "usedGib": 3.2},
+		{"service": "php-webserver", "usedGib": 18.9},
+		{"service": "redis", "usedGib": 6.4},
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Waffle Shape and Gap",
+		"Waffle.CellShape takes square (the default) or circle. Waffle.CellGapPercent sets the space between cells from 0 to 60; the default is 4, 25 opens the circles, and 8 keeps the squares close.",
+		"/display/chart.templ", cellShapeUsage,
+	) {
+		<div class="flex flex-col gap-4">
+			@uiDisplay.Chart(uiDisplay.ChartSettings{
+				Type:  uiDisplay.ChartTypeWaffle,
+				XAxis: uiDisplay.ChartXAxisSettings{RowKey: "service"},
+				Series: []uiDisplay.ChartSeriesSettings{
+					{RowKey: "usedGib", Label: "Storage (GiB)"},
+				},
+				Rows: []map[string]any{
+					{"service": "mariadb", "usedGib": 42.5},
+					{"service": "nginx", "usedGib": 3.2},
+					{"service": "php-webserver", "usedGib": 18.9},
+					{"service": "redis", "usedGib": 6.4},
+				},
+				Tooltip: uiDisplay.ChartTooltipSettings{ValueFormat: ",.1f"},
+				Waffle: uiDisplay.ChartWaffleSettings{
+					CellCount:      100,
+					CellGapPercent: 25,
+					CellShape:      uiDisplay.ChartWaffleCellShapeCircle,
+					ColumnCount:    10,
+				},
+				AriaLabel: "Storage by service with circles",
+			})
+			@uiDisplay.Chart(uiDisplay.ChartSettings{
+				Type:  uiDisplay.ChartTypeWaffle,
+				XAxis: uiDisplay.ChartXAxisSettings{RowKey: "service"},
+				Series: []uiDisplay.ChartSeriesSettings{
+					{RowKey: "usedGib", Label: "Storage (GiB)"},
+				},
+				Rows: []map[string]any{
+					{"service": "mariadb", "usedGib": 42.5},
+					{"service": "nginx", "usedGib": 3.2},
+					{"service": "php-webserver", "usedGib": 18.9},
+					{"service": "redis", "usedGib": 6.4},
+				},
+				Tooltip: uiDisplay.ChartTooltipSettings{ValueFormat: ",.1f"},
+				Waffle: uiDisplay.ChartWaffleSettings{
+					CellCount:      100,
+					CellGapPercent: 8,
+					CellShape:      uiDisplay.ChartWaffleCellShapeSquare,
+					ColumnCount:    10,
+				},
+				AriaLabel: "Storage by service with squares",
+			})
+		</div>
+	}
+}
+
+templ ChartSunburstExample() {
+	{{
+		sunburstUsage := `@uiDisplay.Chart(uiDisplay.ChartSettings{
+	Type:  uiDisplay.ChartTypeSunburst,
+	XAxis: uiDisplay.ChartXAxisSettings{RowKey: "team"},
+	Series: []uiDisplay.ChartSeriesSettings{
+		{RowKey: "usedGib", Label: "Storage (GiB)"},
+	},
+	Sunburst: uiDisplay.ChartSunburstSettings{ChildRowKey: "service"},
+
+	// OptionalFields
+	Tooltip: uiDisplay.ChartTooltipSettings{ValueFormat: ",.1f"},
+	Slices: uiDisplay.ChartSliceSettings{
+		SliceIdentityColors: map[string]string{"storage": "sky-500"},
+	},
+	Rows: []map[string]any{
+		{"team": "storage", "service": "mariadb", "usedGib": 42.5},
+		{"team": "storage", "service": "nginx", "usedGib": 3.2},
+		{"team": "compute", "service": "php-webserver", "usedGib": 18.9},
+		{"team": "compute", "service": "redis", "usedGib": 6.4},
+		{"team": "backup", "service": "", "usedGib": 9.3},
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Sunburst",
+		"Sunburst is a donut with a second ring. XAxis.RowKey names the category and Sunburst.ChildRowKey the child. The inner ring holds one arc per category, and the outer ring one arc per child. A category arc spans the sum of its children. A row with an empty child draws its category arc only. Children draw in their category color at 60 percent opacity. Each arc shows its percentage at its midpoint on a rounded pill: a category arc shows its share of the total and a child arc its share of its category. Slices.IsSliceLabelHidden removes those labels, Slices.SliceLabelColor paints them, and Slices.SliceLabelPillBackgroundColor paints the pill.",
+		"/display/chart.templ", sunburstUsage,
+	) {
+		@uiDisplay.Chart(uiDisplay.ChartSettings{
+			Type:  uiDisplay.ChartTypeSunburst,
+			XAxis: uiDisplay.ChartXAxisSettings{RowKey: "team"},
+			Series: []uiDisplay.ChartSeriesSettings{
+				{RowKey: "usedGib", Label: "Storage (GiB)"},
+			},
+			Rows: []map[string]any{
+				{"team": "storage", "service": "mariadb", "usedGib": 42.5},
+				{"team": "storage", "service": "nginx", "usedGib": 3.2},
+				{"team": "compute", "service": "php-webserver", "usedGib": 18.9},
+				{"team": "compute", "service": "redis", "usedGib": 6.4},
+				{"team": "backup", "service": "", "usedGib": 9.3},
+			},
+			Tooltip: uiDisplay.ChartTooltipSettings{ValueFormat: ",.1f"},
+			Slices: uiDisplay.ChartSliceSettings{
+				SliceIdentityColors: map[string]string{"storage": "sky-500"},
+			},
+			Sunburst:  uiDisplay.ChartSunburstSettings{ChildRowKey: "service"},
+			AriaLabel: "Storage by team and service",
+		})
+	}
+}
+
+templ ChartParliamentExample() {
+	{{
+		parliamentUsage := `@uiDisplay.Chart(uiDisplay.ChartSettings{
+	Type:  uiDisplay.ChartTypeParliament,
+	XAxis: uiDisplay.ChartXAxisSettings{RowKey: "party"},
+	Series: []uiDisplay.ChartSeriesSettings{
+		{RowKey: "seats", Label: "Seats"},
+	},
+
+	// OptionalFields
+	Parliament: uiDisplay.ChartParliamentSettings{RowCount: 6, DotGapPercent: 20},
+	Tooltip:    uiDisplay.ChartTooltipSettings{ValueFormat: ",.0f"},
+	Slices: uiDisplay.ChartSliceSettings{
+		SliceIdentityColors: map[string]string{"Center": "sky-500"},
+	},
+	Rows: []map[string]any{
+		{"party": "Center", "seats": 52},
+		{"party": "Alliance", "seats": 41},
+		{"party": "Greens", "seats": 27},
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Parliament",
+		"Parliament draws one dot per seat over concentric semicircle rows. XAxis.RowKey names the party and the first series holds the seat count. Parties fill the seats as contiguous blocks, ordered by row and then left to right. RowCount sets the number of rows, DotShape picks the dot symbol — circle, square, diamond, cross, triangleUp, or triangleDown — DotGapPercent sets the empty share of the space between seats, and DotSizePercent scales each dot on top of that space.",
+		"/display/chart.templ", parliamentUsage,
+	) {
+		@uiDisplay.Chart(uiDisplay.ChartSettings{
+			Type:  uiDisplay.ChartTypeParliament,
+			XAxis: uiDisplay.ChartXAxisSettings{RowKey: "party"},
+			Series: []uiDisplay.ChartSeriesSettings{
+				{RowKey: "seats", Label: "Seats"},
+			},
+			Rows: []map[string]any{
+				{"party": "Center", "seats": 52},
+				{"party": "Alliance", "seats": 41},
+				{"party": "Greens", "seats": 27},
+			},
+			Tooltip: uiDisplay.ChartTooltipSettings{ValueFormat: ",.0f"},
+			Slices: uiDisplay.ChartSliceSettings{
+				SliceIdentityColors: map[string]string{"Center": "sky-500"},
+			},
+			Parliament: uiDisplay.ChartParliamentSettings{RowCount: 6, DotGapPercent: 20},
+			AriaLabel:  "Seats by party",
+		})
+	}
+}
+
+templ ChartParliamentDotShapeExample() {
+	{{
+		dotShapeUsage := `@uiDisplay.Chart(uiDisplay.ChartSettings{
+	Type:  uiDisplay.ChartTypeParliament,
+	XAxis: uiDisplay.ChartXAxisSettings{RowKey: "party"},
+	Series: []uiDisplay.ChartSeriesSettings{
+		{RowKey: "seats", Label: "Seats"},
+	},
+
+	// OptionalFields
+	Parliament: uiDisplay.ChartParliamentSettings{
+		RowCount:       5,
+		DotShape:       uiDisplay.ChartDotShapeSquare,
+		DotGapPercent:  15,
+		DotSizePercent: 85,
+	},
+	Tooltip: uiDisplay.ChartTooltipSettings{ValueFormat: ",.0f"},
+	Rows: []map[string]any{
+		{"party": "Center", "seats": 52},
+		{"party": "Alliance", "seats": 41},
+		{"party": "Greens", "seats": 27},
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Parliament Dot Shape",
+		"Parliament.DotShape takes circle (the default), square, diamond, cross, triangleUp, or triangleDown. DotGapPercent sets the empty share between seats from 0 to 95, where zero selects the default of 25. DotSizePercent scales each dot from 10 to 200 on top of the seat space.",
+		"/display/chart.templ", dotShapeUsage,
+	) {
+		@uiDisplay.Chart(uiDisplay.ChartSettings{
+			Type:  uiDisplay.ChartTypeParliament,
+			XAxis: uiDisplay.ChartXAxisSettings{RowKey: "party"},
+			Series: []uiDisplay.ChartSeriesSettings{
+				{RowKey: "seats", Label: "Seats"},
+			},
+			Rows: []map[string]any{
+				{"party": "Center", "seats": 52},
+				{"party": "Alliance", "seats": 41},
+				{"party": "Greens", "seats": 27},
+			},
+			Tooltip: uiDisplay.ChartTooltipSettings{ValueFormat: ",.0f"},
+			Parliament: uiDisplay.ChartParliamentSettings{
+				RowCount:       5,
+				DotShape:       uiDisplay.ChartDotShapeSquare,
+				DotGapPercent:  15,
+				DotSizePercent: 85,
+			},
+			AriaLabel: "Seats by party",
 		})
 	}
 }
@@ -356,6 +747,397 @@ templ ChartEmptyExample() {
 	}
 }
 
+templ ChartProgressExample() {
+	{{
+		progressUsage := `@uiDisplay.Chart(uiDisplay.ChartSettings{
+	Type: uiDisplay.ChartTypeProgress,
+
+	// OptionalFields
+	Progress: uiDisplay.ChartProgressSettings{
+		Value:                  65,
+		ShouldShowPercentLabel: true,
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Progress",
+		"The progress type shows how much of a task is done. It draws no Vega canvas, so a page that uses only the progress type needs no Vega head tag. Size takes xs, sm (the default), or md and sets the track height and the label text size; MinWidthClass, MaxWidthClass, MinHeightClass, and MaxHeightClass replace the default w-full and the size height. The label sits on a rounded dark pill so it stays readable over any fill; LabelBackgroundColor and LabelTextColor repaint it. LabelPrefix and LabelSuffix wrap the percent text. IsStriped draws diagonal stripes in StripeColor over the fill.",
+		"/display/chart.templ", progressUsage,
+	) {
+		<div class="flex flex-col gap-3">
+			@uiDisplay.Chart(uiDisplay.ChartSettings{
+				Type: uiDisplay.ChartTypeProgress,
+				Progress: uiDisplay.ChartProgressSettings{
+					Value:                  65,
+					ShouldShowPercentLabel: true,
+				},
+			})
+			@uiDisplay.Chart(uiDisplay.ChartSettings{
+				Type: uiDisplay.ChartTypeProgress,
+				Progress: uiDisplay.ChartProgressSettings{
+					Value:                  40,
+					IsStriped:              true,
+					ShouldShowPercentLabel: true,
+				},
+			})
+			@uiDisplay.Chart(uiDisplay.ChartSettings{
+				Type: uiDisplay.ChartTypeProgress,
+				Progress: uiDisplay.ChartProgressSettings{
+					Value:                  82,
+					LabelPrefix:            "Used ",
+					LabelSuffix:            " of capacity",
+					ShouldShowPercentLabel: true,
+				},
+			})
+			for _, size := range []string{
+				uiDisplay.ChartProgressSizeXs,
+				uiDisplay.ChartProgressSizeSm,
+				uiDisplay.ChartProgressSizeMd,
+			} {
+				@uiDisplay.Chart(uiDisplay.ChartSettings{
+					Type: uiDisplay.ChartTypeProgress,
+					Progress: uiDisplay.ChartProgressSettings{
+						Value: 60,
+						Size:  size,
+					},
+				})
+			}
+		</div>
+	}
+}
+
+templ ChartProgressThresholdsExample() {
+	{{
+		thresholdsUsage := `@uiDisplay.Chart(uiDisplay.ChartSettings{
+	Type: uiDisplay.ChartTypeProgress,
+
+	// OptionalFields
+	Progress: uiDisplay.ChartProgressSettings{
+		Value:                  78,
+		ShouldShowPercentLabel: true,
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Progress Thresholds",
+		"Without custom thresholds the bar follows the capacity defaults: cyan below 50, amber from 50, amber-600 from 75, red-600 from 85, and red-800 from 90. Thresholds replace the defaults; the first matching threshold wins, so list the highest first, and DefaultColor paints every percent below the lowest threshold. MinValue and MaxValue set the range the bar maps to a percentage, and Label replaces the percent text.",
+		"/display/chart.templ", thresholdsUsage,
+	) {
+		<div class="flex flex-col gap-3">
+			for _, value := range []float64{20, 55, 78, 87, 95} {
+				@uiDisplay.Chart(uiDisplay.ChartSettings{
+					Type: uiDisplay.ChartTypeProgress,
+					Progress: uiDisplay.ChartProgressSettings{
+						Value:                  value,
+						ShouldShowPercentLabel: true,
+					},
+				})
+			}
+			for _, value := range []float64{30, 65, 84} {
+				@uiDisplay.Chart(uiDisplay.ChartSettings{
+					Type: uiDisplay.ChartTypeProgress,
+					Progress: uiDisplay.ChartProgressSettings{
+						Value: value,
+						Thresholds: []uiDisplay.ChartProgressThresholdSettings{
+							{MinimumPercent: 80, BackgroundColor: "emerald-500"},
+							{MinimumPercent: 50, BackgroundColor: "amber-500"},
+						},
+						DefaultColor:           "rose-500",
+						ShouldShowPercentLabel: true,
+					},
+				})
+			}
+			@uiDisplay.Chart(uiDisplay.ChartSettings{
+				Type: uiDisplay.ChartTypeProgress,
+				Progress: uiDisplay.ChartProgressSettings{
+					Value:    12,
+					MinValue: 8,
+					MaxValue: 24,
+					Label:    "12 of 24",
+				},
+			})
+		</div>
+	}
+}
+
+templ ChartProgressBoundExample() {
+	{{
+		boundUsage := `@uiDisplay.Chart(uiDisplay.ChartSettings{
+	Type:      uiDisplay.ChartTypeProgress,
+	AriaLabel: "Upload progress",
+
+	// OptionalFields
+	Progress: uiDisplay.ChartProgressSettings{
+		ValueOneWayStatePath:   "uploadPercent",
+		ShouldShowPercentLabel: true,
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Progress Bound Value",
+		"Progress.ValueOneWayStatePath makes the bar follow an Alpine path. The percent, the fill color, and the accessible value all update with the path. IsIndeterminate animates the fill for work with unknown duration; that bar carries no aria-valuenow, so a screen reader reports an unknown progress.",
+		"/display/chart.templ", boundUsage,
+	) {
+		<div x-data="{uploadPercent: 35}" class="flex flex-col gap-4">
+			@uiDisplay.Chart(uiDisplay.ChartSettings{
+				Type:      uiDisplay.ChartTypeProgress,
+				AriaLabel: "Upload progress",
+				Progress: uiDisplay.ChartProgressSettings{
+					ValueOneWayStatePath:   "uploadPercent",
+					ShouldShowPercentLabel: true,
+				},
+			})
+			@uiControl.RangeSlider(uiControl.RangeSliderSettings{
+				ThumbValueTwoWayStatePath: "uploadPercent",
+				TrackStartValue:           "0",
+				TrackEndValue:             "100",
+			})
+			<p class={ DemoLiveStateClasses }>
+				uploadPercent: <span x-text="uploadPercent"></span>
+			</p>
+			@uiDisplay.Chart(uiDisplay.ChartSettings{
+				Type: uiDisplay.ChartTypeProgress,
+				Progress: uiDisplay.ChartProgressSettings{
+					IsIndeterminate: true,
+					Label:           "Syncing",
+					MinWidthClass:   "min-w-32",
+				},
+			})
+		</div>
+	}
+}
+
+templ ChartGaugeExample() {
+	{{
+		gaugeUsage := `@uiDisplay.Chart(uiDisplay.ChartSettings{
+	Type:      uiDisplay.ChartTypeGauge,
+	AriaLabel: "CPU load",
+
+	// OptionalFields
+		Gauge: uiDisplay.ChartGaugeSettings{
+			Value:       65,
+			NeedleColor: "secondary-400",
+			Bands: []uiDisplay.ChartGaugeBandSettings{
+				{MinimumPercent: 0, MaximumPercent: 60, Color: "emerald-500"},
+				{MinimumPercent: 60, MaximumPercent: 80, Color: "amber-500"},
+				{MinimumPercent: 80, MaximumPercent: 100, Color: "red-500"},
+			},
+			Label: "CPU",
+		},
+})`
+	}}
+	@DemoExampleCard(
+		"Gauge",
+		"The gauge type draws a needle over a track, with optional colored bands and a center label. It renders as plain SVG with the meter role, so the page needs no Vega head tag. Gauge.ArcThickness sizes the track and the bands, while NeedleThickness, NeedleLength, and PivotRadius shape the needle. NeedleColor paints the needle and its pivot, and ValueColor and LabelColor paint the center text.",
+		"/display/chart.templ", gaugeUsage,
+	) {
+		@uiDisplay.Chart(uiDisplay.ChartSettings{
+			Type:      uiDisplay.ChartTypeGauge,
+			AriaLabel: "CPU load",
+			Gauge: uiDisplay.ChartGaugeSettings{
+				Value:       65,
+				NeedleColor: "secondary-400",
+				Bands: []uiDisplay.ChartGaugeBandSettings{
+					{MinimumPercent: 0, MaximumPercent: 60, Color: "emerald-500"},
+					{MinimumPercent: 60, MaximumPercent: 80, Color: "amber-500"},
+					{MinimumPercent: 80, MaximumPercent: 100, Color: "red-500"},
+				},
+				Label: "CPU",
+			},
+		})
+	}
+}
+
+templ ChartGaugeSemicircleExample() {
+	{{
+		semicircleUsage := `@uiDisplay.Chart(uiDisplay.ChartSettings{
+	Type: uiDisplay.ChartTypeGauge,
+
+	// OptionalFields
+	Gauge: uiDisplay.ChartGaugeSettings{
+		Value:        72,
+		IsSemicircle: true,
+		Label:        "Memory",
+		NeedleColor:  "sky-400",
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Gauge Semicircle",
+		"Gauge.IsSemicircle draws the top half only. Gauge.NeedleColor recolors the needle and its pivot; the track keeps its default color.",
+		"/display/chart.templ", semicircleUsage,
+	) {
+		@uiDisplay.Chart(uiDisplay.ChartSettings{
+			Type: uiDisplay.ChartTypeGauge,
+			Gauge: uiDisplay.ChartGaugeSettings{
+				Value:        72,
+				IsSemicircle: true,
+				Label:        "Memory",
+				NeedleColor:  "sky-400",
+			},
+		})
+	}
+}
+
+templ ChartGaugeTicksExample() {
+	{{
+		ticksUsage := `@uiDisplay.Chart(uiDisplay.ChartSettings{
+	Type: uiDisplay.ChartTypeGauge,
+	AriaLabel: "Requests served",
+
+	// OptionalFields
+	Gauge: uiDisplay.ChartGaugeSettings{
+		Value:           65,
+		IsSemicircle:    true,
+		Label:           "Requests",
+		MaxValue:        100,
+		NeedleColor:     "sky-400",
+		ArcThickness:    20,
+		NeedleThickness: 5,
+		NeedleLength:    60,
+		TickCount:       5,
+		TickPosition:    uiDisplay.ChartGaugeTickPositionOutside,
+		Bands: []uiDisplay.ChartGaugeBandSettings{
+			{MinimumPercent: 0, MaximumPercent: 60, Color: "emerald-500"},
+			{MinimumPercent: 60, MaximumPercent: 100, Color: "neutral-700"},
+		},
+		TickColor:      "neutral-50/50",
+		TickLabelColor: "neutral-400",
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Gauge Ticks",
+		"Gauge.TickCount draws evenly spaced tick marks with a label per tick across MinValue and MaxValue. Gauge.TickPosition places them outside the track (the default) or inside it; TickColor and TickLabelColor paint them. ArcThickness widens the track and the bands together.",
+		"/display/chart.templ", ticksUsage,
+	) {
+		<div class="flex flex-col gap-4">
+			@uiDisplay.Chart(uiDisplay.ChartSettings{
+				Type:      uiDisplay.ChartTypeGauge,
+				AriaLabel: "Requests served",
+				Gauge: uiDisplay.ChartGaugeSettings{
+					Value:           65,
+					IsSemicircle:    true,
+					Label:           "Requests",
+					MaxValue:        100,
+					NeedleColor:     "sky-400",
+					ArcThickness:    20,
+					NeedleThickness: 5,
+					NeedleLength:    60,
+					TickCount:       5,
+					TickPosition:    uiDisplay.ChartGaugeTickPositionOutside,
+					Bands: []uiDisplay.ChartGaugeBandSettings{
+						{MinimumPercent: 0, MaximumPercent: 60, Color: "emerald-500"},
+						{MinimumPercent: 60, MaximumPercent: 100, Color: "neutral-700"},
+					},
+					TickColor:      "neutral-50/50",
+					TickLabelColor: "neutral-400",
+				},
+			})
+			@uiDisplay.Chart(uiDisplay.ChartSettings{
+				Type:      uiDisplay.ChartTypeGauge,
+				AriaLabel: "Requests served inside ticks",
+				Gauge: uiDisplay.ChartGaugeSettings{
+					Value:           65,
+					IsSemicircle:    true,
+					Label:           "Requests",
+					MaxValue:        100,
+					NeedleColor:     "sky-400",
+					ArcThickness:    20,
+					NeedleThickness: 5,
+					NeedleLength:    60,
+					TickCount:       5,
+					TickPosition:    uiDisplay.ChartGaugeTickPositionInside,
+					Bands: []uiDisplay.ChartGaugeBandSettings{
+						{MinimumPercent: 0, MaximumPercent: 60, Color: "emerald-500"},
+						{MinimumPercent: 60, MaximumPercent: 100, Color: "neutral-700"},
+					},
+					TickColor:      "neutral-50/50",
+					TickLabelColor: "neutral-400",
+				},
+			})
+		</div>
+	}
+}
+
+templ ChartProgressLabelSizeExample() {
+	{{
+		labelSizeUsage := `@uiDisplay.Chart(uiDisplay.ChartSettings{
+	Type: uiDisplay.ChartTypeProgress,
+
+	// OptionalFields
+	Progress: uiDisplay.ChartProgressSettings{
+		Value:                  65,
+		LabelTextSizeClass:     "text-lg",
+		ShouldShowPercentLabel: true,
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Progress Label Size",
+		"Progress.LabelTextSizeClass sets the label font size on its own, for example text-lg. Without it, the label follows Progress.Size.",
+		"/display/chart.templ", labelSizeUsage,
+	) {
+		<div class="flex flex-col gap-3">
+			for _, labelTextSizeClass := range []string{
+				"text-[0.625rem]",
+				"text-xs",
+				"text-sm",
+				"text-lg",
+				"text-2xl",
+			} {
+				@uiDisplay.Chart(uiDisplay.ChartSettings{
+					Type: uiDisplay.ChartTypeProgress,
+					Progress: uiDisplay.ChartProgressSettings{
+						Value:                  65,
+						LabelTextSizeClass:     labelTextSizeClass,
+						ShouldShowPercentLabel: true,
+					},
+				})
+			}
+		</div>
+	}
+}
+
+templ ChartGaugeTextExample() {
+	{{
+		gaugeTextUsage := `@uiDisplay.Chart(uiDisplay.ChartSettings{
+	Type: uiDisplay.ChartTypeGauge,
+	AriaLabel: "Disk usage",
+
+	// OptionalFields
+	Gauge: uiDisplay.ChartGaugeSettings{
+		Value:          72,
+		IsSemicircle:   true,
+		Label:          "Disk usage",
+		LabelTextSize:  16,
+		NeedleColor:    "sky-400",
+		TextOffset:     20,
+		ValueTextSize:  36,
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Gauge Text Size and Offset",
+		"Gauge.ValueTextSize and Gauge.LabelTextSize set the two center font sizes; the defaults are 24 and 12. Gauge.TextOffset moves the pair down, away from the pivot; the default is 0. The viewBox grows with the offset and the larger of the two text sizes, and widens for a long value or label, so the text never clips.",
+		"/display/chart.templ", gaugeTextUsage,
+	) {
+		@uiDisplay.Chart(uiDisplay.ChartSettings{
+			Type:      uiDisplay.ChartTypeGauge,
+			AriaLabel: "Disk usage",
+			Gauge: uiDisplay.ChartGaugeSettings{
+				Value:         72,
+				IsSemicircle:  true,
+				Label:         "Disk usage",
+				LabelTextSize: 16,
+				NeedleColor:   "sky-400",
+				TextOffset:    20,
+				ValueTextSize: 36,
+			},
+		})
+	}
+}
+
 templ ChartDemo() {
 	{{
 		demoUsage := `@uiDisplay.Chart(uiDisplay.ChartSettings{
@@ -386,7 +1168,7 @@ templ ChartDemo() {
 	<div class="flex flex-col gap-4" id="chart-demo">
 		@DemoComponentSection(DemoComponentSectionSettings{
 			ComponentPath:          "/display/chart.templ",
-			Description:            "A chart renders line, area, bar, and donut charts with Vega. It draws an HTML legend, a hover tooltip, and a screen-reader table, and it redraws when the rows at RowsOneWayStatePath change. The page must load Vega once, usually with @uiImport.HeadTagsVega() in the layout head.",
+			Description:            "A chart renders line, area, bar, horizontal bar, pie, donut, radial bar, sunburst, parliament, and waffle charts with Vega, and a progress bar and a gauge without it. A line, area, or bar reads the Cartesian group; a donut, pie, or radial bar reads Slices; sunburst, parliament, and waffle read Slices plus their own group; progress and gauge read only their own group. Vega charts draw an HTML legend, a hover tooltip, and a screen-reader table, and they redraw when the rows at RowsOneWayStatePath change. The page must load Vega once, usually with @uiImport.HeadTagsVega() in the layout head.",
 			LiveExampleDescription: "CPU and memory usage. The parent state appends a row every two seconds and drops the oldest.",
 			Title:                  ".Chart",
 			UsageCode:              demoUsage,
@@ -422,9 +1204,24 @@ templ ChartDemo() {
 		@DemoAdvancedExamples("chart-demo", []uiDisplay.AccordionItemSettings{
 			{Title: "Line", Icon: "ph-chart-line", Content: ChartLineExample()},
 			{Title: "Bar", Icon: "ph-chart-bar", Content: ChartBarExample()},
+			{Title: "Horizontal Bar", Icon: "ph-chart-bar-horizontal", Content: ChartHorizontalBarExample()},
 			{Title: "Stacked", Icon: "ph-stack", Content: ChartStackedExample()},
 			{Title: "Donut", Icon: "ph-chart-donut", Content: ChartDonutExample()},
-			{Title: "Donut Center Label", Icon: "ph-text-align-center", Content: ChartDonutCenterLabelExample()},
+			{Title: "Pie", Icon: "ph-chart-pie", Content: ChartPieExample()},
+			{Title: "Radial Bar", Icon: "ph-chart-polar", Content: ChartRadialBarExample()},
+			{Title: "Sunburst", Icon: "ph-sun", Content: ChartSunburstExample()},
+			{Title: "Parliament", Icon: "ph-bank", Content: ChartParliamentExample()},
+			{Title: "Parliament Dot Shape", Icon: "ph-shapes", Content: ChartParliamentDotShapeExample()},
+			{Title: "Waffle", Icon: "ph-squares-four", Content: ChartWaffleExample()},
+			{Title: "Waffle Shape and Gap", Icon: "ph-circles-three", Content: ChartWaffleCellShapeExample()},
+			{Title: "Progress", Icon: "ph-spinner-gap", Content: ChartProgressExample()},
+			{Title: "Progress Thresholds", Icon: "ph-traffic-sign", Content: ChartProgressThresholdsExample()},
+			{Title: "Progress Bound Value", Icon: "ph-link", Content: ChartProgressBoundExample()},
+			{Title: "Progress Label Size", Icon: "ph-text-aa", Content: ChartProgressLabelSizeExample()},
+			{Title: "Gauge", Icon: "ph-gauge", Content: ChartGaugeExample()},
+			{Title: "Gauge Semicircle", Icon: "ph-circle-half", Content: ChartGaugeSemicircleExample()},
+			{Title: "Gauge Ticks", Icon: "ph-ruler", Content: ChartGaugeTicksExample()},
+			{Title: "Gauge Text Size and Offset", Icon: "ph-text-aa", Content: ChartGaugeTextExample()},
 			{Title: "Appearance", Icon: "ph-palette", Content: ChartAppearanceExample()},
 			{Title: "Empty State", Icon: "ph-chart-line-down", Content: ChartEmptyExample()},
 		})
