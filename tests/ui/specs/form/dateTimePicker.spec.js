@@ -131,6 +131,59 @@ test.describe("DateTimePicker", () => {
     ).toBeDisabled();
   });
 
+  test("@browser Home and End jump to the edges of the focused week", async ({
+    page,
+  }) => {
+    const picker = page.locator(mainPickerSelector).first();
+
+    await picker.locator(triggerSelector).click();
+    await expect(picker.locator(popoverSelector)).toBeVisible();
+
+    const day16 = pickDay(picker, 16);
+    await day16.focus();
+    await day16.press("Home");
+
+    await expect(
+      picker.locator("button[data-day-index]:focus"),
+    ).toHaveAttribute("data-day-index", "14");
+
+    await page.keyboard.press("End");
+
+    await expect(
+      picker.locator("button[data-day-index]:focus"),
+    ).toHaveAttribute("data-day-index", "20");
+  });
+
+  test("@browser Home and End skip disabled days at the week edges", async ({
+    page,
+  }) => {
+    const panel = await openExamplePanel(
+      page,
+      pickerSection,
+      "Locale and Bounds",
+    );
+    const picker = panel.locator("[x-data^=dateTimePicker]").first();
+
+    await picker.locator(triggerSelector).click();
+    await expect(picker.locator(popoverSelector)).toBeVisible();
+
+    await picker.getByRole("button", { name: "Next month" }).click();
+    await expect(picker.locator(monthLabelSelector)).toHaveText(
+      /novembro de 2026/,
+    );
+
+    const lastEnabledIndex = await pickDay(picker, 20).getAttribute(
+      "data-day-index",
+    );
+    const day16 = pickDay(picker, 16);
+    await day16.focus();
+    await page.keyboard.press("End");
+
+    await expect(
+      picker.locator("button[data-day-index]:focus"),
+    ).toHaveAttribute("data-day-index", lastEnabledIndex);
+  });
+
   test("@smoke the time selector commits hours and minutes through SelectInput", async ({
     page,
   }) => {

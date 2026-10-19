@@ -171,7 +171,11 @@ UiToolset.RegisterAlpineState(() => {
         if (day.isDisabled) {
           return;
         }
-        this.assignDraft(this.composeDateDraft(day.iso));
+        const candidateDraft = this.composeDateDraft(day.iso);
+        if (this.valueIsOutOfBounds(candidateDraft)) {
+          return;
+        }
+        this.assignDraft(candidateDraft);
         if (this.isRange) {
           this.normalizeRangeOrder();
           this.activeEnd = this.activeEnd === "start" ? "end" : "start";
@@ -280,14 +284,25 @@ UiToolset.RegisterAlpineState(() => {
         this.viewYear += offset;
       },
 
-      focusDayOffset(event, offset) {
+      dayFocusTargetResolver(event) {
         const dayButtons = event.currentTarget.querySelectorAll(
           "button[data-day-index]",
         );
         if (dayButtons.length === 0) {
+          return null;
+        }
+        return {
+          dayButtons,
+          currentIndex: Number(event.target.dataset.dayIndex ?? 0),
+        };
+      },
+
+      focusDayOffset(event, offset) {
+        const dayFocusTarget = this.dayFocusTargetResolver(event);
+        if (dayFocusTarget === null) {
           return;
         }
-        const currentIndex = Number(event.target.dataset.dayIndex ?? 0);
+        const { dayButtons, currentIndex } = dayFocusTarget;
         const targetIndex = Math.min(
           Math.max(currentIndex + offset, 0),
           dayButtons.length - 1,
@@ -296,13 +311,28 @@ UiToolset.RegisterAlpineState(() => {
       },
 
       focusDayEdge(event, edge) {
-        const dayButtons = event.currentTarget.querySelectorAll(
-          "button[data-day-index]",
-        );
-        if (dayButtons.length === 0) {
+        const dayFocusTarget = this.dayFocusTargetResolver(event);
+        if (dayFocusTarget === null) {
           return;
         }
-        const targetIndex = edge === "start" ? 0 : dayButtons.length - 1;
+        const { dayButtons, currentIndex } = dayFocusTarget;
+        const weekStartIndex = currentIndex - (currentIndex % 7);
+        const weekEndIndex = Math.min(
+          weekStartIndex + 6,
+          dayButtons.length - 1,
+        );
+        const step = edge === "start" ? 1 : -1;
+        let targetIndex = edge === "start" ? weekStartIndex : weekEndIndex;
+        while (
+          targetIndex >= weekStartIndex &&
+          targetIndex <= weekEndIndex &&
+          dayButtons[targetIndex].disabled
+        ) {
+          targetIndex += step;
+        }
+        if (targetIndex < weekStartIndex || targetIndex > weekEndIndex) {
+          return;
+        }
         dayButtons[targetIndex].focus();
       },
 
@@ -546,8 +576,8 @@ UiToolset.RegisterAlpineState(() => {
         if (!this.startDraft || !this.endDraft) {
           return;
         }
-        const start = this.datePartExtractor(this.startDraft);
-        const end = this.datePartExtractor(this.endDraft);
+        const start = this.boundComparisonTextResolver(this.startDraft);
+        const end = this.boundComparisonTextResolver(this.endDraft);
         if (start > end) {
           const previousStart = this.startDraft;
           this.startDraft = this.endDraft;
