@@ -203,7 +203,7 @@ templ MultiColumnRepeatableFieldset(componentSettings MultiColumnRepeatableField
 				</tr>
 			</thead>
 			<tbody>
-				<template x-for={ "(row, rowIndex) in " + statePath } :key="rowIndex">
+				<template x-for={ "(row, rowIndex) in " + statePath } :key="rowKeyResolver(row)">
 					<tr class="border-b border-neutral-50/5">
 						for _, column := range componentSettings.Columns {
 							<td class="px-2 py-2">

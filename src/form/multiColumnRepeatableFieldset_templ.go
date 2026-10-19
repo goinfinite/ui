@@ -297,7 +297,7 @@ func MultiColumnRepeatableFieldset(componentSettings MultiColumnRepeatableFields
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" :key=\"rowIndex\"><tr class=\"border-b border-neutral-50/5\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" :key=\"rowKeyResolver(row)\"><tr class=\"border-b border-neutral-50/5\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

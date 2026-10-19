@@ -90,7 +90,7 @@ func TestMultiColumnRepeatableFieldsetRender(t *testing.T) {
 	}
 	renderedHtml := buffer.String()
 	expectedFragments := []string{
-		`x-for="(row, rowIndex) in contactRows" :key="rowIndex"`,
+		`x-for="(row, rowIndex) in contactRows" :key="rowKeyResolver(row)"`,
 		`:class="{&#39;mt-0&#39;: !row[&#34;name&#34;], &#39;!border-red-500&#39;: columnIsInvalid(row, &#34;name&#34;)}"`,
 		`x-model:value="row[&#34;name&#34;]"`,
 		`:aria-invalid="columnIsInvalid(row, &#34;name&#34;)"`,
