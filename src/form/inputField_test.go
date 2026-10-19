@@ -51,6 +51,30 @@ func TestInputFieldRendersPlaceholderStyling(t *testing.T) {
 	}
 }
 
+func TestInputFieldRendersInvalidStateBinding(t *testing.T) {
+	var buffer bytes.Buffer
+	renderErr := InputField(InputFieldSettings{
+		InputType:                InputTypeText,
+		InputName:                "name",
+		Label:                    "Name",
+		TwoWayStatePath:          "fieldValue",
+		IsInvalidOneWayStatePath: "fieldIsInvalid",
+	}).Render(context.Background(), &buffer)
+	if renderErr != nil {
+		t.Fatalf("InputFieldRenderFailed: %v", renderErr)
+	}
+	renderedHtml := buffer.String()
+	expectedFragments := []string{
+		`:class="{&#39;mt-0&#39;: !fieldValue, &#39;!border-red-500&#39;: fieldIsInvalid}"`,
+		`:aria-invalid="fieldIsInvalid"`,
+	}
+	for _, expectedFragment := range expectedFragments {
+		if !strings.Contains(renderedHtml, expectedFragment) {
+			t.Errorf("RenderedHtmlMissingFragment: %q", expectedFragment)
+		}
+	}
+}
+
 func TestInputFieldSizeTokensResolver(t *testing.T) {
 	testCases := []struct {
 		name           string

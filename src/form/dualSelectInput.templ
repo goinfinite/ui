@@ -91,6 +91,15 @@ templ DualSelectInput(componentSettings DualSelectInputSettings) {
 	if valueStateIsEmptyExpression == "" {
 		{{ valueInputClasses += " " + valueInputBandClasses }}
 	}
+	{{ triggerHorizontalPaddingClass := strings.Replace(sizeTokens.LeftPadding, "pl-", "px-", 1) }}
+	{{ displayBottomPaddingClass := strings.Replace(sizeTokens.AffixPadding, "p-", "pb-", 1) }}
+	{{ actionOverlapExpression := "" }}
+	if componentSettings.Label != "" || componentSettings.IsRequired {
+		{{ actionOverlapExpression = "'" + notchedFieldActionOverlapClassesResolver(sizeTokens.LegendTextSize) + "'" }}
+		if valueStateIsEmptyExpression != "" {
+			{{ actionOverlapExpression = "!(" + valueStateIsEmptyExpression + ") && " + actionOverlapExpression }}
+		}
+	}
 	{{ fieldsetClassEntries := make([]string, 0, 2) }}
 	{{ legendClassEntries := make([]string, 0, 1) }}
 	if valueStateIsEmptyExpression != "" {
@@ -126,7 +135,7 @@ templ DualSelectInput(componentSettings DualSelectInputSettings) {
 				}
 			</legend>
 			<div class="relative flex grow items-stretch">
-				<div class={ "flex min-w-0 grow items-center border-r " + fieldDividerClass }>
+				<div class={ "flex min-w-0 grow items-stretch border-r " + fieldDividerClass }>
 					<div
 						x-ref="selectTrigger"
 						role="button"
@@ -137,19 +146,26 @@ templ DualSelectInput(componentSettings DualSelectInputSettings) {
 						@keydown.enter.prevent="toggleDropdown()"
 						@keydown.space.prevent="toggleDropdown()"
 						@keydown.arrow-down.prevent="openWithOptionFocus()"
-						class={ "group flex w-full min-w-0 cursor-pointer items-center justify-between " + fieldTextColorClass + " " + sizeTokens.InputPadding + " " + sizeTokens.TextSize }
+						class={ "group flex w-full min-w-0 cursor-pointer items-center justify-between " + fieldTextColorClass + " " + triggerHorizontalPaddingClass + " " + sizeTokens.TextSize }
 						if invalidAriaExpression != "" {
 							:aria-invalid={ invalidAriaExpression }
 						}
-						if valueStateIsEmptyExpression != "" {
-							:class={ "{" + "'pt-" + sizeTokens.LabelOffset + "': " + valueStateIsEmptyExpression + "}" }
-						}
 					>
-						<div class="w-full overflow-hidden text-ellipsis whitespace-nowrap">
+						<div
+							class={ "w-full overflow-hidden text-ellipsis whitespace-nowrap " + displayBottomPaddingClass }
+							if valueStateIsEmptyExpression != "" {
+								:class={ "{" + "'pt-" + sizeTokens.LabelOffset + "': " + valueStateIsEmptyExpression + "}" }
+							}
+						>
 							<span x-show={ selectedLabelExpression } x-text={ selectedLabelExpression }></span>
 							<span class={ textCaseClass } x-show={ "!(" + selectedLabelExpression + ")" }>{ componentSettings.Label }</span>
 						</div>
-						<div class="flex items-center gap-2.5 text-neutral-100/60">
+						<div
+							class="flex shrink-0 self-stretch items-center text-neutral-100/60"
+							if actionOverlapExpression != "" {
+								:class={ actionOverlapExpression }
+							}
+						>
 							<i
 								class={ "ph-bold ph-caret-down pt-0.5 transition-transform group-focus-within:text-neutral-300 group-hover:text-neutral-300 " + sizeTokens.TextSize }
 								:class="isOpen ? 'rotate-180' : ''"

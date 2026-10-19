@@ -21,42 +21,42 @@ func TestSelectInputSizeClassesResolver(t *testing.T) {
 			name:                      "xs",
 			size:                      SelectInputSizeXs,
 			expectedLegendClass:       "text-[0.625rem]",
-			expectedTriggerClass:      "px-1 pb-0.5 text-xs",
+			expectedTriggerClass:      "px-1 text-xs",
 			expectedEmptyPaddingClass: "pt-0.5",
 		},
 		{
 			name:                      "sm",
 			size:                      SelectInputSizeSm,
 			expectedLegendClass:       "text-[0.625rem]",
-			expectedTriggerClass:      "px-1.5 pb-1 text-xs",
+			expectedTriggerClass:      "px-1.5 text-xs",
 			expectedEmptyPaddingClass: "pt-1",
 		},
 		{
 			name:                      "md",
 			size:                      SelectInputSizeMd,
 			expectedLegendClass:       "text-xs",
-			expectedTriggerClass:      "px-1.5 pb-1.5 text-sm",
+			expectedTriggerClass:      "px-1.5 text-sm",
 			expectedEmptyPaddingClass: "pt-1.5",
 		},
 		{
 			name:                      "lg",
 			size:                      SelectInputSizeLg,
 			expectedLegendClass:       "text-sm",
-			expectedTriggerClass:      "px-2 pb-2 text-base",
+			expectedTriggerClass:      "px-2 text-base",
 			expectedEmptyPaddingClass: "pt-2",
 		},
 		{
 			name:                      "xl",
 			size:                      SelectInputSizeXl,
 			expectedLegendClass:       "text-base",
-			expectedTriggerClass:      "px-2.5 pb-2.5 text-lg",
+			expectedTriggerClass:      "px-2.5 text-lg",
 			expectedEmptyPaddingClass: "pt-2.5",
 		},
 		{
 			name:                      "default",
 			size:                      "",
 			expectedLegendClass:       "text-xs",
-			expectedTriggerClass:      "px-1.5 pb-1.5 text-sm",
+			expectedTriggerClass:      "px-1.5 text-sm",
 			expectedEmptyPaddingClass: "pt-1.5",
 		},
 	}
@@ -137,6 +137,29 @@ func TestSelectInputRendersTriggerDropdownAndIconStyle(t *testing.T) {
 		"border-violet-500/20", "peer-checked:text-violet-500",
 		"peer-focus-visible:ring-violet-500", "ph-circle",
 		`@keydown.arrow-down.prevent="openWithOptionFocus()"`,
+	}
+	for _, expectedFragment := range expectedFragments {
+		if !strings.Contains(renderedHtml, expectedFragment) {
+			t.Errorf("RenderedHtmlMissingFragment: %q", expectedFragment)
+		}
+	}
+}
+
+func TestSelectInputRendersInvalidStateBinding(t *testing.T) {
+	var buffer bytes.Buffer
+	renderErr := SelectInput(SelectInputSettings{
+		Label:                    "Role",
+		FlatOptions:              []string{"Owner", "Member"},
+		TwoWayStatePath:          "roleValue",
+		IsInvalidOneWayStatePath: "roleIsInvalid",
+	}).Render(context.Background(), &buffer)
+	if renderErr != nil {
+		t.Fatalf("SelectInputRenderFailed: %v", renderErr)
+	}
+	renderedHtml := buffer.String()
+	expectedFragments := []string{
+		`:class="{&#39;mt-0&#39;: !(roleValue), &#39;!border-red-500&#39;: roleIsInvalid}"`,
+		`:aria-invalid="roleIsInvalid"`,
 	}
 	for _, expectedFragment := range expectedFragments {
 		if !strings.Contains(renderedHtml, expectedFragment) {

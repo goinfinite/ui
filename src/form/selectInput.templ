@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"fmt"
 	"strconv"
+	"strings"
 	"sync/atomic"
 
 	uiToolset "github.com/goinfinite/ui/src/toolset"
@@ -53,6 +54,7 @@ type SelectInputSettings struct {
 	LabelValueOptions                 []SelectLabelValueOption
 	TwoWayStatePath                   string
 	InputId                           string
+	IsInvalidOneWayStatePath          string
 	IsMultiSelect                     bool
 	OnChangeFunc                      string
 	Size                              string
@@ -84,25 +86,24 @@ func selectInputSizeClassesResolver(size string) (
 ) {
 	switch size {
 	case SelectInputSizeXs:
-		return "text-[0.625rem]", "px-1 pb-0.5 text-xs", "pt-0.5"
+		return "text-[0.625rem]", "px-1 text-xs", "pt-0.5"
 	case SelectInputSizeSm:
-		return "text-[0.625rem]", "px-1.5 pb-1 text-xs", "pt-1"
+		return "text-[0.625rem]", "px-1.5 text-xs", "pt-1"
 	case SelectInputSizeLg:
-		return "text-sm", "px-2 pb-2 text-base", "pt-2"
+		return "text-sm", "px-2 text-base", "pt-2"
 	case SelectInputSizeXl:
-		return "text-base", "px-2.5 pb-2.5 text-lg", "pt-2.5"
+		return "text-base", "px-2.5 text-lg", "pt-2.5"
 	}
-	return "text-xs", "px-1.5 pb-1.5 text-sm", "pt-1.5"
+	return "text-xs", "px-1.5 text-sm", "pt-1.5"
 }
 
-func selectInputEmptyStateClassExpressionBuilder(
-	statePath string, isMultiSelect bool, classBody string,
+func selectInputEmptyStateCheckExpressionBuilder(
+	statePath string, isMultiSelect bool,
 ) string {
-	emptyCheck := "!(" + statePath + ")"
 	if isMultiSelect {
-		emptyCheck = "!(" + statePath + ".length)"
+		return "!(" + statePath + ".length)"
 	}
-	return emptyCheck + " && '" + classBody + "'"
+	return "!(" + statePath + ")"
 }
 
 templ selectInputOptionCheckbox(
@@ -162,6 +163,7 @@ templ SelectInput(componentSettings SelectInputSettings) {
 		{{ openWithOptionFocusExpression = "!(" + isDisabledPath + ") && openWithOptionFocus()" }}
 	}
 	{{ legendSizeClasses, triggerSizeClasses, emptyPaddingClass := selectInputSizeClassesResolver(componentSettings.Size) }}
+	{{ displayPaddingClass := strings.Replace(emptyPaddingClass, "pt-", "pb-", 1) }}
 	{{ textCaseClass := uiToolset.TextCaseClassResolver(componentSettings.TextCase) }}
 	{{ triggerStyle := componentSettings.Trigger }}
 	{{ triggerBackgroundClass := uiToolset.BackgroundColorClassResolver(triggerStyle.BackgroundColor, "bg-neutral-50/7.5") }}
@@ -170,13 +172,27 @@ templ SelectInput(componentSettings SelectInputSettings) {
 	{{ triggerTextColorClass := uiToolset.TextColorClassResolver(triggerStyle.TextColor, "text-neutral-100") }}
 	{{ selectedIconColor := componentSettings.SelectedIconColor }}
 	{{ labelValueOptionsScriptId := generateLabelValueOptionsScriptId() }}
-	{{ fieldsetEmptyStateExpression := "" }}
-	{{ legendEmptyStateExpression := "" }}
-	{{ triggerEmptyStateExpression := "" }}
+	{{ emptyStateCheckExpression := "" }}
 	if componentSettings.TwoWayStatePath != "" {
-		{{ fieldsetEmptyStateExpression = selectInputEmptyStateClassExpressionBuilder(componentSettings.TwoWayStatePath, componentSettings.IsMultiSelect, "mt-0") }}
-		{{ legendEmptyStateExpression = selectInputEmptyStateClassExpressionBuilder(componentSettings.TwoWayStatePath, componentSettings.IsMultiSelect, "opacity-0 !p-0 w-0 h-0") }}
-		{{ triggerEmptyStateExpression = selectInputEmptyStateClassExpressionBuilder(componentSettings.TwoWayStatePath, componentSettings.IsMultiSelect, emptyPaddingClass) }}
+		{{ emptyStateCheckExpression = selectInputEmptyStateCheckExpressionBuilder(componentSettings.TwoWayStatePath, componentSettings.IsMultiSelect) }}
+	}
+	{{ fieldsetClassEntries := make([]string, 0, 2) }}
+	{{ legendClassEntries := make([]string, 0, 1) }}
+	{{ displayClassEntries := make([]string, 0, 1) }}
+	if emptyStateCheckExpression != "" {
+		{{ fieldsetClassEntries = append(fieldsetClassEntries, "'mt-0': "+emptyStateCheckExpression) }}
+		{{ legendClassEntries = append(legendClassEntries, "'opacity-0 !p-0 w-0 h-0': "+emptyStateCheckExpression) }}
+		{{ displayClassEntries = append(displayClassEntries, "'"+emptyPaddingClass+"': "+emptyStateCheckExpression) }}
+	}
+	{{ actionOverlapExpression := "" }}
+	if componentSettings.Label != "" || componentSettings.IsRequired {
+		{{ actionOverlapExpression = strconv.Quote(notchedFieldActionOverlapClassesResolver(legendSizeClasses)) }}
+		if emptyStateCheckExpression != "" {
+			{{ actionOverlapExpression = "!(" + emptyStateCheckExpression + ") && " + actionOverlapExpression }}
+		}
+	}
+	if componentSettings.IsInvalidOneWayStatePath != "" {
+		{{ fieldsetClassEntries = append(fieldsetClassEntries, "'!border-red-500': "+componentSettings.IsInvalidOneWayStatePath) }}
 	}
 	{{ selectedDisplayExpression := selectValueStatePath }}
 	if componentSettings.IsMultiSelect {
@@ -201,14 +217,14 @@ templ SelectInput(componentSettings SelectInputSettings) {
 		<div class="flex w-full flex-col">
 			<fieldset
 				class={ triggerBackgroundClass + " relative -mt-1.5 w-full " + triggerBorderRadiusClass + " border " + triggerBorderClass + " transition-colors autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30" }
-				if fieldsetEmptyStateExpression != "" {
-					:class={ fieldsetEmptyStateExpression }
+				if len(fieldsetClassEntries) > 0 {
+					:class={ "{" + strings.Join(fieldsetClassEntries, ", ") + "}" }
 				}
 			>
 				<legend
 					class={ "ml-1 select-none px-1 font-bold leading-none text-neutral-50/80 " + legendSizeClasses + " " + textCaseClass }
-					if legendEmptyStateExpression != "" {
-						:class={ legendEmptyStateExpression }
+					if len(legendClassEntries) > 0 {
+						:class={ "{" + strings.Join(legendClassEntries, ", ") + "}" }
 					}
 				>
 					{ componentSettings.Label }
@@ -223,22 +239,32 @@ templ SelectInput(componentSettings SelectInputSettings) {
 					tabindex="0"
 					role="button"
 					:aria-expanded="isOpen"
+					if componentSettings.IsInvalidOneWayStatePath != "" {
+						:aria-invalid={ componentSettings.IsInvalidOneWayStatePath }
+					}
 					@keydown.enter.prevent={ toggleExpression }
 					@keydown.space.prevent={ toggleExpression }
 					@keydown.arrow-down.prevent={ openWithOptionFocusExpression }
-					if triggerEmptyStateExpression != "" {
-						:class={ triggerEmptyStateExpression }
-					}
 					if isDisabledPath != "" {
 						:aria-disabled={ isDisabledPath }
 					}
 					@click={ toggleExpression }
 				>
-					<div class="w-full overflow-hidden text-ellipsis">
+					<div
+						class={ "w-full overflow-hidden text-ellipsis " + displayPaddingClass }
+						if len(displayClassEntries) > 0 {
+							:class={ "{" + strings.Join(displayClassEntries, ", ") + "}" }
+						}
+					>
 						<span x-show={ selectedDisplayExpression } x-text={ selectedDisplayExpression }></span>
 						<span class={ textCaseClass } x-show={ "!(" + selectedDisplayExpression + ")" }>{ componentSettings.Label }</span>
 					</div>
-					<div class="flex items-center gap-2.5 text-neutral-100/60">
+					<div
+						class="flex shrink-0 self-stretch items-center gap-2.5 text-neutral-100/60"
+						if actionOverlapExpression != "" {
+							:class={ actionOverlapExpression }
+						}
+					>
 						<!-- SelectDropdownIcon -->
 						<i class="ph-bold ph-caret-down pt-0.5 text-sm transition-transform hover:text-neutral-300 group-focus-within:text-neutral-300 group-hover:text-neutral-300" :class="isOpen ? 'rotate-180' : ''"></i>
 						if componentSettings.IsMultiSelect {

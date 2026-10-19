@@ -2,6 +2,7 @@ package uiForm
 
 import (
 	"strconv"
+	"strings"
 
 	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
@@ -112,6 +113,7 @@ type InputFieldSettings struct {
 	InputNumberMax                    string
 	InputNumberStep                   string
 	IsRequired                        bool
+	IsInvalidOneWayStatePath          string
 	IsReadOnly                        bool
 	TextCase                          string
 	HintValue                         string
@@ -126,6 +128,18 @@ type InputFieldSettings struct {
 	Size                              string
 }
 
+func notchedFieldActionOverlapClassesResolver(legendTextSizeClass string) string {
+	switch legendTextSizeClass {
+	case "text-[0.625rem]":
+		return "-mt-[calc(0.625rem/2-1px)]"
+	case "text-sm":
+		return "-mt-[calc(0.875rem/2-1px)]"
+	case "text-base":
+		return "-mt-[calc(1rem/2-1px)]"
+	}
+	return "-mt-[calc(0.75rem/2-1px)]"
+}
+
 templ InputField(componentSettings InputFieldSettings) {
 	<!-- InputField -->
 	{{ sizeTokens := inputFieldSizeTokensResolver(componentSettings.Size) }}
@@ -134,11 +148,26 @@ templ InputField(componentSettings InputFieldSettings) {
 	if textCaseClass != "" {
 		{{ legendClasses += " " + textCaseClass }}
 	}
+	{{ fieldsetClassEntries := make([]string, 0, 2) }}
+	if componentSettings.TwoWayStatePath != "" {
+		{{ fieldsetClassEntries = append(fieldsetClassEntries, "'mt-0': !"+componentSettings.TwoWayStatePath) }}
+	}
+	if componentSettings.IsInvalidOneWayStatePath != "" {
+		{{ fieldsetClassEntries = append(fieldsetClassEntries, "'!border-red-500': "+componentSettings.IsInvalidOneWayStatePath) }}
+	}
+	{{ actionOverlapExpression := "" }}
+	if componentSettings.Label != "" || componentSettings.IsRequired {
+		{{ actionOverlapExpression = strconv.Quote(notchedFieldActionOverlapClassesResolver(sizeTokens.LegendTextSize)) }}
+		if componentSettings.TwoWayStatePath != "" {
+			{{ actionOverlapExpression = componentSettings.TwoWayStatePath + " && " + actionOverlapExpression }}
+		}
+	}
+	{{ hasHintTooltip := shouldRenderInputHintTooltip(componentSettings.HintDisplay, componentSettings.HintValue, componentSettings.HintStatePath) }}
 	<div class="flex w-full flex-col">
 		<fieldset
 			class={ "bg-neutral-50/7.5 relative -mt-" + sizeTokens.LabelOffset + " w-full min-w-0 rounded border border-neutral-50/5 transition-colors autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30" }
-			if componentSettings.TwoWayStatePath != "" {
-				:class={ `!` + componentSettings.TwoWayStatePath + ` && 'mt-0'` }
+			if len(fieldsetClassEntries) > 0 {
+				:class={ "{" + strings.Join(fieldsetClassEntries, ", ") + "}" }
 			}
 		>
 			<legend
@@ -177,7 +206,14 @@ templ InputField(componentSettings InputFieldSettings) {
 					</div>
 				}
 				if componentSettings.IconLeft != "" {
-					<i class={ "ph-bold shrink-0 self-center text-neutral-400 " + componentSettings.IconLeft + " " + sizeTokens.LeftPadding + " " + sizeTokens.TextSize } aria-hidden="true"></i>
+					<span
+						class="flex shrink-0 self-stretch items-center"
+						if actionOverlapExpression != "" {
+							:class={ actionOverlapExpression }
+						}
+					>
+						<i class={ "ph-bold text-neutral-400 " + componentSettings.IconLeft + " " + sizeTokens.LeftPadding + " " + sizeTokens.TextSize } aria-hidden="true"></i>
+					</span>
 				}
 				{{ inputClasses := "w-full min-w-0 bg-transparent placeholder:text-neutral-50 placeholder:opacity-80 outline-none focus:outline-none peer " + sizeTokens.InputPadding + " " + sizeTokens.TextSize }}
 				if componentSettings.IconLeft != "" {
@@ -198,6 +234,9 @@ templ InputField(componentSettings InputFieldSettings) {
 					}
 					if componentSettings.Label != "" {
 						aria-label={ componentSettings.Label }
+					}
+					if componentSettings.IsInvalidOneWayStatePath != "" {
+						:aria-invalid={ componentSettings.IsInvalidOneWayStatePath }
 					}
 					if componentSettings.InputNumberMin != "" {
 						min={ componentSettings.InputNumberMin }
@@ -257,23 +296,30 @@ templ InputField(componentSettings InputFieldSettings) {
 						}
 					</div>
 				}
-				if componentSettings.AffixRightComponent != nil {
-					@componentSettings.AffixRightComponent
-				}
-				if shouldRenderInputHintTooltip(componentSettings.HintDisplay, componentSettings.HintValue, componentSettings.HintStatePath) {
-					<span class="flex items-center self-center">
-						@InputHintTooltip(InputHintSettings{
-							Value:                  componentSettings.HintValue,
-							StatePath:              componentSettings.HintStatePath,
-							TooltipBackgroundColor: componentSettings.HintDisplayTooltipBackgroundColor,
-							TooltipMinWidthClass:   componentSettings.HintDisplayTooltipMinWidthClass,
-							TooltipMaxWidthClass:   componentSettings.HintDisplayTooltipMaxWidthClass,
-							TooltipMinHeightClass:  componentSettings.HintDisplayTooltipMinHeightClass,
-							TooltipMaxHeightClass:  componentSettings.HintDisplayTooltipMaxHeightClass,
-							Size:                   InputHintSizeSm,
-							IconStyle:              componentSettings.HintIconStyle,
-						})
-					</span>
+				if componentSettings.AffixRightComponent != nil || hasHintTooltip {
+					<div
+						class="flex shrink-0 self-stretch items-center"
+						if actionOverlapExpression != "" {
+							:class={ actionOverlapExpression }
+						}
+					>
+						if componentSettings.AffixRightComponent != nil {
+							@componentSettings.AffixRightComponent
+						}
+						if hasHintTooltip {
+							@InputHintTooltip(InputHintSettings{
+								Value:                  componentSettings.HintValue,
+								StatePath:              componentSettings.HintStatePath,
+								TooltipBackgroundColor: componentSettings.HintDisplayTooltipBackgroundColor,
+								TooltipMinWidthClass:   componentSettings.HintDisplayTooltipMinWidthClass,
+								TooltipMaxWidthClass:   componentSettings.HintDisplayTooltipMaxWidthClass,
+								TooltipMinHeightClass:  componentSettings.HintDisplayTooltipMinHeightClass,
+								TooltipMaxHeightClass:  componentSettings.HintDisplayTooltipMaxHeightClass,
+								Size:                   InputHintSizeSm,
+								IconStyle:              componentSettings.HintIconStyle,
+							})
+						}
+					</div>
 				}
 			</div>
 		</fieldset>

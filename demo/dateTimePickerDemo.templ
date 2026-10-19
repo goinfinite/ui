@@ -1,0 +1,328 @@
+package main
+
+import (
+	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiForm "github.com/goinfinite/ui/src/form"
+	uiToolset "github.com/goinfinite/ui/src/toolset"
+)
+
+templ DateTimePickerDateTimeExample() {
+	{{
+		dateTimeUsage := `@uiForm.DateTimePicker(uiForm.DateTimePickerSettings{
+	Label: "Publish at",
+
+	// OptionalFields
+	Mode:                    uiForm.DateTimePickerModeDateTime,
+	Timezone:                "America/Sao_Paulo",
+	TimezoneTwoWayStatePath: "publishTimezone",
+	TimezoneInputName:       "publishTimezone",
+	TwoWayStatePath:         "publishAt",
+})`
+	}}
+	@DemoExampleCard(
+		"Date, Time, and Timezone",
+		"Mode datetime adds the centered time row. Setting Timezone adds the timezone select and writes the UTC offset into the value.",
+		"/form/dateTimePicker.templ", dateTimeUsage,
+	) {
+		<div x-data="{publishAt: '2026-10-16T09:30-03:00', publishTimezone: 'America/Sao_Paulo'}" class="flex flex-col gap-3">
+			@uiForm.DateTimePicker(uiForm.DateTimePickerSettings{
+				Label:                   "Publish at",
+				Mode:                    uiForm.DateTimePickerModeDateTime,
+				Timezone:                "America/Sao_Paulo",
+				TimezoneTwoWayStatePath: "publishTimezone",
+				TimezoneInputName:       "publishTimezone",
+				TwoWayStatePath:         "publishAt",
+			})
+			<p class={ DemoLiveStateClasses }>
+				publishAt: <span x-text="publishAt || '—'"></span> · timezone: <span x-text="publishTimezone || '—'"></span>
+			</p>
+		</div>
+	}
+}
+
+templ DateTimePickerTimeExample() {
+	{{
+		timeUsage := `@uiForm.DateTimePicker(uiForm.DateTimePickerSettings{
+	Label: "Start time",
+
+	// OptionalFields
+	Mode:            uiForm.DateTimePickerModeTime,
+	TwoWayStatePath: "startTime",
+})`
+	}}
+	@DemoExampleCard(
+		"Time Only",
+		"Mode time hides the calendar and edits hours and minutes alone. The value is an HH:MM string.",
+		"/form/dateTimePicker.templ", timeUsage,
+	) {
+		<div x-data="{startTime: '09:30'}" class="flex flex-col gap-3">
+			@uiForm.DateTimePicker(uiForm.DateTimePickerSettings{
+				Label:           "Start time",
+				Mode:            uiForm.DateTimePickerModeTime,
+				TwoWayStatePath: "startTime",
+			})
+			<p class={ DemoLiveStateClasses }>
+				startTime: <span x-text="startTime || '—'"></span>
+			</p>
+		</div>
+	}
+}
+
+templ DateTimePickerRangeExample() {
+	{{
+		rangeUsage := `@uiForm.DateTimePicker(uiForm.DateTimePickerSettings{
+	Label: "Booking window",
+
+	// OptionalFields
+	IsRange:                 true,
+	TwoWayStatePath:         "bookingStart",
+	RangeEndTwoWayStatePath: "bookingEnd",
+})`
+	}}
+	@DemoExampleCard(
+		"Range",
+		"IsRange splits the field into captioned Start and End sides and paints the calendar span as one continuous band.",
+		"/form/dateTimePicker.templ", rangeUsage,
+	) {
+		<div x-data="{bookingStart: '2026-10-16', bookingEnd: '2026-10-21'}" class="flex flex-col gap-3">
+			@uiForm.DateTimePicker(uiForm.DateTimePickerSettings{
+				Label:                   "Booking window",
+				IsRange:                 true,
+				TwoWayStatePath:         "bookingStart",
+				RangeEndTwoWayStatePath: "bookingEnd",
+			})
+			<p class={ DemoLiveStateClasses }>
+				bookingStart: <span x-text="bookingStart || '—'"></span> · bookingEnd: <span x-text="bookingEnd || '—'"></span>
+			</p>
+		</div>
+	}
+}
+
+templ DateTimePickerBoundsExample() {
+	{{
+		boundsUsage := `@uiForm.DateTimePicker(uiForm.DateTimePickerSettings{
+	Label: "Appointment",
+
+	// OptionalFields
+	Locale:          "pt-BR",
+	MinValue:        "2026-10-10",
+	MaxValue:        "2026-11-20",
+	TwoWayStatePath: "appointmentDate",
+})`
+	}}
+	@DemoExampleCard(
+		"Locale and Bounds",
+		"Locale drives the format and the week start. MinValue and MaxValue disable the days outside the bounds.",
+		"/form/dateTimePicker.templ", boundsUsage,
+	) {
+		<div x-data="{appointmentDate: ''}" class="flex flex-col gap-3">
+			@uiForm.DateTimePicker(uiForm.DateTimePickerSettings{
+				Label:           "Appointment",
+				Locale:          "pt-BR",
+				MinValue:        "2026-10-10",
+				MaxValue:        "2026-11-20",
+				TwoWayStatePath: "appointmentDate",
+			})
+			<p class={ DemoLiveStateClasses }>
+				appointmentDate: <span x-text="appointmentDate || '—'"></span>
+			</p>
+		</div>
+	}
+}
+
+templ DateTimePickerTypedInputExample() {
+	{{
+		typedUsage := `@uiForm.DateTimePicker(uiForm.DateTimePickerSettings{
+	Label: "Signed on",
+
+	// OptionalFields
+	InputName: "signedOn",
+	Value:     "2026-10-16",
+})`
+	}}
+	@DemoExampleCard(
+		"Typed Input",
+		"Type an ISO value and commit it with Enter or blur. Invalid text reverts to the stored value.",
+		"/form/dateTimePicker.templ", typedUsage,
+	) {
+		@uiForm.DateTimePicker(uiForm.DateTimePickerSettings{
+			Label:     "Signed on",
+			InputName: "signedOn",
+			Value:     "2026-10-16",
+		})
+	}
+}
+
+templ DateTimePickerHintsExample() {
+	{{
+		hintsUsage := `@uiForm.DateTimePicker(uiForm.DateTimePickerSettings{
+	Label: "Booking date",
+
+	// OptionalFields
+	HintDisplay:     uiForm.InputHintDisplayTooltip,
+	HintIconStyle:   uiForm.InputHintIconStyleBoxed,
+	HintValue:       "Bookings open at 9 in the morning.",
+	TwoWayStatePath: "hintDate",
+})`
+	}}
+	@DemoExampleCard(
+		"Hints",
+		"HintDisplay picks a tooltip or a description below the field. HintIconStyle boxed turns the tooltip trigger into a box, and the HintDisplayTooltip colors and size classes customize the tooltip.",
+		"/form/dateTimePicker.templ", hintsUsage,
+	) {
+		<div x-data="{hintDate: '2026-10-16', describedDate: '2026-10-20'}" class="flex flex-col gap-4">
+			@uiForm.DateTimePicker(uiForm.DateTimePickerSettings{
+				Label:           "Booking date",
+				TwoWayStatePath: "hintDate",
+				HintValue:       "Bookings open at 9 in the morning.",
+				HintDisplay:     uiForm.InputHintDisplayTooltip,
+				HintIconStyle:   uiForm.InputHintIconStyleBoxed,
+			})
+			@uiForm.DateTimePicker(uiForm.DateTimePickerSettings{
+				Label:           "Check-in date",
+				TwoWayStatePath: "describedDate",
+				HintValue:       "The front desk closes at 22:00.",
+				HintDisplay:     uiForm.InputHintDisplayDescription,
+			})
+		</div>
+	}
+}
+
+templ DateTimePickerAppearanceExample() {
+	{{
+		appearanceUsage := `@uiForm.DateTimePicker(uiForm.DateTimePickerSettings{
+	Label: "Stay",
+
+	// OptionalFields
+	CalendarButtonStyle: uiForm.InputActionButtonStylePlain,
+	DoneButtonIconLeft:  "ph-calendar-check",
+	DoneButtonLabel:     "Apply dates",
+	DoneButtonStyle: uiForm.DateTimePickerDoneButtonStyle{
+		BackgroundColor: "primary-500",
+		IconSizeClass:   "text-sm",
+		TextColor:       "primary-950",
+	},
+	IsRange:                 true,
+	RangeEndLabel:           "Check-out",
+	RangeEndTwoWayStatePath: "stayEnd",
+	RangeStartLabel:         "Check-in",
+	Style: uiForm.DateTimePickerStyle{
+		CalendarBackgroundColor:    "neutral-950",
+		CalendarBorderColor:        "primary-500/30",
+		CalendarBorderRadius:       uiToolset.BorderRadiusLg,
+		DayDisabledTextColor:       "neutral-700",
+		DayHoverBackgroundColor:    "primary-500/10",
+		DayMutedTextColor:          "neutral-500",
+		DayRangeBackgroundColor:    "primary-500/25",
+		DayRangeTextColor:          "primary-50",
+		DaySelectedBackgroundColor: "primary-500",
+		DaySelectedTextColor:       "neutral-950",
+		DayTextColor:               "neutral-100",
+		DayTodayRingColor:          "primary-400/50",
+		FieldBackgroundColor:       "primary-950/40",
+		FieldBorderColor:           "primary-500/30",
+		FieldBorderRadius:          uiToolset.BorderRadiusLg,
+		CalendarButtonIconColor:    "primary-300",
+		RangeDividerColor:          "primary-500/30",
+		RangeLabelTextColor:        "primary-300",
+		TextColor:                  "primary-100",
+	},
+	TextCase:        uiToolset.TextCaseUpper,
+	TwoWayStatePath: "stayStart",
+})`
+	}}
+	@DemoExampleCard(
+		"Appearance",
+		"DateTimePickerStyle paints the field, the calendar surface, and every day state. TextCase and the Done settings finish the look.",
+		"/form/dateTimePicker.templ", appearanceUsage,
+	) {
+		<div x-data="{stayStart: '2026-10-16', stayEnd: '2026-10-21'}" class="flex flex-col gap-3">
+			@uiForm.DateTimePicker(uiForm.DateTimePickerSettings{
+				Label:               "Stay",
+				CalendarButtonStyle: uiForm.InputActionButtonStylePlain,
+				DoneButtonIconLeft:  "ph-calendar-check",
+				DoneButtonLabel:     "Apply dates",
+				DoneButtonStyle: uiForm.DateTimePickerDoneButtonStyle{
+					BackgroundColor: "primary-500",
+					IconSizeClass:   "text-sm",
+					TextColor:       "primary-950",
+				},
+				IsRange:                 true,
+				RangeStartLabel:         "Check-in",
+				RangeEndLabel:           "Check-out",
+				RangeEndTwoWayStatePath: "stayEnd",
+				TextCase:                uiToolset.TextCaseUpper,
+				TwoWayStatePath:         "stayStart",
+				Style: uiForm.DateTimePickerStyle{
+					CalendarBackgroundColor:    "neutral-950",
+					CalendarBorderColor:        "primary-500/30",
+					CalendarBorderRadius:       uiToolset.BorderRadiusLg,
+					DayDisabledTextColor:       "neutral-700",
+					DayHoverBackgroundColor:    "primary-500/10",
+					DayMutedTextColor:          "neutral-500",
+					DayRangeBackgroundColor:    "primary-500/25",
+					DayRangeTextColor:          "primary-50",
+					DaySelectedBackgroundColor: "primary-500",
+					DaySelectedTextColor:       "neutral-950",
+					DayTextColor:               "neutral-100",
+					DayTodayRingColor:          "primary-400/50",
+					FieldBackgroundColor:       "primary-950/40",
+					FieldBorderColor:           "primary-500/30",
+					FieldBorderRadius:          uiToolset.BorderRadiusLg,
+					CalendarButtonIconColor:    "primary-300",
+					RangeDividerColor:          "primary-500/30",
+					RangeLabelTextColor:        "primary-300",
+					TextColor:                  "primary-100",
+				},
+			})
+			<p class={ DemoLiveStateClasses }>
+				stayStart: <span x-text="stayStart || '—'"></span> · stayEnd: <span x-text="stayEnd || '—'"></span>
+			</p>
+		</div>
+	}
+}
+
+templ DateTimePickerDemo() {
+	{{
+		demoUsage := `@uiForm.DateTimePicker(uiForm.DateTimePickerSettings{
+	Label: "Booking date",
+
+	// OptionalFields
+	TwoWayStatePath: "bookingDate",
+	Value:           "2026-10-16",
+	HintValue:       "Bookings open at 9 in the morning.",
+	HintDisplay:     uiForm.InputHintDisplayTooltip,
+})`
+	}}
+	<div class="flex flex-col gap-4" id="date-time-picker-demo">
+		@DemoComponentSection(DemoComponentSectionSettings{
+			ComponentPath:          "/form/dateTimePicker.templ",
+			Description:            "A date and time picker with a calendar popover, an optional timezone, range mode, bounds, hints, and full style control.",
+			LiveExampleDescription: "A date field bound to bookingDate, with a hint tooltip and the bound value shown live.",
+			Title:                  ".DateTimePicker",
+			UsageCode:              demoUsage,
+		}) {
+			<div x-data="{bookingDate: '2026-10-16'}" class="flex flex-col gap-3">
+				@uiForm.DateTimePicker(uiForm.DateTimePickerSettings{
+					Label:           "Booking date",
+					TwoWayStatePath: "bookingDate",
+					Value:           "2026-10-16",
+					HintValue:       "Bookings open at 9 in the morning.",
+					HintDisplay:     uiForm.InputHintDisplayTooltip,
+				})
+				<p class={ DemoLiveStateClasses }>
+					bookingDate: <span x-text="bookingDate || '—'"></span>
+				</p>
+			</div>
+		}
+		@DemoAdvancedExamples("date-time-picker-demo", []uiDisplay.AccordionItemSettings{
+			{Title: "Date, Time, and Timezone", Icon: "ph-clock", Content: DateTimePickerDateTimeExample()},
+			{Title: "Time Only", Icon: "ph-timer", Content: DateTimePickerTimeExample()},
+			{Title: "Range", Icon: "ph-arrows-left-right", Content: DateTimePickerRangeExample()},
+			{Title: "Locale and Bounds", Icon: "ph-globe", Content: DateTimePickerBoundsExample()},
+			{Title: "Typed Input", Icon: "ph-keyboard", Content: DateTimePickerTypedInputExample()},
+			{Title: "Hints", Icon: "ph-info", Content: DateTimePickerHintsExample()},
+			{Title: "Appearance", Icon: "ph-palette", Content: DateTimePickerAppearanceExample()},
+		})
+	</div>
+}

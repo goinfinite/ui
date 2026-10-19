@@ -2,6 +2,7 @@ package uiForm
 
 import (
 	"strconv"
+	"strings"
 
 	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
@@ -110,19 +111,6 @@ templ searchableSelectInputShell(settings searchableSelectInputShellSettings) {
 	</div>
 }
 
-templ searchableSelectInputTriggerRow(settings searchableSelectInputShellSettings) {
-	{{ _, triggerSizeClasses, emptyPaddingClass := selectInputSizeClassesResolver(settings.Size) }}
-	{{ hasSelectionExpression := searchableSelectInputHasSelectionExpressionBuilder(settings.TwoWayStatePath) }}
-	<div
-		x-ref="searchableSelectTrigger"
-		class={ "group flex w-full cursor-text flex-wrap items-center gap-1 text-neutral-100 " + triggerSizeClasses }
-		:class={ "!(" + hasSelectionExpression + ") && '" + emptyPaddingClass + "'" }
-		@click="openDropdown()"
-	>
-		{ children... }
-	</div>
-}
-
 templ searchableSelectInputFilterInput(
 	settings searchableSelectInputShellSettings, enterExpression, backspaceExpression string,
 ) {
@@ -159,7 +147,14 @@ templ searchableSelectInputFilterInput(
 
 templ searchableSelectInputTriggerEndIcons(settings searchableSelectInputShellSettings) {
 	{{ hasSelectionExpression := searchableSelectInputHasSelectionExpressionBuilder(settings.TwoWayStatePath) }}
-	<div class="flex shrink-0 items-center gap-2.5 text-neutral-100/60">
+	{{ legendSizeClasses, _, _ := selectInputSizeClassesResolver(settings.Size) }}
+	{{ legendOverlapClasses := notchedFieldActionOverlapClassesResolver(legendSizeClasses) }}
+	<div
+		class="flex shrink-0 self-stretch items-center gap-2.5 text-neutral-100/60"
+		if settings.Label != "" {
+			:class={ hasSelectionExpression + " && '" + legendOverlapClasses + "'" }
+		}
+	>
 		<!-- SearchableSelectDropdownIcon -->
 		<i class="ph-bold ph-caret-down pt-0.5 text-sm transition-transform hover:text-neutral-300 group-focus-within:text-neutral-300 group-hover:text-neutral-300" :class="isOpen ? 'rotate-180' : ''"></i>
 		<!-- SearchableSelectClearButton -->
@@ -171,7 +166,7 @@ templ searchableSelectInputTriggerEndIcons(settings searchableSelectInputShellSe
 			x-show={ hasSelectionExpression }
 			aria-label="Clear selection"
 			@click.stop.prevent={ searchableSelectInputClearExpressionBuilder(settings.TwoWayStatePath, settings.ClientConfig.IsMultiSelect, settings.OnChangeSuffix) }
-			class="cursor-pointer rounded bg-transparent leading-none transition-colors hover:text-neutral-300"
+			class="flex cursor-pointer items-center justify-center rounded bg-transparent leading-none transition-colors hover:text-neutral-300"
 		>
 			<i class="ph-bold ph-x-circle text-lg"></i>
 		</button>
@@ -188,6 +183,25 @@ templ searchableSelectInputTriggerEndIcons(settings searchableSelectInputShellSe
 				IconStyle:              settings.HintIconStyle,
 			})
 		}
+	</div>
+}
+
+templ searchableSelectInputTriggerRow(settings searchableSelectInputShellSettings) {
+	{{ _, triggerSizeClasses, emptyPaddingClass := selectInputSizeClassesResolver(settings.Size) }}
+	{{ displayPaddingClass := strings.Replace(emptyPaddingClass, "pt-", "pb-", 1) }}
+	{{ hasSelectionExpression := searchableSelectInputHasSelectionExpressionBuilder(settings.TwoWayStatePath) }}
+	<div
+		x-ref="searchableSelectTrigger"
+		class={ "group flex w-full cursor-text items-center gap-1 text-neutral-100 " + triggerSizeClasses }
+		@click="openDropdown()"
+	>
+		<div
+			class={ "flex min-w-0 flex-1 flex-wrap items-center gap-1 " + displayPaddingClass }
+			:class={ "!(" + hasSelectionExpression + ") && '" + emptyPaddingClass + "'" }
+		>
+			{ children... }
+		</div>
+		@searchableSelectInputTriggerEndIcons(settings)
 	</div>
 }
 
@@ -362,7 +376,6 @@ templ SearchableSelectInput(componentSettings SearchableSelectInputSettings) {
 				@searchableSelectInputSelectedLabels(shellSettings)
 			}
 			@searchableSelectInputFilterInput(shellSettings, enterExpression, backspaceExpression)
-			@searchableSelectInputTriggerEndIcons(shellSettings)
 		}
 		@searchableSelectInputDropdown(shellSettings) {
 			for _, option := range componentSettings.FlatOptions {

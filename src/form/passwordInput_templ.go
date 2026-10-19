@@ -157,76 +157,10 @@ type PasswordInputSettings struct {
 	HintIconStyle                        string
 }
 
-type passwordInputActionButtonStyle struct {
-	BackgroundColor      string
-	BackgroundColorHover string
-	RingColor            string
-	RingColorHover       string
-}
-
-type passwordInputActionButtonSize struct {
-	ButtonSize     string
-	MinWidthClass  string
-	MinHeightClass string
-}
-
 const (
-	PasswordInputActionButtonStyleBoxed string = "boxed"
-	PasswordInputActionButtonStylePlain string = "plain"
+	PasswordInputActionButtonStyleBoxed string = InputActionButtonStyleBoxed
+	PasswordInputActionButtonStylePlain string = InputActionButtonStylePlain
 )
-
-func passwordInputActionButtonStyleResolver(actionButtonStyle string) passwordInputActionButtonStyle {
-	if actionButtonStyle == PasswordInputActionButtonStylePlain {
-		return passwordInputActionButtonStyle{
-			BackgroundColor:      "transparent",
-			BackgroundColorHover: "neutral-50/5",
-		}
-	}
-	return passwordInputActionButtonStyle{
-		BackgroundColor:      "neutral-50/5",
-		BackgroundColorHover: "neutral-50/20",
-		RingColor:            "neutral-50/5",
-		RingColorHover:       "neutral-50/30",
-	}
-}
-
-func passwordInputActionButtonSizeResolver(size string) passwordInputActionButtonSize {
-	switch size {
-	case InputFieldSizeXs:
-		return passwordInputActionButtonSize{ButtonSize: uiControl.ButtonSizeXs, MinWidthClass: "min-w-5", MinHeightClass: "min-h-5"}
-	case InputFieldSizeSm:
-		return passwordInputActionButtonSize{ButtonSize: uiControl.ButtonSizeSm, MinWidthClass: "min-w-6", MinHeightClass: "min-h-6"}
-	case InputFieldSizeLg:
-		return passwordInputActionButtonSize{ButtonSize: uiControl.ButtonSizeLg, MinWidthClass: "min-w-8", MinHeightClass: "min-h-8"}
-	case InputFieldSizeXl:
-		return passwordInputActionButtonSize{ButtonSize: uiControl.ButtonSizeXl, MinWidthClass: "min-w-9", MinHeightClass: "min-h-9"}
-	}
-	return passwordInputActionButtonSize{ButtonSize: uiControl.ButtonSizeMd, MinWidthClass: "min-w-7", MinHeightClass: "min-h-7"}
-}
-
-func passwordInputActionButtonSettingsResolver(
-	size, actionButtonStyle, ariaLabel, icon, onClickFunc, tooltipContent string,
-) uiControl.ButtonSettings {
-	actionStyle := passwordInputActionButtonStyleResolver(actionButtonStyle)
-	actionSize := passwordInputActionButtonSizeResolver(size)
-	return uiControl.ButtonSettings{
-		AriaLabel:            ariaLabel,
-		BackgroundColor:      actionStyle.BackgroundColor,
-		BackgroundColorHover: actionStyle.BackgroundColorHover,
-		IconLeft:             icon,
-		MinHeightClass:       actionSize.MinHeightClass,
-		MinWidthClass:        actionSize.MinWidthClass,
-		OnClickFunc:          onClickFunc,
-		PaddingSize:          uiToolset.PaddingSizeNone,
-		RingColor:            actionStyle.RingColor,
-		RingColorHover:       actionStyle.RingColorHover,
-		RingThickness:        uiToolset.RingThicknessXs,
-		Size:                 actionSize.ButtonSize,
-		TextColor:            "neutral-100",
-		TextColorHover:       "neutral-100",
-		TooltipContent:       tooltipContent,
-	}
-}
 
 func passwordInputActions(shouldShowGenerateButton bool, passwordStatePath, size, actionButtonStyle string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -249,7 +183,7 @@ func passwordInputActions(shouldShowGenerateButton bool, passwordStatePath, size
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		revealButtonSettings := passwordInputActionButtonSettingsResolver(
+		revealButtonSettings := inputActionButtonSettingsResolver(
 			size, actionButtonStyle, "", "", "isPasswordVisible = !isPasswordVisible",
 			"show/hide the password",
 		)
@@ -264,7 +198,7 @@ func passwordInputActions(shouldShowGenerateButton bool, passwordStatePath, size
 			return templ_7745c5c3_Err
 		}
 		if shouldShowGenerateButton {
-			templ_7745c5c3_Err = uiControl.Button(passwordInputActionButtonSettingsResolver(
+			templ_7745c5c3_Err = uiControl.Button(inputActionButtonSettingsResolver(
 				size, actionButtonStyle, "Generate random password", "ph-binary",
 				passwordStatePath+" = generateRandomPassword(); copyPasswordToClipboard("+passwordStatePath+")",
 				"generate random password",
@@ -325,7 +259,7 @@ func PasswordInput(componentSettings PasswordInputSettings) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.ResolveAttributeValue(templ.JSFuncCall("passwordInput", rulesScriptId))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/passwordInput.templ`, Line: 254, Col: 59}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/passwordInput.templ`, Line: 188, Col: 59}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
 		if templ_7745c5c3_Err != nil {
@@ -338,7 +272,7 @@ func PasswordInput(componentSettings PasswordInputSettings) templ.Component {
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue("updatePasswordStrength(" + componentSettings.TwoWayStatePath + ")")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/passwordInput.templ`, Line: 255, Col: 80}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/passwordInput.templ`, Line: 189, Col: 80}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
 		if templ_7745c5c3_Err != nil {
@@ -436,7 +370,7 @@ func PasswordInput(componentSettings PasswordInputSettings) templ.Component {
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.ResolveAttributeValue("'width: ' + passwordStrengthPercentage + '%'")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/passwordInput.templ`, Line: 306, Col: 61}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/passwordInput.templ`, Line: 240, Col: 61}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
 			if templ_7745c5c3_Err != nil {
@@ -471,7 +405,7 @@ func PasswordInput(componentSettings PasswordInputSettings) templ.Component {
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.ResolveAttributeValue(shouldShowStrengthCriteria)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/passwordInput.templ`, Line: 309, Col: 147}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/passwordInput.templ`, Line: 243, Col: 147}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var10)
 			if templ_7745c5c3_Err != nil {
@@ -511,7 +445,7 @@ func PasswordInput(componentSettings PasswordInputSettings) templ.Component {
 				var templ_7745c5c3_Var13 string
 				templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.ResolveAttributeValue("passwordStrengthCriteria." + criteriaItem.StateKey)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/passwordInput.templ`, Line: 314, Col: 68}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/passwordInput.templ`, Line: 248, Col: 68}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var13)
 				if templ_7745c5c3_Err != nil {
@@ -546,7 +480,7 @@ func PasswordInput(componentSettings PasswordInputSettings) templ.Component {
 				var templ_7745c5c3_Var16 string
 				templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.ResolveAttributeValue("!passwordStrengthCriteria." + criteriaItem.StateKey)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/passwordInput.templ`, Line: 318, Col: 69}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/passwordInput.templ`, Line: 252, Col: 69}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var16)
 				if templ_7745c5c3_Err != nil {
@@ -559,7 +493,7 @@ func PasswordInput(componentSettings PasswordInputSettings) templ.Component {
 				var templ_7745c5c3_Var17 string
 				templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(criteriaItem.Label)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/passwordInput.templ`, Line: 320, Col: 27}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/passwordInput.templ`, Line: 254, Col: 27}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 				if templ_7745c5c3_Err != nil {
