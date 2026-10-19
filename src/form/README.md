@@ -47,6 +47,45 @@ A cron expression control. A mode switch picks between a predefined-schedule dro
 - `Size` takes an `InputFieldSize*` constant. `TextCase` changes the label, the field labels, and the preview.
 - `Field` takes a `CronScheduleFieldStyle` with the outer `BackgroundColor`, `BorderColor`, and `BorderRadius`. `Dropdown` takes a `CronScheduleDropdownStyle` with `BackgroundColor`, `BorderColor`, and `BorderRadius` for the predefined list and the five field lists. `Preview` takes a `CronSchedulePreviewStyle` with `TextColor` for the plain-words line and its clock icon, and `CodeBackgroundColor` and `CodeTextColor` for the expression chip. `RadioStyle` takes a `RadioInputStyle` for the mode radios. The predefined trigger and the five custom field surfaces keep their neutral style.
 
+## DateTimePicker
+
+A text input that opens a calendar popover. Modes cover date, time, and datetime. The picker writes the selected value to a state path as an ISO 8601 string.
+
+```go
+@uiForm.DateTimePicker(uiForm.DateTimePickerSettings{
+    Label:           "Start Date",
+    TwoWayStatePath: "startDate",
+
+    // OptionalFields
+    Mode:           uiForm.DateTimePickerModeDate,
+    MinValue:       "2026-01-01",
+    MaxValue:       "2026-12-31",
+    Locale:         "en-US",
+    FirstDayOfWeek: "sunday",
+})
+```
+
+- `Mode` takes `DateTimePickerModeDate` (default), `DateTimePickerModeDateTime`, or `DateTimePickerModeTime`.
+- The picker stores ISO 8601 values: `YYYY-MM-DD` in date mode, `YYYY-MM-DDTHH:MM` in datetime mode, and `HH:MM` in time mode. The input shows the value in the locale format.
+- Typing an ISO 8601 value commits it. Any other text reverts to the stored value on blur or Enter. A typed offset is dropped and the configured timezone supplies the offset again.
+- `MinValue` and `MaxValue` disable the days outside the bounds. Use the same ISO format as the mode.
+- `Locale` takes a BCP 47 tag for the month names, the weekday names, and the input format (default `en-US`). `FirstDayOfWeek` shifts the week start by weekday name, for example `"monday"`.
+- `IsRange` shows two inputs split by a divider, one for the begin value and one for the end value. Each side carries a caption from `RangeStartLabel` and `RangeEndLabel` (default `Start` and `End`). Each input edits its own side and commits on its own; the active input stays bright, and the calendar edits the active side. The start writes to `TwoWayStatePath`, and the end writes to `RangeEndTwoWayStatePath`. The calendar paints the span as one continuous band and rounds only the two ends. Clicking a day before the start swaps the ends, and a typed value that would cross the other side swaps the ends too.
+- `Value` and `RangeEndValue` seed the picker when no state path is set.
+- The picker seeds its drafts from the bound paths at mount and writes each change back. A path written from outside the picker stays until the next user change.
+- Give the state paths from code, never from request data. The component puts them into client-side expressions.
+- `InputName` adds a hidden input that submits the ISO value with the form. In range mode the end input takes `RangeEndInputName` or `InputName + "-end"`.
+- The time selector sits centered in the popover and renders through `SelectInput`. `TimeSelectorSize` takes a `SelectInputSize*` constant. `TimeSelector` takes a `DateTimePickerTimeSelectorStyle` group with `BackgroundColor`, `BorderColor`, `BorderRadius`, `TextColor`, `DropdownBackgroundColor`, `DropdownBorderColor`, and `DropdownBorderRadius`.
+- `Timezone` takes an IANA name, for example `"America/Sao_Paulo"`. In datetime mode, setting it shows a timezone select beside the time when the field is wide enough and wraps it below when it is not, and writes the value with its UTC offset, for example `2026-10-16T09:30-03:00`. Changing the timezone recomposes the current drafts. `TimezoneOptions` replaces the built-in zone list, and a configured zone outside the list is added at the top. `TimezoneTwoWayStatePath` seeds the selected zone from the app state and writes each change back. `Timezone` supplies the zone when the path is empty. `TimezoneInputName` adds a hidden input for form submission.
+- Arrow keys move day focus by one day (left/right) or one week (up/down). Home and End jump to the week edges. Escape closes the popover from anywhere on the page.
+- `Size` takes an `InputFieldSize*` constant.
+- `TextCase` takes a `uiToolset.TextCase*` value. It changes the label, the range captions, the inputs, the time selector labels, and the Done button.
+- `CalendarButtonStyle` takes `InputActionButtonStyleBoxed` (the default) or `InputActionButtonStylePlain` for the calendar toggle.
+- The Done action renders with the `ph-check` icon and lowercase text by default; a set `TextCase` overrides the lowercase default. `DoneButtonLabel`, `DoneButtonIconLeft`, `DoneButtonIconRight`, `DoneButtonSize`, and `DoneButtonStyle` customize it. `DoneButtonStyle` takes `BackgroundColor`, `BackgroundColorHover`, `IconSizeClass`, `RingColor`, `RingColorHover`, `RingThickness`, `Shape`, `TextColor`, `TextColorHover`, and `TextSizeClass`. `IconSizeClass` and `TextSizeClass` take a Tailwind text size class and size the icon and the label on their own; the default icon size follows the button size.
+- `HintValue` and `HintStatePath` carry the hint text, and `HintDisplay` picks the display mode: `InputHintDisplayTooltip` (default when set) or `InputHintDisplayDescription`. The tooltip settings mirror the InputField, including `HintIconStyle`.
+- `Style` takes a `DateTimePickerStyle` group. The field fields are `FieldBackgroundColor`, `FieldBorderColor`, `FieldBorderRadius`, `TextColor`, `PlaceholderColor`, `CalendarButtonIconColor`, `RangeDividerColor`, and `RangeLabelTextColor`; the calendar surface fields are `CalendarBackgroundColor`, `CalendarBorderColor`, and `CalendarBorderRadius`; the calendar day fields are `DayTextColor`, `DayMutedTextColor`, `DayDisabledTextColor`, `DayHoverBackgroundColor`, `DaySelectedBackgroundColor`, `DaySelectedTextColor`, `DayRangeBackgroundColor`, `DayRangeTextColor`, and `DayTodayRingColor`. Every field takes a Tailwind token, and the defaults match the neutral and secondary tones.
+- The calendar navigation, the toggle, and the Done action render through `uiControl.Button`.
+
 ## InputField
 
 A single-line input with a floating label, optional affixes, and an optional hint.
@@ -66,6 +105,7 @@ A single-line input with a floating label, optional affixes, and an optional hin
 - An affix shows a static value (`AffixLeftValue`, `AffixRightValue`) or a state path (`AffixLeftStatePath`, `AffixRightStatePath`). `AffixLeftWidthPercent` and `AffixRightWidthPercent` fix the affix width, for example `25`.
 - `AffixRightComponent` renders a templ component at the right edge. `PasswordInput` uses it for its buttons.
 - A number input takes `InputNumberMin`, `InputNumberMax`, and `InputNumberStep`.
+- `IsInvalidOneWayStatePath` paints the field border red and sets `aria-invalid` while the path is truthy.
 - `Size` takes an `InputFieldSize*` constant (default `md`). It scales the input, the affixes, and the label.
 
 ## FileUploadInput
@@ -98,6 +138,40 @@ A drop zone that also opens a file picker. It lists each file with a type icon, 
 - `Size` takes `FileUploadInputSizeXs` through `FileUploadInputSizeXl` and scales the zone, the icon, the rows, and the text together.
 - `Zone`, `Row`, `Progress`, and `Rejected` take the colors and the radius of each part. Every color field takes a Tailwind token.
 - `Zone.Icon` takes a Phosphor icon name for the drop zone (default `ph-tray-arrow-up`). The row icon follows the file type and is not configurable.
+
+## MultiColumnRepeatableFieldset
+
+A repeatable list of rows built from column definitions. Each cell renders through the matching input component: text and number cells through `InputField`, select cells through `SelectInput`, and checkbox cells through `CheckboxInput`. The user adds, duplicates, moves, and removes rows. The list writes itself to a state path as JSON.
+
+```go
+@uiForm.MultiColumnRepeatableFieldset(uiForm.MultiColumnRepeatableFieldsetSettings{
+    TwoWayStatePath: "teamMembers",
+    Columns: []uiForm.MultiColumnRepeatableFieldsetColumn{
+        {Id: "name", Label: "Name", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeText, IsRequired: true},
+        {Id: "role", Label: "Role", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeSelect,
+            Options: []uiForm.SelectLabelValueOption{{Label: "Owner", Value: "owner"}}},
+    },
+
+    // OptionalFields
+    AddRowLabel:     "Add member",
+    Dropdown:        uiForm.MultiColumnRepeatableFieldsetDropdownStyle{BackgroundColor: "neutral-950"},
+    EmptyStateLabel: "No members yet",
+    InputName:       "teamMembers",
+    Size:            uiForm.InputFieldSizeSm,
+    TextCase:        "capitalize",
+})
+```
+
+- `InputType` takes `MultiColumnRepeatableFieldsetColumnTypeText`, `MultiColumnRepeatableFieldsetColumnTypeNumber`, `MultiColumnRepeatableFieldsetColumnTypeSelect`, or `MultiColumnRepeatableFieldsetColumnTypeCheckbox`. An unknown type renders a text cell.
+- Number columns take `Min`, `Max`, and `Step`. Select columns take `Options`; the picker is clearable and shows the label as its placeholder.
+- `IsRequired` marks the cell required: the field carries the required and aria-invalid wiring and paints a red border while empty. It does not block the row actions.
+- `Size` takes an `InputFieldSize*` constant and applies to every cell. `TextCase` changes the cell label case.
+- Each cell type carries a style group. `Dropdown` takes `BackgroundColor`, `BorderColor`, and `BorderRadius` for the select option list. `Select` takes `SelectedIconColor` and a `Trigger` surface of `BackgroundColor`, `BorderColor`, `BorderRadius`, and `TextColor`. `Checkbox` takes `CheckedColor`, `UncheckedColor`, `FocusRingColor`, and `Shape`.
+- `NewRowFunc` names a JavaScript expression that returns a new row object. The Add row action merges the returned values into the column defaults, so each added row can carry distinct values. Invalid or unknown entries fall back to the column defaults and log `MultiColumnRepeatableFieldsetNewRowFuncFailed`. Give the expression from code, never from request data; the component evaluates it in the browser.
+- The move-up and move-down buttons disable on the edge rows. `AddRowLabel` replaces the add button text, and `EmptyStateLabel` replaces the empty-state text.
+- `InputName` adds a hidden input that submits the rows as JSON with the form.
+- The rows read and write through `TwoWayStatePath`. Each edit writes the whole array back. An empty array shows the empty state.
+- Give the state paths from code, never from request data. The component puts them into client-side expressions.
 
 ## NumberRangeInputField
 
@@ -220,7 +294,7 @@ A dropdown select. It is not a native `<select>`: hidden radio inputs and an Alp
 
 - `IsMultiSelect` shows checkbox rows, keeps the list open after each toggle, and binds an array. The trigger joins the selected labels. `InputId` prefixes the checkbox ids.
 - `ShouldIncludeBlankOption` adds a blank entry in single mode. In multi mode, a clear control shows while the array holds a value.
-- `IsDisabledOneWayStatePath` disables the trigger while the path is truthy.
+- `IsDisabledOneWayStatePath` disables the trigger while the path is truthy. `IsInvalidOneWayStatePath` paints the field border red and sets `aria-invalid` on the trigger while the path is truthy.
 - `OnChangeFunc` runs after a change, a toggle, or a clear.
 - `Size` takes a `SelectInputSize*` constant (default `md`).
 - The trigger opens on click, Enter, Space, or ArrowDown; the checked row takes focus, Enter commits, and Escape closes with focus return. A pick in single mode closes the dropdown.

@@ -233,6 +233,36 @@ Drop zone with click-to-pick that lists each file with a type icon, size, status
 
 ---
 
+## Date Time Picker
+
+Text input that opens a calendar popover for date, time, or datetime values. The value moves through the bound state path as an ISO 8601 string. An optional range mode splits the field into captioned Start and End sides with a divider, each editable and committed on its own, and paints the calendar span as a continuous band. Min and max bound the selectable days, locale and first-day settings drive the month and weekday names, and a typed ISO value commits from the keyboard. The centered time row renders through SelectInput, with optional timezone selection that sits beside the time when the field is wide enough and writes the UTC offset into the value. Optional hints render as a focusable tooltip or a description line. DateTimePickerStyle paints the field, the calendar surface, the range captions and divider, and every calendar day state; TimeSelector and DoneButtonStyle paint the time controls and the Done action; TextCase reaches the labels, inputs, time selects, and Done action; and the calendar navigation, the toggle, and the Done action render through the library Button.
+
+**Flow:**
+
+1. `src/form/dateTimePicker.templ` — Component definition with DateTimePickerSettings struct, the DateTimePickerStyle, DateTimePickerTimeSelectorStyle, and DateTimePickerDoneButtonStyle groups, the calendar and SelectInput time popover markup, the timezone select, the captioned range sides, the hint rendering through InputHintTooltip and InputHintDescription, and the data and writeback expression builders that pass the bound values into the Alpine factory
+2. `src/form/dateTimePickerState.js` — Alpine data component: the view navigation, the draft and per-side typed-value sync, the side activation, the range order normalization, the bounds checks, the locale formatting, the typed commit and revert, the timezone offset and wall-clock resolution, the banded day classes, and the keyboard day focus
+3. `src/form/dateTimePickerOptions.go` — The hour, minute, and timezone option lists
+4. `src/form/dateTimePicker_test.go` — Renders, path wiring, mode and locale settings, bounds, range captions and divider, time selector rendering, timezone options, style config, and Done button customization tests
+5. `src/form/inputHint.templ` — Shared hint renderer for the tooltip and description display modes
+6. `src/form/inputActionButton.go` — Shared boxed and plain action-button recipe behind the calendar toggle and the PasswordInput actions
+7. `src/control/button.templ` — The calendar navigation, toggle, and Done buttons
+8. `src/form/dateTimePicker_templ.go` — Compiled output
+
+---
+
+## Multi Column Repeatable Fieldset
+
+Repeatable table of rows built from column definitions. Each cell renders through the matching input component: text and number cells through InputField, select cells through SelectInput, and checkbox cells through CheckboxInput, with a shared Size and TextCase. Each cell type carries its own style group: Checkbox (checked and unchecked colors, focus ring, shape), Select (trigger surface and checked-option icon color), and Dropdown (the option list surface). `NewRowFunc` names the expression that builds a new row, so the Add row action can seed distinct values. The user adds, duplicates, moves, and removes rows. The whole array reads and writes through the bound state path and submits as JSON through a hidden input.
+
+**Flow:**
+
+1. `src/form/multiColumnRepeatableFieldset.templ` — Component definition with the settings and column structs, the style groups, the table markup, the cell sub-template mapped to InputField, SelectInput, or CheckboxInput, the row action buttons with the edge-row disabling, the empty-state row, and the hidden JSON input
+2. `src/form/multiColumnRepeatableFieldsetState.js` — Alpine data component: the default row builder with the optional NewRowFunc evaluation, the append, duplicate, move, and remove operations, and the required-cell validation expressions
+3. `src/form/multiColumnRepeatableFieldset_test.go` — Renders, wiring, column input types, empty state, hidden input, NewRowFunc, and style group tests
+4. `src/form/multiColumnRepeatableFieldset_templ.go` — Compiled output
+
+---
+
 ## Range Slider
 
 Input range slider control with min/max constraints, step values, bidirectional Alpine.js state binding for numeric input, optional tick marks, value bubbles with an always or hover display mode, an optional track hover tooltip that previews the value under the pointer, and accessible names for single and dual thumbs.
@@ -257,15 +287,15 @@ Dismissible alert component with title, description, icons (left/right), and var
 
 ## Chart
 
-Line, area, bar, and donut charts drawn with plain Vega. The settings split by chart kind: the shared settings hold the X axis, the series, the legend, and the tooltip, while the type-specific options live in a Cartesian or a Donut group. Colors are Tailwind tokens. The chart supports stacking, area fills, markers, line dashes, an empty state, a screen-reader table, and live rows from an Alpine path with a row cap.
+Line, area, bar, horizontal bar, pie, donut, radial bar, sunburst, parliament, and waffle charts drawn with plain Vega, plus a progress bar and a gauge drawn without Vega. The settings split by chart kind: the shared settings hold the X axis, the series, the legend, and the tooltip, while the type-specific options live in a Cartesian, a Slices, a Waffle, a Sunburst, a Parliament, a Progress, or a Gauge group. Slices is the group every donut-like variation reads: the donut, the pie, the radial bar, the sunburst, the parliament, and the waffle, so the donut stays one type constant among them. A pie is a donut with a forced zero hole and a hidden center label, and each slice labels its share of the total at its midpoint. A radial bar is a circular bar chart that grows each category from the Slices hole to the outer edge; each bar labels its share of the largest value at its midpoint. A sunburst draws a category ring and a child ring over one synthetic hierarchy root, where each category arc spans the sum of its children; each arc labels its share of the total, and a child arc its share of its category. Every in-fill slice label sits on a rounded pill whose background is a customizable token. A parliament dots one seat per value over concentric semicircle rows in contiguous party blocks, with a configurable dot shape, dot gap, and dot size. A waffle tiles a grid of equal cells by each category's share of the total, with a configurable cell shape and gap. A horizontal bar swaps the category and value axes while `XAxis` keeps naming the category. Colors are Tailwind tokens. The Vega types support stacking, area fills, markers, line dashes, an empty state, a screen-reader table, and live rows from an Alpine path with a row cap; the progress type supports thresholds, bounds, min and max size classes, a label text size class, an indeterminate animation, diagonal stripes, label affixes, a percent or fixed label, a one-way bound value path, and a label pill with a customizable background; the gauge type supports colored bands, a semicircle mode, a center label with configurable value and label text sizes and a text offset away from the pivot, tick marks with labels placed outside or inside the track, configurable arc and needle geometry, and custom colors including the needle.
 
 **Flow:**
 
-1. `src/display/chart.go` — The shared settings and the per-kind Cartesian and Donut groups, the private wire structs with their JSON tags, the config resolver with defaults and option checks, the legend and tooltip classes, and the color token collector
-2. `src/display/chart.templ` — JSON config script, legend, canvas, empty state, tooltip, color probes, and table markup
-3. `src/display/chartState.js` — Color probe reader, Vega spec builders per chart type, the validated palette, the Vega view lifecycle outside Alpine state, the rows watch, and the tooltip handler
+1. `src/display/chart.go` — The shared settings and the per-kind Cartesian, Slices (the slice label color and pill background), Waffle (cell count, column count, cell shape, cell gap), Sunburst (the child row key), Parliament (row count, dot shape, dot gap, dot size), Progress, and Gauge (including the tick position) groups, the private wire structs with their JSON tags, the type resolver, the config resolver with defaults and option checks, the legend and tooltip classes, the progress and gauge resolvers, and the color token collector
+2. `src/display/chart.templ` — The progress and gauge markup branches, then the JSON config script, legend, canvas, empty state, tooltip, color probes, and table markup
+3. `src/display/chartState.js` — Color probe reader, Vega spec builders per chart type with orientation-aware scales, axes, and bar channels, the pie, radial bar, and sunburst percentage labels over their pill backgrounds, the parliament dot and waffle cell shape channels, the progress Alpine data, the validated palette, the Vega view lifecycle outside Alpine state, the rows watch, and the tooltip handler
 4. `src/import/import.templ` — HeadTagsVega loads Vega once for the page, usually from the layout head
-5. `demo/chartDemo.templ` and `demo/chartDemoState.js` — Live streaming area chart and the line, bar, stacked, donut, appearance, and empty examples
+5. `demo/chartDemo.templ` and `demo/chartDemoState.js` — Live streaming area chart and the line, bar, horizontal bar, stacked, donut (with the center label), pie, radial bar, sunburst, parliament, parliament dot shape, waffle, waffle shape and gap, progress, progress thresholds, progress bound value, gauge, gauge semicircle, gauge ticks, appearance, and empty examples
 
 ---
 
@@ -479,6 +509,19 @@ Collapsible section component for grouping content into expandable panels. The c
 
 1. `src/display/accordion.templ` — Component definition with AccordionSettings struct
 2. `src/display/accordion_templ.go` — Compiled output rendering accordion structure with Alpine.js collapse behavior
+
+---
+
+## Collapsible Text
+
+Text block truncated to a line limit with an inline lowercase show-more affordance after the ellipsis, rendered only when the text overflows. Optional Phosphor icons flank the text, the toggle icons take one name per state, and the size scale covers the text, the affordance, and the icons together.
+
+**Flow:**
+
+1. `src/display/collapsibleText.templ` — Component definition with CollapsibleTextSettings struct, the truncation target, the inline affordance with its per-state toggle icons, and the flanking icons
+2. `src/display/collapsibleTextState.js` — Alpine data component: the display text and toggle label getters, the measured truncation against the line budget, the word-boundary cut, and the expand and collapse state
+3. `src/display/collapsibleText_test.go` — Renders, size and label resolvers, icons, and color tests
+4. `src/display/collapsibleText_templ.go` — Compiled output
 
 ---
 

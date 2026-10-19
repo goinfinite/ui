@@ -44,7 +44,7 @@ A status message with a title, a description, and a variation.
 
 ## Chart
 
-Line, area, bar, and donut charts drawn with [Vega](https://vega.github.io/vega/). The chart reads the global `vega` and does not load it. Load Vega once per page, usually with `@uiImport.HeadTagsVega()` in the layout head. Without Vega, the chart shows the legend and the table and logs `ChartVegaLibraryNotLoaded`.
+Line, area, bar, horizontal bar, pie, donut, radial bar, sunburst, parliament, and waffle charts drawn with [Vega](https://vega.github.io/vega/), plus a progress bar and a gauge drawn without it. The chart reads the global `vega` and does not load it. Load Vega once per page, usually with `@uiImport.HeadTagsVega()` in the layout head. Without Vega, the chart shows the legend and the table and logs `ChartVegaLibraryNotLoaded`. A page that uses only the progress or gauge type needs no Vega at all.
 
 ```go
 @uiDisplay.Chart(uiDisplay.ChartSettings{
@@ -78,19 +78,27 @@ An unknown option value, a missing `RowKey`, or a bound that is not a number sto
 - A row is one object. `XAxis.RowKey` names the key with the X value. Each series `RowKey` names the key with that series value. Example: `{time: 1760360000000, cpu: 0.42, memory: 0.61}`.
 - `Rows` sets the initial rows from Go. Any value that encodes to a JSON array of objects works.
 - `RowsOneWayStatePath` binds the rows to Alpine state. The chart draws again when the array or a row changes.
+- Give `RowsOneWayStatePath` from code, never from request data. The component puts it into a client-side expression.
 - `MaxRows` keeps only the newest rows. `0` keeps every row.
 
 ### Type and marks
 
-- `Type` takes `ChartTypeLine` (the default), `ChartTypeArea`, `ChartTypeBar`, or `ChartTypeDonut`.
-- A line, area, or bar chart reads `Cartesian`. A donut reads `Donut`.
+- `Type` takes `ChartTypeLine` (the default), `ChartTypeArea`, `ChartTypeBar`, `ChartTypeHorizontalBar`, `ChartTypePie`, `ChartTypeDonut`, `ChartTypeRadialBar`, `ChartTypeSunburst`, `ChartTypeParliament`, `ChartTypeWaffle`, `ChartTypeProgress`, or `ChartTypeGauge`.
+- A line, area, or bar chart reads `Cartesian`. A progress chart reads `Progress`, and a gauge chart reads `Gauge`; both skip `XAxis` and `Series`.
+- The donut-like variations read `Slices`. The donut, the pie, and the radial bar have no group of their own: `Type` selects the variation and `Slices` holds every setting. The sunburst, the parliament, and the waffle read `Slices` and their own group for the extra fields.
 - `Cartesian.StackMode` takes `ChartStackModeNone` (the default), `ChartStackModeStacked`, or `ChartStackModePercent`. A stacked chart piles the series. A percent chart shows each series as a share of the total, and the Y axis format changes to `".0%"`. Without a stack, a bar chart puts the series side by side.
 - `Cartesian.AreaFillStyle` takes `ChartAreaFillStyleGradient` (the default), `ChartAreaFillStyleSolid`, or `ChartAreaFillStyleNone`.
 - `Cartesian.MarkerDisplayMode` takes `ChartMarkerDisplayModeHover` (the default), `ChartMarkerDisplayModeAlways`, or `ChartMarkerDisplayModeHidden`.
-- A donut reads the first series. `XAxis.RowKey` names each slice. `Donut.HolePercent` sets the hole size (default 60, maximum 90).
-- `Donut.CenterLabelDisplayMode` shows the slice name and its value in the hole. It takes `ChartDonutCenterLabelDisplayModeHidden` (the default), `ChartDonutCenterLabelDisplayModeHover`, or `ChartDonutCenterLabelDisplayModeAlways`. Always keeps the at-rest slice. A hover replaces it. Hover mode shows the label only while a slice is hovered.
-- `Donut.CenterLabelAlwaysSlice` names the at-rest slice. An empty value shows the first slice. An unknown name logs `ChartDonutCenterLabelSliceNotFound` and shows the first slice. `Donut.CenterLabelSliceColor` and `Donut.CenterLabelValueColor` set the two label colors. The value takes `Tooltip.ValueFormat`.
-- `Donut.CenterLabelSize` takes `ChartDonutCenterLabelSizeXs` through `ChartDonutCenterLabelSizeXl` (default `Md`). It scales both label lines together. `Donut.CenterLabelValueSuffix` follows the center label value only, for example `" GiB"`. The tooltip keeps its own value.
+- A donut reads the first series. `XAxis.RowKey` names each slice. `Slices.HolePercent` sets the hole size (default 60, maximum 90).
+- A pie is a donut with no hole. It reads the same rows as the donut, ignores `Slices.HolePercent`, and hides the center label. Each slice shows its share of the total on a rounded pill at the slice midpoint.
+- A radial bar is a circular bar chart. It reads the same rows as the donut. Each category gets one bar that grows from `Slices.HolePercent` to the outer edge, and the legend lists the categories in row order. Each bar shows its share of the largest value at its midpoint on a rounded pill.
+- A sunburst is a donut with a second ring. `XAxis.RowKey` names the category and `Sunburst.ChildRowKey` the child. The inner ring holds one arc per category and the outer ring one arc per child. A category arc spans the sum of its children. Each arc shows its percentage at its midpoint on a rounded pill: a category arc its share of the total and a child arc its share of its category.
+- The pie, the radial bar, and the sunburst labels take `Slices.IsSliceLabelHidden` to remove them, `Slices.SliceLabelColor` to paint the text, and `Slices.SliceLabelPillBackgroundColor` to paint the pill behind the text (default `neutral-950/70`).
+- A parliament draws one dot per seat over concentric semicircle rows. `XAxis.RowKey` names the party and the first series holds the seat count. Parties fill the seats as contiguous blocks, ordered by row and then left to right. `Parliament.RowCount` sets the number of rows (default 6). `Parliament.DotShape` takes `ChartDotShapeCircle` (the default), `ChartDotShapeSquare`, `ChartDotShapeDiamond`, `ChartDotShapeCross`, `ChartDotShapeTriangleUp`, or `ChartDotShapeTriangleDown`. `Parliament.DotGapPercent` sets the empty share of the seat-to-seat space up to 95 (default 25; zero selects the default), and `Parliament.DotSizePercent` scales each dot from 10 to 200 on top of that space (default 100).
+- A waffle shows the parts of a whole as a grid of equal cells. Each category gets as many cells as its share of the total. `Waffle.CellCount` sets the cell total (default 100) and `Waffle.ColumnCount` the grid width (default 10). A zero count selects the default. `Waffle.CellShape` takes `ChartWaffleCellShapeSquare` (the default) or `ChartWaffleCellShapeCircle`, and `Waffle.CellGapPercent` sets the space between cells from 0 to 60 (default 4). The cells tile the grid exactly, so no cell is lost to rounding.
+- `Slices.CenterLabelDisplayMode` shows the slice name and its value in the hole of a donut or a pie. It takes `ChartCenterLabelDisplayModeHidden` (the default), `ChartCenterLabelDisplayModeHover`, or `ChartCenterLabelDisplayModeAlways`. Always keeps the at-rest slice. A hover replaces it. Hover mode shows the label only while a slice is hovered. A radial bar ignores the center label.
+- `Slices.CenterLabelAlwaysSlice` names the at-rest slice. An empty value shows the first slice. An unknown name logs `ChartCenterLabelSliceNotFound` and shows the first slice. `Slices.CenterLabelSliceColor` and `Slices.CenterLabelValueColor` set the two label colors. The value takes `Tooltip.ValueFormat`.
+- `Slices.CenterLabelSize` takes `ChartCenterLabelSizeXs` through `ChartCenterLabelSizeXl` (default `Md`). It scales both label lines together. `Slices.CenterLabelValueSuffix` follows the center label value only, for example `" GiB"`. The tooltip keeps its own value.
 - `GapColor` sets the color of the gaps between bars, slices, and markers (default `neutral-900`). Match it to the background behind the chart.
 
 ### Colors
@@ -98,7 +106,7 @@ An unknown option value, a missing `RowKey`, or a bound that is not a number sto
 - Every color field takes a Tailwind color token, for example `"sky-400"`, `"red-500/20"`, or `"[#4c8dff]"`. The chart reads the real color from a hidden element with that class.
 - `IdentityColor` is the one color of a series. The line, the area, the bar, the marker, the legend swatch, and the tooltip swatch all use it, so the legend always matches the plot.
 - Without `IdentityColor`, each series gets the next color of a fixed palette of eight. The palette passes color-vision checks on the dark surface. A ninth series shows gray and logs `ChartSeriesPaletteExceeded`, so group extra series.
-- `Donut.SliceIdentityColors` maps a slice name to a token. Other slices use the palette.
+- `Slices.SliceIdentityColors` maps a slice name to a token. Other slices use the palette.
 - A token that the page cannot resolve logs `ChartColorTokenUnresolved`.
 
 ### Series
@@ -117,6 +125,7 @@ An unknown option value, a missing `RowKey`, or a bound that is not a number sto
 - `XAxis.IsGridLineVisible` shows the X grid, which is off by default. `YAxis.IsGridLineHidden` hides the Y grid.
 - `YAxis.MinValue` and `YAxis.MaxValue` fix the value range. Empty values fit the data.
 - `YAxis.TickCount` sets the number of Y labels (default 5). `YAxis.Position` takes `ChartYAxisPositionLeft` (the default) or `ChartYAxisPositionRight`.
+- A horizontal bar draws the category axis down the left edge and the value axis along the bottom. `XAxis` still names the category and `Cartesian.YAxis` still names the value axis. `YAxis.Position` right moves the value labels to the top.
 
 ### Legend
 
@@ -129,7 +138,7 @@ An unknown option value, a missing `RowKey`, or a bound that is not a number sto
 
 - On a line or area chart, hover shows a crosshair and each series value at that point. A bar or a slice shows its own value.
 - `TitleFormat` formats the X value. A time axis defaults to `"%b %d, %H:%M:%S"`. A category axis ignores it and shows the row value as it is. `ValueFormat` formats the series values. It defaults to the Y tick label format, and to `",.2~f"` on a percent stack.
-- `ContentFunc` names a global JavaScript function that returns the tooltip HTML for the hovered row. It receives the row object and replaces the default title and rows. A name that is not a function logs `ChartTooltipContentFuncMissing` and falls back to the default.
+- `ContentFunc` names a global JavaScript function that returns the tooltip HTML for the hovered row. It receives the row object and replaces the default title and rows. The returned HTML is trusted and inserted as is: never return request data without sanitizing it first. A name that is not a function logs `ChartTooltipContentFuncMissing` and falls back to the default.
 - `BackgroundColor`, `TitleColor`, `SeriesLabelColor`, and `ValueColor` set the colors. `RingColor`, `RingThickness`, `ShadowSize`, `PaddingSize`, `BorderRadius`, `MinWidthClass`, and `MaxWidthClass` style the surface.
 - `CrosshairColor` sets the crosshair color. `IsCrosshairHidden` hides it. `IsHidden` hides the tooltip.
 
@@ -137,7 +146,66 @@ An unknown option value, a missing `RowKey`, or a bound that is not a number sto
 
 - `HeightClass` sets the plot height (default `h-64`).
 - `EmptyState` takes a component that shows over the plot when there are no rows. The default is the text `No data`.
-- `AriaLabel` names the plot and the screen-reader table of rows. Without it, the series labels name the plot.
+- `AriaLabel` names the plot and the screen-reader table of rows. Without it, the series labels name the plot. On a progress chart it names the bar, and on a gauge chart it names the meter.
+
+### Progress
+
+`ChartTypeProgress` draws an HTML progress bar and no Vega canvas. It reads `Progress` and skips `XAxis`, `Series`, and the Vega sections. A page that uses only the progress type needs no Vega head tag.
+
+- `Progress.Value` is the number the bar shows. `Progress.MinValue` and `Progress.MaxValue` set the value range; a value outside the range clamps to the nearest end. The default range is 0 to 100.
+- `Progress.Thresholds` are checked in list order, and the first entry whose `MinimumPercent` has been reached paints the fill. List them from highest to lowest percent. Without thresholds, the fill takes red-800 at 90%, red-600 at 85%, amber-600 at 75%, amber-300 at 50%, and cyan-400 below.
+- `Progress.DefaultColor` paints every percent below the lowest threshold.
+- `Progress.IsIndeterminate` hides the percent and animates a sliding segment, for work of unknown length.
+- `Progress.IsStriped` draws diagonal stripes over the fill in `Progress.StripeColor` (default `neutral-50/20`).
+- `Progress.ShouldShowPercentLabel` shows a percent label. `Progress.Label` replaces the text with fixed content, and `Progress.LabelOneWayStatePath` reads the text from a state path. `Progress.LabelPrefix` and `Progress.LabelSuffix` wrap the percent text.
+- `Progress.ValueOneWayStatePath` makes the bar follow a state path. The bar reads the path and never writes back.
+- `Progress.Size` takes `ChartProgressSizeXs`, `ChartProgressSizeSm` (default), or `ChartProgressSizeMd` and sets the track height and the label text size.
+- `Progress.MinWidthClass`, `Progress.MaxWidthClass`, `Progress.MinHeightClass`, and `Progress.MaxHeightClass` constrain the bar; it fills its container by default with a `min-w-20` floor.
+- `Progress.TrackBackgroundColor`, `Progress.DefaultColor`, `Progress.LabelBackgroundColor`, and `Progress.LabelTextColor` take color tokens. The label sits on a rounded pill; the pill takes `LabelBackgroundColor`, which defaults to `neutral-950/70`.
+- `Progress.LabelTextSizeClass` takes a Tailwind text size class for the label alone, for example `text-lg`. Without it, the label follows `Progress.Size`.
+- Give the state paths from code, never from request data. The component puts them into client-side expressions.
+
+### Gauge
+
+`ChartTypeGauge` draws a needle over a track, with optional colored bands and a center label. It renders as plain SVG with the `meter` role and no Vega canvas. It reads `Gauge` and skips `XAxis`, `Series`, and the Vega sections. A page that uses only the gauge type needs no Vega head tag.
+
+- `Gauge.Value` is the number the needle shows. `Gauge.MinValue` and `Gauge.MaxValue` set the value range; a value outside the range clamps to the nearest end. The default range is 0 to 100. The center text and the accessible value show the clamped value; the needle follows the same clamp.
+- `Gauge.Bands` draws colored arcs between percent marks, in list order. Each band spans `MinimumPercent` to `MaximumPercent`, where 0 is the start of the arc and 100 its end. A band outside that range, or with the minimum at or above the maximum, fails the render with `ChartInvalidGaugeBandPercent`. A band color defaults to `neutral-700`.
+- `Gauge.IsSemicircle` draws the top half only.
+- `Gauge.Label` shows fixed text under the value. `Gauge.ValueColor` and `Gauge.LabelColor` paint the two center texts (defaults `neutral-50` and `neutral-400`). `Gauge.ValueTextSize` and `Gauge.LabelTextSize` set the two font sizes (defaults 24 and 12, allowed 6 to 72). `Gauge.TextOffset` moves both texts down, away from the pivot (default 0, allowed 0 to 80); the viewBox grows with the offset and the larger of the two text sizes, and widens for a long value or label, so the text never clips.
+- `Gauge.ArcThickness` sets the track and band width in the 200-unit viewBox (default 16, allowed 4 to 36).
+- `Gauge.NeedleLength`, `Gauge.NeedleThickness`, and `Gauge.PivotRadius` shape the needle: the length accepts 10 to 90 (default 55), the thickness 1 to 12 (default 3), and the pivot radius up to 20 (default 5). A zero value selects its default, and a value outside its range fails the render.
+- `Gauge.TickCount` draws that many evenly spaced tick intervals across `MinValue` to `MaxValue`, each with a label; zero draws none. `Gauge.TickPosition` places them `ChartGaugeTickPositionOutside` (the default) or `ChartGaugeTickPositionInside` the track. Outside ticks widen the viewBox so the labels stay in view. On a full-circle gauge, inside ticks label the top half only, so the center value and label keep their space. `Gauge.TickColor` and `Gauge.TickLabelColor` paint them.
+- `Gauge.TrackColor` and `Gauge.NeedleColor` take color tokens. The defaults are `neutral-50/15` and `neutral-50`. `NeedleColor` paints the needle and its pivot.
+- The center value and label sit below the pivot with clearance, so the needle does not touch them.
+- Give the color tokens and the label from code, never from request data. The component puts them into class names and text.
+
+### Waffle
+
+`ChartTypeWaffle` draws the parts of a whole as a grid of equal cells on a Vega canvas. It reads the first series and `XAxis.RowKey`, and it colors the cells like the donut, through `Slices.SliceIdentityColors` and the palette. The legend lists the categories in row order. It ignores `Slices.HolePercent` and the center label.
+
+- `Waffle.CellCount` sets the number of cells (default 100). `Waffle.ColumnCount` sets the number of cells per row (default 10). A zero count selects the default.
+- `Waffle.CellShape` takes `ChartWaffleCellShapeSquare` (the default) or `ChartWaffleCellShapeCircle`. `Waffle.CellGapPercent` sets the space between cells up to 60 (default 4; zero selects the default). A value outside the range fails the render.
+- Each category ends on a rounded cumulative boundary, so the categories tile every cell exactly.
+- The grid centers itself in the plot, whatever the height and the width of the canvas.
+
+### Sunburst
+
+`ChartTypeSunburst` draws a two-level hierarchy as two concentric rings on a Vega canvas. `XAxis.RowKey` names the category, `Sunburst.ChildRowKey` names the child of each row, and the first series holds the value. The inner ring holds one arc per category, and the outer ring one arc per child. A category arc spans the sum of its children, so the rings stay aligned. The legend lists the categories in row order.
+
+- `Sunburst.ChildRowKey` is required. A missing name fails the render with `ChartSunburstChildRowKeyMissing`.
+- A row with an empty child draws its category arc only.
+- A child draws in its category color at 60 percent opacity. The colors come from `Slices.SliceIdentityColors` and the palette, like the donut.
+- The category tooltip shows the category total; a child tooltip shows the child value.
+
+### Parliament
+
+`ChartTypeParliament` draws one dot per seat over concentric semicircle rows on a Vega canvas. It reads the first series and `XAxis.RowKey`, and it colors the dots like the donut, through `Slices.SliceIdentityColors` and the palette. The legend lists the parties in row order. It ignores `Slices.HolePercent` and the center label.
+
+- `Parliament.RowCount` sets the number of rows (default 6). A zero count selects the default.
+- `Parliament.DotShape` takes `ChartDotShapeCircle` (the default), `ChartDotShapeSquare`, `ChartDotShapeDiamond`, `ChartDotShapeCross`, `ChartDotShapeTriangleUp`, or `ChartDotShapeTriangleDown`. `Parliament.DotSizePercent` scales each dot, accepting 10 to 200 (default 100; zero selects the default). A bad shape or size fails the render.
+- The seats fill row by row, from the innermost row out and from left to right. Each party occupies a contiguous block of seats.
+- A seat count with a fraction rounds to whole seats at each party boundary, so the parties tile every seat exactly.
 
 ## CloakLoading
 
@@ -154,6 +222,36 @@ A full-screen loader that covers the page until CSS and JavaScript load. Put it 
 - It uses inline styles, so it renders before the stylesheet loads.
 - It hides `HideDelaySeconds` after Alpine starts.
 - The icon size takes a `CloakLoadingIconSize*` constant. The animation takes a `CloakLoadingAnimationName*` constant.
+
+## CollapsibleText
+
+A block of text that truncates to a line limit with an inline Show more affordance. The affordance renders only when the text exceeds the limit, and it sits directly after the ellipsis on the truncated line.
+
+```go
+@uiDisplay.CollapsibleText(uiDisplay.CollapsibleTextSettings{
+    Text: "A paragraph long enough to exceed three lines on a narrow card.",
+
+    // OptionalFields
+    MaxVisibleLines: 3,
+    ExpandLabel:     "show details",
+    CollapseLabel:   "show summary",
+    ExpandIcon:      "ph-caret-down",
+    CollapseIcon:    "ph-caret-up",
+    FlankIconLeft:   "ph-file-text",
+    FlankIconRight:  "ph-caret-up-down",
+    IconColor:       "neutral-400",
+    Size:            uiDisplay.CollapsibleTextSizeSm,
+    TextColor:       "neutral-300",
+    ToggleColor:     "secondary-400",
+})
+```
+
+- `MaxVisibleLines` caps the visible lines; values below 1 default to 3. The component measures the rendered text, truncates it at the last word that fits, and renders the affordance inline after the ellipsis. The affordance renders only when the text overflows.
+- `ExpandLabel` and `CollapseLabel` replace the affordance text. The defaults are lowercase: "show more" and "show less".
+- `ExpandIcon` and `CollapseIcon` set the affordance icon for each state. The defaults are `ph-caret-down` and `ph-caret-up`.
+- `Size` takes `CollapsibleTextSizeXs`, `CollapsibleTextSizeSm` (default), `CollapsibleTextSizeMd`, or `CollapsibleTextSizeLg`. It scales the text, the affordance, and the flanking icons together.
+- `FlankIconLeft` and `FlankIconRight` place a Phosphor icon at each side of the text, rendered in the bold weight. `IconColor` takes a color token with a neutral-400 default.
+- `TextColor` and `ToggleColor` take color tokens. The defaults are neutral-300 and secondary-400.
 
 ## ConfirmationDialog and Presets
 

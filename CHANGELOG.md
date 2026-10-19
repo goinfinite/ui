@@ -1,6 +1,66 @@
 # Changelog
 
 ```log
+0.3.2 - 2026/10/17
+feat: center the DateTimePicker time row on SelectInput and add an optional IANA timezone select that sits beside the time when the field is wide enough, wraps below when it is not, and writes the UTC offset into the datetime value
+feat: add DateTimePickerTimeSelectorStyle and TimeSelectorSize, so the time selects take the SelectInput trigger and dropdown surfaces
+feat: add TextCase, DoneButtonLabel, DoneButtonIconLeft, DoneButtonIconRight, DoneButtonSize, and DateTimePickerDoneButtonStyle to the DateTimePicker, whose Done action now defaults to the ph-check icon at the label size and lowercase text
+feat: add CalendarBackgroundColor, CalendarBorderColor, CalendarBorderRadius, and CalendarButtonIconColor to DateTimePickerStyle, and show the calendar surface and every day color in the appearance demo
+feat: split the DateTimePicker range field into captioned Start and End sides with a divider, and paint the calendar span as one continuous band with rounded ends
+feat: share the PasswordInput action-button recipe with the DateTimePicker calendar toggle through CalendarButtonStyle
+docs: update the DateTimePicker readme, context, and feature map, and merge the overlapping demo examples into date, time, and timezone plus appearance and text case
+feat: add IconSizeClass and TextSizeClass to the Button, so a caller sizes the icon and the label on their own
+fix: match the DateTimePicker field height to the InputField by moving the input padding onto the input and by sizing the calendar toggle and the Done icon to the field
+fix: put the DateTimePicker calendar toggle and hint icon on the input text line and center the calendar glyph's ink on the value, so single, empty, and range fields all keep the icons level with the value
+fix: keep the DateTimePicker timezone select to datetime mode and seed the zone from its two-way state path
+fix: keep the DateTimePicker range order and bounds checks consistent across day picks, time commits, and date-only bounds
+docs: shorten the DateTimePicker demo descriptions and give the appearance example a distinct calendar surface, day, and selection palette
+test: cover the DateTimePicker time selector, timezone, range captions, band, TextCase, and Done customization
+feat: show the percent inside each pie slice that is wide enough, and draw every in-fill slice label on a settable pill through Slices.SliceLabelPillBackgroundColor
+feat: add DotGapPercent to the parliament chart, so the space between the seat dots is settable
+feat: add TickPosition and NeedleColor to the gauge, so the ticks sit outside or inside and the needle color is settable
+feat: add ValueTextSize, LabelTextSize, and TextOffset to the gauge, so the center text sizes and the distance from the needle are settable
+fix: move the semicircle center text clear of the needle, hide the inside tick labels that would cross it, and grow the viewBox with the offset and the larger text, so nothing clips
+fix: keep the Progress percent label on a pill by default through LabelBackgroundColor, size it through LabelTextSizeClass, and raise the default track height
+fix: keep the percent label off an indeterminate Progress and report the clamped value in its aria-valuenow
+fix: skip the last tick of a full-circle gauge, so the min and max labels never draw on the same point
+fix: build the static Progress fill width from the bare percent, so the label affixes cannot break it
+fix: stop an older CollapsibleText truncation run from overwriting a newer one
+fix: resolve the DateTimePicker timezone offset at the selected wall-clock time and reject impossible dates
+fix: key the sunburst leaves by the category and child lengths, so names with slashes never collide
+fix: lowercase the CollapsibleText toggle labels by default and let ExpandIcon and CollapseIcon set each state icon on its own
+refactor: rename the CollapsibleText IconLeft and IconRight to FlankIconLeft and FlankIconRight, so the flanking icons are distinct from the toggle icons
+docs: title every general visual example Appearance, merge the Donut and Donut Center Label examples into one panel, add a DateTimePicker hints example, show the vertical Tabs bounds and MaxVisibleTabs as separate options, and set the demo version to the newest release
+test: cover the gauge text sizes and offset, the full-circle tick count, the static Progress width with affixes, the slice label pill, the chart gaps, the CollapsibleText icons, and the DateTimePicker DST offset
+
+0.3.1 - 2026/10/16
+feat: add the CollapsibleText with a line limit, an inline Show more affordance right after the ellipsis, flanking icons, and a size scale that also covers the affordance
+feat: add the progress chart type with threshold colors, min-max rescaling, an indeterminate animation, a percent label, and a one-way bound value path
+feat: add the horizontal bar and pie chart types; a pie is a donut with no hole
+feat: add the gauge chart type with colored bands, a semicircle mode, a center label, and custom track and needle colors
+feat: add the radial bar chart type, a circular bar chart that grows each category from the donut hole to the outer edge
+feat: add the waffle chart type with a configurable cell grid, exact cumulative tiling, and per-category colors
+feat: add the sunburst chart type, a two-level hierarchy of a category ring and a child ring with per-category colors
+feat: add the parliament chart type, a semicircle of one seat dot per value across concentric rows in contiguous party blocks
+feat: add the DateTimePicker for date, time, and datetime values, with range selection, bounds, locale week and format, keyboard day navigation, and a typed ISO fallback
+feat: add the MultiColumnRepeatableFieldset with text, number, select, and checkbox cells rendered through the InputField, SelectInput, and CheckboxInput components, a shared size, text case, and dropdown surface, add, duplicate, move, and remove actions, per-row validation, an empty state, and a JSON hidden input
+feat: paint the invalid state on the InputField and the SelectInput through IsInvalidOneWayStatePath, matching the CheckboxInput and the DualSelectInput
+refactor: rename the Donut chart settings group to Slices, a name that covers the donut, pie, radial bar, sunburst, parliament, and waffle types, and rename the center label types to ChartCenterLabel*, keeping the donut as one type constant among the variations
+feat: draw the percentage of each radial bar at its midpoint and of each sunburst arc at its centroid, with Slices.SliceLabelColor and Slices.IsSliceLabelHidden controlling the new labels
+feat: add DotShape and DotSizePercent to the parliament chart and CellShape and CellGapPercent to the waffle chart, so both control the shape and the size of their dots
+feat: add ArcThickness, NeedleLength, NeedleThickness, PivotRadius, TickCount, TickColor, TickLabelColor, ValueColor, and LabelColor to the gauge, and move the full-circle value and label below the pivot so the needle never crosses the text
+feat: add MinWidthClass, MaxWidthClass, MinHeightClass, and MaxHeightClass to the progress chart, replacing WidthClass, and add IsStriped with StripeColor plus LabelPrefix and LabelSuffix
+fix: drop the progress label background by default and take the label affixes into the bound percent, so the label never reads wider than the bar
+feat: add HintValue and the hint display settings to the DateTimePicker, mirroring the InputField
+feat: add the DateTimePickerStyle group for the field and every calendar day state, and render the calendar navigation, the toggle, and the range inputs through the library Button, which gains AriaExpandedOneWayStatePath
+feat: show the DateTimePicker range mode as two inputs, one per side, each editable and typed independently, replacing the start-end toggle
+feat: add Checkbox and Select style groups and the NewRowFunc row factory to the MultiColumnRepeatableFieldset, so callers customize the cells and seed new rows with distinct values
+fix: pass the bound state values into the DateTimePicker data factory, so the picker seeds its drafts from the paths instead of reading them before Alpine creates the state
+test: cover the new components with unit and browser specs
+docs: update the readmes, the contexts, the feature map, and the changelog
+chore(docs): regenerate the demo page
+chore: align the demo module Go version with the library module
+
 0.3.0 - 2026/10/15
 feat: add the CronSchedule with a predefined-schedule dropdown, a five-field custom builder, per-field validation, and a plain-words preview
 feat: add the DualSelectInput, a select and a value input under one label and one border, where the select half opens the shared custom dropdown and the value half carries a darker background
