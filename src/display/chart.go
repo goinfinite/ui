@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"errors"
 	"fmt"
+	"math"
 	"slices"
 	"strconv"
 	"strings"
@@ -26,13 +27,33 @@ func generateChartConfigScriptId() string {
 	return fmt.Sprintf("chart-config-%d", chartConfigScriptIdCounter.Add(1))
 }
 
+const (
+	ChartProgressSizeXs string = "xs"
+	ChartProgressSizeSm string = "sm"
+	ChartProgressSizeMd string = "md"
+)
+
+const chartProgressIndeterminateStyle string = "<style type=\"text/css\">@keyframes ui-progress-bar-indeterminate{0%{left:-40%}100%{left:100%}}</style>"
+
+var chartProgressIndeterminateStyleOnce = templ.NewOnceHandle(
+	templ.WithComponent(templ.Raw(chartProgressIndeterminateStyle)),
+)
+
 type ChartType string
 
 const (
-	ChartTypeArea  ChartType = "area"
-	ChartTypeBar   ChartType = "bar"
-	ChartTypeDonut ChartType = "donut"
-	ChartTypeLine  ChartType = "line"
+	ChartTypeArea          ChartType = "area"
+	ChartTypeBar           ChartType = "bar"
+	ChartTypeDonut         ChartType = "donut"
+	ChartTypeGauge         ChartType = "gauge"
+	ChartTypeHorizontalBar ChartType = "horizontalBar"
+	ChartTypeLine          ChartType = "line"
+	ChartTypeParliament    ChartType = "parliament"
+	ChartTypePie           ChartType = "pie"
+	ChartTypeProgress      ChartType = "progress"
+	ChartTypeRadialBar     ChartType = "radialBar"
+	ChartTypeSunburst      ChartType = "sunburst"
+	ChartTypeWaffle        ChartType = "waffle"
 )
 
 type ChartScaleType string
@@ -105,51 +126,700 @@ const (
 	ChartLegendAlignmentStart  ChartLegendAlignment = "start"
 )
 
-type ChartDonutCenterLabelDisplayMode string
+type ChartCenterLabelDisplayMode string
 
 const (
-	ChartDonutCenterLabelDisplayModeAlways ChartDonutCenterLabelDisplayMode = "always"
-	ChartDonutCenterLabelDisplayModeHidden ChartDonutCenterLabelDisplayMode = "hidden"
-	ChartDonutCenterLabelDisplayModeHover  ChartDonutCenterLabelDisplayMode = "hover"
+	ChartCenterLabelDisplayModeAlways ChartCenterLabelDisplayMode = "always"
+	ChartCenterLabelDisplayModeHidden ChartCenterLabelDisplayMode = "hidden"
+	ChartCenterLabelDisplayModeHover  ChartCenterLabelDisplayMode = "hover"
 )
 
-type ChartDonutCenterLabelSize string
+type ChartCenterLabelSize string
 
 const (
-	ChartDonutCenterLabelSizeXs ChartDonutCenterLabelSize = "xs"
-	ChartDonutCenterLabelSizeSm ChartDonutCenterLabelSize = "sm"
-	ChartDonutCenterLabelSizeMd ChartDonutCenterLabelSize = "md"
-	ChartDonutCenterLabelSizeLg ChartDonutCenterLabelSize = "lg"
-	ChartDonutCenterLabelSizeXl ChartDonutCenterLabelSize = "xl"
+	ChartCenterLabelSizeXs ChartCenterLabelSize = "xs"
+	ChartCenterLabelSizeSm ChartCenterLabelSize = "sm"
+	ChartCenterLabelSizeMd ChartCenterLabelSize = "md"
+	ChartCenterLabelSizeLg ChartCenterLabelSize = "lg"
+	ChartCenterLabelSizeXl ChartCenterLabelSize = "xl"
 )
 
 const (
-	chartDefaultTimeTitleFormat       string = "%b %d, %H:%M:%S"
-	chartDefaultValueFormat           string = ",.2~f"
-	chartDefaultPercentFormat         string = ".0%"
-	chartDefaultDonutHolePercent      uint8  = 60
-	chartMaxDonutHolePercent          uint8  = 90
-	chartDefaultYTickCount            uint   = 5
-	chartDefaultCenterLabelSliceColor string = "neutral-400"
-	chartDefaultCenterLabelValueColor string = "neutral-50"
+	chartDefaultTimeTitleFormat    string = "%b %d, %H:%M:%S"
+	chartDefaultValueFormat        string = ",.2~f"
+	chartDefaultPercentFormat      string = ".0%"
+	chartDefaultSliceHolePercent   uint8  = 60
+	chartMaxSliceHolePercent       uint8  = 90
+	chartDefaultYTickCount         uint   = 5
+	chartDefaultWaffleCellCount    uint   = 100
+	chartDefaultWaffleColumnCount  uint   = 10
+	chartDefaultParliamentRowCount uint   = 6
+
+	chartDefaultWaffleCellGapPercent     float64 = 4
+	chartMaxWaffleCellGapPercent         float64 = 60
+	chartDefaultParliamentDotGapPercent  float64 = 25
+	chartMaxParliamentDotGapPercent      float64 = 95
+	chartDefaultParliamentDotSizePercent float64 = 100
+	chartMinParliamentDotSizePercent     float64 = 10
+	chartMaxParliamentDotSizePercent     float64 = 200
+	chartDefaultCenterLabelSliceColor    string  = "neutral-400"
+	chartDefaultCenterLabelValueColor    string  = "neutral-50"
+	chartDefaultSliceLabelPillColor      string  = "neutral-950/70"
 )
 
 func chartCenterLabelSizeMultiplierResolver(
-	centerLabelSize ChartDonutCenterLabelSize,
+	centerLabelSize ChartCenterLabelSize,
 ) string {
 	switch centerLabelSize {
-	case ChartDonutCenterLabelSizeXs:
+	case ChartCenterLabelSizeXs:
 		return "0.75"
-	case ChartDonutCenterLabelSizeSm:
+	case ChartCenterLabelSizeSm:
 		return "0.875"
-	case ChartDonutCenterLabelSizeMd:
+	case ChartCenterLabelSizeMd:
 		return "1"
-	case ChartDonutCenterLabelSizeLg:
+	case ChartCenterLabelSizeLg:
 		return "1.15"
-	case ChartDonutCenterLabelSizeXl:
+	case ChartCenterLabelSizeXl:
 		return "1.3"
 	}
 	return "1"
+}
+
+type ChartProgressThresholdSettings struct {
+	MinimumPercent  float64
+	BackgroundColor string
+}
+
+type ChartProgressSettings struct {
+	// OptionalFields
+	DefaultColor           string
+	IsIndeterminate        bool
+	IsStriped              bool
+	Label                  string
+	LabelBackgroundColor   string
+	LabelOneWayStatePath   string
+	LabelPrefix            string
+	LabelSuffix            string
+	LabelTextColor         string
+	LabelTextSizeClass     string
+	MaxHeightClass         string
+	MaxValue               float64
+	MaxWidthClass          string
+	MinHeightClass         string
+	MinValue               float64
+	MinWidthClass          string
+	ShouldShowPercentLabel bool
+	Size                   string
+	StripeColor            string
+	Thresholds             []ChartProgressThresholdSettings
+	TrackBackgroundColor   string
+	Value                  float64
+	ValueOneWayStatePath   string
+}
+
+type chartProgressThreshold struct {
+	MinimumPercent  float64 `json:"minimumPercent"`
+	BackgroundColor string  `json:"backgroundColor"`
+}
+
+type chartValueBounds struct {
+	Min float64
+	Max float64
+}
+
+func chartValueBoundsNormalizer(minValue, maxValue float64) chartValueBounds {
+	if maxValue > minValue {
+		return chartValueBounds{Min: minValue, Max: maxValue}
+	}
+	return chartValueBounds{Min: minValue, Max: minValue + 100}
+}
+
+func chartValuePercentResolver(value, minValue, maxValue float64) float64 {
+	valueSpan := maxValue - minValue
+	if valueSpan <= 0 {
+		return 0
+	}
+	ratio := (value - minValue) / valueSpan
+	clampedRatio := math.Min(math.Max(ratio, 0), 1)
+	return clampedRatio * 100
+}
+
+func (componentSettings ChartProgressSettings) boundsResolver() chartValueBounds {
+	return chartValueBoundsNormalizer(componentSettings.MinValue, componentSettings.MaxValue)
+}
+
+func (componentSettings ChartProgressSettings) percentResolver() float64 {
+	progressBounds := componentSettings.boundsResolver()
+	return chartValuePercentResolver(
+		componentSettings.Value, progressBounds.Min, progressBounds.Max,
+	)
+}
+
+func (componentSettings ChartProgressSettings) clampedValueResolver() float64 {
+	progressBounds := componentSettings.boundsResolver()
+	return math.Min(math.Max(componentSettings.Value, progressBounds.Min), progressBounds.Max)
+}
+
+func (componentSettings ChartProgressSettings) thresholdsResolver() []chartProgressThreshold {
+	if len(componentSettings.Thresholds) > 0 {
+		resolvedThresholds := make(
+			[]chartProgressThreshold, 0, len(componentSettings.Thresholds),
+		)
+		for _, threshold := range componentSettings.Thresholds {
+			resolvedThresholds = append(
+				resolvedThresholds, chartProgressThreshold(threshold),
+			)
+		}
+		return resolvedThresholds
+	}
+	return []chartProgressThreshold{
+		{MinimumPercent: 90, BackgroundColor: "red-800"},
+		{MinimumPercent: 85, BackgroundColor: "red-600"},
+		{MinimumPercent: 75, BackgroundColor: "amber-600"},
+		{MinimumPercent: 50, BackgroundColor: "amber-300"},
+	}
+}
+
+func (componentSettings ChartProgressSettings) defaultColorResolver() string {
+	if componentSettings.DefaultColor != "" {
+		return componentSettings.DefaultColor
+	}
+	return "cyan-400"
+}
+
+func (componentSettings ChartProgressSettings) fillColorResolver(percent float64) string {
+	for _, threshold := range componentSettings.thresholdsResolver() {
+		if percent >= threshold.MinimumPercent {
+			return "bg-" + threshold.BackgroundColor
+		}
+	}
+	return "bg-" + componentSettings.defaultColorResolver()
+}
+
+type chartProgressSizeTokens struct {
+	TrackHeight   string
+	LabelTextSize string
+}
+
+func chartProgressSizeTokensResolver(size string) chartProgressSizeTokens {
+	switch size {
+	case ChartProgressSizeXs:
+		return chartProgressSizeTokens{TrackHeight: "h-4", LabelTextSize: "text-[0.625rem]"}
+	case ChartProgressSizeMd:
+		return chartProgressSizeTokens{TrackHeight: "h-8", LabelTextSize: "text-sm"}
+	}
+	return chartProgressSizeTokens{TrackHeight: "h-6", LabelTextSize: "text-xs"}
+}
+
+func chartProgressLabelTextSizeResolver(configuredClass, size string) string {
+	if configuredClass != "" {
+		return configuredClass
+	}
+	return chartProgressSizeTokensResolver(size).LabelTextSize
+}
+
+func chartProgressPercentTextResolver(percent float64) string {
+	return chartRoundedValueTextResolver(percent) + "%"
+}
+
+func chartRoundedValueTextResolver(value float64) string {
+	roundedValue := math.Round(value*10) / 10
+	return strconv.FormatFloat(roundedValue, 'f', -1, 64)
+}
+
+const (
+	chartGaugeOuterRadius            float64 = 90
+	chartGaugeDefaultArcThickness    float64 = 16
+	chartGaugeMinArcThickness        float64 = 4
+	chartGaugeMaxArcThickness        float64 = 36
+	chartGaugeDefaultNeedleLength    float64 = 55
+	chartGaugeMinNeedleLength        float64 = 10
+	chartGaugeMaxNeedleLength        float64 = 90
+	chartGaugeDefaultNeedleThickness float64 = 3
+	chartGaugeMinNeedleThickness     float64 = 1
+	chartGaugeMaxNeedleThickness     float64 = 12
+	chartGaugeDefaultPivotRadius     float64 = 5
+	chartGaugeMaxPivotRadius         float64 = 20
+	chartGaugeDefaultValueTextSize   float64 = 24
+	chartGaugeDefaultLabelTextSize   float64 = 12
+	chartGaugeMinTextSize            float64 = 6
+	chartGaugeMaxTextSize            float64 = 72
+	chartGaugeMaxTextOffset          float64 = 80
+	chartGaugeTickLength             float64 = 8
+	chartGaugeTickLabelGap           float64 = 10
+	chartGaugeTickGap                float64 = 2
+)
+
+type ChartGaugeBandSettings struct {
+	MinimumPercent float64
+	MaximumPercent float64
+
+	// OptionalFields
+	Color string
+}
+
+type ChartGaugeTickPosition string
+
+const (
+	ChartGaugeTickPositionInside  ChartGaugeTickPosition = "inside"
+	ChartGaugeTickPositionOutside ChartGaugeTickPosition = "outside"
+)
+
+type ChartGaugeSettings struct {
+	// OptionalFields
+	ArcThickness    float64
+	Bands           []ChartGaugeBandSettings
+	IsSemicircle    bool
+	Label           string
+	LabelColor      string
+	LabelTextSize   float64
+	MaxValue        float64
+	MinValue        float64
+	NeedleColor     string
+	NeedleLength    float64
+	NeedleThickness float64
+	PivotRadius     float64
+	TextOffset      float64
+	TickColor       string
+	TickCount       uint
+	TickLabelColor  string
+	TickPosition    ChartGaugeTickPosition
+	TrackColor      string
+	Value           float64
+	ValueColor      string
+	ValueTextSize   float64
+}
+
+type ChartWaffleCellShape string
+
+const (
+	ChartWaffleCellShapeCircle ChartWaffleCellShape = "circle"
+	ChartWaffleCellShapeSquare ChartWaffleCellShape = "square"
+)
+
+type ChartWaffleSettings struct {
+	// OptionalFields
+	CellCount      uint
+	CellGapPercent float64
+	CellShape      ChartWaffleCellShape
+	ColumnCount    uint
+}
+
+type ChartSunburstSettings struct {
+	ChildRowKey string
+}
+
+type ChartDotShape string
+
+const (
+	ChartDotShapeCircle       ChartDotShape = "circle"
+	ChartDotShapeCross        ChartDotShape = "cross"
+	ChartDotShapeDiamond      ChartDotShape = "diamond"
+	ChartDotShapeSquare       ChartDotShape = "square"
+	ChartDotShapeTriangleDown ChartDotShape = "triangleDown"
+	ChartDotShapeTriangleUp   ChartDotShape = "triangleUp"
+)
+
+type ChartParliamentSettings struct {
+	// OptionalFields
+	DotGapPercent  float64
+	DotShape       ChartDotShape
+	DotSizePercent float64
+	RowCount       uint
+}
+
+type chartGaugeBand struct {
+	ArcPath      string
+	IsFullCircle bool
+	Color        string
+}
+
+type chartGaugeTextSettings struct {
+	LabelSize float64
+	Offset    float64
+	ValueSize float64
+}
+
+type chartGaugeTextLayout struct {
+	ValueY string
+	LabelY string
+	Bottom float64
+}
+
+type chartGaugeLayout struct {
+	ArcRadius       float64
+	ArcThickness    float64
+	NeedleLength    float64
+	NeedleThickness float64
+	PivotRadius     float64
+}
+
+type chartGaugeTick struct {
+	LineX1 string
+	LineY1 string
+	LineX2 string
+	LineY2 string
+	LabelX string
+	LabelY string
+	Label  string
+}
+
+func chartGaugeValueDefaulter(value, defaultValue float64) float64 {
+	if value == 0 {
+		return defaultValue
+	}
+	return value
+}
+
+func chartGaugeRangeValidator(
+	value, minValue, maxValue float64, errorKey string,
+) error {
+	if math.IsNaN(value) || value < minValue || value > maxValue {
+		return fmt.Errorf("%s: %v", errorKey, value)
+	}
+	return nil
+}
+
+func (componentSettings ChartGaugeSettings) layoutResolver() (chartGaugeLayout, error) {
+	arcThickness := chartGaugeValueDefaulter(
+		componentSettings.ArcThickness, chartGaugeDefaultArcThickness,
+	)
+	arcThicknessErr := chartGaugeRangeValidator(
+		arcThickness, chartGaugeMinArcThickness, chartGaugeMaxArcThickness,
+		"ChartInvalidGaugeArcThickness",
+	)
+	if arcThicknessErr != nil {
+		return chartGaugeLayout{}, arcThicknessErr
+	}
+	needleLength := chartGaugeValueDefaulter(
+		componentSettings.NeedleLength, chartGaugeDefaultNeedleLength,
+	)
+	needleLengthErr := chartGaugeRangeValidator(
+		needleLength, chartGaugeMinNeedleLength, chartGaugeMaxNeedleLength,
+		"ChartInvalidGaugeNeedleLength",
+	)
+	if needleLengthErr != nil {
+		return chartGaugeLayout{}, needleLengthErr
+	}
+	needleThickness := chartGaugeValueDefaulter(
+		componentSettings.NeedleThickness, chartGaugeDefaultNeedleThickness,
+	)
+	needleThicknessErr := chartGaugeRangeValidator(
+		needleThickness, chartGaugeMinNeedleThickness, chartGaugeMaxNeedleThickness,
+		"ChartInvalidGaugeNeedleThickness",
+	)
+	if needleThicknessErr != nil {
+		return chartGaugeLayout{}, needleThicknessErr
+	}
+	pivotRadius := chartGaugeValueDefaulter(
+		componentSettings.PivotRadius, chartGaugeDefaultPivotRadius,
+	)
+	pivotRadiusErr := chartGaugeRangeValidator(
+		pivotRadius, 0, chartGaugeMaxPivotRadius, "ChartInvalidGaugePivotRadius",
+	)
+	if pivotRadiusErr != nil {
+		return chartGaugeLayout{}, pivotRadiusErr
+	}
+	return chartGaugeLayout{
+		ArcRadius:       chartGaugeOuterRadius - arcThickness/2,
+		ArcThickness:    arcThickness,
+		NeedleLength:    needleLength,
+		NeedleThickness: needleThickness,
+		PivotRadius:     pivotRadius,
+	}, nil
+}
+
+func chartGaugeTextSizeResolver(
+	size, defaultSize float64, errorKey string,
+) (float64, error) {
+	if size == 0 {
+		return defaultSize, nil
+	}
+	if math.IsNaN(size) || size < chartGaugeMinTextSize || size > chartGaugeMaxTextSize {
+		return 0, fmt.Errorf("%s: %v", errorKey, size)
+	}
+	return size, nil
+}
+
+func (componentSettings ChartGaugeSettings) textSettingsResolver() (
+	chartGaugeTextSettings, error,
+) {
+	valueSize, valueSizeErr := chartGaugeTextSizeResolver(
+		componentSettings.ValueTextSize, chartGaugeDefaultValueTextSize,
+		"ChartInvalidGaugeValueTextSize",
+	)
+	if valueSizeErr != nil {
+		return chartGaugeTextSettings{}, valueSizeErr
+	}
+	labelSize, labelSizeErr := chartGaugeTextSizeResolver(
+		componentSettings.LabelTextSize, chartGaugeDefaultLabelTextSize,
+		"ChartInvalidGaugeLabelTextSize",
+	)
+	if labelSizeErr != nil {
+		return chartGaugeTextSettings{}, labelSizeErr
+	}
+	textOffset := componentSettings.TextOffset
+	if math.IsNaN(textOffset) ||
+		textOffset < 0 || textOffset > chartGaugeMaxTextOffset {
+		return chartGaugeTextSettings{}, fmt.Errorf(
+			"ChartInvalidGaugeTextOffset: %v", textOffset,
+		)
+	}
+	return chartGaugeTextSettings{
+		LabelSize: labelSize,
+		Offset:    textOffset,
+		ValueSize: valueSize,
+	}, nil
+}
+
+func (componentSettings ChartGaugeSettings) tickPositionResolver() (
+	ChartGaugeTickPosition, error,
+) {
+	return chartOptionResolver(
+		componentSettings.TickPosition, ChartGaugeTickPositionOutside,
+		[]ChartGaugeTickPosition{
+			ChartGaugeTickPositionInside, ChartGaugeTickPositionOutside,
+		},
+		"ChartInvalidGaugeTickPosition",
+	)
+}
+
+func (componentSettings ChartGaugeSettings) boundsResolver() chartValueBounds {
+	return chartValueBoundsNormalizer(componentSettings.MinValue, componentSettings.MaxValue)
+}
+
+func (componentSettings ChartGaugeSettings) percentResolver() float64 {
+	gaugeBounds := componentSettings.boundsResolver()
+	return chartValuePercentResolver(
+		componentSettings.Value, gaugeBounds.Min, gaugeBounds.Max,
+	)
+}
+
+func (componentSettings ChartGaugeSettings) clampedValueResolver() float64 {
+	gaugeBounds := componentSettings.boundsResolver()
+	return math.Min(math.Max(componentSettings.Value, gaugeBounds.Min), gaugeBounds.Max)
+}
+
+func chartGaugeAngleResolver(percent float64, isSemicircle bool) float64 {
+	if isSemicircle {
+		return -90 + percent*1.8
+	}
+	return percent * 3.6
+}
+
+func chartGaugePointResolver(angleDeg float64, radius float64) (float64, float64) {
+	angleRad := angleDeg * math.Pi / 180
+	return 100 + radius*math.Sin(angleRad), 100 - radius*math.Cos(angleRad)
+}
+
+func chartGaugeArcPathResolver(startAngleDeg, endAngleDeg, radius float64) string {
+	startX, startY := chartGaugePointResolver(startAngleDeg, radius)
+	endX, endY := chartGaugePointResolver(endAngleDeg, radius)
+	largeArcFlag := 0
+	if endAngleDeg-startAngleDeg > 180 {
+		largeArcFlag = 1
+	}
+	return fmt.Sprintf(
+		"M%.2f %.2f A%.2f %.2f 0 %d 1 %.2f %.2f",
+		startX, startY, radius, radius, largeArcFlag, endX, endY,
+	)
+}
+
+func chartGaugeBandShapeResolver(
+	minimumPercent, maximumPercent float64, isSemicircle bool, arcRadius float64,
+) chartGaugeBand {
+	isFullCircle := !isSemicircle && minimumPercent == 0 && maximumPercent == 100
+	gaugeBand := chartGaugeBand{IsFullCircle: isFullCircle}
+	if !isFullCircle {
+		gaugeBand.ArcPath = chartGaugeArcPathResolver(
+			chartGaugeAngleResolver(minimumPercent, isSemicircle),
+			chartGaugeAngleResolver(maximumPercent, isSemicircle),
+			arcRadius,
+		)
+	}
+	return gaugeBand
+}
+
+func (componentSettings ChartGaugeSettings) trackResolver(
+	layout chartGaugeLayout,
+) chartGaugeBand {
+	return chartGaugeBandShapeResolver(
+		0, 100, componentSettings.IsSemicircle, layout.ArcRadius,
+	)
+}
+
+func (componentSettings ChartGaugeSettings) bandsResolver(
+	layout chartGaugeLayout,
+) ([]chartGaugeBand, error) {
+	resolvedBands := []chartGaugeBand{}
+	for _, band := range componentSettings.Bands {
+		isValidBand := band.MinimumPercent >= 0 && band.MaximumPercent <= 100 &&
+			band.MinimumPercent < band.MaximumPercent
+		if !isValidBand {
+			return nil, fmt.Errorf(
+				"ChartInvalidGaugeBandPercent: %v-%v", band.MinimumPercent, band.MaximumPercent,
+			)
+		}
+		resolvedBand := chartGaugeBandShapeResolver(
+			band.MinimumPercent, band.MaximumPercent, componentSettings.IsSemicircle,
+			layout.ArcRadius,
+		)
+		resolvedBand.Color = chartTextDefaulter(band.Color, "neutral-700")
+		resolvedBands = append(resolvedBands, resolvedBand)
+	}
+	return resolvedBands, nil
+}
+
+func chartGaugeNeedleTransformResolver(percent float64, isSemicircle bool) string {
+	needleAngle := chartGaugeAngleResolver(percent, isSemicircle)
+	roundedAngle := math.Round(needleAngle*100) / 100
+	return fmt.Sprintf(
+		"rotate(%s 100 100)", strconv.FormatFloat(roundedAngle, 'f', -1, 64),
+	)
+}
+
+func chartGaugeViewBoxResolver(
+	isSemicircle bool, hasOutsideTicks bool, textBottom, textWidth float64,
+) string {
+	minX, minY := 0.0, 0.0
+	width, height := 200.0, 150.0
+	if !isSemicircle {
+		height = 200
+	}
+	if hasOutsideTicks {
+		minX, minY = -20, -20
+		width = 240
+		if isSemicircle {
+			height = 190
+		} else {
+			height = 240
+		}
+	}
+	textWidthWithMargin := textWidth + 4
+	if textWidthWithMargin > width {
+		widthExpansion := textWidthWithMargin - width
+		minX -= widthExpansion / 2
+		width += widthExpansion
+	}
+	viewBoxBottom := minY + height
+	textBottomWithMargin := textBottom + 2
+	if textBottomWithMargin > viewBoxBottom {
+		height += textBottomWithMargin - viewBoxBottom
+	}
+	return chartGaugeCoordinateTextResolver(minX) + " " +
+		chartGaugeCoordinateTextResolver(minY) + " " +
+		chartGaugeCoordinateTextResolver(width) + " " +
+		chartGaugeCoordinateTextResolver(height)
+}
+
+func chartGaugeTextLayoutResolver(
+	hasLabel, isSemicircle bool, textSettings chartGaugeTextSettings,
+) chartGaugeTextLayout {
+	valueY := 134.0
+	labelY := 156.0
+	if isSemicircle {
+		valueY = 122
+		labelY = 142
+	}
+	if !hasLabel {
+		valueY = 134
+		if isSemicircle {
+			valueY = 124
+		}
+	}
+	valueY += textSettings.Offset
+	labelY += textSettings.Offset
+	valueBottom := valueY + textSettings.ValueSize/2
+	textLayout := chartGaugeTextLayout{
+		ValueY: chartGaugeCoordinateTextResolver(valueY),
+		Bottom: valueBottom,
+	}
+	if !hasLabel {
+		return textLayout
+	}
+	labelBottom := labelY + textSettings.LabelSize/2
+	textLayout.LabelY = chartGaugeCoordinateTextResolver(labelY)
+	textLayout.Bottom = math.Max(valueBottom, labelBottom)
+	return textLayout
+}
+
+func chartGaugeTextWidthEstimate(text string, fontSize float64) float64 {
+	return float64(len([]rune(text))) * fontSize * 0.62
+}
+
+func chartGaugeTextWidthResolver(
+	valueText, label string, hasLabel bool, textSettings chartGaugeTextSettings,
+) float64 {
+	textWidth := chartGaugeTextWidthEstimate(valueText, textSettings.ValueSize)
+	if !hasLabel {
+		return textWidth
+	}
+	return math.Max(
+		textWidth, chartGaugeTextWidthEstimate(label, textSettings.LabelSize),
+	)
+}
+
+func chartGaugeTickLabelShouldRender(
+	tick chartGaugeTick, tickPosition ChartGaugeTickPosition, isSemicircle bool,
+) bool {
+	if isSemicircle || tickPosition != ChartGaugeTickPositionInside {
+		return true
+	}
+	labelY, parseErr := strconv.ParseFloat(tick.LabelY, 64)
+	if parseErr != nil {
+		return true
+	}
+	return labelY <= 100
+}
+
+func chartGaugeCoordinateTextResolver(coordinate float64) string {
+	roundedCoordinate := math.Round(coordinate*100) / 100
+	return strconv.FormatFloat(roundedCoordinate, 'f', -1, 64)
+}
+
+func (componentSettings ChartGaugeSettings) ticksResolver(
+	layout chartGaugeLayout, tickPosition ChartGaugeTickPosition,
+) []chartGaugeTick {
+	tickCount := componentSettings.TickCount
+	if tickCount == 0 {
+		return []chartGaugeTick{}
+	}
+	gaugeBounds := componentSettings.boundsResolver()
+	arcOuterRadius := layout.ArcRadius + layout.ArcThickness/2
+	arcInnerRadius := layout.ArcRadius - layout.ArcThickness/2
+	tickStartRadius := arcInnerRadius - chartGaugeTickGap
+	tickEndRadius := tickStartRadius - chartGaugeTickLength
+	tickLabelRadius := tickEndRadius - chartGaugeTickLabelGap
+	if tickPosition == ChartGaugeTickPositionOutside {
+		tickStartRadius = arcOuterRadius + chartGaugeTickGap
+		tickEndRadius = tickStartRadius + chartGaugeTickLength
+		tickLabelRadius = tickEndRadius + chartGaugeTickLabelGap
+	}
+	lastTickIndex := tickCount
+	if !componentSettings.IsSemicircle {
+		lastTickIndex = tickCount - 1
+	}
+	resolvedTicks := make([]chartGaugeTick, 0, lastTickIndex+1)
+	for tickIndex := uint(0); tickIndex <= lastTickIndex; tickIndex++ {
+		tickRatio := float64(tickIndex) / float64(tickCount)
+		tickAngle := chartGaugeAngleResolver(
+			tickRatio*100, componentSettings.IsSemicircle,
+		)
+		lineX1, lineY1 := chartGaugePointResolver(tickAngle, tickStartRadius)
+		lineX2, lineY2 := chartGaugePointResolver(tickAngle, tickEndRadius)
+		labelX, labelY := chartGaugePointResolver(tickAngle, tickLabelRadius)
+		tickValue := gaugeBounds.Min + (gaugeBounds.Max-gaugeBounds.Min)*tickRatio
+		resolvedTicks = append(resolvedTicks, chartGaugeTick{
+			LineX1: chartGaugeCoordinateTextResolver(lineX1),
+			LineY1: chartGaugeCoordinateTextResolver(lineY1),
+			LineX2: chartGaugeCoordinateTextResolver(lineX2),
+			LineY2: chartGaugeCoordinateTextResolver(lineY2),
+			LabelX: chartGaugeCoordinateTextResolver(labelX),
+			LabelY: chartGaugeCoordinateTextResolver(labelY),
+			Label:  chartRoundedValueTextResolver(tickValue),
+		})
+	}
+	return resolvedTicks
 }
 
 type ChartSeriesSettings struct {
@@ -232,16 +902,19 @@ type ChartCartesianSettings struct {
 	YAxis             ChartYAxisSettings
 }
 
-type ChartDonutSettings struct {
+type ChartSliceSettings struct {
 	// OptionalFields
-	CenterLabelAlwaysSlice string
-	CenterLabelDisplayMode ChartDonutCenterLabelDisplayMode
-	CenterLabelSize        ChartDonutCenterLabelSize
-	CenterLabelSliceColor  string
-	CenterLabelValueColor  string
-	CenterLabelValueSuffix string
-	HolePercent            uint8
-	SliceIdentityColors    map[string]string
+	CenterLabelAlwaysSlice        string
+	CenterLabelDisplayMode        ChartCenterLabelDisplayMode
+	CenterLabelSize               ChartCenterLabelSize
+	CenterLabelSliceColor         string
+	CenterLabelValueColor         string
+	CenterLabelValueSuffix        string
+	HolePercent                   uint8
+	IsSliceLabelHidden            bool
+	SliceIdentityColors           map[string]string
+	SliceLabelColor               string
+	SliceLabelPillBackgroundColor string
 }
 
 type ChartSettings struct {
@@ -252,15 +925,20 @@ type ChartSettings struct {
 	// OptionalFields
 	AriaLabel           string
 	Cartesian           ChartCartesianSettings
-	Donut               ChartDonutSettings
 	EmptyState          templ.Component
 	GapColor            string
+	Gauge               ChartGaugeSettings
 	HeightClass         string
 	Legend              ChartLegendSettings
 	MaxRows             uint
+	Parliament          ChartParliamentSettings
+	Progress            ChartProgressSettings
 	Rows                any
 	RowsOneWayStatePath string
+	Slices              ChartSliceSettings
+	Sunburst            ChartSunburstSettings
 	Tooltip             ChartTooltipSettings
+	Waffle              ChartWaffleSettings
 }
 
 type chartSeriesConfig struct {
@@ -315,28 +993,52 @@ type chartCartesianConfig struct {
 	YAxis             chartYAxisConfig       `json:"yAxis"`
 }
 
-type chartDonutConfig struct {
-	CenterLabelAlwaysSlice    string                           `json:"centerLabelAlwaysSlice"`
-	CenterLabelDisplayMode    ChartDonutCenterLabelDisplayMode `json:"centerLabelDisplayMode"`
-	CenterLabelSizeMultiplier string                           `json:"centerLabelSizeMultiplier"`
-	CenterLabelSliceColor     string                           `json:"centerLabelSliceColor"`
-	CenterLabelValueColor     string                           `json:"centerLabelValueColor"`
-	CenterLabelValueSuffix    string                           `json:"centerLabelValueSuffix"`
-	HolePercent               uint8                            `json:"holePercent"`
-	SliceIdentityColors       map[string]string                `json:"sliceIdentityColors"`
+type chartSliceConfig struct {
+	CenterLabelAlwaysSlice        string                      `json:"centerLabelAlwaysSlice"`
+	CenterLabelDisplayMode        ChartCenterLabelDisplayMode `json:"centerLabelDisplayMode"`
+	CenterLabelSizeMultiplier     string                      `json:"centerLabelSizeMultiplier"`
+	CenterLabelSliceColor         string                      `json:"centerLabelSliceColor"`
+	CenterLabelValueColor         string                      `json:"centerLabelValueColor"`
+	CenterLabelValueSuffix        string                      `json:"centerLabelValueSuffix"`
+	HolePercent                   uint8                       `json:"holePercent"`
+	IsSliceLabelHidden            bool                        `json:"isSliceLabelHidden"`
+	SliceIdentityColors           map[string]string           `json:"sliceIdentityColors"`
+	SliceLabelColor               string                      `json:"sliceLabelColor"`
+	SliceLabelPillBackgroundColor string                      `json:"sliceLabelPillBackgroundColor"`
+}
+
+type chartWaffleConfig struct {
+	CellCount      uint                 `json:"cellCount"`
+	CellGapPercent float64              `json:"cellGapPercent"`
+	CellShape      ChartWaffleCellShape `json:"cellShape"`
+	ColumnCount    uint                 `json:"columnCount"`
+}
+
+type chartSunburstConfig struct {
+	ChildRowKey string `json:"childRowKey"`
+}
+
+type chartParliamentConfig struct {
+	DotGapPercent  float64       `json:"dotGapPercent"`
+	DotShape       ChartDotShape `json:"dotShape"`
+	DotSizePercent float64       `json:"dotSizePercent"`
+	RowCount       uint          `json:"rowCount"`
 }
 
 type chartConfig struct {
-	ChartType     ChartType            `json:"chartType"`
-	XAxis         chartXAxisConfig     `json:"xAxis"`
-	Series        []chartSeriesConfig  `json:"series"`
-	Tooltip       chartTooltipConfig   `json:"tooltip"`
-	Cartesian     chartCartesianConfig `json:"cartesian"`
-	Donut         chartDonutConfig     `json:"donut"`
-	GapColor      string               `json:"gapColor"`
-	Rows          any                  `json:"rows"`
-	RowsStatePath string               `json:"rowsStatePath"`
-	MaxRows       uint                 `json:"maxRows"`
+	ChartType     ChartType             `json:"chartType"`
+	XAxis         chartXAxisConfig      `json:"xAxis"`
+	Series        []chartSeriesConfig   `json:"series"`
+	Tooltip       chartTooltipConfig    `json:"tooltip"`
+	Cartesian     chartCartesianConfig  `json:"cartesian"`
+	Parliament    chartParliamentConfig `json:"parliament"`
+	Slices        chartSliceConfig      `json:"slices"`
+	Sunburst      chartSunburstConfig   `json:"sunburst"`
+	Waffle        chartWaffleConfig     `json:"waffle"`
+	GapColor      string                `json:"gapColor"`
+	Rows          any                   `json:"rows"`
+	RowsStatePath string                `json:"rowsStatePath"`
+	MaxRows       uint                  `json:"maxRows"`
 }
 
 func chartOptionResolver[Option ~string](
@@ -532,61 +1234,194 @@ func chartCartesianResolver(
 	}, nil
 }
 
-func chartDonutResolver(donut ChartDonutSettings) (chartDonutConfig, error) {
-	holePercent := donut.HolePercent
-	if holePercent == 0 {
-		holePercent = chartDefaultDonutHolePercent
+func chartSliceHolePercentResolver(
+	configuredHolePercent uint8, isPie bool,
+) (uint8, error) {
+	if isPie {
+		return 0, nil
 	}
-	if holePercent > chartMaxDonutHolePercent {
-		return chartDonutConfig{}, fmt.Errorf(
-			"ChartInvalidDonutHolePercent: %d", holePercent,
+	if configuredHolePercent == 0 {
+		return chartDefaultSliceHolePercent, nil
+	}
+	if configuredHolePercent > chartMaxSliceHolePercent {
+		return 0, fmt.Errorf(
+			"ChartInvalidSliceHolePercent: %d", configuredHolePercent,
 		)
 	}
+	return configuredHolePercent, nil
+}
+
+func chartSliceResolver(
+	slices ChartSliceSettings, chartType ChartType,
+) (chartSliceConfig, error) {
+	isPie := chartType == ChartTypePie
+	holePercent, holePercentErr := chartSliceHolePercentResolver(
+		slices.HolePercent, isPie,
+	)
+	if holePercentErr != nil {
+		return chartSliceConfig{}, holePercentErr
+	}
 	centerLabelDisplayMode, centerLabelDisplayModeErr := chartOptionResolver(
-		donut.CenterLabelDisplayMode, ChartDonutCenterLabelDisplayModeHidden,
-		[]ChartDonutCenterLabelDisplayMode{
-			ChartDonutCenterLabelDisplayModeAlways, ChartDonutCenterLabelDisplayModeHidden,
-			ChartDonutCenterLabelDisplayModeHover,
+		slices.CenterLabelDisplayMode, ChartCenterLabelDisplayModeHidden,
+		[]ChartCenterLabelDisplayMode{
+			ChartCenterLabelDisplayModeAlways, ChartCenterLabelDisplayModeHidden,
+			ChartCenterLabelDisplayModeHover,
 		},
-		"ChartInvalidDonutCenterLabelDisplayMode",
+		"ChartInvalidCenterLabelDisplayMode",
 	)
 	if centerLabelDisplayModeErr != nil {
-		return chartDonutConfig{}, centerLabelDisplayModeErr
+		return chartSliceConfig{}, centerLabelDisplayModeErr
+	}
+	if isPie {
+		centerLabelDisplayMode = ChartCenterLabelDisplayModeHidden
 	}
 	centerLabelSize, centerLabelSizeErr := chartOptionResolver(
-		donut.CenterLabelSize, ChartDonutCenterLabelSizeMd,
-		[]ChartDonutCenterLabelSize{
-			ChartDonutCenterLabelSizeXs, ChartDonutCenterLabelSizeSm,
-			ChartDonutCenterLabelSizeMd, ChartDonutCenterLabelSizeLg,
-			ChartDonutCenterLabelSizeXl,
+		slices.CenterLabelSize, ChartCenterLabelSizeMd,
+		[]ChartCenterLabelSize{
+			ChartCenterLabelSizeXs, ChartCenterLabelSizeSm,
+			ChartCenterLabelSizeMd, ChartCenterLabelSizeLg,
+			ChartCenterLabelSizeXl,
 		},
-		"ChartInvalidDonutCenterLabelSize",
+		"ChartInvalidCenterLabelSize",
 	)
 	if centerLabelSizeErr != nil {
-		return chartDonutConfig{}, centerLabelSizeErr
+		return chartSliceConfig{}, centerLabelSizeErr
 	}
-	sliceIdentityColors := donut.SliceIdentityColors
+	sliceIdentityColors := slices.SliceIdentityColors
 	if sliceIdentityColors == nil {
 		sliceIdentityColors = map[string]string{}
 	}
-	return chartDonutConfig{
-		CenterLabelAlwaysSlice:    donut.CenterLabelAlwaysSlice,
-		CenterLabelDisplayMode:    centerLabelDisplayMode,
-		CenterLabelSizeMultiplier: chartCenterLabelSizeMultiplierResolver(centerLabelSize),
-		CenterLabelSliceColor:     chartTextDefaulter(donut.CenterLabelSliceColor, chartDefaultCenterLabelSliceColor),
-		CenterLabelValueColor:     chartTextDefaulter(donut.CenterLabelValueColor, chartDefaultCenterLabelValueColor),
-		CenterLabelValueSuffix:    donut.CenterLabelValueSuffix,
-		HolePercent:               holePercent,
-		SliceIdentityColors:       sliceIdentityColors,
+	return chartSliceConfig{
+		CenterLabelAlwaysSlice:        slices.CenterLabelAlwaysSlice,
+		CenterLabelDisplayMode:        centerLabelDisplayMode,
+		CenterLabelSizeMultiplier:     chartCenterLabelSizeMultiplierResolver(centerLabelSize),
+		CenterLabelSliceColor:         chartTextDefaulter(slices.CenterLabelSliceColor, chartDefaultCenterLabelSliceColor),
+		CenterLabelValueColor:         chartTextDefaulter(slices.CenterLabelValueColor, chartDefaultCenterLabelValueColor),
+		CenterLabelValueSuffix:        slices.CenterLabelValueSuffix,
+		HolePercent:                   holePercent,
+		IsSliceLabelHidden:            slices.IsSliceLabelHidden,
+		SliceIdentityColors:           sliceIdentityColors,
+		SliceLabelColor:               chartTextDefaulter(slices.SliceLabelColor, "neutral-50"),
+		SliceLabelPillBackgroundColor: chartTextDefaulter(slices.SliceLabelPillBackgroundColor, chartDefaultSliceLabelPillColor),
+	}, nil
+}
+
+func (componentSettings ChartSettings) chartTypeResolver() (ChartType, error) {
+	return chartOptionResolver(
+		componentSettings.Type, ChartTypeLine,
+		[]ChartType{
+			ChartTypeArea, ChartTypeBar, ChartTypeDonut, ChartTypeGauge,
+			ChartTypeHorizontalBar, ChartTypeLine, ChartTypeParliament,
+			ChartTypePie, ChartTypeProgress, ChartTypeRadialBar,
+			ChartTypeSunburst, ChartTypeWaffle,
+		},
+		"ChartInvalidType",
+	)
+}
+
+func chartWaffleGridResolver(waffle ChartWaffleSettings) (chartWaffleConfig, error) {
+	cellShape, cellShapeErr := chartOptionResolver(
+		waffle.CellShape, ChartWaffleCellShapeSquare,
+		[]ChartWaffleCellShape{ChartWaffleCellShapeCircle, ChartWaffleCellShapeSquare},
+		"ChartInvalidWaffleCellShape",
+	)
+	if cellShapeErr != nil {
+		return chartWaffleConfig{}, cellShapeErr
+	}
+	cellGapPercent := waffle.CellGapPercent
+	if cellGapPercent == 0 {
+		cellGapPercent = chartDefaultWaffleCellGapPercent
+	}
+	if math.IsNaN(cellGapPercent) ||
+		cellGapPercent < 0 || cellGapPercent > chartMaxWaffleCellGapPercent {
+		return chartWaffleConfig{}, fmt.Errorf(
+			"ChartInvalidWaffleCellGapPercent: %v", cellGapPercent,
+		)
+	}
+	cellCount := waffle.CellCount
+	if cellCount == 0 {
+		cellCount = chartDefaultWaffleCellCount
+	}
+	columnCount := waffle.ColumnCount
+	if columnCount == 0 {
+		columnCount = chartDefaultWaffleColumnCount
+	}
+	return chartWaffleConfig{
+		CellCount:      cellCount,
+		CellGapPercent: cellGapPercent,
+		CellShape:      cellShape,
+		ColumnCount:    columnCount,
+	}, nil
+}
+
+func chartSunburstResolver(
+	sunburst ChartSunburstSettings, chartType ChartType,
+) (chartSunburstConfig, error) {
+	if chartType == ChartTypeSunburst && sunburst.ChildRowKey == "" {
+		return chartSunburstConfig{}, errors.New("ChartSunburstChildRowKeyMissing")
+	}
+	return chartSunburstConfig(sunburst), nil
+}
+
+func chartVegaSymbolShapeResolver(dotShape ChartDotShape) ChartDotShape {
+	switch dotShape {
+	case ChartDotShapeTriangleUp:
+		return "triangle-up"
+	case ChartDotShapeTriangleDown:
+		return "triangle-down"
+	}
+	return dotShape
+}
+
+func chartParliamentLayoutResolver(
+	parliament ChartParliamentSettings,
+) (chartParliamentConfig, error) {
+	dotShape, dotShapeErr := chartOptionResolver(
+		parliament.DotShape, ChartDotShapeCircle,
+		[]ChartDotShape{
+			ChartDotShapeCircle, ChartDotShapeCross, ChartDotShapeDiamond,
+			ChartDotShapeSquare, ChartDotShapeTriangleDown, ChartDotShapeTriangleUp,
+		},
+		"ChartInvalidParliamentDotShape",
+	)
+	if dotShapeErr != nil {
+		return chartParliamentConfig{}, dotShapeErr
+	}
+	dotGapPercent := parliament.DotGapPercent
+	if dotGapPercent == 0 {
+		dotGapPercent = chartDefaultParliamentDotGapPercent
+	}
+	if math.IsNaN(dotGapPercent) ||
+		dotGapPercent < 0 || dotGapPercent > chartMaxParliamentDotGapPercent {
+		return chartParliamentConfig{}, fmt.Errorf(
+			"ChartInvalidParliamentDotGapPercent: %v", dotGapPercent,
+		)
+	}
+	dotSizePercent := parliament.DotSizePercent
+	if dotSizePercent == 0 {
+		dotSizePercent = chartDefaultParliamentDotSizePercent
+	}
+	if math.IsNaN(dotSizePercent) ||
+		dotSizePercent < chartMinParliamentDotSizePercent ||
+		dotSizePercent > chartMaxParliamentDotSizePercent {
+		return chartParliamentConfig{}, fmt.Errorf(
+			"ChartInvalidParliamentDotSizePercent: %v", dotSizePercent,
+		)
+	}
+	rowCount := parliament.RowCount
+	if rowCount == 0 {
+		rowCount = chartDefaultParliamentRowCount
+	}
+	return chartParliamentConfig{
+		DotGapPercent:  dotGapPercent,
+		DotShape:       chartVegaSymbolShapeResolver(dotShape),
+		DotSizePercent: dotSizePercent,
+		RowCount:       rowCount,
 	}, nil
 }
 
 func (componentSettings ChartSettings) configResolver() (chartConfig, error) {
-	chartType, chartTypeErr := chartOptionResolver(
-		componentSettings.Type, ChartTypeLine,
-		[]ChartType{ChartTypeArea, ChartTypeBar, ChartTypeDonut, ChartTypeLine},
-		"ChartInvalidType",
-	)
+	chartType, chartTypeErr := componentSettings.chartTypeResolver()
 	if chartTypeErr != nil {
 		return chartConfig{}, chartTypeErr
 	}
@@ -602,9 +1437,25 @@ func (componentSettings ChartSettings) configResolver() (chartConfig, error) {
 	if cartesianErr != nil {
 		return chartConfig{}, cartesianErr
 	}
-	donut, donutErr := chartDonutResolver(componentSettings.Donut)
-	if donutErr != nil {
-		return chartConfig{}, donutErr
+	slices, slicesErr := chartSliceResolver(componentSettings.Slices, chartType)
+	if slicesErr != nil {
+		return chartConfig{}, slicesErr
+	}
+	sunburst, sunburstErr := chartSunburstResolver(
+		componentSettings.Sunburst, chartType,
+	)
+	if sunburstErr != nil {
+		return chartConfig{}, sunburstErr
+	}
+	parliament, parliamentErr := chartParliamentLayoutResolver(
+		componentSettings.Parliament,
+	)
+	if parliamentErr != nil {
+		return chartConfig{}, parliamentErr
+	}
+	waffle, waffleErr := chartWaffleGridResolver(componentSettings.Waffle)
+	if waffleErr != nil {
+		return chartConfig{}, waffleErr
 	}
 	rows := componentSettings.Rows
 	if rows == nil {
@@ -618,7 +1469,10 @@ func (componentSettings ChartSettings) configResolver() (chartConfig, error) {
 			componentSettings.Tooltip, xAxis, cartesian.YAxis, cartesian.StackMode,
 		),
 		Cartesian:     cartesian,
-		Donut:         donut,
+		Parliament:    parliament,
+		Slices:        slices,
+		Sunburst:      sunburst,
+		Waffle:        waffle,
 		GapColor:      chartTextDefaulter(componentSettings.GapColor, "neutral-900"),
 		Rows:          rows,
 		RowsStatePath: componentSettings.RowsOneWayStatePath,
@@ -725,17 +1579,28 @@ func (resolvedConfig chartConfig) colorTokensCollector() []string {
 		resolvedConfig.Cartesian.YAxis.BaselineColor,
 		resolvedConfig.Cartesian.YAxis.GridLineColor,
 	}
-	if resolvedConfig.Donut.CenterLabelDisplayMode != ChartDonutCenterLabelDisplayModeHidden {
+	if resolvedConfig.Slices.CenterLabelDisplayMode != ChartCenterLabelDisplayModeHidden {
 		colorTokens = append(
 			colorTokens,
-			resolvedConfig.Donut.CenterLabelSliceColor,
-			resolvedConfig.Donut.CenterLabelValueColor,
+			resolvedConfig.Slices.CenterLabelSliceColor,
+			resolvedConfig.Slices.CenterLabelValueColor,
+		)
+	}
+	isSliceLabelShown := !resolvedConfig.Slices.IsSliceLabelHidden &&
+		(resolvedConfig.ChartType == ChartTypePie ||
+			resolvedConfig.ChartType == ChartTypeRadialBar ||
+			resolvedConfig.ChartType == ChartTypeSunburst)
+	if isSliceLabelShown {
+		colorTokens = append(
+			colorTokens,
+			resolvedConfig.Slices.SliceLabelColor,
+			resolvedConfig.Slices.SliceLabelPillBackgroundColor,
 		)
 	}
 	for _, seriesEntry := range resolvedConfig.Series {
 		colorTokens = append(colorTokens, seriesEntry.IdentityColor)
 	}
-	for _, sliceColorToken := range resolvedConfig.Donut.SliceIdentityColors {
+	for _, sliceColorToken := range resolvedConfig.Slices.SliceIdentityColors {
 		colorTokens = append(colorTokens, sliceColorToken)
 	}
 	uniqueTokens := []string{}
