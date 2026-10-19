@@ -1,0 +1,170 @@
+package main
+
+import (
+	"strconv"
+
+	uiDisplay "github.com/goinfinite/ui/src/display"
+)
+
+const collapsibleTextDemoDescription string = `2026-10-16T09:32:11Z INFO  request finished method=GET path=/api/v1/containers status=200 duration=42.8ms bytes=18420
+2026-10-16T09:32:12Z WARN  host memory usage above the soft limit usage=87.4% limit=85% reclaim=in_progress
+2026-10-16T09:32:15Z ERROR database connection retry attempt=3 of=5 error="connection refused" backoff=800ms
+2026-10-16T09:32:18Z INFO  request finished method=POST path=/api/v1/accounts status=201 duration=131.2ms bytes=642`
+
+templ CollapsibleTextLineLimitsExample() {
+	{{
+		lineLimitsUsage := `@uiDisplay.CollapsibleText(uiDisplay.CollapsibleTextSettings{
+	Text: collapsibleTextDemoDescription,
+
+	// OptionalFields
+	MaxVisibleLines: 2,
+})`
+	}}
+	@DemoExampleCard(
+		"Line Limits",
+		"MaxVisibleLines sets how many lines stay visible before the text collapses. The affordance appears only when the text exceeds the limit.",
+		"/display/collapsibleText.templ", lineLimitsUsage,
+	) {
+		<div class="flex flex-col gap-4">
+			for _, maxVisibleLines := range []int{1, 2, 6} {
+				<div class="flex flex-col gap-1">
+					<p class="text-xs font-bold text-neutral-400">{ strconv.Itoa(maxVisibleLines) } lines</p>
+					@uiDisplay.CollapsibleText(uiDisplay.CollapsibleTextSettings{
+						Text:            collapsibleTextDemoDescription,
+						MaxVisibleLines: maxVisibleLines,
+					})
+				</div>
+			}
+		</div>
+	}
+}
+
+templ CollapsibleTextCustomLabelsExample() {
+	{{
+		customLabelsUsage := `@uiDisplay.CollapsibleText(uiDisplay.CollapsibleTextSettings{
+	Text: collapsibleTextDemoDescription,
+
+	// OptionalFields
+	ExpandLabel:   "Expand the line",
+	CollapseLabel: "Collapse the line",
+})`
+	}}
+	@DemoExampleCard(
+		"Custom Labels",
+		"ExpandLabel and CollapseLabel replace the affordance text. The defaults are lowercase: show more and show less.",
+		"/display/collapsibleText.templ", customLabelsUsage,
+	) {
+		@uiDisplay.CollapsibleText(uiDisplay.CollapsibleTextSettings{
+			Text:          collapsibleTextDemoDescription,
+			ExpandLabel:   "Expand the line",
+			CollapseLabel: "Collapse the line",
+		})
+	}
+}
+
+templ CollapsibleTextSizesExample() {
+	{{
+		sizesUsage := `@uiDisplay.CollapsibleText(uiDisplay.CollapsibleTextSettings{
+	Text: collapsibleTextDemoDescription,
+
+	// OptionalFields
+	Size: uiDisplay.CollapsibleTextSizeLg,
+})`
+	}}
+	@DemoExampleCard(
+		"Sizes",
+		"Size takes xs, sm (the default), md, or lg and scales the text, the affordance, and the flanking icons.",
+		"/display/collapsibleText.templ", sizesUsage,
+	) {
+		<div class="flex flex-col gap-4">
+			for _, size := range []string{
+				uiDisplay.CollapsibleTextSizeXs,
+				uiDisplay.CollapsibleTextSizeSm,
+				uiDisplay.CollapsibleTextSizeMd,
+				uiDisplay.CollapsibleTextSizeLg,
+			} {
+				<div class="flex flex-col gap-1">
+					<p class="text-xs font-bold text-neutral-400">{ size }</p>
+					@uiDisplay.CollapsibleText(uiDisplay.CollapsibleTextSettings{
+						Text: collapsibleTextDemoDescription,
+						Size: size,
+					})
+				</div>
+			}
+		</div>
+	}
+}
+
+templ CollapsibleTextIconsExample() {
+	{{
+		iconsUsage := `@uiDisplay.CollapsibleText(uiDisplay.CollapsibleTextSettings{
+	Text: collapsibleTextDemoDescription,
+
+	// OptionalFields
+	FlankIconLeft:  "ph-file-text",
+	FlankIconRight: "ph-caret-up-down",
+})`
+	}}
+	@DemoExampleCard(
+		"Flanking Icons",
+		"FlankIconLeft and FlankIconRight place a Phosphor icon at each side of the text. IconColor recolors them; the default is neutral-400.",
+		"/display/collapsibleText.templ", iconsUsage,
+	) {
+		@uiDisplay.CollapsibleText(uiDisplay.CollapsibleTextSettings{
+			Text:           collapsibleTextDemoDescription,
+			FlankIconLeft:  "ph-file-text",
+			FlankIconRight: "ph-caret-up-down",
+		})
+	}
+}
+
+templ CollapsibleTextToggleIconsExample() {
+	{{
+		toggleIconsUsage := `@uiDisplay.CollapsibleText(uiDisplay.CollapsibleTextSettings{
+	Text: collapsibleTextDemoDescription,
+
+	// OptionalFields
+	ExpandIcon:   "ph-plus-circle",
+	CollapseIcon: "ph-minus-circle",
+})`
+	}}
+	@DemoExampleCard(
+		"Toggle Icons",
+		"ExpandIcon shows while the text is collapsed, and CollapseIcon shows while it is expanded. Each state takes its own Phosphor icon.",
+		"/display/collapsibleText.templ", toggleIconsUsage,
+	) {
+		@uiDisplay.CollapsibleText(uiDisplay.CollapsibleTextSettings{
+			Text:         collapsibleTextDemoDescription,
+			ExpandIcon:   "ph-plus-circle",
+			CollapseIcon: "ph-minus-circle",
+		})
+	}
+}
+
+templ CollapsibleTextDemo() {
+	{{
+		demoUsage := `@uiDisplay.CollapsibleText(uiDisplay.CollapsibleTextSettings{
+	Text: collapsibleTextDemoDescription,
+})`
+	}}
+	<div class="flex flex-col gap-4" id="collapsible-text-demo">
+		@DemoComponentSection(DemoComponentSectionSettings{
+			ComponentPath:          "/display/collapsibleText.templ",
+			Description:            "Collapsible text truncates long content to a line limit and shows an expand and collapse affordance only when the content exceeds it.",
+			LiveExampleDescription: "A long log block capped at three lines. Expand it to read the whole entry, then collapse it again.",
+			Title:                  ".CollapsibleText",
+			UsageCode:              demoUsage,
+		}) {
+			@uiDisplay.CollapsibleText(uiDisplay.CollapsibleTextSettings{
+				Text: collapsibleTextDemoDescription,
+			})
+		}
+		@DemoAdvancedExamples("collapsible-text-demo", []uiDisplay.AccordionItemSettings{
+			{Title: "Line Limits", Icon: "ph-text-align-left", Content: CollapsibleTextLineLimitsExample()},
+			{Title: "Custom Labels", Icon: "ph-text-t", Content: CollapsibleTextCustomLabelsExample()},
+			{Title: "Sizes", Icon: "ph-text-aa", Content: CollapsibleTextSizesExample()},
+			{Title: "Flanking Icons", Icon: "ph-image-square", Content: CollapsibleTextIconsExample()},
+			{Title: "Toggle Icons", Icon: "ph-caret-down", Content: CollapsibleTextToggleIconsExample()},
+		})
+	</div>
+}
