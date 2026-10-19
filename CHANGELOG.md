@@ -36,6 +36,9 @@ fix: keep the CollapsibleText truncation measured when the computed line height 
 fix: reject an out-of-bounds DateTimePicker day draft, keep Home and End on the focused week, and swap same-day datetime ranges by time
 fix: key each MultiColumnRepeatableFieldset row by a stable identity, so nested state follows a moved row
 test: cover the normal CollapsibleText line height and the DateTimePicker Home and End focus
+fix: keep the trailing word when a CollapsibleText cut lands on whitespace
+fix: clamp an out-of-bounds DateTimePicker boundary day to the valid time and keep a chosen time when no date is set
+fix: keep the repeatable fieldset default when a NewRowFunc cell is undefined
 
 0.3.1 - 2026/10/16
 feat: add the CollapsibleText with a line limit, an inline Show more affordance right after the ellipsis, flanking icons, and a size scale that also covers the affordance
