@@ -32,6 +32,10 @@ fix: lowercase the CollapsibleText toggle labels by default and let ExpandIcon a
 refactor: rename the CollapsibleText IconLeft and IconRight to FlankIconLeft and FlankIconRight, so the flanking icons are distinct from the toggle icons
 docs: title every general visual example Appearance, merge the Donut and Donut Center Label examples into one panel, add a DateTimePicker hints example, show the vertical Tabs bounds and MaxVisibleTabs as separate options, and set the demo version to the newest release
 test: cover the gauge text sizes and offset, the full-circle tick count, the static Progress width with affixes, the slice label pill, the chart gaps, the CollapsibleText icons, and the DateTimePicker DST offset
+fix: keep the CollapsibleText truncation measured when the computed line height is normal, observe the text width, and cut words without a backtracking regex
+fix: reject an out-of-bounds DateTimePicker day draft, keep Home and End on the focused week, and swap same-day datetime ranges by time
+fix: key each MultiColumnRepeatableFieldset row by a stable identity, so nested state follows a moved row
+test: cover the normal CollapsibleText line height and the DateTimePicker Home and End focus
 
 0.3.1 - 2026/10/16
 feat: add the CollapsibleText with a line limit, an inline Show more affordance right after the ellipsis, flanking icons, and a size scale that also covers the affordance
