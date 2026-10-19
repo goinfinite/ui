@@ -32,6 +32,7 @@ const (
 type ButtonSettings struct {
 	// OptionalFields
 	Label                         string
+	AriaExpandedOneWayStatePath   string
 	AriaLabel                     string
 	AriaLabelOneWayStatePath      string
 	BackgroundColor               string
@@ -43,6 +44,7 @@ type ButtonSettings struct {
 	IconLeftOneWayStatePath       string
 	IconRight                     string
 	IconRightOneWayStatePath      string
+	IconSizeClass                 string
 	Id                            string
 	IsDisabled                    bool
 	IsDisabledOneWayStatePath     string
@@ -68,6 +70,7 @@ type ButtonSettings struct {
 	TextCase                      string
 	TextColor                     string
 	TextColorHover                string
+	TextSizeClass                 string
 	TooltipContent                string
 	TooltipContentHtml            templ.Component
 	TooltipContentOneWayStatePath string
@@ -175,6 +178,9 @@ templ buttonFrame(componentSettings ButtonSettings) {
 		{{ sizeTokens := buttonSizeTokensResolver(componentSettings.Size) }}
 		{{ buttonPadding := sizeTokens.Padding }}
 		{{ buttonTextSize := sizeTokens.TextSize }}
+		if componentSettings.TextSizeClass != "" {
+			{{ buttonTextSize = componentSettings.TextSizeClass }}
+		}
 		{{ buttonGap := sizeTokens.Gap }}
 		if componentSettings.Label != "" {
 			switch componentSettings.Size {
@@ -225,6 +231,9 @@ templ buttonFrame(componentSettings ButtonSettings) {
 		}
 		{{ radiusRoundness := uiToolset.ShapeClassResolver(componentSettings.Shape, "rounded-md") }}
 		{{ iconSize := sizeTokens.IconSize }}
+		if componentSettings.IconSizeClass != "" {
+			{{ iconSize = componentSettings.IconSizeClass }}
+		}
 		{{ buttonClasses := buttonWidth + " " + backgroundClasses + " " + textColor + " " + textColorHover + " " + radiusRoundness + " " + ringClasses + sizeConstraintClasses + " justify-center items-center text-center font-bold flex flex-row leading-none transition-all" }}
 		if textCaseClass != "" {
 			{{ buttonClasses += " " + textCaseClass }}
@@ -251,6 +260,9 @@ templ buttonFrame(componentSettings ButtonSettings) {
 			}
 			if componentSettings.AriaLabelOneWayStatePath != "" {
 				:aria-label={ componentSettings.AriaLabelOneWayStatePath }
+			}
+			if componentSettings.AriaExpandedOneWayStatePath != "" {
+				:aria-expanded={ componentSettings.AriaExpandedOneWayStatePath }
 			}
 			if componentSettings.OnClickFunc != "" && !componentSettings.IsDisabled {
 				if componentSettings.OnClickPreventDefault {
