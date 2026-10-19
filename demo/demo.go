@@ -25,6 +25,9 @@ var buttonDemoAlpineState string
 //go:embed chartDemoState.js
 var chartDemoAlpineState string
 
+//go:embed multiColumnRepeatableFieldsetDemoState.js
+var multiColumnRepeatableFieldsetDemoAlpineState string
+
 //go:embed fileUploadDemoRouting.js
 var fileUploadDemoRoutingScript string
 
