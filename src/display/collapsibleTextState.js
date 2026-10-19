@@ -1,6 +1,7 @@
 UiToolset.RegisterAlpineState(() => {
   const collapsibleTextEllipsis = "…";
   const collapsibleTextMeasurementTolerancePx = 1;
+  const collapsibleTextIsWhitespace = (character) => /\s/.test(character);
 
   Alpine.data(
     "collapsibleText",
@@ -29,7 +30,7 @@ UiToolset.RegisterAlpineState(() => {
       },
 
       init() {
-        this.truncateText();
+        void this.truncateText();
         this.observeTextResize();
       },
 
@@ -40,7 +41,31 @@ UiToolset.RegisterAlpineState(() => {
 
       toggleTextDisplay() {
         this.isExpanded = !this.isExpanded;
-        this.$nextTick(() => this.truncateText());
+        this.$nextTick(() => {
+          void this.truncateText();
+        });
+      },
+
+      lineHeightPxResolver(clipElement) {
+        const computedLineHeightText = getComputedStyle(clipElement).lineHeight;
+        const computedLineHeight = Number.parseFloat(computedLineHeightText);
+        if (Number.isFinite(computedLineHeight)) {
+          return computedLineHeight;
+        }
+        if (computedLineHeightText !== "normal") {
+          return Number.NaN;
+        }
+        const lineProbe = clipElement.cloneNode(false);
+        lineProbe.textContent = "M";
+        lineProbe.removeAttribute("id");
+        lineProbe.removeAttribute("x-ref");
+        lineProbe.style.position = "absolute";
+        lineProbe.style.visibility = "hidden";
+        lineProbe.style.pointerEvents = "none";
+        clipElement.parentElement.insertBefore(lineProbe, clipElement);
+        const measuredLineHeight = lineProbe.offsetHeight;
+        lineProbe.remove();
+        return measuredLineHeight;
       },
 
       async truncateText() {
@@ -54,10 +79,15 @@ UiToolset.RegisterAlpineState(() => {
         if (!clipElement) {
           return;
         }
-        const lineHeight = parseFloat(getComputedStyle(clipElement).lineHeight);
-        const maxHeightPx = lineHeight * this.maxVisibleLines;
+        const lineHeightPx = this.lineHeightPxResolver(clipElement);
+        const lineHeightIsUnmeasurable = Number.isNaN(lineHeightPx);
         this.hasToggle = false;
         this.truncatedText = "";
+        if (lineHeightIsUnmeasurable) {
+          this.hasToggle = true;
+          return;
+        }
+        const maxHeightPx = lineHeightPx * this.maxVisibleLines;
         await this.$nextTick();
         if (isStale()) {
           return;
@@ -143,9 +173,21 @@ UiToolset.RegisterAlpineState(() => {
         if (cutIndex >= this.fullText.length) {
           return rawCut;
         }
-        const trailingWordStart = rawCut.search(/\s+\S*$/);
-        if (trailingWordStart < 0) {
+        let trailingWordStart = rawCut.length;
+        while (
+          trailingWordStart > 0 &&
+          !collapsibleTextIsWhitespace(rawCut[trailingWordStart - 1])
+        ) {
+          trailingWordStart -= 1;
+        }
+        if (trailingWordStart === 0) {
           return rawCut;
+        }
+        while (
+          trailingWordStart > 0 &&
+          collapsibleTextIsWhitespace(rawCut[trailingWordStart - 1])
+        ) {
+          trailingWordStart -= 1;
         }
         return rawCut.slice(0, trailingWordStart);
       },
@@ -155,16 +197,20 @@ UiToolset.RegisterAlpineState(() => {
         if (typeof ResizeObserver === "undefined") {
           return;
         }
-        this.observedWidth = this.$el.getBoundingClientRect().width;
+        const clipElement = this.$refs.textContent;
+        if (!clipElement) {
+          return;
+        }
+        this.observedWidth = clipElement.getBoundingClientRect().width;
         this.textResizeObserver = new ResizeObserver((resizeEntries) => {
           const currentWidth = resizeEntries[0].contentRect.width;
           if (currentWidth === this.observedWidth) {
             return;
           }
           this.observedWidth = currentWidth;
-          this.truncateText();
+          void this.truncateText();
         });
-        this.textResizeObserver.observe(this.$el);
+        this.textResizeObserver.observe(clipElement);
       },
     }),
   );

@@ -56,4 +56,19 @@ test.describe("CollapsibleText", () => {
 
     await expect(toggle).toContainText("Collapse the line");
   });
+
+  test("@browser a normal line height still truncates the text", async ({
+    page,
+  }) => {
+    const text = page.locator(textSelector).first();
+
+    await text.evaluate((element) => {
+      element.style.lineHeight = "normal";
+      element.style.width = "200px";
+      element.style.flex = "none";
+    });
+
+    await expect(text).toContainText(/…\s*show more/);
+    await expect(text).not.toContainText("bytes=642");
+  });
 });
