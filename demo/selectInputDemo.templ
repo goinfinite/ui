@@ -565,9 +565,9 @@ templ SelectInputMultiSelectLabelValueExample() {
 	}
 }
 
-templ SelectInputStyleExample() {
+templ SelectInputAppearanceExample() {
 	{{
-		styleUsage := `@uiForm.SelectInput(uiForm.SelectInputSettings{
+		appearanceUsage := `@uiForm.SelectInput(uiForm.SelectInputSettings{
 	InputName: "country",
 	Label:     "Country",
 
@@ -586,9 +586,9 @@ templ SelectInputStyleExample() {
 })`
 	}}
 	@DemoExampleCard(
-		"Style",
+		"Appearance",
 		"Trigger repaints the field surface. SelectedIconColor adds the checked-row icon and its focus ring, and the dropdown border and radius shape the list.",
-		"/form/selectInput.templ", styleUsage,
+		"/form/selectInput.templ", appearanceUsage,
 	) {
 		@DemoAlpineStateBlock(`<div x-data="{country: 'Brazil'}"></div>`)
 		<div x-data="{country: 'Brazil'}">
@@ -659,7 +659,7 @@ templ SelectInputDemo() {
 			{Title: "Sizes", Icon: "ph-ruler", Content: SelectInputSizesExample()},
 			{Title: "Text Case", Icon: "ph-text-t", Content: SelectInputTextCaseExample()},
 			{Title: "Dropdown Background", Icon: "ph-paint-brush", Content: SelectInputDropdownBackgroundExample()},
-			{Title: "Style", Icon: "ph-palette", Content: SelectInputStyleExample()},
+			{Title: "Appearance", Icon: "ph-palette", Content: SelectInputAppearanceExample()},
 			{Title: "Dropdown Height", Icon: "ph-arrows-out-line-vertical", Content: SelectInputDropdownHeightExample()},
 			{Title: "Required", Icon: "ph-asterisk", Content: SelectInputRequiredExample()},
 			{Title: "Disabled Binding", Icon: "ph-prohibit", Content: SelectInputDisabledBindingExample()},

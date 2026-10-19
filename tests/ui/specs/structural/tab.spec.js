@@ -187,7 +187,7 @@ test.describe("Tabs @structural", () => {
     const panel = await openExamplePanel(
       page,
       tabsSection,
-      "Surface Customization",
+      "Appearance",
     );
 
     const tablist = panel.locator("[role=tablist]").first();

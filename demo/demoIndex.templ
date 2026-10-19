@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	UiVersion string = "0.3.0"
+	UiVersion string = "0.3.2"
 )
 
 templ DemoNavSection(label string) {
@@ -72,11 +72,13 @@ templ DemoNavigationContent() {
 		@DemoNavSection("@uiForm")
 		@DemoNavItem("CheckboxInput", "checkbox-input-demo", "ph-check-square")
 		@DemoNavItem("CronSchedule", "cron-schedule-demo", "ph-clock")
+		@DemoNavItem("DateTimePicker", "date-time-picker-demo", "ph-calendar-blank")
 		@DemoNavItem("DualSelectInput", "dual-select-input-demo", "ph-arrows-left-right")
 		@DemoNavItem("FileUploadInput", "file-upload-input-demo", "ph-upload-simple")
 		@DemoNavItem("InlineCheckboxGroup", "inline-checkbox-group-demo", "ph-checks")
 		@DemoNavItem("InlineRadioGroup", "inline-radio-group-demo", "ph-selection")
 		@DemoNavItem("InputField", "input-field-demo", "ph-text-aa")
+		@DemoNavItem("MultiColumnRepeatableFieldset", "multi-column-repeatable-fieldset-demo", "ph-list-plus")
 		@DemoNavItem("NumberRangeInputField", "number-range-input-field-demo", "ph-number-square-one")
 		@DemoNavItem("PasswordInput", "password-input-demo", "ph-password")
 		@DemoNavItem("SearchableSelectInput", "searchable-select-input-demo", "ph-magnifying-glass")
@@ -90,6 +92,7 @@ templ DemoNavigationContent() {
 		@DemoNavItem("Alert", "alert-demo", "ph-warning")
 		@DemoNavItem("Chart", "chart-demo", "ph-chart-line")
 		@DemoNavItem("CloakLoading", "cloak-loading-demo", "ph-eye-slash")
+		@DemoNavItem("CollapsibleText", "collapsible-text-demo", "ph-caret-up-down")
 		@DemoNavItem("ConfirmationDialog", "confirmation-dialog-demo", "ph-question")
 		@DemoNavItem("LoadingOverlay", "loading-overlay-demo", "ph-spinner")
 		@DemoNavItem("Modal", "modal-demo", "ph-square")
@@ -180,11 +183,13 @@ templ DemoIndex() {
 						<div class="*:border-t *:border-neutral-800 *:py-20 flex flex-col">
 							@CheckboxInputDemo()
 							@CronScheduleDemo()
+							@DateTimePickerDemo()
 							@DualSelectInputDemo()
 							@FileUploadInputDemo()
 							@InlineCheckboxGroupDemo()
 							@InlineRadioGroupDemo()
 							@InputFieldDemo()
+							@MultiColumnRepeatableFieldsetDemo()
 							@NumberRangeInputFieldDemo()
 							@PasswordInputDemo()
 							@SearchableSelectInputDemo()
@@ -210,6 +215,7 @@ templ DemoIndex() {
 							@AlertDemo()
 							@ChartDemo()
 							@CloakLoadingDemo()
+							@CollapsibleTextDemo()
 							@ConfirmationDialogDemo()
 							@LoadingOverlayDemo()
 							@ModalDemo()

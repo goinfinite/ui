@@ -85,9 +85,9 @@ templ CronScheduleTextCaseExample() {
 	}
 }
 
-templ CronScheduleStyleExample() {
+templ CronScheduleAppearanceExample() {
 	{{
-		styleUsage := `@uiForm.CronSchedule(uiForm.CronScheduleSettings{
+		appearanceUsage := `@uiForm.CronSchedule(uiForm.CronScheduleSettings{
 	Label:           "Cron Schedule",
 	TwoWayStatePath: "schedule",
 
@@ -114,9 +114,9 @@ templ CronScheduleStyleExample() {
 })`
 	}}
 	@DemoExampleCard(
-		"Style",
+		"Appearance",
 		"Field repaints the outer surface and Dropdown repaints both option lists; Preview colors the plain-words line and the expression chip; RadioStyle colors the mode radios.",
-		"/form/cronSchedule.templ", styleUsage,
+		"/form/cronSchedule.templ", appearanceUsage,
 	) {
 		<div class="flex w-full max-w-lg flex-col gap-3" x-data="{schedule: '0 0 * * *'}">
 			@uiForm.CronSchedule(uiForm.CronScheduleSettings{
@@ -182,7 +182,7 @@ templ CronScheduleDemo() {
 		@DemoAdvancedExamples("cron-schedule-demo", []uiDisplay.AccordionItemSettings{
 			{Title: "Validation", Icon: "ph-warning-circle", Content: CronScheduleValidationExample()},
 			{Title: "Sizes", Icon: "ph-ruler", Content: CronScheduleSizesExample()},
-			{Title: "Style", Icon: "ph-paint-brush", Content: CronScheduleStyleExample()},
+			{Title: "Appearance", Icon: "ph-paint-brush", Content: CronScheduleAppearanceExample()},
 			{Title: "Text Case", Icon: "ph-text-t", Content: CronScheduleTextCaseExample()},
 		})
 	</div>

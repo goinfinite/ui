@@ -6,9 +6,9 @@ import (
 	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
-templ DualSelectInputStyleExample() {
+templ DualSelectInputAppearanceExample() {
 	{{
-		styleUsage := `@uiForm.DualSelectInput(uiForm.DualSelectInputSettings{
+		appearanceUsage := `@uiForm.DualSelectInput(uiForm.DualSelectInputSettings{
 	Label:   "Port",
 	Options: portOptions,
 
@@ -25,9 +25,9 @@ templ DualSelectInputStyleExample() {
 })`
 	}}
 	@DemoExampleCard(
-		"Style",
+		"Appearance",
 		"Field repaints the shared surface: the background, the border, the radius, the divider between the halves, and the text.",
-		"/form/dualSelectInput.templ", styleUsage,
+		"/form/dualSelectInput.templ", appearanceUsage,
 	) {
 		<div
 			class="flex w-full max-w-96 flex-col gap-3"
@@ -309,7 +309,7 @@ templ DualSelectInputDemo() {
 			{Title: "Number Value", Icon: "ph-number-square-one", Content: DualSelectInputNumberExample()},
 			{Title: "Invalid State", Icon: "ph-warning-circle", Content: DualSelectInputInvalidExample()},
 			{Title: "Dropdown", Icon: "ph-caret-down", Content: DualSelectInputDropdownExample()},
-			{Title: "Style", Icon: "ph-paint-brush", Content: DualSelectInputStyleExample()},
+			{Title: "Appearance", Icon: "ph-paint-brush", Content: DualSelectInputAppearanceExample()},
 			{Title: "Sizes", Icon: "ph-ruler", Content: DualSelectInputSizesExample()},
 		})
 	</div>

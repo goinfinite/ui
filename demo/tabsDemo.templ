@@ -203,8 +203,8 @@ templ TabsVerticalAlignmentExample() {
 					{Label: "Advanced", Value: "advanced", Icon: "ph-sliders", Content: TabsDemoAdvancedPanel()},
 				},
 				SelectedValueTwoWayStatePath: "selectedAlignmentTab",
-				Orientation:                       uiStructural.TabOrientationVertical,
-				Alignment:                         uiStructural.TabAlignmentCenter,
+				Orientation:                  uiStructural.TabOrientationVertical,
+				Alignment:                    uiStructural.TabAlignmentCenter,
 			})
 		</div>
 	}
@@ -272,13 +272,13 @@ templ TabsBorderRadiusExample() {
 					{Label: "Advanced", Value: "advanced", Icon: "ph-sliders", Content: TabsDemoAdvancedPanel()},
 				},
 				SelectedValueTwoWayStatePath: "selectedRadiusTab",
-				BorderRadius:                     uiToolset.BorderRadiusXl,
+				BorderRadius:                 uiToolset.BorderRadiusXl,
 			})
 		</div>
 	}
 }
 
-templ TabsSurfaceExample() {
+templ TabsAppearanceExample() {
 	{{
 		surfaceUsage := `@uiStructural.Tabs(uiStructural.TabSettings{
     Items: []uiStructural.TabItemSettings{
@@ -301,7 +301,7 @@ templ TabsSurfaceExample() {
 })`
 	}}
 	@DemoExampleCardStacked(
-		"Surface Customization",
+		"Appearance",
 		"BackgroundColor paints the tab list. BorderRadius rounds the tab edges. GapSize and PaddingSize space and inset the tabs. RingColor and RingThickness frame the list. ShadowSize adds a shadow. TextCase transforms the labels. TextColor tints the unselected tab labels.",
 		"/structural/tabs.templ", surfaceUsage,
 	) {
@@ -316,15 +316,15 @@ templ TabsSurfaceExample() {
 					{Label: "Advanced", Value: "advanced", Icon: "ph-sliders", Content: TabsDemoAdvancedPanel()},
 				},
 				SelectedValueTwoWayStatePath: "selectedSurfaceTab",
-				BackgroundColor:                "neutral-50/5",
-				BorderRadius:                   uiToolset.BorderRadiusNone,
-				GapSize:                        uiToolset.GapSizeLg,
-				PaddingSize:                    uiToolset.PaddingSizeXs,
-				RingColor:                      "neutral-50/10",
-				RingThickness:                  uiToolset.RingThicknessMd,
-				ShadowSize:                     uiToolset.ShadowSizeMd,
-				TextCase:                       uiToolset.TextCaseUpper,
-				TextColor:                      "neutral-50/60",
+				BackgroundColor:              "neutral-50/5",
+				BorderRadius:                 uiToolset.BorderRadiusNone,
+				GapSize:                      uiToolset.GapSizeLg,
+				PaddingSize:                  uiToolset.PaddingSizeXs,
+				RingColor:                    "neutral-50/10",
+				RingThickness:                uiToolset.RingThicknessMd,
+				ShadowSize:                   uiToolset.ShadowSizeMd,
+				TextCase:                     uiToolset.TextCaseUpper,
+				TextColor:                    "neutral-50/60",
 			})
 		</div>
 	}
@@ -366,13 +366,13 @@ templ TabsContentSurfaceExample() {
 					{Label: "Advanced", Value: "advanced", Icon: "ph-sliders", Content: TabsDemoAdvancedPanel()},
 				},
 				SelectedValueTwoWayStatePath: "selectedContentTab",
-				ContentBackgroundColor:           "neutral-50/5",
-				ContentBorderRadius:              uiToolset.BorderRadiusMd,
-				ContentPaddingSize:               uiToolset.PaddingSizeMd,
-				ContentRingColor:                 "neutral-50/10",
-				ContentRingThickness:             uiToolset.RingThicknessMd,
-				ContentShadowSize:                uiToolset.ShadowSizeMd,
-				ContentTextColor:                 "neutral-50/70",
+				ContentBackgroundColor:       "neutral-50/5",
+				ContentBorderRadius:          uiToolset.BorderRadiusMd,
+				ContentPaddingSize:           uiToolset.PaddingSizeMd,
+				ContentRingColor:             "neutral-50/10",
+				ContentRingThickness:         uiToolset.RingThicknessMd,
+				ContentShadowSize:            uiToolset.ShadowSizeMd,
+				ContentTextColor:             "neutral-50/70",
 			})
 		</div>
 	}
@@ -414,10 +414,10 @@ templ TabsBadgeExample() {
 					Size:        uiControl.ButtonSizeSm,
 				})
 				@uiControl.Button(uiControl.ButtonSettings{
-					Label:       "Clear Alerts",
-					IconLeft:    "ph-check",
-					OnClickFunc: "alertCount = 0",
-					Size:        uiControl.ButtonSizeSm,
+					Label:           "Clear Alerts",
+					IconLeft:        "ph-check",
+					OnClickFunc:     "alertCount = 0",
+					Size:            uiControl.ButtonSizeSm,
 					BackgroundColor: "neutral-50/10",
 				})
 			</div>
@@ -447,21 +447,21 @@ templ TabsDeepLinkExample() {
 		<div class="flex flex-col gap-4" x-data="{selectedDeepLinkTab: 'general'}">
 			<div class="flex flex-wrap gap-2">
 				@uiControl.Button(uiControl.ButtonSettings{
-					Label:       "Open General",
-					OnClickFunc: "location.hash = 'general'",
-					Size:        uiControl.ButtonSizeSm,
+					Label:           "Open General",
+					OnClickFunc:     "location.hash = 'general'",
+					Size:            uiControl.ButtonSizeSm,
 					BackgroundColor: "neutral-50/10",
 				})
 				@uiControl.Button(uiControl.ButtonSettings{
-					Label:       "Open Security",
-					OnClickFunc: "location.hash = 'security'",
-					Size:        uiControl.ButtonSizeSm,
+					Label:           "Open Security",
+					OnClickFunc:     "location.hash = 'security'",
+					Size:            uiControl.ButtonSizeSm,
 					BackgroundColor: "neutral-50/10",
 				})
 				@uiControl.Button(uiControl.ButtonSettings{
-					Label:       "Open Advanced",
-					OnClickFunc: "location.hash = 'advanced'",
-					Size:        uiControl.ButtonSizeSm,
+					Label:           "Open Advanced",
+					OnClickFunc:     "location.hash = 'advanced'",
+					Size:            uiControl.ButtonSizeSm,
 					BackgroundColor: "neutral-50/10",
 				})
 			</div>
@@ -472,7 +472,7 @@ templ TabsDeepLinkExample() {
 					{Label: "Advanced", Value: "advanced", Content: TabsDemoAdvancedPanel()},
 				},
 				SelectedValueTwoWayStatePath: "selectedDeepLinkTab",
-				IsUrlHashSynced:                 true,
+				IsUrlHashSynced:              true,
 			})
 		</div>
 	}
@@ -523,10 +523,10 @@ templ TabsOverflowExample() {
 					{Label: "Danger", Value: "danger", Icon: "ph-warning", Content: TabsDemoDangerPanel()},
 				},
 				SelectedValueTwoWayStatePath: "selectedOverflowTab",
-				MinWidthPercent:                50,
-				MaxWidthPercent:                80,
-				MinWidthClass:                  "min-w-64",
-				MaxWidthClass:                  "max-w-80",
+				MinWidthPercent:              50,
+				MaxWidthPercent:              80,
+				MinWidthClass:                "min-w-64",
+				MaxWidthClass:                "max-w-80",
 			})
 		</div>
 	}
@@ -549,14 +549,16 @@ templ TabsVerticalOverflowExample() {
     SelectedValueTwoWayStatePath: "selectedVerticalOverflowTab",
 
     // OptionalFields
-    Orientation:      uiStructural.TabOrientationVertical,
+    Orientation: uiStructural.TabOrientationVertical,
+
+    // Option A: bound the list height
     MinHeightPercent: 30,
     MaxHeightPercent: 60,
     MinHeightClass:   "min-h-32",
     MaxHeightClass:   "max-h-48",
 
-    // Or cap the list to a number of tabs
-    MaxVisibleTabs: 4,
+    // Option B: cap the visible tabs instead
+    // MaxVisibleTabs: 4,
 })`
 	}}
 	@DemoExampleCardStacked(
@@ -582,11 +584,11 @@ templ TabsVerticalOverflowExample() {
 						{Label: "Danger", Value: "danger", Icon: "ph-warning", Content: TabsDemoDangerPanel()},
 					},
 					SelectedValueTwoWayStatePath: "selectedVerticalOverflowTab",
-					Orientation:                        uiStructural.TabOrientationVertical,
-					MinHeightPercent:                   30,
-					MaxHeightPercent:                   60,
-					MinHeightClass:                     "min-h-32",
-					MaxHeightClass:                     "max-h-48",
+					Orientation:                  uiStructural.TabOrientationVertical,
+					MinHeightPercent:             30,
+					MaxHeightPercent:             60,
+					MinHeightClass:               "min-h-32",
+					MaxHeightClass:               "max-h-48",
 				})
 			</div>
 			<div
@@ -607,8 +609,8 @@ templ TabsVerticalOverflowExample() {
 						{Label: "Danger", Value: "danger", Icon: "ph-warning", Content: TabsDemoDangerPanel()},
 					},
 					SelectedValueTwoWayStatePath: "selectedVisibleTabsTab",
-					Orientation:                        uiStructural.TabOrientationVertical,
-					MaxVisibleTabs:                     4,
+					Orientation:                  uiStructural.TabOrientationVertical,
+					MaxVisibleTabs:               4,
 				})
 			</div>
 		</div>
@@ -648,18 +650,18 @@ templ TabsDemo() {
 				})
 			</div>
 		}
-	@DemoAdvancedExamples("tabs-demo", []uiDisplay.AccordionItemSettings{
-		{Title: "Vertical", Icon: "ph-columns", Content: TabsVerticalExample()},
-		{Title: "Right Side", Icon: "ph-arrow-right", Content: TabsRightSideExample()},
-		{Title: "Vertical Alignment", Icon: "ph-align-center-vertical", Content: TabsVerticalAlignmentExample()},
-		{Title: "Icon Position", Icon: "ph-arrows-vertical", Content: TabsIconPositionExample()},
-		{Title: "Border Radius", Icon: "ph-frame-corners", Content: TabsBorderRadiusExample()},
-		{Title: "Surface Customization", Icon: "ph-paint-roller", Content: TabsSurfaceExample()},
-		{Title: "Content Surface", Icon: "ph-layout", Content: TabsContentSurfaceExample()},
-		{Title: "Badge Counts", Icon: "ph-bell", Content: TabsBadgeExample()},
-		{Title: "Deep Linking", Icon: "ph-link", Content: TabsDeepLinkExample()},
-		{Title: "Overflow Scroll", Icon: "ph-arrows-left-right", Content: TabsOverflowExample()},
-		{Title: "Vertical Overflow Scroll", Icon: "ph-arrows-down-up", Content: TabsVerticalOverflowExample()},
-	})
+		@DemoAdvancedExamples("tabs-demo", []uiDisplay.AccordionItemSettings{
+			{Title: "Vertical", Icon: "ph-columns", Content: TabsVerticalExample()},
+			{Title: "Right Side", Icon: "ph-arrow-right", Content: TabsRightSideExample()},
+			{Title: "Vertical Alignment", Icon: "ph-align-center-vertical", Content: TabsVerticalAlignmentExample()},
+			{Title: "Icon Position", Icon: "ph-arrows-vertical", Content: TabsIconPositionExample()},
+			{Title: "Border Radius", Icon: "ph-frame-corners", Content: TabsBorderRadiusExample()},
+			{Title: "Appearance", Icon: "ph-paint-roller", Content: TabsAppearanceExample()},
+			{Title: "Content Surface", Icon: "ph-layout", Content: TabsContentSurfaceExample()},
+			{Title: "Badge Counts", Icon: "ph-bell", Content: TabsBadgeExample()},
+			{Title: "Deep Linking", Icon: "ph-link", Content: TabsDeepLinkExample()},
+			{Title: "Overflow Scroll", Icon: "ph-arrows-left-right", Content: TabsOverflowExample()},
+			{Title: "Vertical Overflow Scroll", Icon: "ph-arrows-down-up", Content: TabsVerticalOverflowExample()},
+		})
 	</div>
 }

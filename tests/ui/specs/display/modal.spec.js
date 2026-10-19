@@ -44,7 +44,7 @@ test.describe("Modal", () => {
   });
 
   test("closeable modal still closes on a backdrop click", async ({ page }) => {
-    await openExamplePanel(page, modalSection, "Custom Surface");
+    await openExamplePanel(page, modalSection, "Appearance");
     await page
       .locator(modalSection)
       .getByRole("button", { name: "Blue", exact: true })
@@ -58,7 +58,7 @@ test.describe("Modal", () => {
   test("@browser dragging from the panel to the backdrop keeps the modal open", async ({
     page,
   }) => {
-    await openExamplePanel(page, modalSection, "Custom Surface");
+    await openExamplePanel(page, modalSection, "Appearance");
     await page
       .locator(modalSection)
       .getByRole("button", { name: "Blue", exact: true })

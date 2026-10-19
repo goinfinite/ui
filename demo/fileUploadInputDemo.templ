@@ -68,9 +68,9 @@ templ FileUploadInputSingleFileExample() {
 	}
 }
 
-templ FileUploadInputStyleExample() {
+templ FileUploadInputAppearanceExample() {
 	{{
-		styleUsage := `@uiForm.FileUploadInput(uiForm.FileUploadInputSettings{
+		appearanceUsage := `@uiForm.FileUploadInput(uiForm.FileUploadInputSettings{
 	InputName: "files",
 	Label:     "Drop files here or click to pick",
 
@@ -99,9 +99,9 @@ templ FileUploadInputStyleExample() {
 })`
 	}}
 	@DemoExampleCard(
-		"Styling",
+		"Appearance",
 		"Size scales the zone, the icon, the rows, and the text together. Zone, Row, Progress, and Rejected take the colors and the radius of each part. Zone.Icon picks the drop zone icon; the row icon follows the file type. Every color is a Tailwind token.",
-		"/form/fileUploadInput.templ", styleUsage,
+		"/form/fileUploadInput.templ", appearanceUsage,
 	) {
 		@uiForm.FileUploadInput(uiForm.FileUploadInputSettings{
 			InputName: "styledFiles",
@@ -178,7 +178,7 @@ templ FileUploadInputDemo() {
 		}
 		@DemoAdvancedExamples("file-upload-input-demo", []uiDisplay.AccordionItemSettings{
 			{Title: "Single File", Icon: "ph-file", Content: FileUploadInputSingleFileExample()},
-			{Title: "Styling", Icon: "ph-palette", Content: FileUploadInputStyleExample()},
+			{Title: "Appearance", Icon: "ph-palette", Content: FileUploadInputAppearanceExample()},
 			{Title: "Upload Failure", Icon: "ph-warning-circle", Content: FileUploadInputFailureExample()},
 		})
 	</div>

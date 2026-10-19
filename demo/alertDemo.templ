@@ -108,7 +108,7 @@ templ AlertCloseTimeoutExample() {
 	}
 }
 
-templ AlertCustomSurfaceExample() {
+templ AlertAppearanceExample() {
 	{{
 		surfaceUsage := `@uiDisplay.Alert(uiDisplay.AlertSettings{
 	Title:       "Alert Title",
@@ -128,7 +128,7 @@ templ AlertCustomSurfaceExample() {
 })`
 	}}
 	@DemoExampleCard(
-		"Custom Surface",
+		"Appearance",
 		"Background, text, ring, radius, shadow, and close-icon colors accept Tailwind tokens. TextTitleColor and TextDescriptionColor style the title and description separately. Gradient backgrounds work too.",
 		"/display/alert.templ", surfaceUsage,
 	) {
@@ -317,7 +317,7 @@ templ AlertDemo() {
 			{Title: "Content Html Slot", Icon: "ph-code", Content: AlertContentHtmlExample()},
 			{Title: "Icons", Icon: "ph-rocket-launch", Content: AlertIconsExample()},
 			{Title: "Close & Timeout", Icon: "ph-timer", Content: AlertCloseTimeoutExample()},
-			{Title: "Custom Surface", Icon: "ph-palette", Content: AlertCustomSurfaceExample()},
+			{Title: "Appearance", Icon: "ph-palette", Content: AlertAppearanceExample()},
 			{Title: "State-Bound Content", Icon: "ph-arrows-clockwise", Content: AlertStateBoundExample()},
 		})
 	</div>
