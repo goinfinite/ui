@@ -57,12 +57,17 @@ const selectDropdownController = {
     this.isOpen = true;
     this.$nextTick(() => {
       this.openUpward = selectDropdownOpenUpwardResolver(trigger, dropdown);
-      const checkedOption =
-        dropdown.querySelector("input:checked") ??
-        dropdown.querySelector("input");
-      if (checkedOption !== null) {
-        checkedOption.focus();
-      }
+      requestAnimationFrame(() => {
+        if (!this.isOpen) {
+          return;
+        }
+        const checkedOption =
+          dropdown.querySelector("input:checked") ??
+          dropdown.querySelector("input");
+        if (checkedOption !== null) {
+          checkedOption.focus();
+        }
+      });
     });
   },
 
