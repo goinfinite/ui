@@ -173,3 +173,29 @@ func TestDualSelectInputRendersSeparateHalves(t *testing.T) {
 		}
 	}
 }
+
+func TestDualSelectInputRendersLabelStatePath(testingHandle *testing.T) {
+	var buffer bytes.Buffer
+	renderErr := DualSelectInput(DualSelectInputSettings{
+		Label:                "Timeout",
+		LabelOneWayStatePath: "timeoutLabel",
+		Options: []SelectLabelValueOption{
+			{Label: "seconds", Value: "seconds"},
+		},
+		ValueTwoWayStatePath: "timeoutValue",
+	}).Render(context.Background(), &buffer)
+	if renderErr != nil {
+		testingHandle.Fatalf("DualSelectInputRenderFailed: %v", renderErr)
+	}
+	renderedHtml := buffer.String()
+	for _, expectedFragment := range []string{
+		`x-text="timeoutLabel"`,
+		`:aria-label="(timeoutLabel) || &#34;Timeout&#34;"`,
+		`:placeholder="(timeoutLabel) || &#34;Timeout&#34;"`,
+		"Timeout",
+	} {
+		if !strings.Contains(renderedHtml, expectedFragment) {
+			testingHandle.Errorf("RenderedHtmlMissingFragment: %q", expectedFragment)
+		}
+	}
+}

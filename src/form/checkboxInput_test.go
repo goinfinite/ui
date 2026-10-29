@@ -209,3 +209,27 @@ func TestCheckboxInputCombinesIndeterminateAndInvalidClassExpressions(t *testing
 		}
 	}
 }
+
+func TestCheckboxInputRendersLabelStatePath(testingHandle *testing.T) {
+	var buffer bytes.Buffer
+	renderErr := CheckboxInput(CheckboxInputSettings{
+		InputId:                  "terms",
+		Label:                    "Accept the terms",
+		LabelOneWayStatePath:     "termsLabel",
+		AriaLabel:                "Accept the terms",
+		AriaLabelOneWayStatePath: "termsAriaLabel",
+	}).Render(context.Background(), &buffer)
+	if renderErr != nil {
+		testingHandle.Fatalf("CheckboxRenderFailed: %v", renderErr)
+	}
+	renderedHtml := buffer.String()
+	for _, expectedFragment := range []string{
+		`x-text="termsLabel"`,
+		`:aria-label="(termsAriaLabel) || &#34;Accept the terms&#34;"`,
+		"Accept the terms",
+	} {
+		if !strings.Contains(renderedHtml, expectedFragment) {
+			testingHandle.Errorf("RenderedHtmlMissingFragment: %q", expectedFragment)
+		}
+	}
+}

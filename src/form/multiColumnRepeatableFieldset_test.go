@@ -218,3 +218,55 @@ func TestMultiColumnRepeatableFieldsetRenderDefaults(t *testing.T) {
 		t.Error("rendered html contains hidden input without InputName")
 	}
 }
+
+func TestMultiColumnRepeatableFieldsetRendersColumnLabelStatePath(testingHandle *testing.T) {
+	component := MultiColumnRepeatableFieldset(MultiColumnRepeatableFieldsetSettings{
+		Columns: []MultiColumnRepeatableFieldsetColumn{
+			{
+				Id: "name", Label: "Name", LabelOneWayStatePath: "nameColumnLabel",
+				InputType: MultiColumnRepeatableFieldsetColumnTypeText,
+			},
+			{
+				Id: "role", Label: "Role", LabelOneWayStatePath: "roleColumnLabel",
+				InputType: MultiColumnRepeatableFieldsetColumnTypeSelect,
+			},
+			{
+				Id: "active", Label: "Active", LabelOneWayStatePath: "activeColumnLabel",
+				InputType: MultiColumnRepeatableFieldsetColumnTypeCheckbox,
+			},
+		},
+		TwoWayStatePath: "memberRows",
+	})
+	var buffer bytes.Buffer
+	renderErr := component.Render(context.Background(), &buffer)
+	if renderErr != nil {
+		testingHandle.Fatalf("Render failed: %v", renderErr)
+	}
+	renderedHtml := buffer.String()
+	for _, expectedFragment := range []string{
+		`x-text="nameColumnLabel"`,
+		`x-text="roleColumnLabel"`,
+		`x-text="activeColumnLabel"`,
+		`:aria-label="(activeColumnLabel) || &#34;Active&#34;"`,
+	} {
+		if !strings.Contains(renderedHtml, expectedFragment) {
+			testingHandle.Errorf("rendered html missing fragment %s", expectedFragment)
+		}
+	}
+	for _, expectedCount := range []struct {
+		fragment string
+		count    int
+	}{
+		{`x-text="nameColumnLabel"`, 2},
+		{`x-text="roleColumnLabel"`, 2},
+		{`x-text="activeColumnLabel"`, 1},
+	} {
+		actualCount := strings.Count(renderedHtml, expectedCount.fragment)
+		if actualCount < expectedCount.count {
+			testingHandle.Errorf(
+				"rendered html fragment %s count = %d, want at least %d",
+				expectedCount.fragment, actualCount, expectedCount.count,
+			)
+		}
+	}
+}

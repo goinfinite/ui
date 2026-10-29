@@ -1,9 +1,10 @@
 package uiForm
 
 type RemoteSearchableSelectInputSettings struct {
-	InputName  string
-	Label      string
-	OptionsUrl string
+	InputName            string
+	Label                string
+	LabelOneWayStatePath string
+	OptionsUrl           string
 
 	// OptionalFields
 	OptionsQueryParam                 string
@@ -65,30 +66,33 @@ templ RemoteSearchableSelectInput(componentSettings RemoteSearchableSelectInputS
 	if !componentSettings.IsMultiSelect {
 		{{ initExpression = "$watch('" + componentSettings.TwoWayStatePath + "', (value) => { userInput = optionLabelResolver(value); isUserSearching = false }); userInput = optionLabelResolver(" + componentSettings.TwoWayStatePath + " ?? '')" }}
 	}
-	{{ shellSettings := searchableSelectInputShellSettings{
-		Label:                             componentSettings.Label,
-		TwoWayStatePath:                   componentSettings.TwoWayStatePath,
-		InputId:                           componentSettings.InputId,
-		ClientConfig:                      clientConfig,
-		Size:                              componentSettings.Size,
-		TextCase:                          componentSettings.TextCase,
-		DropdownBackgroundColor:           componentSettings.DropdownBackgroundColor,
-		DropdownMinHeightClass:            componentSettings.DropdownMinHeightClass,
-		DropdownMaxHeightClass:            componentSettings.DropdownMaxHeightClass,
-		MaxVisibleOptions:                 componentSettings.MaxVisibleOptions,
-		OnChangeSuffix:                    onChangeSuffix,
-		InitExpression:                    initExpression,
-		IsDisabledOneWayStatePath:         componentSettings.IsDisabledOneWayStatePath,
-		HintValue:                         componentSettings.HintValue,
-		HintStatePath:                     componentSettings.HintStatePath,
-		HintDisplay:                       componentSettings.HintDisplay,
-		HintDisplayTooltipBackgroundColor: componentSettings.HintDisplayTooltipBackgroundColor,
-		HintDisplayTooltipMinWidthClass:   componentSettings.HintDisplayTooltipMinWidthClass,
-		HintDisplayTooltipMaxWidthClass:   componentSettings.HintDisplayTooltipMaxWidthClass,
-		HintDisplayTooltipMinHeightClass:  componentSettings.HintDisplayTooltipMinHeightClass,
-		HintDisplayTooltipMaxHeightClass:  componentSettings.HintDisplayTooltipMaxHeightClass,
-		HintIconStyle:                     componentSettings.HintIconStyle,
-	} }}
+	{{
+		shellSettings := searchableSelectInputShellSettings{
+			Label:                             componentSettings.Label,
+			LabelOneWayStatePath:              componentSettings.LabelOneWayStatePath,
+			TwoWayStatePath:                   componentSettings.TwoWayStatePath,
+			InputId:                           componentSettings.InputId,
+			ClientConfig:                      clientConfig,
+			Size:                              componentSettings.Size,
+			TextCase:                          componentSettings.TextCase,
+			DropdownBackgroundColor:           componentSettings.DropdownBackgroundColor,
+			DropdownMinHeightClass:            componentSettings.DropdownMinHeightClass,
+			DropdownMaxHeightClass:            componentSettings.DropdownMaxHeightClass,
+			MaxVisibleOptions:                 componentSettings.MaxVisibleOptions,
+			OnChangeSuffix:                    onChangeSuffix,
+			InitExpression:                    initExpression,
+			IsDisabledOneWayStatePath:         componentSettings.IsDisabledOneWayStatePath,
+			HintValue:                         componentSettings.HintValue,
+			HintStatePath:                     componentSettings.HintStatePath,
+			HintDisplay:                       componentSettings.HintDisplay,
+			HintDisplayTooltipBackgroundColor: componentSettings.HintDisplayTooltipBackgroundColor,
+			HintDisplayTooltipMinWidthClass:   componentSettings.HintDisplayTooltipMinWidthClass,
+			HintDisplayTooltipMaxWidthClass:   componentSettings.HintDisplayTooltipMaxWidthClass,
+			HintDisplayTooltipMinHeightClass:  componentSettings.HintDisplayTooltipMinHeightClass,
+			HintDisplayTooltipMaxHeightClass:  componentSettings.HintDisplayTooltipMaxHeightClass,
+			HintIconStyle:                     componentSettings.HintIconStyle,
+		}
+	}}
 	@searchableSelectInputShell(shellSettings) {
 		@searchableSelectInputTriggerRow(shellSettings) {
 			if componentSettings.IsMultiSelect {

@@ -23,7 +23,8 @@ A checkbox with a label. It binds to a boolean or to an array.
 - `CheckedColor`, `UncheckedColor`, and `FocusRingColor` set the box colors. On hover, the border shows `CheckedColor`.
 - `LabelPosition` takes `CheckboxInputLabelPositionLeft` or `CheckboxInputLabelPositionRight`.
 - `IsChecked`, `IsDisabled`, and `IsRequired` set static states. `IsCheckedOneWayStatePath`, `IsDisabledOneWayStatePath`, and `IndeterminateOneWayStatePath` bind them to Alpine state.
-- `AriaLabel` names a checkbox that has no visible label.
+- `AriaLabel` names a checkbox that has no visible label. `AriaLabelOneWayStatePath` binds that name to an Alpine path.
+- `LabelOneWayStatePath` renders the visible label from an Alpine path. `Label` remains the static fallback.
 - `IsInvalid` and `IsInvalidOneWayStatePath` set the error state. The border changes to `ErrorColor` (default `"red-500"`), and the input gets `aria-invalid`.
 - `ErrorMessage` and `ErrorMessageOneWayStatePath` show a message below the box. With an invalid path, the message shows only while the path is true. With `InputId`, the input points to the message through `aria-describedby`.
 
@@ -79,6 +80,7 @@ A text input that opens a calendar popover. Modes cover date, time, and datetime
 - `Timezone` takes an IANA name, for example `"America/Sao_Paulo"`. In datetime mode, setting it shows a timezone select beside the time when the field is wide enough and wraps it below when it is not, and writes the value with its UTC offset, for example `2026-10-16T09:30-03:00`. Changing the timezone recomposes the current drafts. `TimezoneOptions` replaces the built-in zone list, and a configured zone outside the list is added at the top. `TimezoneTwoWayStatePath` seeds the selected zone from the app state and writes each change back. `Timezone` supplies the zone when the path is empty. `TimezoneInputName` adds a hidden input for form submission.
 - Arrow keys move day focus by one day (left/right) or one week (up/down). Home and End jump to the week edges. Escape closes the popover from anywhere on the page.
 - `Size` takes an `InputFieldSize*` constant.
+- `LabelOneWayStatePath` renders the visible label and the accessible names from an Alpine path. In range mode it also drives the Start and End names. `Label` remains the static fallback.
 - `TextCase` takes a `uiToolset.TextCase*` value. It changes the label, the range captions, the inputs, the time selector labels, and the Done button.
 - `CalendarButtonStyle` takes `InputActionButtonStyleBoxed` (the default) or `InputActionButtonStylePlain` for the calendar toggle.
 - The Done action renders with the `ph-check` icon and lowercase text by default; a set `TextCase` overrides the lowercase default. `DoneButtonLabel`, `DoneButtonIconLeft`, `DoneButtonIconRight`, `DoneButtonSize`, and `DoneButtonStyle` customize it. `DoneButtonStyle` takes `BackgroundColor`, `BackgroundColorHover`, `IconSizeClass`, `RingColor`, `RingColorHover`, `RingThickness`, `Shape`, `TextColor`, `TextColorHover`, and `TextSizeClass`. `IconSizeClass` and `TextSizeClass` take a Tailwind text size class and size the icon and the label on their own; the default icon size follows the button size.
@@ -102,6 +104,7 @@ A single-line input with a floating label, optional affixes, and an optional hin
 
 - `InputType` takes a `uiForm.InputType*` constant. `InputTypeExpression` sets the type from an Alpine expression and replaces `InputType`, for example `"isPasswordVisible ? 'text' : 'password'"`.
 - `IconLeft` shows a Phosphor icon before the input, for example `"ph-magnifying-glass"`.
+- `LabelOneWayStatePath` renders the legend, the placeholder, and the accessible name from an Alpine path. `Label` remains the static fallback.
 - An affix shows a static value (`AffixLeftValue`, `AffixRightValue`) or a state path (`AffixLeftStatePath`, `AffixRightStatePath`). `AffixLeftWidthPercent` and `AffixRightWidthPercent` fix the affix width, for example `25`.
 - `AffixRightComponent` renders a templ component at the right edge. `PasswordInput` uses it for its buttons.
 - A number input takes `InputNumberMin`, `InputNumberMax`, and `InputNumberStep`.
@@ -135,6 +138,7 @@ A drop zone that also opens a file picker. It lists each file with a type icon, 
 - During an HTMX request, each file shows its share of the upload progress. A native POST shows no progress, because the browser reports none.
 - After a successful request, the files show as uploaded and leave the input, so the next submit sends only new files. After a failed request, the files stay, so the next submit sends them again.
 - The form `reset` event clears the list. `Description` shows a hint below the `Label`. `IsRequired` marks the label and sets `required`.
+- `LabelOneWayStatePath` and `DescriptionOneWayStatePath` bind the visible label and hint to Alpine paths. `Label` and `Description` remain the static fallbacks.
 - `Size` takes `FileUploadInputSizeXs` through `FileUploadInputSizeXl` and scales the zone, the icon, the rows, and the text together.
 - `Zone`, `Row`, `Progress`, and `Rejected` take the colors and the radius of each part. Every color field takes a Tailwind token.
 - `Zone.Icon` takes a Phosphor icon name for the drop zone (default `ph-tray-arrow-up`). The row icon follows the file type and is not configurable.
@@ -164,6 +168,7 @@ A repeatable list of rows built from column definitions. Each cell renders throu
 
 - `InputType` takes `MultiColumnRepeatableFieldsetColumnTypeText`, `MultiColumnRepeatableFieldsetColumnTypeNumber`, `MultiColumnRepeatableFieldsetColumnTypeSelect`, or `MultiColumnRepeatableFieldsetColumnTypeCheckbox`. An unknown type renders a text cell.
 - Number columns take `Min`, `Max`, and `Step`. Select columns take `Options`; the picker is clearable and shows the label as its placeholder.
+- A column's `LabelOneWayStatePath` binds the header, the text or select cell label, and the checkbox accessible name to Alpine state. `Label` remains the static fallback.
 - `IsRequired` marks the cell required: the field carries the required and aria-invalid wiring and paints a red border while empty. It does not block the row actions.
 - `Size` takes an `InputFieldSize*` constant and applies to every cell. `TextCase` changes the cell label case.
 - Each cell type carries a style group. `Dropdown` takes `BackgroundColor`, `BorderColor`, and `BorderRadius` for the select option list. `Select` takes `SelectedIconColor` and a `Trigger` surface of `BackgroundColor`, `BorderColor`, `BorderRadius`, and `TextColor`. `Checkbox` takes `CheckedColor`, `UncheckedColor`, `FocusRingColor`, and `Shape`.
@@ -192,6 +197,7 @@ A number box and a slider on one state path. The user types the value or drags i
 ```
 
 - `Min`, `Max`, and `Step` default to `"0"`, `"100"`, and `"1"`. They set the box limits and the slider track.
+- `LabelOneWayStatePath` forwards to the number box label and the slider accessible name. `Label` remains the static fallback.
 - The box keeps a draft while the user types, so a partial value does not reach the path.
 - On `change` (blur or Enter), the field keeps the draft between `Min` and `Max`, moves it to the nearest step, and writes a number to the path. An empty or invalid draft returns to the path value.
 - The slider writes the path directly, and the box follows.
@@ -219,9 +225,11 @@ A password field with a reveal button, an optional password generator, and an op
 
 - `Rules` configures the generator and the meter: `MinLength` (default 6), `MaxLength` (default 64), `GenerationLength` (default 16), and one `ShouldInclude*Chars` flag for each character class. With no class selected, all classes apply.
 - The generator uses `UiToolset.CreateRandomPassword(options)` and includes at least one character of each selected class.
+- While the field has focus and Caps Lock is on, a `Caps Lock is on` line shows below the field. The line clears on focusout. `CapsLockWarningText` replaces the text, `CapsLockWarningTextOneWayStatePath` binds it to Alpine state, `CapsLockWarningTextColor` takes a color token, and `CapsLockWarningTextCase` takes a `uiToolset.TextCase*` value. `ShouldHideCapsLockWarning` removes the warning and its key listeners.
 - The generate button copies the password and shows a toast in the browser language, with English as the fallback. The page must mount `Toast`.
 - The meter shows a bar and a checklist of the enabled criteria. Both update as the user types.
 - The reveal and generate buttons are `uiControl.Button` squares sized to the field, each with a tooltip and an accessible name. `ActionButtonStyle` takes `PasswordInputActionButtonStyleBoxed` (the default) or `PasswordInputActionButtonStylePlain`.
+- `LabelOneWayStatePath` forwards to the `InputField` label, placeholder, and accessible-name path.
 - `StrengthMeterColor`, `StrengthCriteriaTextColor`, `StrengthCriteriaFulfilledIconColor`, and `StrengthCriteriaUnfulfilledIconColor` take color tokens.
 
 ## InlineCheckboxGroup
@@ -242,7 +250,7 @@ A row or column of checkboxes under one label. The label sits in the top border,
 - All inputs must use the same array `TwoWayStatePath`. Alpine adds and removes the checked values.
 - `Orientation` takes `InlineCheckboxGroupOrientationHorizontal` (the default) or `InlineCheckboxGroupOrientationVertical`.
 - `MaxVisibleOptions` limits the visible rows and scrolls the rest.
-- `TextCase` changes only the group label.
+- `TextCase` changes only the group label. `LabelOneWayStatePath` binds the group label to Alpine state. `Label` remains the static fallback.
 - On hover or focus, the group shows select-all and deselect-all `FloatingButton` actions. Select-all skips disabled options. `FloatingButtonStyle` restyles them. `ShouldHideFloatingButtons` removes them. Vertical rows reserve the resolved action width, so a large action never covers the labels.
 
 ## FloatingButton
@@ -273,15 +281,17 @@ A multiline input with expand, copy, and clear actions.
 ```
 
 - `IsCode` uses a monospace font. `IsReadOnly` sets `readonly` and drops the clear action, so a read-only field never mutates its bound state. `IsRequired` marks the label and sets `required`.
+- `LabelOneWayStatePath` renders the label, the placeholder, and the accessible name from an Alpine path. `Label` remains the static fallback.
 - On hover or focus, the field shows the expand, copy, and clear `FloatingButton` actions. A read-only field shows expand and copy only. `FloatingButtonStyle` restyles them. `ShouldHideFloatingButtons` removes them, and the text uses the full width. The text reserves the resolved action width, so a large action never covers the content.
 
 ## SelectInput
 
-A dropdown select. It is not a native `<select>`: hidden radio inputs and an Alpine list hold the value. It has three option modes:
+A dropdown select. It is not a native `<select>`: hidden radio inputs and an Alpine list hold the value. It has four option modes:
 
 1. `FlatOptions []string` for plain values.
 2. `LabelValueOptions []SelectLabelValueOption` for label and value pairs.
 3. `LabelValueOptions` with `LabelHtml` for rich option content.
+4. `OptionsOneWayStatePath` for an Alpine array built at render time. Each entry is a plain value or an object with `value` and `label`.
 
 ```go
 @uiForm.SelectInput(uiForm.SelectInputSettings{
@@ -292,7 +302,9 @@ A dropdown select. It is not a native `<select>`: hidden radio inputs and an Alp
 })
 ```
 
+- `LabelOneWayStatePath` renders the legend and the empty trigger text from an Alpine path. `Label` remains the static fallback.
 - `IsMultiSelect` shows checkbox rows, keeps the list open after each toggle, and binds an array. The trigger joins the selected labels. `InputId` prefixes the checkbox ids.
+- `OptionsOneWayStatePath` replaces the static option lists. The trigger resolves the selected label from the same array, in single and multi mode.
 - `ShouldIncludeBlankOption` adds a blank entry in single mode. In multi mode, a clear control shows while the array holds a value.
 - `IsDisabledOneWayStatePath` disables the trigger while the path is truthy. `IsInvalidOneWayStatePath` paints the field border red and sets `aria-invalid` on the trigger while the path is truthy.
 - `OnChangeFunc` runs after a change, a toggle, or a clear.
@@ -320,6 +332,7 @@ One control that combines a select for the unit or operator with a text or numbe
 
 - With `SelectTwoWayStatePath` empty, both halves bind `ValueTwoWayStatePath`: a preset pick writes the slot, and a typed value that matches no option shows `Custom` on the select.
 - `InputType` takes a `uiForm.InputType*` constant (default `text`). `SelectName` and `InputName` submit the two halves as separate form fields.
+- `LabelOneWayStatePath` renders the legend, the empty trigger text, the placeholder, and the accessible name from an Alpine path. `Label` remains the static fallback.
 - The select half is not a native `<select>`: it opens the shared custom dropdown. The trigger opens on click, Enter, Space, or ArrowDown; the checked row takes focus, Enter commits, and Escape closes with focus return.
 - The value half carries a darker background than the select half, so the two halves read as separate controls.
 - `IsInvalidOneWayStatePath` marks both halves and the border while the path is truthy.
@@ -341,6 +354,7 @@ A dropdown with a filter box. Use it for more than about ten options. The list s
 ```
 
 - It takes the `FlatOptions` and `LabelValueOptions` modes of `SelectInput`. The filter matches the label and ignores case.
+- `LabelOneWayStatePath` renders the legend, the empty placeholder, and the accessible name from an Alpine path. `Label` remains the static fallback.
 - `IsMultiSelect` binds an array and keeps the list open after each toggle.
 - `SelectionDisplay` takes `SearchableSelectInputSelectionDisplayText` (the default, which joins the labels) or `SearchableSelectInputSelectionDisplayTags`.
 - Tags apply only in multi mode. Each tag shows the option label, and the array holds the value. Backspace in an empty input removes the last tag. `ShouldAllowCustomValues` turns typed text into a tag on Enter.
@@ -362,6 +376,7 @@ A searchable select that loads its options from a URL while the user types. It s
 })
 ```
 
+- `LabelOneWayStatePath` renders the legend, the empty placeholder, and the accessible name from an Alpine path. `Label` remains the static fallback.
 - The endpoint receives `GET OptionsUrl?<query param>=<typed text>`. It returns `{ "body": [{ "label": "...", "value": "..." }] }`, or a bare array of strings or `{label, value}` objects.
 - `OptionsQueryParam` names the parameter (default `q`). `DebounceMs` sets the wait before each request (default 300). The component ignores a response that a newer request replaced.
 - `MinQueryLength` sets the shortest query that starts a request (default 3). A shorter query shows a prompt.
@@ -382,7 +397,7 @@ One radio option. Inputs on the same `TwoWayStatePath` form a group.
 })
 ```
 
-- `Size` takes a `RadioInputSize*` constant. `TextCase` changes the label.
+- `Size` takes a `RadioInputSize*` constant. `TextCase` changes the label. `LabelOneWayStatePath` binds the visible label to Alpine state. `Label` remains the static fallback.
 - `Style` takes a `RadioInputStyle` with `TextColor` for the idle label (default `neutral-100`), `ActiveColor` for the checked and hover color (default `secondary-500`), and `FocusRingColor` for the keyboard focus ring (default: `ActiveColor`).
 
 ## InlineRadioGroup
@@ -401,7 +416,7 @@ A row of radios under one label. The label sits in the top border, like the othe
 
 - `Orientation` takes `InlineRadioGroupOrientationHorizontal` (the default) or `InlineRadioGroupOrientationVertical`.
 - `MaxVisibleOptions` limits the visible rows and scrolls the rest.
-- The group `TextCase` changes only the group label. Each option takes its own `RadioInputSettings.TextCase`.
+- The group `TextCase` changes only the group label. `LabelOneWayStatePath` binds the group label to Alpine state. Each option takes its own `RadioInputSettings.TextCase`.
 
 ## ToggleSwitch
 
@@ -414,7 +429,7 @@ An on-off switch. It binds to a boolean. With `CustomValue`, it adds one value t
 })
 ```
 
-`LabelPosition` takes `ToggleSwitchLabelPositionLeft` or `ToggleSwitchLabelPositionRight`. The `*Color` settings change the track and thumb colors.
+`LabelPosition` takes `ToggleSwitchLabelPositionLeft` or `ToggleSwitchLabelPositionRight`. `LabelOneWayStatePath` binds the label to Alpine state. `Label` remains the static fallback. The `*Color` settings change the track and thumb colors.
 
 ## InputHint
 

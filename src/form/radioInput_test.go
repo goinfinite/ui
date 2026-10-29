@@ -62,3 +62,26 @@ func TestRadioInputRendersCustomStyle(t *testing.T) {
 		t.Error("CustomStyleRendersDefaultColor")
 	}
 }
+
+func TestRadioInputRendersLabelStatePath(testingHandle *testing.T) {
+	var buffer bytes.Buffer
+	renderErr := RadioInput(RadioInputSettings{
+		Label:                "Monthly",
+		LabelOneWayStatePath: "billingLabel",
+		StateValue:           "monthly",
+		TwoWayStatePath:      "billingCycle",
+	}).Render(context.Background(), &buffer)
+	if renderErr != nil {
+		testingHandle.Fatalf("RadioInputRenderFailed: %v", renderErr)
+	}
+	renderedHtml := buffer.String()
+	for _, expectedFragment := range []string{
+		`x-text="billingLabel"`,
+		"Monthly",
+		`x-model="billingCycle"`,
+	} {
+		if !strings.Contains(renderedHtml, expectedFragment) {
+			testingHandle.Errorf("RenderedHtmlMissingFragment: %q", expectedFragment)
+		}
+	}
+}

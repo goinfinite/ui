@@ -30,9 +30,10 @@ const (
 )
 
 type NumberRangeInputFieldSettings struct {
-	InputName       string
-	Label           string
-	TwoWayStatePath string
+	InputName            string
+	Label                string
+	LabelOneWayStatePath string
+	TwoWayStatePath      string
 
 	// OptionalFields
 	InputId             string
@@ -97,7 +98,7 @@ func numberRangeBox(rangeSettings NumberRangeInputFieldSettings) templ.Component
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templruntime.NewAttributeExpression(templ.JSFuncCall("numberRangeInputField", rangeBounds.Min, rangeBounds.Max, rangeBounds.Step)).Resolve(ctx)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/numberRangeInputField.templ`, Line: 67, Col: 104}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/numberRangeInputField.templ`, Line: 68, Col: 104}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var2)
 		if templ_7745c5c3_Err != nil {
@@ -110,7 +111,7 @@ func numberRangeBox(rangeSettings NumberRangeInputFieldSettings) templ.Component
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templruntime.NewAttributeExpression("syncNumberRangeTypedValue(" + rangeSettings.TwoWayStatePath + ")").Resolve(ctx)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/numberRangeInputField.templ`, Line: 68, Col: 79}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/numberRangeInputField.templ`, Line: 69, Col: 79}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
 		if templ_7745c5c3_Err != nil {
@@ -123,7 +124,7 @@ func numberRangeBox(rangeSettings NumberRangeInputFieldSettings) templ.Component
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templruntime.NewAttributeExpression(rangeSettings.TwoWayStatePath + " = commitNumberRangeTypedValue(" + rangeSettings.TwoWayStatePath + ")").Resolve(ctx)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/numberRangeInputField.templ`, Line: 69, Col: 115}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/numberRangeInputField.templ`, Line: 70, Col: 115}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
 		if templ_7745c5c3_Err != nil {
@@ -134,17 +135,18 @@ func numberRangeBox(rangeSettings NumberRangeInputFieldSettings) templ.Component
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = InputField(InputFieldSettings{
-			InputType:       InputTypeNumber,
-			InputName:       rangeSettings.InputName,
-			Label:           rangeSettings.Label,
-			TwoWayStatePath: "numberRangeTypedValue",
-			AffixRightValue: rangeSettings.UnitSuffix,
-			InputId:         rangeSettings.InputId,
-			InputNumberMin:  rangeBounds.Min,
-			InputNumberMax:  rangeBounds.Max,
-			InputNumberStep: rangeBounds.Step,
-			IsRequired:      rangeSettings.IsRequired,
-			Size:            rangeSettings.Size,
+			InputType:            InputTypeNumber,
+			InputName:            rangeSettings.InputName,
+			Label:                rangeSettings.Label,
+			LabelOneWayStatePath: rangeSettings.LabelOneWayStatePath,
+			TwoWayStatePath:      "numberRangeTypedValue",
+			AffixRightValue:      rangeSettings.UnitSuffix,
+			InputId:              rangeSettings.InputId,
+			InputNumberMin:       rangeBounds.Min,
+			InputNumberMax:       rangeBounds.Max,
+			InputNumberStep:      rangeBounds.Step,
+			IsRequired:           rangeSettings.IsRequired,
+			Size:                 rangeSettings.Size,
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -194,6 +196,9 @@ func numberRangeSlider(rangeSettings NumberRangeInputFieldSettings) templ.Compon
 		thumbSettings := rangeSettings.Thumb
 		if thumbSettings.AriaLabel == "" {
 			thumbSettings.AriaLabel = rangeSettings.Label
+		}
+		if thumbSettings.AriaLabelOneWayStatePath == "" {
+			thumbSettings.AriaLabelOneWayStatePath = rangeSettings.LabelOneWayStatePath
 		}
 		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"w-full pb-4\">")
 		if templ_7745c5c3_Err != nil {

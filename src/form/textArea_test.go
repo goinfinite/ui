@@ -66,6 +66,29 @@ func TestTextAreaRendersFirstChildMarginReset(t *testing.T) {
 	}
 }
 
+func TestTextAreaRendersLabelStatePath(testingHandle *testing.T) {
+	var buffer bytes.Buffer
+	renderErr := TextArea(TextAreaSettings{
+		InputName:            "description",
+		Label:                "Description",
+		LabelOneWayStatePath: "fieldLabel",
+	}).Render(context.Background(), &buffer)
+	if renderErr != nil {
+		testingHandle.Fatalf("TextAreaRenderFailed: %v", renderErr)
+	}
+	renderedHtml := buffer.String()
+	for _, expectedFragment := range []string{
+		`x-text="fieldLabel"`,
+		`:aria-label="(fieldLabel) || &#34;Description&#34;"`,
+		`:placeholder="(fieldLabel) || &#34;Description&#34;"`,
+		"Description",
+	} {
+		if !strings.Contains(renderedHtml, expectedFragment) {
+			testingHandle.Errorf("RenderedHtmlMissingFragment: %q", expectedFragment)
+		}
+	}
+}
+
 func TestTextAreaRendersPlaceholderStyling(t *testing.T) {
 	testCases := []struct {
 		name                   string

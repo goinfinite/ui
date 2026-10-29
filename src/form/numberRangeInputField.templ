@@ -21,22 +21,23 @@ const (
 )
 
 type NumberRangeInputFieldSettings struct {
-	InputName       string
-	Label           string
-	TwoWayStatePath string
+	InputName            string
+	Label                string
+	LabelOneWayStatePath string
+	TwoWayStatePath      string
 
 	// OptionalFields
-	InputId       string
-	IsRequired    bool
+	InputId             string
+	IsRequired          bool
 	IsValueLabelsHidden bool
-	Max           string
-	Min           string
-	Size          string
-	SliderDisplay string
-	Step          string
-	Thumb         uiControl.RangeSliderThumbSettings
-	Track         uiControl.RangeSliderTrackSettings
-	UnitSuffix    string
+	Max                 string
+	Min                 string
+	Size                string
+	SliderDisplay       string
+	Step                string
+	Thumb               uiControl.RangeSliderThumbSettings
+	Track               uiControl.RangeSliderTrackSettings
+	UnitSuffix          string
 }
 
 type numberRangeBounds struct {
@@ -69,17 +70,18 @@ templ numberRangeBox(rangeSettings NumberRangeInputFieldSettings) {
 		@change={ rangeSettings.TwoWayStatePath + " = commitNumberRangeTypedValue(" + rangeSettings.TwoWayStatePath + ")" }
 	>
 		@InputField(InputFieldSettings{
-			InputType:       InputTypeNumber,
-			InputName:       rangeSettings.InputName,
-			Label:           rangeSettings.Label,
-			TwoWayStatePath: "numberRangeTypedValue",
-			AffixRightValue: rangeSettings.UnitSuffix,
-			InputId:         rangeSettings.InputId,
-			InputNumberMin:  rangeBounds.Min,
-			InputNumberMax:  rangeBounds.Max,
-			InputNumberStep: rangeBounds.Step,
-			IsRequired:      rangeSettings.IsRequired,
-			Size:            rangeSettings.Size,
+			InputType:            InputTypeNumber,
+			InputName:            rangeSettings.InputName,
+			Label:                rangeSettings.Label,
+			LabelOneWayStatePath: rangeSettings.LabelOneWayStatePath,
+			TwoWayStatePath:      "numberRangeTypedValue",
+			AffixRightValue:      rangeSettings.UnitSuffix,
+			InputId:              rangeSettings.InputId,
+			InputNumberMin:       rangeBounds.Min,
+			InputNumberMax:       rangeBounds.Max,
+			InputNumberStep:      rangeBounds.Step,
+			IsRequired:           rangeSettings.IsRequired,
+			Size:                 rangeSettings.Size,
 		})
 	</div>
 }
@@ -105,6 +107,9 @@ templ numberRangeSlider(rangeSettings NumberRangeInputFieldSettings) {
 	{{ thumbSettings := rangeSettings.Thumb }}
 	if thumbSettings.AriaLabel == "" {
 		{{ thumbSettings.AriaLabel = rangeSettings.Label }}
+	}
+	if thumbSettings.AriaLabelOneWayStatePath == "" {
+		{{ thumbSettings.AriaLabelOneWayStatePath = rangeSettings.LabelOneWayStatePath }}
 	}
 	<div class="w-full pb-4">
 		@uiControl.RangeSlider(uiControl.RangeSliderSettings{

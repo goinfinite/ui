@@ -10,9 +10,10 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 type RemoteSearchableSelectInputSettings struct {
-	InputName  string
-	Label      string
-	OptionsUrl string
+	InputName            string
+	Label                string
+	LabelOneWayStatePath string
+	OptionsUrl           string
 
 	// OptionalFields
 	OptionsQueryParam                 string
@@ -95,6 +96,7 @@ func RemoteSearchableSelectInput(componentSettings RemoteSearchableSelectInputSe
 		}
 		shellSettings := searchableSelectInputShellSettings{
 			Label:                             componentSettings.Label,
+			LabelOneWayStatePath:              componentSettings.LabelOneWayStatePath,
 			TwoWayStatePath:                   componentSettings.TwoWayStatePath,
 			InputId:                           componentSettings.InputId,
 			ClientConfig:                      clientConfig,

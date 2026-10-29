@@ -17,7 +17,8 @@ const (
 const textAreaActionColumnInsetRem = 1.25
 
 type TextAreaSettings struct {
-	Label string
+	Label                string
+	LabelOneWayStatePath string
 
 	// OptionalFields
 	InputId                           string
@@ -47,6 +48,7 @@ templ TextArea(componentSettings TextAreaSettings) {
 		{{ textAreaRef = "textAreaInput" }}
 	}
 	{{ textCaseClass := uiToolset.TextCaseClassResolver(componentSettings.TextCase) }}
+	{{ labelAccessibleNameExpression := statePathFallbackExpressionBuilder(componentSettings.LabelOneWayStatePath, componentSettings.Label) }}
 	<!-- TextArea -->
 	<fieldset
 		class="bg-neutral-50/7.5 relative -mt-2 first:mt-0 w-full rounded border border-neutral-50/5 transition-colors autofill:bg-neutral-50/20 focus-within:border-neutral-50/30 hover:border-neutral-50/30"
@@ -62,7 +64,7 @@ templ TextArea(componentSettings TextAreaSettings) {
 				:class={ `!` + componentSettings.TwoWayStatePath + ` && 'opacity-0 !p-0 w-0 h-0'` }
 			}
 		>
-			{ componentSettings.Label }
+			@statePathBoundLabelText(componentSettings.Label, componentSettings.LabelOneWayStatePath)
 			if componentSettings.IsRequired {
 				<span class="text-red-700">*</span>
 			}
@@ -131,6 +133,9 @@ templ TextArea(componentSettings TextAreaSettings) {
 				if componentSettings.Label != "" {
 					aria-label={ componentSettings.Label }
 				}
+				if labelAccessibleNameExpression != "" {
+					:aria-label={ labelAccessibleNameExpression }
+				}
 				x-ref={ textAreaRef }
 				if componentSettings.InputName != "" {
 					name={ componentSettings.InputName }
@@ -142,6 +147,9 @@ templ TextArea(componentSettings TextAreaSettings) {
 					x-model:value={ componentSettings.TwoWayStatePath }
 				}
 				placeholder={ componentSettings.Label }
+				if labelAccessibleNameExpression != "" {
+					:placeholder={ labelAccessibleNameExpression }
+				}
 				class={ textAreaClasses }
 				:class={ textAreaDynamicClasses }
 				if componentSettings.IsReadOnly {

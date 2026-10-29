@@ -13,8 +13,9 @@ const (
 )
 
 type ToggleSwitchSettings struct {
-	Label           string
-	TwoWayStatePath string
+	Label                string
+	LabelOneWayStatePath string
+	TwoWayStatePath      string
 
 	// OptionalFields
 	CustomValue                 string
@@ -147,7 +148,7 @@ templ ToggleSwitch(componentSettings ToggleSwitchSettings) {
 		/>
 		<div class={ trackClasses + " " + thumbClasses }></div>
 		<span class={ labelSpanClasses }>
-			{ componentSettings.Label }
+			@statePathBoundLabelText(componentSettings.Label, componentSettings.LabelOneWayStatePath)
 			if componentSettings.IsRequired {
 				<span class="text-red-700">*</span>
 			}

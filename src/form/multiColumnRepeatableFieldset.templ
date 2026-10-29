@@ -46,9 +46,10 @@ type MultiColumnRepeatableFieldsetSelectStyle struct {
 }
 
 type MultiColumnRepeatableFieldsetColumn struct {
-	Id        string
-	Label     string
-	InputType string
+	Id                   string
+	Label                string
+	LabelOneWayStatePath string
+	InputType            string
 
 	// OptionalFields
 	IsRequired bool
@@ -139,6 +140,7 @@ templ multiColumnRepeatableFieldsetCell(
 		case MultiColumnRepeatableFieldsetColumnTypeCheckbox:
 			@CheckboxInput(CheckboxInputSettings{
 				AriaLabel:                column.Label,
+				AriaLabelOneWayStatePath: column.LabelOneWayStatePath,
 				CheckedColor:             componentSettings.Checkbox.CheckedColor,
 				FocusRingColor:           componentSettings.Checkbox.FocusRingColor,
 				IsInvalidOneWayStatePath: invalidExpression,
@@ -151,6 +153,7 @@ templ multiColumnRepeatableFieldsetCell(
 		case MultiColumnRepeatableFieldsetColumnTypeSelect:
 			@SelectInput(SelectInputSettings{
 				Label:                    column.Label,
+				LabelOneWayStatePath:     column.LabelOneWayStatePath,
 				LabelValueOptions:        column.Options,
 				ShouldIncludeBlankOption: true,
 				IsInvalidOneWayStatePath: invalidExpression,
@@ -168,6 +171,7 @@ templ multiColumnRepeatableFieldsetCell(
 			@InputField(InputFieldSettings{
 				InputType:                multiColumnRepeatableFieldsetInputTypeResolver(column),
 				Label:                    column.Label,
+				LabelOneWayStatePath:     column.LabelOneWayStatePath,
 				InputNumberMax:           column.Max,
 				InputNumberMin:           column.Min,
 				InputNumberStep:          column.Step,
@@ -195,7 +199,9 @@ templ MultiColumnRepeatableFieldset(componentSettings MultiColumnRepeatableField
 			<thead>
 				<tr class="border-b border-neutral-50/10 text-left text-xs text-neutral-400">
 					for _, column := range componentSettings.Columns {
-						<th scope="col" class="px-2 py-2 font-medium">{ column.Label }</th>
+						<th scope="col" class="px-2 py-2 font-medium">
+							@statePathBoundLabelText(column.Label, column.LabelOneWayStatePath)
+						</th>
 					}
 					<th scope="col" class="w-0 px-2 py-2">
 						<span class="sr-only">Row actions</span>

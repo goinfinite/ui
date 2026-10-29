@@ -19,6 +19,7 @@ UiToolset.RegisterAlpineState(() => {
   Alpine.data("passwordInput", (rulesScriptId) => ({
     rules: { ...passwordInputDefaultRules },
     isPasswordVisible: false,
+    isCapsLockOn: false,
     passwordStrengthPercentage: 0,
     passwordStrengthCriteria: {
       isLongEnough: false,
@@ -41,6 +42,14 @@ UiToolset.RegisterAlpineState(() => {
       } catch (parseError) {
         console.error(`PasswordInputInvalidRulesJson: ${parseError.message}`);
       }
+    },
+
+    updateCapsLockState(keyboardEvent) {
+      this.isCapsLockOn = keyboardEvent.getModifierState("CapsLock");
+    },
+
+    hideCapsLockHint() {
+      this.isCapsLockOn = false;
     },
 
     updatePasswordStrength(passwordValue) {

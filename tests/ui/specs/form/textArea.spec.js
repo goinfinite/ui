@@ -74,4 +74,18 @@ test.describe("TextArea", () => {
     await toggleHeightButton.press("Enter");
     await expectStableHeight(page, 0, expandedHeightPx);
   });
+
+  test("@browser label state path updates the legend, placeholder, and aria label", async ({
+    page,
+  }) => {
+    const panel = await openExamplePanel(page, textAreaSection, "State Paths");
+    const fieldset = panel.locator("fieldset");
+    const textarea = fieldset.locator("textarea");
+
+    await expect(fieldset.locator("legend")).toHaveText("Description");
+    await panel.getByRole("button", { name: "Change Label" }).click();
+    await expect(fieldset.locator("legend")).toHaveText("Message");
+    await expect(textarea).toHaveAttribute("placeholder", "Message");
+    await expect(textarea).toHaveAttribute("aria-label", "Message");
+  });
 });

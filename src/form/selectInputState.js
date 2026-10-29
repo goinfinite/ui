@@ -7,6 +7,42 @@ UiToolset.RegisterAlpineState(() => {
     selectedValue: "",
     selectedItems: [],
 
+    dynamicOptionLabelResolver(options, optionValue) {
+      if (!Array.isArray(options) || optionValue === undefined) {
+        return "";
+      }
+
+      const matchedOption = options.find(
+        (option) => String(option?.value ?? option) === String(optionValue),
+      );
+      if (matchedOption === undefined) {
+        return "";
+      }
+      if (typeof matchedOption === "object" && matchedOption !== null) {
+        return matchedOption.label ?? matchedOption.value ?? "";
+      }
+      return matchedOption;
+    },
+
+    dynamicOptionsDisplayResolver(options, selectedValue) {
+      if (!Array.isArray(selectedValue)) {
+        return this.dynamicOptionLabelResolver(options, selectedValue);
+      }
+      if (selectedValue.length === 0) {
+        return null;
+      }
+
+      const selectedLabels = selectedValue
+        .map((optionValue) =>
+          this.dynamicOptionLabelResolver(options, optionValue),
+        )
+        .filter((optionLabel) => optionLabel !== "");
+      if (selectedLabels.length === 0) {
+        return null;
+      }
+      return selectedLabels.join(", ");
+    },
+
     selectedItemsDisplayFormatter(items) {
       if (!items || items.length === 0) {
         return null;

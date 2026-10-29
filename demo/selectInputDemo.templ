@@ -46,11 +46,24 @@ templ SelectInputLabelValueExample() {
 	}}
 	@DemoExampleCard(
 		"LabelValueOptions",
-		"LabelValueOptions send a stored Value while showing a human Label. The bound state holds the Value.",
+		"LabelValueOptions send a stored Value while showing a human Label. OptionsOneWayStatePath builds the same rows from an Alpine array of label and value objects.",
 		"/form/selectInput.templ", labelValueUsage,
 	) {
-		@DemoAlpineStateBlock(`<div x-data="{country: 'BR'}"></div>`)
-		<div x-data="{country: 'BR'}">
+		@DemoAlpineStateBlock(`<div x-data="{country: 'BR', fieldLabel: 'Runtime Role', runtimeFieldRole: '', runtimeRole: 'admin', runtimeOptions: [{value: 'admin', label: 'Administrator'}]}"></div>`)
+		<div
+			class="flex flex-col gap-3"
+			x-data="{
+				country: 'BR',
+				fieldLabel: 'Runtime Role',
+				runtimeFieldRole: '',
+				runtimeRole: 'admin',
+				runtimeOptions: [
+					{value: 'admin', label: 'Administrator'},
+					{value: 'editor', label: 'Editor'},
+					{value: 'viewer', label: 'Viewer'},
+				],
+			}"
+		>
 			@uiForm.SelectInput(uiForm.SelectInputSettings{
 				InputName: "countryCode",
 				Label:     "Country",
@@ -70,6 +83,33 @@ templ SelectInputLabelValueExample() {
 				},
 				TwoWayStatePath:          "country",
 				ShouldIncludeBlankOption: true,
+			})
+			@uiForm.SelectInput(uiForm.SelectInputSettings{
+				InputName:              "role",
+				Label:                  "Role",
+				OptionsOneWayStatePath: "runtimeOptions",
+				TwoWayStatePath:        "runtimeRole",
+			})
+			@uiForm.SelectInput(uiForm.SelectInputSettings{
+				InputName:            "runtimeLabelField",
+				Label:                "Runtime Role",
+				LabelOneWayStatePath: "fieldLabel",
+				FlatOptions:          []string{"Owner", "Member"},
+				TwoWayStatePath:      "runtimeFieldRole",
+			})
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "Add auditor",
+				IconLeft:        "ph-plus",
+				OnClickFunc:     "runtimeOptions.push({value: 'auditor', label: 'Auditor'})",
+				Size:            uiControl.ButtonSizeSm,
+				BackgroundColor: "neutral-50/10",
+			})
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "Rename field",
+				IconLeft:        "ph-pencil-simple",
+				OnClickFunc:     "fieldLabel = fieldLabel === 'Runtime Role' ? 'Account Role' : 'Runtime Role'",
+				Size:            uiControl.ButtonSizeSm,
+				BackgroundColor: "neutral-50/10",
 			})
 		</div>
 	}
@@ -499,17 +539,31 @@ templ SelectInputMultiSelectExample() {
 	}}
 	@DemoExampleCard(
 		"Multi-Select",
-		"IsMultiSelect renders checkbox rows, keeps the dropdown open while you pick, and joins the selected labels in the trigger.",
+		"IsMultiSelect renders checkbox rows, keeps the dropdown open while you pick, and joins the selected labels in the trigger. OptionsOneWayStatePath builds the plain values from Alpine state.",
 		"/form/selectInput.templ", multiSelectUsage,
 	) {
-		@DemoAlpineStateBlock(`<div x-data="{countries: ['Brazil']}"></div>`)
-		<div x-data="{countries: ['Brazil']}">
+		@DemoAlpineStateBlock(`<div x-data="{countries: ['Brazil'], runtimeLabels: ['us-east'], runtimeRegions: ['us-east', 'eu-west', 'ap-south']}"></div>`)
+		<div
+			class="flex flex-col gap-3"
+			x-data="{
+				countries: ['Brazil'],
+				runtimeLabels: ['us-east'],
+				runtimeRegions: ['us-east', 'eu-west', 'ap-south'],
+			}"
+		>
 			@uiForm.SelectInput(uiForm.SelectInputSettings{
 				InputName:       "countries",
 				Label:           "Countries",
 				FlatOptions:     []string{"Argentina", "Brazil", "Chile"},
 				IsMultiSelect:   true,
 				TwoWayStatePath: "countries",
+			})
+			@uiForm.SelectInput(uiForm.SelectInputSettings{
+				InputName:              "regionTags",
+				Label:                  "Region tags",
+				OptionsOneWayStatePath: "runtimeRegions",
+				TwoWayStatePath:        "runtimeLabels",
+				IsMultiSelect:          true,
 			})
 			<p class={ DemoLiveStateClasses }>
 				Values: <span x-text="JSON.stringify(countries)"></span>
@@ -536,11 +590,22 @@ templ SelectInputMultiSelectLabelValueExample() {
 	}}
 	@DemoExampleCard(
 		"Multi-Select LabelValueOptions",
-		"With IsMultiSelect the bound state holds the selected Values while the trigger joins their Labels.",
+		"With IsMultiSelect the bound state holds the selected Values while the trigger joins their Labels. OptionsOneWayStatePath builds the label and value rows from Alpine state.",
 		"/form/selectInput.templ", multiLabelValueUsage,
 	) {
-		@DemoAlpineStateBlock(`<div x-data="{countries: ['BR']}"></div>`)
-		<div x-data="{countries: ['BR']}">
+		@DemoAlpineStateBlock(`<div x-data="{countries: ['BR'], runtimeRoles: ['admin'], runtimeOptions: [{value: 'admin', label: 'Administrator'}]}"></div>`)
+		<div
+			class="flex flex-col gap-3"
+			x-data="{
+				countries: ['BR'],
+				runtimeRoles: ['admin'],
+				runtimeOptions: [
+					{value: 'admin', label: 'Administrator'},
+					{value: 'editor', label: 'Editor'},
+					{value: 'viewer', label: 'Viewer'},
+				],
+			}"
+		>
 			@uiForm.SelectInput(uiForm.SelectInputSettings{
 				InputName: "countriesLabelValue",
 				Label:     "Countries",
@@ -560,6 +625,13 @@ templ SelectInputMultiSelectLabelValueExample() {
 				},
 				IsMultiSelect:   true,
 				TwoWayStatePath: "countries",
+			})
+			@uiForm.SelectInput(uiForm.SelectInputSettings{
+				InputName:              "roles",
+				Label:                  "Roles",
+				OptionsOneWayStatePath: "runtimeOptions",
+				TwoWayStatePath:        "runtimeRoles",
+				IsMultiSelect:          true,
 			})
 		</div>
 	}

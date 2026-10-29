@@ -115,3 +115,28 @@ func TestRemoteSearchableSelectInputRendersOpaqueDropdownAboveStickyHeaders(t *t
 		t.Errorf("RenderedHtmlKeepsDefaultDropdownBackground")
 	}
 }
+
+func TestRemoteSearchableSelectInputRendersLabelStatePath(testingHandle *testing.T) {
+	var buffer bytes.Buffer
+	renderErr := RemoteSearchableSelectInput(RemoteSearchableSelectInputSettings{
+		InputName:            "country",
+		Label:                "Country",
+		LabelOneWayStatePath: "countryLabel",
+		OptionsUrl:           "/api/countries",
+		TwoWayStatePath:      "countryValue",
+	}).Render(context.Background(), &buffer)
+	if renderErr != nil {
+		testingHandle.Fatalf("RemoteSearchableSelectInputRenderFailed: %v", renderErr)
+	}
+	renderedHtml := buffer.String()
+	for _, expectedFragment := range []string{
+		`x-text="countryLabel"`,
+		`:aria-label="(countryLabel) || &#34;Country&#34;"`,
+		`(countryLabel) || &#34;Country&#34;`,
+		"Country",
+	} {
+		if !strings.Contains(renderedHtml, expectedFragment) {
+			testingHandle.Errorf("RenderedHtmlMissingFragment: %q", expectedFragment)
+		}
+	}
+}

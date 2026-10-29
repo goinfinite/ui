@@ -31,8 +31,9 @@ type DualSelectInputFieldStyle struct {
 }
 
 type DualSelectInputSettings struct {
-	Label   string
-	Options []SelectLabelValueOption
+	Label                string
+	LabelOneWayStatePath string
+	Options              []SelectLabelValueOption
 
 	// OptionalFields
 	Dropdown                 DualSelectInputDropdownStyle
@@ -55,6 +56,7 @@ templ DualSelectInput(componentSettings DualSelectInputSettings) {
 	@dualSelectInputAlpineStateOnce.Once()
 	{{ sizeTokens := inputFieldSizeTokensResolver(componentSettings.Size) }}
 	{{ textCaseClass := uiToolset.TextCaseClassResolver(componentSettings.TextCase) }}
+	{{ labelAccessibleNameExpression := statePathFallbackExpressionBuilder(componentSettings.LabelOneWayStatePath, componentSettings.Label) }}
 	{{ legendClasses := "ml-1 select-none px-1 font-bold leading-none text-neutral-50/80 " + sizeTokens.LegendTextSize }}
 	if textCaseClass != "" {
 		{{ legendClasses += " " + textCaseClass }}
@@ -94,7 +96,7 @@ templ DualSelectInput(componentSettings DualSelectInputSettings) {
 	{{ triggerHorizontalPaddingClass := strings.Replace(sizeTokens.LeftPadding, "pl-", "px-", 1) }}
 	{{ displayBottomPaddingClass := strings.Replace(sizeTokens.AffixPadding, "p-", "pb-", 1) }}
 	{{ actionOverlapExpression := "" }}
-	if componentSettings.Label != "" || componentSettings.IsRequired {
+	if componentSettings.Label != "" || componentSettings.LabelOneWayStatePath != "" || componentSettings.IsRequired {
 		{{ actionOverlapExpression = "'" + notchedFieldActionOverlapClassesResolver(sizeTokens.LegendTextSize) + "'" }}
 		if valueStateIsEmptyExpression != "" {
 			{{ actionOverlapExpression = "!(" + valueStateIsEmptyExpression + ") && " + actionOverlapExpression }}
@@ -129,7 +131,7 @@ templ DualSelectInput(componentSettings DualSelectInputSettings) {
 					:class={ "{" + strings.Join(legendClassEntries, ", ") + "}" }
 				}
 			>
-				{ componentSettings.Label }
+				@statePathBoundLabelText(componentSettings.Label, componentSettings.LabelOneWayStatePath)
 				if componentSettings.IsRequired {
 					<span class="text-red-700">*</span>
 				}
@@ -141,6 +143,9 @@ templ DualSelectInput(componentSettings DualSelectInputSettings) {
 						role="button"
 						tabindex="0"
 						aria-label={ componentSettings.Label }
+						if labelAccessibleNameExpression != "" {
+							:aria-label={ labelAccessibleNameExpression }
+						}
 						:aria-expanded="isOpen"
 						@click="toggleDropdown()"
 						@keydown.enter.prevent="toggleDropdown()"
@@ -158,7 +163,9 @@ templ DualSelectInput(componentSettings DualSelectInputSettings) {
 							}
 						>
 							<span x-show={ selectedLabelExpression } x-text={ selectedLabelExpression }></span>
-							<span class={ textCaseClass } x-show={ "!(" + selectedLabelExpression + ")" }>{ componentSettings.Label }</span>
+							<span class={ textCaseClass } x-show={ "!(" + selectedLabelExpression + ")" }>
+								@statePathBoundLabelText(componentSettings.Label, componentSettings.LabelOneWayStatePath)
+							</span>
 						</div>
 						<div
 							class="flex shrink-0 self-stretch items-center text-neutral-100/60"
@@ -215,6 +222,9 @@ templ DualSelectInput(componentSettings DualSelectInputSettings) {
 				<input
 					type={ inputType }
 					aria-label={ componentSettings.Label }
+					if labelAccessibleNameExpression != "" {
+						:aria-label={ labelAccessibleNameExpression }
+					}
 					if componentSettings.InputId != "" {
 						id={ componentSettings.InputId }
 					}
@@ -231,6 +241,9 @@ templ DualSelectInput(componentSettings DualSelectInputSettings) {
 						@change={ componentSettings.OnChangeFunc }
 					}
 					placeholder={ componentSettings.Label }
+					if labelAccessibleNameExpression != "" {
+						:placeholder={ labelAccessibleNameExpression }
+					}
 					if componentSettings.IsRequired {
 						required
 					}

@@ -78,6 +78,43 @@ func TestSelectInputSizeClassesResolver(t *testing.T) {
 	}
 }
 
+func TestSelectInputOptionIconExpressionBuilder(t *testing.T) {
+	actualExpression := selectInputOptionIconExpressionBuilder(
+		"selectedValue", `"admin"`,
+	)
+	expectedExpression := `String(selectedValue) === String("admin") ? "ph-check-circle" : "ph-circle"`
+	if actualExpression != expectedExpression {
+		t.Errorf(
+			"IconExpressionMismatch: got %q, want %q",
+			actualExpression, expectedExpression,
+		)
+	}
+}
+
+func TestSelectInputRendersDynamicOptionsStatePath(t *testing.T) {
+	var buffer bytes.Buffer
+	renderErr := SelectInput(SelectInputSettings{
+		InputName:              "status",
+		Label:                  "Status",
+		OptionsOneWayStatePath: "dynamicOptions",
+		TwoWayStatePath:        "selectedStatus",
+	}).Render(context.Background(), &buffer)
+	if renderErr != nil {
+		t.Fatalf("SelectInputRenderFailed: %v", renderErr)
+	}
+	renderedHtml := buffer.String()
+	for _, expectedFragment := range []string{
+		`x-for="(option, optionIndex) in dynamicOptions"`,
+		`dynamicOptionsDisplayResolver(dynamicOptions, selectedStatus)`,
+		`:value="option?.value ?? option"`,
+		`x-text="option?.label ?? option?.value ?? option"`,
+	} {
+		if !strings.Contains(renderedHtml, expectedFragment) {
+			t.Errorf("RenderedHtmlMissingFragment: %q", expectedFragment)
+		}
+	}
+}
+
 func TestSelectInputRendersOpaqueDropdownAboveStickyHeaders(t *testing.T) {
 	settings := SelectInputSettings{
 		InputName:   "status",
@@ -188,5 +225,28 @@ func TestSelectInputRendersNeutralSurfaceByDefault(t *testing.T) {
 	}
 	if strings.Contains(renderedHtml, "ph-circle") {
 		t.Errorf("RenderedHtmlKeepsSelectedIconWithoutColorSetting")
+	}
+}
+
+func TestSelectInputRendersLabelStatePath(testingHandle *testing.T) {
+	var buffer bytes.Buffer
+	renderErr := SelectInput(SelectInputSettings{
+		InputName:            "role",
+		Label:                "Role",
+		LabelOneWayStatePath: "roleLabel",
+		FlatOptions:          []string{"Owner", "Member"},
+		TwoWayStatePath:      "roleValue",
+	}).Render(context.Background(), &buffer)
+	if renderErr != nil {
+		testingHandle.Fatalf("SelectInputRenderFailed: %v", renderErr)
+	}
+	renderedHtml := buffer.String()
+	for _, expectedFragment := range []string{
+		`x-text="roleLabel"`,
+		"Role",
+	} {
+		if !strings.Contains(renderedHtml, expectedFragment) {
+			testingHandle.Errorf("RenderedHtmlMissingFragment: %q", expectedFragment)
+		}
 	}
 }

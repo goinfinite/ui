@@ -30,6 +30,69 @@ test.describe("SelectInput", () => {
     await expect(checkedRadioOf(page, "country")).toHaveValue("Argentina");
   });
 
+  test("@smoke dynamic label and value options follow Alpine state", async ({
+    page,
+  }) => {
+    const panel = await openExamplePanel(
+      page,
+      selectSection,
+      "LabelValueOptions",
+    );
+    const trigger = panel.locator("[role=button]").nth(1);
+    await expect(trigger).toContainText("Administrator");
+
+    const labelField = panel.locator(
+      'fieldset:has(input[name="runtimeLabelField"]) legend',
+    );
+    await expect(labelField).toHaveText("Runtime Role");
+    await panel.getByRole("button", { name: "Rename field" }).click();
+    await expect(labelField).toHaveText("Account Role");
+
+    await trigger.click();
+    const options = panel.locator("ul").nth(1);
+    await expect(options).toBeVisible();
+    await options.getByText("Editor", { exact: true }).click();
+    await expect(trigger).toContainText("Editor");
+
+    await panel.getByRole("button", { name: "Add auditor" }).click();
+    await trigger.click();
+    await expect(options.getByText("Auditor", { exact: true })).toBeVisible();
+  });
+
+  test("@smoke dynamic plain values and label values work in multi-select", async ({
+    page,
+  }) => {
+    const plainPanel = await openExamplePanel(
+      page,
+      selectSection,
+      "Multi-Select",
+    );
+    const plainMultiTrigger = plainPanel.locator("[role=button]").nth(1);
+    await expect(plainMultiTrigger).toContainText("us-east");
+    await plainMultiTrigger.click();
+    const plainMultiOptions = plainPanel.locator("ul").nth(1);
+    await plainMultiOptions.getByText("eu-west", { exact: true }).click();
+    await expect(
+      plainPanel.locator("input[type=checkbox][name=regionTags]").nth(1),
+    ).toBeChecked();
+    await expect(plainMultiTrigger).toContainText("us-east, eu-west");
+
+    const labelValuePanel = await openExamplePanel(
+      page,
+      selectSection,
+      "Multi-Select LabelValueOptions",
+    );
+    const labelValueTrigger = labelValuePanel.locator("[role=button]").nth(1);
+    await expect(labelValueTrigger).toContainText("Administrator");
+    await labelValueTrigger.click();
+    const labelValueOptions = labelValuePanel.locator("ul").nth(1);
+    await labelValueOptions.getByText("Editor", { exact: true }).click();
+    await expect(
+      labelValuePanel.locator("input[type=checkbox][name=roles]").nth(1),
+    ).toBeChecked();
+    await expect(labelValueTrigger).toContainText("Administrator, Editor");
+  });
+
   test("@smoke clear button empties the selection", async ({ page }) => {
     await page.locator(`${selectSection} .ph-x-circle`).first().click();
     await expect(
@@ -212,7 +275,9 @@ test.describe("SelectInput", () => {
 
     await trigger.locator(".ph-x-circle").click();
 
-    await expect(panel.locator("input[type=checkbox]:checked")).toHaveCount(0);
+    await expect(
+      panel.locator('input[type=checkbox][name="countries"]:checked'),
+    ).toHaveCount(0);
     await expect(trigger).toContainText("Countries");
   });
 
