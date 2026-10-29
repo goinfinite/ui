@@ -2,6 +2,11 @@
 
 ```log
 0.3.3 - 2026/10/28
+fix: remove the plaintext password readouts from the demo, make the modal save-request test deterministic, move the countdown restart control beside the triggered countdown, and show a zero dynamic SelectInput value in the trigger
+fix: let the MultiColumnRepeatableFieldset bulk edit round-trip delimiters, newlines, and literal backslashes, reject conflicting delimiters, and keep properties outside the columns on the bound rows
+fix: keep the PasswordInput Caps Lock hint to key events from its input, show unmatched dynamic multi-select values as their selected value, and floor negative fractional Unix timestamps before the date conversion
+test: share the Button render cases and cover the zero dynamic option, the bulk-edit escapes and reconciliation, the Caps Lock target filtering, the unmatched multi-select fallback, and the negative fractional timestamp
+docs: update the form readme, context, and feature map, and regenerate the demo page
 feat: add MultiColumnRepeatableFieldset.BulkEdit, a toggle between the row table and a delimiter-separated textarea that parses each edit back into the bound rows, preserves the rows on a no-edit toggle, supports checkbox and select cells, defaults the delimiter to = for two columns and | for more, and adds AddRowButton and BulkEditButton styles with lowercase default labels
 feat: add UiToolset.UnixTimestamp.ToIsoDate and ToRfc1123 for Unix seconds, rejecting timestamps outside UTC years 0000-9999
 feat: add FormId to ButtonSettings and make tracked submits follow the named form, including one mounted after init, so the pending state and double-submit guard still apply

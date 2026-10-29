@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"log/slog"
 	"strconv"
+	"strings"
+	"unicode/utf8"
 
 	uiControl "github.com/goinfinite/ui/src/control"
 	uiToolset "github.com/goinfinite/ui/src/toolset"
@@ -174,11 +176,25 @@ func multiColumnRepeatableFieldsetInputTypeResolver(
 	return MultiColumnRepeatableFieldsetColumnTypeText
 }
 
+func multiColumnRepeatableFieldsetBulkEditDelimiterIsValid(
+	delimiter string,
+) bool {
+	if utf8.RuneCountInString(delimiter) != 1 {
+		return false
+	}
+	if strings.HasPrefix(delimiter, "n") || strings.HasPrefix(delimiter, "\\") {
+		return false
+	}
+	return !strings.ContainsAny(delimiter, "\r\n")
+}
+
 func multiColumnRepeatableFieldsetBulkEditDelimiterResolver(
 	componentSettings MultiColumnRepeatableFieldsetSettings,
 ) string {
-	if componentSettings.BulkEdit.Delimiter != "" {
-		return componentSettings.BulkEdit.Delimiter
+	configuredDelimiter := componentSettings.BulkEdit.Delimiter
+	if configuredDelimiter != "" &&
+		multiColumnRepeatableFieldsetBulkEditDelimiterIsValid(configuredDelimiter) {
+		return configuredDelimiter
 	}
 	if len(componentSettings.Columns) > 2 {
 		return "|"

@@ -45,6 +45,9 @@ UiToolset.RegisterAlpineState(() => {
     },
 
     updateCapsLockState(keyboardEvent) {
+      if (!(keyboardEvent.target instanceof HTMLInputElement)) {
+        return;
+      }
       this.isCapsLockOn = keyboardEvent.getModifierState("CapsLock");
     },
 

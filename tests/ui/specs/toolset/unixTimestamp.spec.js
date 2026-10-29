@@ -38,6 +38,16 @@ test.describe("UnixTimestamp", () => {
     });
   });
 
+  test("@toolset a negative fractional timestamp floors to the previous day", async ({
+    page,
+  }) => {
+    const isoDate = await page.evaluate(() =>
+      window.UiToolset.UnixTimestamp.ToIsoDate(-0.0005),
+    );
+
+    expect(isoDate).toBe("1969-12-31");
+  });
+
   test("@toolset a non-number timestamp rejects", async ({ page }) => {
     const rejection = await page.evaluate(() => {
       try {

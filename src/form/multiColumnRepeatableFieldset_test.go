@@ -199,6 +199,26 @@ func TestMultiColumnRepeatableFieldsetBulkEditResolvers(t *testing.T) {
 	if resolved := multiColumnRepeatableFieldsetBulkEditDelimiterResolver(explicitDelimiterSettings); resolved != "=" {
 		t.Errorf("bulkEditDelimiter explicit multi-column = %s, expected =", resolved)
 	}
+	unicodeDelimiterSettings := MultiColumnRepeatableFieldsetSettings{
+		Columns: multiColumnSettings.Columns,
+		BulkEdit: MultiColumnRepeatableFieldsetBulkEditSettings{
+			Delimiter: "§",
+		},
+	}
+	if resolved := multiColumnRepeatableFieldsetBulkEditDelimiterResolver(unicodeDelimiterSettings); resolved != "§" {
+		t.Errorf("bulkEditDelimiter unicode = %s, expected §", resolved)
+	}
+	for _, conflictingDelimiter := range []string{"n", "\\", "||", "\n", "a\nb"} {
+		conflictingSettings := MultiColumnRepeatableFieldsetSettings{
+			Columns: multiColumnSettings.Columns,
+			BulkEdit: MultiColumnRepeatableFieldsetBulkEditSettings{
+				Delimiter: conflictingDelimiter,
+			},
+		}
+		if resolved := multiColumnRepeatableFieldsetBulkEditDelimiterResolver(conflictingSettings); resolved != "|" {
+			t.Errorf("bulkEditDelimiter conflicting %q = %s, expected |", conflictingDelimiter, resolved)
+		}
+	}
 }
 
 func TestMultiColumnRepeatableFieldsetRender(t *testing.T) {

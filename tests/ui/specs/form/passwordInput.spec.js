@@ -55,9 +55,6 @@ test.describe("PasswordInput", () => {
 
     const generatedValue = await mainPasswordInput(page).inputValue();
     expect(generatedValue.length).toBe(16);
-    await expect(page.locator(`${section} p.font-mono`).first()).toContainText(
-      generatedValue,
-    );
 
     const meterWidth = await page
       .locator(`${section} .bg-secondary-500`)
@@ -106,6 +103,22 @@ test.describe("PasswordInput", () => {
 
     await mainPasswordInput(page).evaluate((inputElement) => {
       inputElement.dispatchEvent(new FocusEvent("focusout", { bubbles: true }));
+    });
+    await expect(capsLockHint).toBeHidden();
+
+    const generateButton = page
+      .getByRole("button", { name: "Generate random password" })
+      .first();
+    await generateButton.focus();
+    await generateButton.evaluate((buttonElement) => {
+      const keyboardEvent = new KeyboardEvent("keydown", {
+        key: "a",
+        bubbles: true,
+      });
+      Object.defineProperty(keyboardEvent, "getModifierState", {
+        value: () => true,
+      });
+      buttonElement.dispatchEvent(keyboardEvent);
     });
     await expect(capsLockHint).toBeHidden();
   });

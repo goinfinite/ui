@@ -59,6 +59,26 @@ test.describe("SelectInput", () => {
     await expect(options.getByText("Auditor", { exact: true })).toBeVisible();
   });
 
+  test("@smoke a zero dynamic option renders in the trigger", async ({
+    page,
+  }) => {
+    const panel = await openExamplePanel(
+      page,
+      selectSection,
+      "LabelValueOptions",
+    );
+    const trigger = panel.locator("[role=button]").nth(1);
+    await trigger.click();
+    const options = panel.locator("ul").nth(1);
+    await options.getByText("0", { exact: true }).click();
+
+    const selectedDisplay = trigger.locator("span").first();
+    const placeholder = trigger.locator("span").nth(1);
+    await expect(selectedDisplay).toHaveText("0");
+    await expect(selectedDisplay).toBeVisible();
+    await expect(placeholder).toBeHidden();
+  });
+
   test("@smoke dynamic plain values and label values work in multi-select", async ({
     page,
   }) => {
@@ -91,6 +111,32 @@ test.describe("SelectInput", () => {
       labelValuePanel.locator("input[type=checkbox][name=roles]").nth(1),
     ).toBeChecked();
     await expect(labelValueTrigger).toContainText("Administrator, Editor");
+  });
+
+  test("@smoke dynamic multi-select falls back to unmatched selected values", async ({
+    page,
+  }) => {
+    const panel = await openExamplePanel(
+      page,
+      selectSection,
+      "Multi-Select LabelValueOptions",
+    );
+    const trigger = panel.locator("[role=button]").nth(1);
+    await expect(trigger).toContainText("Administrator");
+
+    await panel.evaluate((panelElement) => {
+      const stateRoot = panelElement.querySelector('[x-data*="runtimeRoles"]');
+      const selectState = window.Alpine.$data(stateRoot);
+      selectState.runtimeRoles = ["admin", "ghost"];
+    });
+    await expect(trigger).toContainText("Administrator, ghost");
+
+    await panel.evaluate((panelElement) => {
+      const stateRoot = panelElement.querySelector('[x-data*="runtimeRoles"]');
+      const selectState = window.Alpine.$data(stateRoot);
+      selectState.runtimeRoles = ["ghost"];
+    });
+    await expect(trigger).toContainText("ghost");
   });
 
   test("@smoke clear button empties the selection", async ({ page }) => {

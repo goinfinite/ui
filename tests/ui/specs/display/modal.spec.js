@@ -59,10 +59,11 @@ test.describe("Modal", () => {
       "Footer Form Submit",
     );
     let releaseSaveRequest = () => {};
+    const saveRequestReleased = new Promise((resolve) => {
+      releaseSaveRequest = resolve;
+    });
     await page.route(/ui-logo\.svg/, async (route) => {
-      await new Promise((resolve) => {
-        releaseSaveRequest = resolve;
-      });
+      await saveRequestReleased;
       await route.continue();
     });
     await footerFormPanel

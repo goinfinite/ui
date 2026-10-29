@@ -600,7 +600,7 @@ templ ButtonCountdownExample() {
 	}}
 	@DemoExampleCard(
 		"Countdown",
-		"CountdownSeconds disables the button and shows the remaining seconds in the label. The countdown starts on mount. CountdownTriggerOneWayStatePath restarts it when an Alpine value changes, so a failed attempt can start it again.",
+		"CountdownSeconds disables the button and shows the remaining seconds in the label. The countdown starts on mount. The second countdown also sets CountdownTriggerOneWayStatePath, so Restart countdown increments retryCount and starts it again.",
 		"/control/button.templ", countdownUsage,
 	) {
 		<div class="flex flex-col gap-3" x-data="{retryCount: 0}">
@@ -613,13 +613,6 @@ templ ButtonCountdownExample() {
 					BackgroundColor:  "red-500/20",
 					TextColor:        "red-200",
 				})
-				@uiControl.Button(uiControl.ButtonSettings{
-					Label:           "Restart countdown",
-					IconLeft:        "ph-arrow-counter-clockwise",
-					OnClickFunc:     "retryCount++",
-					Size:            uiControl.ButtonSizeSm,
-					BackgroundColor: "neutral-50/10",
-				})
 			</div>
 			<div class="flex flex-wrap items-center gap-3">
 				@uiControl.Button(uiControl.ButtonSettings{
@@ -630,6 +623,13 @@ templ ButtonCountdownExample() {
 					CountdownTriggerOneWayStatePath: "retryCount",
 					BackgroundColor:                 "red-500/20",
 					TextColor:                       "red-200",
+				})
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:           "Restart countdown",
+					IconLeft:        "ph-arrow-counter-clockwise",
+					OnClickFunc:     "retryCount++",
+					Size:            uiControl.ButtonSizeSm,
+					BackgroundColor: "neutral-50/10",
 				})
 				<p class={ DemoLiveStateInlineClasses }>
 					Failed attempts: <span x-text="retryCount"></span>

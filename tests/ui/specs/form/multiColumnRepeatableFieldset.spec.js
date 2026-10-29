@@ -217,6 +217,127 @@ test.describe("MultiColumnRepeatableFieldset", () => {
     await expect(rows.nth(0).locator('input[type="text"]')).toHaveValue("Bob");
   });
 
+  test("@smoke bulk edit escapes delimiters and backslashes in a non-final cell", async ({
+    page,
+  }) => {
+    const panel = await openExamplePanel(page, fieldsetSection, "Delimiters");
+    const wrapper = panel.locator("[x-data*=typedBulkRows]");
+    const readout = wrapper.locator('p:has-text("typedBulkRows:") span');
+    const nameInput = wrapper
+      .locator("tbody tr:has(input)")
+      .first()
+      .locator('input[type="text"]')
+      .first();
+
+    await nameInput.fill("A\\B|C");
+    await wrapper.getByRole("button", { name: "bulk edit" }).click();
+    const textarea = wrapper.locator("textarea");
+    await expect(textarea).toHaveValue("A\\\\B\\|C|owner|true");
+
+    await textarea.fill("A\\\\B\\|C|member|false");
+    await expect(readout).toHaveText(
+      JSON.stringify([{ name: "A\\B|C", role: "member", enabled: false }]),
+    );
+
+    await wrapper.getByRole("button", { name: "table view" }).click();
+    await expect(
+      wrapper
+        .locator("tbody tr:has(input)")
+        .first()
+        .locator('input[type="text"]')
+        .first(),
+    ).toHaveValue("A\\B|C");
+  });
+
+  test("@smoke bulk edit escapes newlines inside a cell", async ({ page }) => {
+    const panel = await openExamplePanel(page, fieldsetSection, "Delimiters");
+    const wrapper = panel.locator("[x-data*=typedBulkRows]");
+    const readout = wrapper.locator('p:has-text("typedBulkRows:") span');
+
+    await wrapper.evaluate((wrapperElement) => {
+      const wrapperState = window.Alpine.$data(wrapperElement);
+      wrapperState.typedBulkRows = [
+        { name: "Line\nBreak", role: "owner", enabled: true },
+      ];
+    });
+    await expect(readout).toHaveText(
+      JSON.stringify([{ name: "Line\nBreak", role: "owner", enabled: true }]),
+    );
+
+    await wrapper.getByRole("button", { name: "bulk edit" }).click();
+    const textarea = wrapper.locator("textarea");
+    await expect(textarea).toHaveValue("Line\\nBreak|owner|true");
+
+    await textarea.fill("Line\\nBreak|member|true");
+    await expect(readout).toHaveText(
+      JSON.stringify([{ name: "Line\nBreak", role: "member", enabled: true }]),
+    );
+
+    await wrapper.getByRole("button", { name: "table view" }).click();
+    await expect(wrapper.locator("tbody tr:has(input)")).toHaveCount(1);
+  });
+
+  test("@smoke bulk edit preserves properties outside the configured columns", async ({
+    page,
+  }) => {
+    const panel = await openExamplePanel(page, fieldsetSection, "Delimiters");
+    const wrapper = panel.locator("[x-data*=envVarRows]");
+    const readout = wrapper.locator('p:has-text("envVarRows:") span');
+    const initialRows = [
+      { id: "env-1", name: "APP_ENV", value: "production" },
+      { id: "env-2", name: "LOG_LEVEL", value: "info" },
+    ];
+
+    await wrapper.evaluate((wrapperElement, rows) => {
+      const wrapperState = window.Alpine.$data(wrapperElement);
+      wrapperState.envVarRows = rows;
+    }, initialRows);
+    await expect(readout).toHaveText(JSON.stringify(initialRows));
+
+    await wrapper.getByRole("button", { name: "bulk edit" }).click();
+    const textarea = wrapper.locator("textarea");
+    await textarea.fill("APP_ENV=staging\nLOG_LEVEL=debug");
+    await expect(readout).toHaveText(
+      JSON.stringify([
+        { id: "env-1", name: "APP_ENV", value: "staging" },
+        { id: "env-2", name: "LOG_LEVEL", value: "debug" },
+      ]),
+    );
+
+    await textarea.fill("LOG_LEVEL=debug");
+    await expect(readout).toHaveText(
+      JSON.stringify([{ id: "env-2", name: "LOG_LEVEL", value: "debug" }]),
+    );
+  });
+
+  test("@smoke bulk edit keeps row properties when lines move", async ({
+    page,
+  }) => {
+    const panel = await openExamplePanel(page, fieldsetSection, "Delimiters");
+    const wrapper = panel.locator("[x-data*=envVarRows]");
+    const readout = wrapper.locator('p:has-text("envVarRows:") span');
+    const initialRows = [
+      { id: "env-1", name: "APP_ENV", value: "production" },
+      { id: "env-2", name: "LOG_LEVEL", value: "info" },
+    ];
+
+    await wrapper.evaluate((wrapperElement, rows) => {
+      const wrapperState = window.Alpine.$data(wrapperElement);
+      wrapperState.envVarRows = rows;
+    }, initialRows);
+    await expect(readout).toHaveText(JSON.stringify(initialRows));
+
+    await wrapper.getByRole("button", { name: "bulk edit" }).click();
+    const textarea = wrapper.locator("textarea");
+    await textarea.fill("LOG_LEVEL=debug\nAPP_ENV=production");
+    await expect(readout).toHaveText(
+      JSON.stringify([
+        { id: "env-2", name: "LOG_LEVEL", value: "debug" },
+        { id: "env-1", name: "APP_ENV", value: "production" },
+      ]),
+    );
+  });
+
   test("@smoke bulk edit defaults to | for four columns", async ({ page }) => {
     const panel = await openExamplePanel(page, fieldsetSection, "Delimiters");
     const wrapper = panel.locator("[x-data*=portBindingRows]");

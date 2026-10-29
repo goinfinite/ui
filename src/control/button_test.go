@@ -9,60 +9,86 @@ import (
 	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
-func TestButtonRendersPaddingAndSizeConstraints(t *testing.T) {
+type buttonRenderCase struct {
+	name               string
+	settings           ButtonSettings
+	expectedFragments  []string
+	forbiddenFragments []string
+}
+
+func renderButtonHtml(test *testing.T, settings ButtonSettings) string {
+	test.Helper()
 	var buffer bytes.Buffer
-	renderErr := Button(ButtonSettings{
+	renderErr := Button(settings).Render(context.Background(), &buffer)
+	if renderErr != nil {
+		test.Fatalf("ButtonRenderFailed: %v", renderErr)
+	}
+	return buffer.String()
+}
+
+func assertButtonHtml(
+	test *testing.T,
+	renderedHtml string,
+	expectedFragments []string,
+	forbiddenFragments []string,
+) {
+	test.Helper()
+	for _, expectedFragment := range expectedFragments {
+		if !strings.Contains(renderedHtml, expectedFragment) {
+			test.Errorf("RenderedHtmlMissingFragment: %q in %s", expectedFragment, renderedHtml)
+		}
+	}
+	for _, forbiddenFragment := range forbiddenFragments {
+		if strings.Contains(renderedHtml, forbiddenFragment) {
+			test.Errorf("RenderedHtmlHasForbiddenFragment: %q", forbiddenFragment)
+		}
+	}
+}
+
+func runButtonRenderCases(test *testing.T, testCases []buttonRenderCase) {
+	test.Helper()
+	for _, testCase := range testCases {
+		test.Run(testCase.name, func(subtest *testing.T) {
+			renderedHtml := renderButtonHtml(subtest, testCase.settings)
+			assertButtonHtml(
+				subtest, renderedHtml,
+				testCase.expectedFragments, testCase.forbiddenFragments,
+			)
+		})
+	}
+}
+
+func TestButtonRendersPaddingAndSizeConstraints(test *testing.T) {
+	renderedHtml := renderButtonHtml(test, ButtonSettings{
 		PaddingSize:              uiToolset.PaddingSizeNone,
 		MinWidthClass:            "min-w-7",
 		MinHeightClass:           "min-h-7",
 		Size:                     ButtonSizeMd,
 		IconLeft:                 "ph-binary",
 		AriaLabelOneWayStatePath: "isVisible ? 'Hide' : 'Show'",
-	}).Render(context.Background(), &buffer)
-	if renderErr != nil {
-		t.Fatalf("ButtonRenderFailed: %v", renderErr)
-	}
-	renderedHtml := buffer.String()
-	for _, expectedFragment := range []string{
+	})
+	assertButtonHtml(test, renderedHtml, []string{
 		"p-0", "min-w-7", "min-h-7",
 		`:aria-label="isVisible ? &#39;Hide&#39; : &#39;Show&#39;"`,
-	} {
-		if !strings.Contains(renderedHtml, expectedFragment) {
-			t.Errorf("RenderedHtmlMissingFragment: %q", expectedFragment)
-		}
-	}
+	}, nil)
 }
 
-func TestButtonRendersAriaExpanded(t *testing.T) {
-	var buffer bytes.Buffer
-	renderErr := Button(ButtonSettings{
+func TestButtonRendersAriaExpanded(test *testing.T) {
+	renderedHtml := renderButtonHtml(test, ButtonSettings{
 		AriaExpandedOneWayStatePath: "isOpen",
 		AriaLabel:                   "Toggle date picker",
 		IconLeft:                    "ph-calendar-blank",
 		OnClickFunc:                 "togglePopover()",
-	}).Render(context.Background(), &buffer)
-	if renderErr != nil {
-		t.Fatalf("ButtonRenderFailed: %v", renderErr)
-	}
-	renderedHtml := buffer.String()
-	for _, expectedFragment := range []string{
+	})
+	assertButtonHtml(test, renderedHtml, []string{
 		`:aria-expanded="isOpen"`,
 		`aria-label="Toggle date picker"`,
 		`@click="togglePopover()"`,
-	} {
-		if !strings.Contains(renderedHtml, expectedFragment) {
-			t.Errorf("RenderedHtmlMissingFragment: %q", expectedFragment)
-		}
-	}
+	}, nil)
 }
 
-func TestButtonRendersActionDisplay(t *testing.T) {
-	testCases := []struct {
-		name               string
-		settings           ButtonSettings
-		expectedFragments  []string
-		forbiddenFragments []string
-	}{
+func TestButtonRendersActionDisplay(test *testing.T) {
+	testCases := []buttonRenderCase{
 		{
 			name:     "PlainButtonHasNoButtonState",
 			settings: ButtonSettings{Label: "Save", IsSubmit: true, OnClickFunc: "save()"},
@@ -161,37 +187,11 @@ func TestButtonRendersActionDisplay(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
-			var buffer bytes.Buffer
-			renderErr := Button(testCase.settings).Render(
-				context.Background(), &buffer,
-			)
-			if renderErr != nil {
-				t.Fatalf("ButtonRenderFailed: %v", renderErr)
-			}
-			renderedHtml := buffer.String()
-			for _, expectedFragment := range testCase.expectedFragments {
-				if !strings.Contains(renderedHtml, expectedFragment) {
-					t.Errorf("RenderedHtmlMissingFragment: %q in %s", expectedFragment, renderedHtml)
-				}
-			}
-			for _, forbiddenFragment := range testCase.forbiddenFragments {
-				if strings.Contains(renderedHtml, forbiddenFragment) {
-					t.Errorf("RenderedHtmlHasForbiddenFragment: %q", forbiddenFragment)
-				}
-			}
-		})
-	}
+	runButtonRenderCases(test, testCases)
 }
 
-func TestButtonRendersFormAssociation(t *testing.T) {
-	testCases := []struct {
-		name              string
-		settings          ButtonSettings
-		expectedFragments []string
-		absentFragments   []string
-	}{
+func TestButtonRendersFormAssociation(test *testing.T) {
+	testCases := []buttonRenderCase{
 		{
 			name:     "FormIdRendersTheFormAttribute",
 			settings: ButtonSettings{Label: "Save", IsSubmit: true, FormId: "account-form"},
@@ -206,41 +206,17 @@ func TestButtonRendersFormAssociation(t *testing.T) {
 			expectedFragments: []string{
 				`type="submit"`,
 			},
-			absentFragments: []string{
+			forbiddenFragments: []string{
 				"form=",
 			},
 		},
 	}
 
-	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
-			var buffer bytes.Buffer
-			renderErr := Button(testCase.settings).Render(context.Background(), &buffer)
-			if renderErr != nil {
-				t.Fatalf("ButtonRenderFailed: %v", renderErr)
-			}
-			renderedHtml := buffer.String()
-			for _, expectedFragment := range testCase.expectedFragments {
-				if !strings.Contains(renderedHtml, expectedFragment) {
-					t.Errorf("RenderedHtmlMissingFragment: %q", expectedFragment)
-				}
-			}
-			for _, absentFragment := range testCase.absentFragments {
-				if strings.Contains(renderedHtml, absentFragment) {
-					t.Errorf("RenderedHtmlHasUnexpectedFragment: %q", absentFragment)
-				}
-			}
-		})
-	}
+	runButtonRenderCases(test, testCases)
 }
 
-func TestButtonRendersIconTop(t *testing.T) {
-	testCases := []struct {
-		name              string
-		settings          ButtonSettings
-		expectedFragments []string
-		absentFragments   []string
-	}{
+func TestButtonRendersIconTop(test *testing.T) {
+	testCases := []buttonRenderCase{
 		{
 			name: "IconTopCombinesWithSideIconsAndLabel",
 			settings: ButtonSettings{
@@ -266,7 +242,7 @@ func TestButtonRendersIconTop(t *testing.T) {
 				"ph-plus",
 				`aria-label="Add"`,
 			},
-			absentFragments: []string{
+			forbiddenFragments: []string{
 				"flex flex-row items-center justify-center",
 			},
 		},
@@ -282,34 +258,11 @@ func TestButtonRendersIconTop(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
-			var buffer bytes.Buffer
-			renderErr := Button(testCase.settings).Render(context.Background(), &buffer)
-			if renderErr != nil {
-				t.Fatalf("ButtonRenderFailed: %v", renderErr)
-			}
-			renderedHtml := buffer.String()
-			for _, expectedFragment := range testCase.expectedFragments {
-				if !strings.Contains(renderedHtml, expectedFragment) {
-					t.Errorf("RenderedHtmlMissingFragment: %q", expectedFragment)
-				}
-			}
-			for _, absentFragment := range testCase.absentFragments {
-				if strings.Contains(renderedHtml, absentFragment) {
-					t.Errorf("RenderedHtmlHasUnexpectedFragment: %q", absentFragment)
-				}
-			}
-		})
-	}
+	runButtonRenderCases(test, testCases)
 }
 
-func TestButtonRendersDynamicLabels(t *testing.T) {
-	testCases := []struct {
-		name              string
-		settings          ButtonSettings
-		expectedFragments []string
-	}{
+func TestButtonRendersDynamicLabels(test *testing.T) {
+	testCases := []buttonRenderCase{
 		{
 			name:     "StatePathAloneCreatesTheLabel",
 			settings: ButtonSettings{LabelOneWayStatePath: "buttonLabel"},
@@ -347,58 +300,30 @@ func TestButtonRendersDynamicLabels(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
-			var buffer bytes.Buffer
-			renderErr := Button(testCase.settings).Render(context.Background(), &buffer)
-			if renderErr != nil {
-				t.Fatalf("ButtonRenderFailed: %v", renderErr)
-			}
-			renderedHtml := buffer.String()
-			for _, expectedFragment := range testCase.expectedFragments {
-				if !strings.Contains(renderedHtml, expectedFragment) {
-					t.Errorf("RenderedHtmlMissingFragment: %q", expectedFragment)
-				}
-			}
-		})
-	}
+	runButtonRenderCases(test, testCases)
 }
 
-func TestButtonMergesActionAndCountdownIntoOneState(t *testing.T) {
-	var buffer bytes.Buffer
-	renderErr := Button(ButtonSettings{
+func TestButtonMergesActionAndCountdownIntoOneState(test *testing.T) {
+	renderedHtml := renderButtonHtml(test, ButtonSettings{
 		Label:             "Delete",
 		IsSubmit:          true,
 		ShouldTrackAction: true,
 		CountdownSeconds:  15,
-	}).Render(context.Background(), &buffer)
-	if renderErr != nil {
-		t.Fatalf("ButtonRenderFailed: %v", renderErr)
-	}
-	renderedHtml := buffer.String()
+	})
 	stateScopeCount := strings.Count(renderedHtml, `x-data="buttonState(`)
 	if stateScopeCount != 1 {
-		t.Errorf("ButtonStateScopeCountMismatch: got %d", stateScopeCount)
+		test.Errorf("ButtonStateScopeCountMismatch: got %d", stateScopeCount)
 	}
-	for _, expectedFragment := range []string{
+	assertButtonHtml(test, renderedHtml, []string{
 		`:disabled="isActionPending(false) || isCounting"`,
 		`x-init="startCountdown()"`,
 		"actionLabelResolver(",
 		"countdownSecondsRemaining",
-	} {
-		if !strings.Contains(renderedHtml, expectedFragment) {
-			t.Errorf("RenderedHtmlMissingFragment: %q", expectedFragment)
-		}
-	}
+	}, nil)
 }
 
-func TestButtonRendersCountdown(t *testing.T) {
-	testCases := []struct {
-		name              string
-		settings          ButtonSettings
-		expectedFragments []string
-		absentFragments   []string
-	}{
+func TestButtonRendersCountdown(test *testing.T) {
+	testCases := []buttonRenderCase{
 		{
 			name:     "CountdownStartsOnMountAndShowsTheSeconds",
 			settings: ButtonSettings{Label: "Delete", CountdownSeconds: 15},
@@ -421,37 +346,18 @@ func TestButtonRendersCountdown(t *testing.T) {
 			expectedFragments: []string{
 				`x-effect="restartCountdownOnTrigger(deleteAttemptCount)"`,
 			},
-			absentFragments: []string{
+			forbiddenFragments: []string{
 				`x-init="startCountdown()"`,
 			},
 		},
 		{
 			name:     "NoCountdownKeepsThePlainButton",
 			settings: ButtonSettings{Label: "Delete"},
-			absentFragments: []string{
+			forbiddenFragments: []string{
 				"buttonState(", "isCounting", "countdownSecondsRemaining",
 			},
 		},
 	}
 
-	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
-			var buffer bytes.Buffer
-			renderErr := Button(testCase.settings).Render(context.Background(), &buffer)
-			if renderErr != nil {
-				t.Fatalf("ButtonRenderFailed: %v", renderErr)
-			}
-			renderedHtml := buffer.String()
-			for _, expectedFragment := range testCase.expectedFragments {
-				if !strings.Contains(renderedHtml, expectedFragment) {
-					t.Errorf("RenderedHtmlMissingFragment: %q", expectedFragment)
-				}
-			}
-			for _, absentFragment := range testCase.absentFragments {
-				if strings.Contains(renderedHtml, absentFragment) {
-					t.Errorf("RenderedHtmlHasUnexpectedFragment: %q", absentFragment)
-				}
-			}
-		})
-	}
+	runButtonRenderCases(test, testCases)
 }

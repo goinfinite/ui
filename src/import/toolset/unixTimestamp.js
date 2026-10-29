@@ -5,7 +5,8 @@ function unixTimestampDateResolver(unixTimestampSeconds) {
   ) {
     throw new Error("InvalidUnixTimestamp");
   }
-  const timestampDate = new Date(unixTimestampSeconds * 1000);
+  const timestampMilliseconds = Math.floor(unixTimestampSeconds * 1000);
+  const timestampDate = new Date(timestampMilliseconds);
   const utcFullYear = timestampDate.getUTCFullYear();
   const isFourDigitYear = utcFullYear >= 0 && utcFullYear <= 9999;
   if (Number.isNaN(timestampDate.getTime()) || !isFourDigitYear) {

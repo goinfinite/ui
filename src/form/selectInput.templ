@@ -217,6 +217,7 @@ templ SelectInput(componentSettings SelectInputSettings) {
 	if componentSettings.OptionsOneWayStatePath != "" {
 		{{ selectedDisplayExpression = "dynamicOptionsDisplayResolver(" + componentSettings.OptionsOneWayStatePath + ", " + selectValueStatePath + ")" }}
 	}
+	{{ selectedDisplayCheckExpression := selectedDisplayExpression + " !== null && " + selectedDisplayExpression + " !== undefined && " + selectedDisplayExpression + " !== ''" }}
 	<!-- SelectInput -->
 	<div
 		x-data={ templ.JSFuncCall("selectInput", labelValueOptionsScriptId) }
@@ -273,10 +274,10 @@ templ SelectInput(componentSettings SelectInputSettings) {
 							:class={ "{" + strings.Join(displayClassEntries, ", ") + "}" }
 						}
 					>
-						<span x-show={ selectedDisplayExpression } x-text={ selectedDisplayExpression }></span>
+						<span x-show={ selectedDisplayCheckExpression } x-text={ selectedDisplayExpression }></span>
 						<span
 							class={ textCaseClass }
-							x-show={ "!(" + selectedDisplayExpression + ")" }
+							x-show={ "!(" + selectedDisplayCheckExpression + ")" }
 						>
 							@statePathBoundLabelText(componentSettings.Label, componentSettings.LabelOneWayStatePath)
 						</span>
