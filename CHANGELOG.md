@@ -2,6 +2,7 @@
 
 ```log
 0.3.3 - 2026/10/28
+feat: add MultiColumnRepeatableFieldset.BulkEdit, a toggle between the row table and a delimiter-separated textarea that parses each edit back into the bound rows, preserves the rows on a no-edit toggle, supports checkbox and select cells, defaults the delimiter to = for two columns and | for more, and adds AddRowButton and BulkEditButton styles with lowercase default labels
 feat: add UiToolset.UnixTimestamp.ToIsoDate and ToRfc1123 for Unix seconds, rejecting timestamps outside UTC years 0000-9999
 feat: add FormId to ButtonSettings and make tracked submits follow the named form, including one mounted after init, so the pending state and double-submit guard still apply
 feat: add IconTop, CountdownSeconds, and one-way state paths for the Button label and action labels; merge the action and countdown data into one buttonState scope
@@ -11,7 +12,9 @@ fix: raise the demo metadata label colors to text-neutral-400 and re-record the 
 fix: keep the modal footer form open after a failed save so the user can retry
 fix: keep the first floating label inside the modal footer form scroll area
 test: cover the FormId tracked submit, dynamic labels and options, the timestamp bound, and the Caps Lock hint, and record golden budgets for the Button action state and NumberRangeInputField slider drag
+test: cover the bulk-edit render, the textarea round trip, the no-edit toggle, the typed cells, the multi-column delimiter default, the custom delimiter, and the button styles
 docs: extend the icon, label, and option examples, add countdown and modal footer form examples, and regenerate the demo page
+docs: add the environment variable, typed, port-binding, and custom-delimiter bulk-edit examples and the button style example, and regenerate the demo page
 
 0.3.2 - 2026/10/17
 feat: center the DateTimePicker time row on SelectInput and add an optional IANA timezone select that sits beside the time when the field is wide enough, wraps below when it is not, and writes the UTC offset into the datetime value

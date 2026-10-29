@@ -68,12 +68,47 @@ type MultiColumnRepeatableFieldsetColumn struct {
 	Step       string
 }
 
+type MultiColumnRepeatableFieldsetBulkEditSettings struct {
+	// OptionalFields
+	ButtonIcon       string
+	ButtonLabel      string
+	Delimiter        string
+	HintValue        string
+	IsEnabled        bool
+	TableButtonIcon  string
+	TableButtonLabel string
+	TextAreaLabel    string
+}
+
+type MultiColumnRepeatableFieldsetAddRowButtonStyle struct {
+	// OptionalFields
+	BackgroundColor      string
+	BackgroundColorHover string
+	IconLeft             string
+	IconRight            string
+	Shape                string
+	TextColor            string
+	TextColorHover       string
+}
+
+type MultiColumnRepeatableFieldsetBulkEditButtonStyle struct {
+	// OptionalFields
+	BackgroundColor      string
+	BackgroundColorHover string
+	Shape                string
+	TextColor            string
+	TextColorHover       string
+}
+
 type MultiColumnRepeatableFieldsetSettings struct {
 	Columns         []MultiColumnRepeatableFieldsetColumn
 	TwoWayStatePath string
 
 	// OptionalFields
+	AddRowButton    MultiColumnRepeatableFieldsetAddRowButtonStyle
 	AddRowLabel     string
+	BulkEdit        MultiColumnRepeatableFieldsetBulkEditSettings
+	BulkEditButton  MultiColumnRepeatableFieldsetBulkEditButtonStyle
 	Checkbox        MultiColumnRepeatableFieldsetCheckboxStyle
 	Dropdown        MultiColumnRepeatableFieldsetDropdownStyle
 	EmptyStateLabel string
@@ -105,11 +140,20 @@ func multiColumnRepeatableFieldsetColumnMetadataJsonBuilder(
 	if marshalErr != nil {
 		slog.Debug(
 			"MultiColumnRepeatableFieldsetMetadataMarshalFailure",
-			slog.String("err", marshalErr.Error()),
+			slog.String("error", marshalErr.Error()),
 		)
 		return "[]"
 	}
 	return string(encodedMetadata)
+}
+
+func multiColumnRepeatableFieldsetAddRowIconResolver(
+	componentSettings MultiColumnRepeatableFieldsetSettings,
+) string {
+	if componentSettings.AddRowButton.IconLeft != "" {
+		return componentSettings.AddRowButton.IconLeft
+	}
+	return "ph-plus"
 }
 
 func multiColumnRepeatableFieldsetAddRowLabelResolver(
@@ -118,7 +162,7 @@ func multiColumnRepeatableFieldsetAddRowLabelResolver(
 	if componentSettings.AddRowLabel != "" {
 		return componentSettings.AddRowLabel
 	}
-	return "Add row"
+	return "add row"
 }
 
 func multiColumnRepeatableFieldsetEmptyStateLabelResolver(
@@ -137,6 +181,95 @@ func multiColumnRepeatableFieldsetInputTypeResolver(
 		return MultiColumnRepeatableFieldsetColumnTypeNumber
 	}
 	return MultiColumnRepeatableFieldsetColumnTypeText
+}
+
+func multiColumnRepeatableFieldsetBulkEditDelimiterResolver(
+	componentSettings MultiColumnRepeatableFieldsetSettings,
+) string {
+	if componentSettings.BulkEdit.Delimiter != "" {
+		return componentSettings.BulkEdit.Delimiter
+	}
+	if len(componentSettings.Columns) > 2 {
+		return "|"
+	}
+	return "="
+}
+
+func multiColumnRepeatableFieldsetBulkEditButtonLabelResolver(
+	componentSettings MultiColumnRepeatableFieldsetSettings,
+) string {
+	if componentSettings.BulkEdit.ButtonLabel != "" {
+		return componentSettings.BulkEdit.ButtonLabel
+	}
+	return "bulk edit"
+}
+
+func multiColumnRepeatableFieldsetBulkEditTableButtonLabelResolver(
+	componentSettings MultiColumnRepeatableFieldsetSettings,
+) string {
+	if componentSettings.BulkEdit.TableButtonLabel != "" {
+		return componentSettings.BulkEdit.TableButtonLabel
+	}
+	return "table view"
+}
+
+func multiColumnRepeatableFieldsetBulkEditTextAreaLabelResolver(
+	componentSettings MultiColumnRepeatableFieldsetSettings,
+) string {
+	if componentSettings.BulkEdit.TextAreaLabel != "" {
+		return componentSettings.BulkEdit.TextAreaLabel
+	}
+	return "Bulk edit"
+}
+
+func multiColumnRepeatableFieldsetBulkEditHintValueResolver(
+	componentSettings MultiColumnRepeatableFieldsetSettings,
+) string {
+	if componentSettings.BulkEdit.HintValue != "" {
+		return componentSettings.BulkEdit.HintValue
+	}
+	if len(componentSettings.Columns) < 2 {
+		return "One row per line. Blank lines are ignored."
+	}
+	return "One row per line. Separate the columns with \"" +
+		multiColumnRepeatableFieldsetBulkEditDelimiterResolver(componentSettings) +
+		"\". Blank lines are ignored."
+}
+
+type multiColumnRepeatableFieldsetBulkEditMetadata struct {
+	Delimiter        string `json:"delimiter"`
+	ButtonLabel      string `json:"buttonLabel"`
+	TableButtonLabel string `json:"tableButtonLabel"`
+	ButtonIcon       string `json:"buttonIcon"`
+	TableButtonIcon  string `json:"tableButtonIcon"`
+}
+
+func multiColumnRepeatableFieldsetBulkEditMetadataJsonBuilder(
+	componentSettings MultiColumnRepeatableFieldsetSettings,
+) string {
+	delimiter := multiColumnRepeatableFieldsetBulkEditDelimiterResolver(componentSettings)
+	buttonLabel := multiColumnRepeatableFieldsetBulkEditButtonLabelResolver(componentSettings)
+	tableButtonLabel := multiColumnRepeatableFieldsetBulkEditTableButtonLabelResolver(componentSettings)
+	metadata := multiColumnRepeatableFieldsetBulkEditMetadata{
+		Delimiter:        delimiter,
+		ButtonLabel:      buttonLabel,
+		TableButtonLabel: tableButtonLabel,
+		ButtonIcon:       componentSettings.BulkEdit.ButtonIcon,
+		TableButtonIcon:  componentSettings.BulkEdit.TableButtonIcon,
+	}
+	encodedMetadata, marshalErr := json.Marshal(metadata)
+	if marshalErr != nil {
+		slog.Debug(
+			"MultiColumnRepeatableFieldsetBulkEditMetadataMarshalFailure",
+			slog.String("error", marshalErr.Error()),
+		)
+		return `{"delimiter":` + strconv.Quote(delimiter) +
+			`,"buttonLabel":` + strconv.Quote(buttonLabel) +
+			`,"tableButtonLabel":` + strconv.Quote(tableButtonLabel) +
+			`,"buttonIcon":` + strconv.Quote(componentSettings.BulkEdit.ButtonIcon) +
+			`,"tableButtonIcon":` + strconv.Quote(componentSettings.BulkEdit.TableButtonIcon) + `}`
+	}
+	return string(encodedMetadata)
 }
 
 func multiColumnRepeatableFieldsetCell(
@@ -239,8 +372,13 @@ func MultiColumnRepeatableFieldset(componentSettings MultiColumnRepeatableFields
 		ctx = templ.ClearChildren(ctx)
 		statePath := componentSettings.TwoWayStatePath
 		columnMetadataJson := multiColumnRepeatableFieldsetColumnMetadataJsonBuilder(componentSettings.Columns)
+		addRowIcon := multiColumnRepeatableFieldsetAddRowIconResolver(componentSettings)
 		addRowLabel := multiColumnRepeatableFieldsetAddRowLabelResolver(componentSettings)
 		emptyStateLabel := multiColumnRepeatableFieldsetEmptyStateLabelResolver(componentSettings)
+		isBulkEditEnabled := componentSettings.BulkEdit.IsEnabled
+		bulkEditMetadataJson := multiColumnRepeatableFieldsetBulkEditMetadataJsonBuilder(componentSettings)
+		bulkEditTextAreaLabel := multiColumnRepeatableFieldsetBulkEditTextAreaLabelResolver(componentSettings)
+		bulkEditHintValue := multiColumnRepeatableFieldsetBulkEditHintValueResolver(componentSettings)
 		templ_7745c5c3_Err = multiColumnRepeatableFieldsetAlpineStateOnce.Once().Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -250,20 +388,30 @@ func MultiColumnRepeatableFieldset(componentSettings MultiColumnRepeatableFields
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templruntime.NewAttributeExpression(templ.JSFuncCall("multiColumnRepeatableFieldset", templ.JSExpression(columnMetadataJson), componentSettings.NewRowFunc)).Resolve(ctx)
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templruntime.NewAttributeExpression(templ.JSFuncCall("multiColumnRepeatableFieldset", templ.JSExpression(columnMetadataJson), componentSettings.NewRowFunc, templ.JSExpression(bulkEditMetadataJson))).Resolve(ctx)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/multiColumnRepeatableFieldset.templ`, Line: 196, Col: 130}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/multiColumnRepeatableFieldset.templ`, Line: 334, Col: 172}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"><table class=\"w-full border-collapse text-sm\"><thead><tr class=\"border-b border-neutral-50/10 text-left text-xs text-neutral-400\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"><table class=\"w-full border-collapse text-sm\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if isBulkEditEnabled {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, " x-show=\"!isBulkEditing\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "><thead><tr class=\"border-b border-neutral-50/10 text-left text-xs text-neutral-400\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		for _, column := range componentSettings.Columns {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<th scope=\"col\" class=\"px-2 py-2 font-medium\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<th scope=\"col\" class=\"px-2 py-2 font-medium\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -271,30 +419,30 @@ func MultiColumnRepeatableFieldset(componentSettings MultiColumnRepeatableFields
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</th>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</th>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<th scope=\"col\" class=\"w-0 px-2 py-2\"><span class=\"sr-only\">Row actions</span></th></tr></thead> <tbody><template x-for=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<th scope=\"col\" class=\"w-0 px-2 py-2\"><span class=\"sr-only\">Row actions</span></th></tr></thead> <tbody><template x-for=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templruntime.NewAttributeExpression("(row, rowIndex) in " + statePath).Resolve(ctx)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/multiColumnRepeatableFieldset.templ`, Line: 212, Col: 55}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/multiColumnRepeatableFieldset.templ`, Line: 355, Col: 55}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" :key=\"rowKeyResolver(row)\"><tr class=\"border-b border-neutral-50/5\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" :key=\"rowKeyResolver(row)\"><tr class=\"border-b border-neutral-50/5\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		for _, column := range componentSettings.Columns {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<td class=\"px-2 py-2\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<td class=\"px-2 py-2\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -302,25 +450,25 @@ func MultiColumnRepeatableFieldset(componentSettings MultiColumnRepeatableFields
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</td>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</td>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<td class=\"w-0 whitespace-nowrap px-2 py-2\"><div class=\"flex items-center justify-end gap-1\"><span :class=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<td class=\"w-0 whitespace-nowrap px-2 py-2\"><div class=\"flex items-center justify-end gap-1\"><span :class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templruntime.NewAttributeExpression("rowIndex === 0 ? 'pointer-events-none opacity-30' : ''").Resolve(ctx)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/multiColumnRepeatableFieldset.templ`, Line: 221, Col: 79}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/multiColumnRepeatableFieldset.templ`, Line: 364, Col: 79}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -334,20 +482,20 @@ func MultiColumnRepeatableFieldset(componentSettings MultiColumnRepeatableFields
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</span> <span :class=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</span> <span :class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templruntime.NewAttributeExpression("rowIndex === " + statePath + ".length - 1 ? 'pointer-events-none opacity-30' : ''").Resolve(ctx)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/multiColumnRepeatableFieldset.templ`, Line: 230, Col: 106}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/multiColumnRepeatableFieldset.templ`, Line: 373, Col: 106}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -361,7 +509,7 @@ func MultiColumnRepeatableFieldset(componentSettings MultiColumnRepeatableFields
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</span>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</span>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -385,95 +533,183 @@ func MultiColumnRepeatableFieldset(componentSettings MultiColumnRepeatableFields
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</div></td></tr></template><tr x-show=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</div></td></tr></template><tr x-show=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templruntime.NewAttributeExpression(statePath + ".length === 0").Resolve(ctx)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/multiColumnRepeatableFieldset.templ`, Line: 257, Col: 44}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/multiColumnRepeatableFieldset.templ`, Line: 400, Col: 44}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\"><td class=\"px-2 py-3 text-sm text-neutral-500\" colspan=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\"><td class=\"px-2 py-3 text-sm text-neutral-500\" colspan=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templruntime.NewAttributeExpression(strconv.Itoa(len(componentSettings.Columns) + 1)).Resolve(ctx)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/multiColumnRepeatableFieldset.templ`, Line: 258, Col: 110}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/multiColumnRepeatableFieldset.templ`, Line: 401, Col: 110}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var8)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(emptyStateLabel)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/multiColumnRepeatableFieldset.templ`, Line: 259, Col: 23}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/multiColumnRepeatableFieldset.templ`, Line: 402, Col: 23}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</td></tr></tbody></table><div class=\"mt-3\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</td></tr></tbody></table>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = uiControl.Button(uiControl.ButtonSettings{
-			IconLeft:    "ph-plus",
-			Label:       addRowLabel,
-			OnClickFunc: "appendRow(" + statePath + ")",
-			Size:        uiControl.ButtonSizeSm,
-		}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</div>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		if componentSettings.InputName != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<input type=\"hidden\" name=\"")
+		if isBulkEditEnabled {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<div x-show=\"isBulkEditing\" style=\"display: none\" @input=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var10 string
-			templ_7745c5c3_Var10, templ_7745c5c3_Err = templruntime.NewAttributeExpression(componentSettings.InputName).Resolve(ctx)
+			templ_7745c5c3_Var10, templ_7745c5c3_Err = templruntime.NewAttributeExpression("replaceRowsFromBulkText(" + statePath + ", $event.target.value)").Resolve(ctx)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/multiColumnRepeatableFieldset.templ`, Line: 273, Col: 58}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/multiColumnRepeatableFieldset.templ`, Line: 411, Col: 78}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var10)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\" :value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "\" @click=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var11 string
-			templ_7745c5c3_Var11, templ_7745c5c3_Err = templruntime.NewAttributeExpression("JSON.stringify(" + statePath + ")").Resolve(ctx)
+			templ_7745c5c3_Var11, templ_7745c5c3_Err = templruntime.NewAttributeExpression("reconcileRowsFromBulkText(" + statePath + ")").Resolve(ctx)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/multiColumnRepeatableFieldset.templ`, Line: 273, Col: 105}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/multiColumnRepeatableFieldset.templ`, Line: 412, Col: 59}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var11)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = TextArea(TextAreaSettings{
+				Label:           bulkEditTextAreaLabel,
+				TwoWayStatePath: "bulkEditText",
+				Size:            componentSettings.Size,
+				TextCase:        componentSettings.TextCase,
+				HintValue:       bulkEditHintValue,
+				HintDisplay:     InputHintDisplayDescription,
+				IsCode:          true,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<div class=\"mt-3 flex flex-wrap items-center gap-2\"><div")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if isBulkEditEnabled {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, " x-show=\"!isBulkEditing\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, ">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = uiControl.Button(uiControl.ButtonSettings{
+			BackgroundColor:      componentSettings.AddRowButton.BackgroundColor,
+			BackgroundColorHover: componentSettings.AddRowButton.BackgroundColorHover,
+			IconLeft:             addRowIcon,
+			IconRight:            componentSettings.AddRowButton.IconRight,
+			Label:                addRowLabel,
+			OnClickFunc:          "appendRow(" + statePath + ")",
+			Shape:                componentSettings.AddRowButton.Shape,
+			Size:                 uiControl.ButtonSizeSm,
+			TextColor:            componentSettings.AddRowButton.TextColor,
+			TextColorHover:       componentSettings.AddRowButton.TextColorHover,
+		}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "</div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if isBulkEditEnabled {
+			templ_7745c5c3_Err = uiControl.Button(uiControl.ButtonSettings{
+				BackgroundColor:         componentSettings.BulkEditButton.BackgroundColor,
+				BackgroundColorHover:    componentSettings.BulkEditButton.BackgroundColorHover,
+				IconLeftOneWayStatePath: "bulkEditToggleIconResolver",
+				LabelOneWayStatePath:    "bulkEditToggleLabelResolver",
+				OnClickFunc:             "toggleBulkEdit(" + statePath + ")",
+				Shape:                   componentSettings.BulkEditButton.Shape,
+				Size:                    uiControl.ButtonSizeSm,
+				TextColor:               componentSettings.BulkEditButton.TextColor,
+				TextColorHover:          componentSettings.BulkEditButton.TextColorHover,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if componentSettings.InputName != "" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "<input type=\"hidden\" name=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var12 string
+			templ_7745c5c3_Var12, templ_7745c5c3_Err = templruntime.NewAttributeExpression(componentSettings.InputName).Resolve(ctx)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/multiColumnRepeatableFieldset.templ`, Line: 459, Col: 58}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var12)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "\" :value=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var13 string
+			templ_7745c5c3_Var13, templ_7745c5c3_Err = templruntime.NewAttributeExpression("JSON.stringify(" + statePath + ")").Resolve(ctx)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/multiColumnRepeatableFieldset.templ`, Line: 459, Col: 105}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var13)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
