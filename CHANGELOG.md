@@ -1,6 +1,18 @@
 # Changelog
 
 ```log
+0.3.3 - 2026/10/28
+feat: add UiToolset.UnixTimestamp.ToIsoDate and ToRfc1123 for Unix seconds, rejecting timestamps outside UTC years 0000-9999
+feat: add FormId to ButtonSettings and make tracked submits follow the named form, including one mounted after init, so the pending state and double-submit guard still apply
+feat: add IconTop, CountdownSeconds, and one-way state paths for the Button label and action labels; merge the action and countdown data into one buttonState scope
+feat: add a Caps Lock hint to PasswordInput with custom text, one-way text path, color, case, and a hide setting
+feat: add LabelOneWayStatePath to the label-bearing form components, including the DateTimePicker range Start and End accessible names, OptionsOneWayStatePath to SelectInput, DescriptionOneWayStatePath to FileUploadInput, and AriaLabelOneWayStatePath to CheckboxInput and RangeSlider
+fix: raise the demo metadata label colors to text-neutral-400 and re-record the axe baseline
+fix: keep the modal footer form open after a failed save so the user can retry
+fix: keep the first floating label inside the modal footer form scroll area
+test: cover the FormId tracked submit, dynamic labels and options, the timestamp bound, and the Caps Lock hint, and record golden budgets for the Button action state and NumberRangeInputField slider drag
+docs: extend the icon, label, and option examples, add countdown and modal footer form examples, and regenerate the demo page
+
 0.3.2 - 2026/10/17
 feat: center the DateTimePicker time row on SelectInput and add an optional IANA timezone select that sits beside the time when the field is wide enough, wraps below when it is not, and writes the UTC offset into the datetime value
 feat: add DateTimePickerTimeSelectorStyle and TimeSelectorSize, so the time selects take the SelectInput trigger and dropdown surfaces
