@@ -13,7 +13,7 @@ test.describe("CollapsibleText", () => {
     );
   });
 
-  test("@smoke the text truncates with the affordance inline after the ellipsis", async ({
+  test("@browser @smoke the text truncates with the affordance inline after the ellipsis", async ({
     page,
   }) => {
     const text = page.locator(textSelector).first();
@@ -29,7 +29,7 @@ test.describe("CollapsibleText", () => {
     await expect(text).not.toContainText("…");
   });
 
-  test("a second click collapses the text back", async ({ page }) => {
+  test("@browser a second click collapses the text back", async ({ page }) => {
     const text = page.locator(textSelector).first();
     const toggle = page.locator(toggleSelector).first();
 

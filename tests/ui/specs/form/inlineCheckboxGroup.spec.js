@@ -24,7 +24,7 @@ test.describe("InlineCheckboxGroup", () => {
     await expect(stateText).not.toContainText("banana");
   });
 
-  test("@smoke select all checks every option and fills the bound array", async ({
+  test("@browser @smoke select all checks every option and fills the bound array", async ({
     page,
   }) => {
     const fieldset = page.locator(`${section} fieldset`).first();
@@ -41,7 +41,7 @@ test.describe("InlineCheckboxGroup", () => {
     await expect(fieldset.getByLabel("Orange", { exact: true })).toBeChecked();
   });
 
-  test("@smoke deselect all unchecks every option and empties the bound array", async ({
+  test("@browser @smoke deselect all unchecks every option and empties the bound array", async ({
     page,
   }) => {
     const fieldset = page.locator(`${section} fieldset`).first();
