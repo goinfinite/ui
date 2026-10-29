@@ -3,16 +3,18 @@ package uiControl
 import (
 	_ "embed"
 	"fmt"
+	"strconv"
+	"strings"
 	"sync/atomic"
 
 	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
-//go:embed buttonActionState.js
-var buttonActionAlpineState string
+//go:embed buttonState.js
+var buttonAlpineState string
 
-var buttonActionAlpineStateOnce = templ.NewOnceHandle(
-	templ.WithComponent(uiToolset.MinifierTemplateJs(&buttonActionAlpineState)),
+var buttonAlpineStateOnce = templ.NewOnceHandle(
+	templ.WithComponent(uiToolset.MinifierTemplateJs(&buttonAlpineState)),
 )
 
 var buttonTooltipIdCounter atomic.Uint64
@@ -31,66 +33,155 @@ const (
 
 type ButtonSettings struct {
 	// OptionalFields
-	Label                         string
-	AriaExpandedOneWayStatePath   string
-	AriaLabel                     string
-	AriaLabelOneWayStatePath      string
-	BackgroundColor               string
-	BackgroundColorActive         string
-	BackgroundColorHover          string
-	FailedIcon                    string
-	FailedLabel                   string
-	IconLeft                      string
-	IconLeftOneWayStatePath       string
-	IconRight                     string
-	IconRightOneWayStatePath      string
-	IconSizeClass                 string
-	Id                            string
-	IsDisabled                    bool
-	IsDisabledOneWayStatePath     string
-	IsPendingOneWayStatePath      string
-	IsVisibleOneWayStatePath      string
-	IsFullWidth                   bool
-	IsSubmit                      bool
-	MaxHeightClass                string
-	MaxWidthClass                 string
-	MinHeightClass                string
-	MinWidthClass                 string
-	OnClickFunc                   string
-	OnClickPreventDefault         bool
-	PaddingSize                   string
-	PendingIcon                   string
-	PendingIconAnimation          string
-	PendingLabel                  string
-	Shape                         string
-	ShouldTrackAction             bool
-	Size                          string
-	SucceededIcon                 string
-	SucceededLabel                string
-	TextCase                      string
-	TextColor                     string
-	TextColorHover                string
-	TextSizeClass                 string
-	TooltipContent                string
-	TooltipContentHtml            templ.Component
-	TooltipContentOneWayStatePath string
-	TooltipBackgroundColor        string
-	TooltipPosition               string
-	TooltipRingColor              string
-	TooltipRingThickness          string
-	TooltipTextColor              string
-	TooltipMinWidthClass          string
-	TooltipMaxWidthClass          string
-	TooltipMinHeightClass         string
-	TooltipMaxHeightClass         string
-	RingColor                     string
-	RingColorHover                string
-	RingThickness                 string
+	Label                           string
+	LabelOneWayStatePath            string
+	AriaExpandedOneWayStatePath     string
+	AriaLabel                       string
+	AriaLabelOneWayStatePath        string
+	BackgroundColor                 string
+	BackgroundColorActive           string
+	BackgroundColorHover            string
+	CountdownSeconds                uint
+	CountdownTriggerOneWayStatePath string
+	FailedIcon                      string
+	FailedLabel                     string
+	FailedLabelOneWayStatePath      string
+	FormId                          string
+	IconLeft                        string
+	IconLeftOneWayStatePath         string
+	IconRight                       string
+	IconRightOneWayStatePath        string
+	IconSizeClass                   string
+	IconTop                         string
+	IconTopOneWayStatePath          string
+	Id                              string
+	IsDisabled                      bool
+	IsDisabledOneWayStatePath       string
+	IsPendingOneWayStatePath        string
+	IsVisibleOneWayStatePath        string
+	IsFullWidth                     bool
+	IsSubmit                        bool
+	MaxHeightClass                  string
+	MaxWidthClass                   string
+	MinHeightClass                  string
+	MinWidthClass                   string
+	OnClickFunc                     string
+	OnClickPreventDefault           bool
+	PaddingSize                     string
+	PendingIcon                     string
+	PendingIconAnimation            string
+	PendingLabel                    string
+	PendingLabelOneWayStatePath     string
+	Shape                           string
+	ShouldTrackAction               bool
+	Size                            string
+	SucceededIcon                   string
+	SucceededLabel                  string
+	SucceededLabelOneWayStatePath   string
+	TextCase                        string
+	TextColor                       string
+	TextColorHover                  string
+	TextSizeClass                   string
+	TooltipContent                  string
+	TooltipContentHtml              templ.Component
+	TooltipContentOneWayStatePath   string
+	TooltipBackgroundColor          string
+	TooltipPosition                 string
+	TooltipRingColor                string
+	TooltipRingThickness            string
+	TooltipTextColor                string
+	TooltipMinWidthClass            string
+	TooltipMaxWidthClass            string
+	TooltipMinHeightClass           string
+	TooltipMaxHeightClass           string
+	RingColor                       string
+	RingColorHover                  string
+	RingThickness                   string
 }
 
 func (componentSettings ButtonSettings) hasActionDisplay() bool {
 	return componentSettings.ShouldTrackAction ||
 		componentSettings.IsPendingOneWayStatePath != ""
+}
+
+func (componentSettings ButtonSettings) hasCountdown() bool {
+	return componentSettings.CountdownSeconds > 0
+}
+
+func (componentSettings ButtonSettings) hasVisibleLabel() bool {
+	if componentSettings.Label != "" || componentSettings.LabelOneWayStatePath != "" {
+		return true
+	}
+	if !componentSettings.hasActionDisplay() {
+		return false
+	}
+	return componentSettings.PendingLabel != "" ||
+		componentSettings.PendingLabelOneWayStatePath != "" ||
+		componentSettings.SucceededLabel != "" ||
+		componentSettings.SucceededLabelOneWayStatePath != "" ||
+		componentSettings.FailedLabel != "" ||
+		componentSettings.FailedLabelOneWayStatePath != ""
+}
+
+func (componentSettings ButtonSettings) labelExpressionResolver(
+	staticLabel, labelStatePath string,
+) string {
+	if labelStatePath != "" {
+		return labelStatePath
+	}
+	return strconv.Quote(staticLabel)
+}
+
+func (componentSettings ButtonSettings) fallbackLabelExpressionResolver(
+	staticLabel, labelStatePath, fallbackExpression string,
+) string {
+	if labelStatePath != "" {
+		return labelStatePath
+	}
+	if staticLabel != "" {
+		return strconv.Quote(staticLabel)
+	}
+	return fallbackExpression
+}
+
+type buttonLabelExpressions struct {
+	Idle      string
+	Pending   string
+	Succeeded string
+	Failed    string
+}
+
+func (componentSettings ButtonSettings) labelExpressionsResolver() buttonLabelExpressions {
+	idleExpression := componentSettings.labelExpressionResolver(
+		componentSettings.Label, componentSettings.LabelOneWayStatePath,
+	)
+	return buttonLabelExpressions{
+		Idle: idleExpression,
+		Pending: componentSettings.fallbackLabelExpressionResolver(
+			componentSettings.PendingLabel, componentSettings.PendingLabelOneWayStatePath,
+			idleExpression,
+		),
+		Succeeded: componentSettings.fallbackLabelExpressionResolver(
+			componentSettings.SucceededLabel, componentSettings.SucceededLabelOneWayStatePath,
+			idleExpression,
+		),
+		Failed: componentSettings.fallbackLabelExpressionResolver(
+			componentSettings.FailedLabel, componentSettings.FailedLabelOneWayStatePath,
+			idleExpression,
+		),
+	}
+}
+
+func (componentSettings ButtonSettings) countdownLabelExpressionBuilder(
+	labelExpression string,
+	actionLabelExpression string,
+) string {
+	countdownLabelExpression := "isCounting ? (" + labelExpression +
+		") + \" (\" + countdownSecondsRemaining + \"s)\" : "
+	if actionLabelExpression != "" {
+		return countdownLabelExpression + actionLabelExpression
+	}
+	return countdownLabelExpression + labelExpression
 }
 
 type buttonActionExpressions struct {
@@ -110,11 +201,19 @@ func (componentSettings ButtonSettings) actionExpressionsResolver() buttonAction
 		isPendingExternallyExpression = "(" + componentSettings.IsPendingOneWayStatePath + ")"
 	}
 	iconExpression := "actionIconResolver(" + isPendingExternallyExpression + ")"
+	labelExpressions := componentSettings.labelExpressionsResolver()
+	labelArguments := strings.Join([]string{
+		labelExpressions.Idle,
+		labelExpressions.Pending,
+		labelExpressions.Succeeded,
+		labelExpressions.Failed,
+		isPendingExternallyExpression,
+	}, ", ")
 	return buttonActionExpressions{
 		IsDisplayed:        true,
 		PendingExpression:  "isActionPending(" + isPendingExternallyExpression + ")",
 		IconExpression:     iconExpression,
-		LabelExpression:    "actionLabelResolver(" + isPendingExternallyExpression + ")",
+		LabelExpression:    "actionLabelResolver(" + labelArguments + ")",
 		IconLeftVisibility: iconExpression + " === ''",
 	}
 }
@@ -122,14 +221,20 @@ func (componentSettings ButtonSettings) actionExpressionsResolver() buttonAction
 func (componentSettings ButtonSettings) disabledExpressionResolver(
 	actionPendingExpression string,
 ) string {
-	disabledStatePath := componentSettings.IsDisabledOneWayStatePath
-	if actionPendingExpression == "" {
-		return disabledStatePath
+	disabledExpressions := []string{}
+	if componentSettings.IsDisabledOneWayStatePath != "" {
+		disabledExpressions = append(
+			disabledExpressions,
+			"("+componentSettings.IsDisabledOneWayStatePath+")",
+		)
 	}
-	if disabledStatePath == "" {
-		return actionPendingExpression
+	if actionPendingExpression != "" {
+		disabledExpressions = append(disabledExpressions, actionPendingExpression)
 	}
-	return "(" + disabledStatePath + ") || " + actionPendingExpression
+	if componentSettings.hasCountdown() {
+		disabledExpressions = append(disabledExpressions, "isCounting")
+	}
+	return strings.Join(disabledExpressions, " || ")
 }
 
 func (componentSettings ButtonSettings) clickExpressionResolver() string {
@@ -138,6 +243,66 @@ func (componentSettings ButtonSettings) clickExpressionResolver() string {
 		return componentSettings.OnClickFunc
 	}
 	return "trackActionPromise(" + componentSettings.OnClickFunc + ")"
+}
+
+templ buttonContent(
+	componentSettings ButtonSettings,
+	actionExpressions buttonActionExpressions,
+	countdownLabelExpression string,
+	iconSize string,
+) {
+	if actionExpressions.IsDisplayed {
+		<i
+			class={ "ph-bold " + iconSize }
+			:class={ actionExpressions.IconExpression }
+			x-show={ actionExpressions.IconExpression + " !== ''" }
+			style="display: none"
+			aria-hidden="true"
+		></i>
+	}
+	if componentSettings.IconLeft != "" {
+		<i
+			class={ "ph-bold " + componentSettings.IconLeft + " " + iconSize }
+			if actionExpressions.IsDisplayed {
+				x-show={ actionExpressions.IconLeftVisibility }
+			}
+		></i>
+	}
+	if componentSettings.IconLeftOneWayStatePath != "" {
+		<i
+			class={ "ph-bold " + iconSize }
+			:class={ componentSettings.IconLeftOneWayStatePath }
+			if actionExpressions.IsDisplayed {
+				x-show={ actionExpressions.IconLeftVisibility }
+			}
+		></i>
+	}
+	if componentSettings.hasVisibleLabel() && countdownLabelExpression != "" {
+		<span x-text={ countdownLabelExpression }>
+			{ componentSettings.Label }
+		</span>
+	}
+	if componentSettings.hasVisibleLabel() && countdownLabelExpression == "" && actionExpressions.IsDisplayed {
+		<span x-text={ actionExpressions.LabelExpression }>
+			{ componentSettings.Label }
+		</span>
+	}
+	if componentSettings.hasVisibleLabel() && countdownLabelExpression == "" && !actionExpressions.IsDisplayed {
+		if componentSettings.LabelOneWayStatePath != "" {
+			<span x-text={ componentSettings.LabelOneWayStatePath }>
+				{ componentSettings.Label }
+			</span>
+		}
+		if componentSettings.LabelOneWayStatePath == "" {
+			{ componentSettings.Label }
+		}
+	}
+	if componentSettings.IconRight != "" {
+		<i class={ "ph-bold " + componentSettings.IconRight + " " + iconSize }></i>
+	}
+	if componentSettings.IconRightOneWayStatePath != "" {
+		<i class={ "ph-bold " + iconSize } :class={ componentSettings.IconRightOneWayStatePath }></i>
+	}
 }
 
 templ buttonFrame(componentSettings ButtonSettings) {
@@ -152,7 +317,12 @@ templ buttonFrame(componentSettings ButtonSettings) {
 		{{ tooltipId = generateButtonTooltipId() }}
 	}
 	{{ actionExpressions := componentSettings.actionExpressionsResolver() }}
+	{{ labelExpressions := componentSettings.labelExpressionsResolver() }}
 	{{ disabledExpression := componentSettings.disabledExpressionResolver(actionExpressions.PendingExpression) }}
+	{{ countdownLabelExpression := "" }}
+	if componentSettings.hasCountdown() && componentSettings.hasVisibleLabel() {
+		{{ countdownLabelExpression = componentSettings.countdownLabelExpressionBuilder(labelExpressions.Idle, actionExpressions.LabelExpression) }}
+	}
 	<div
 		class={ "relative " + buttonWidth }
 		if hasTooltip {
@@ -182,7 +352,7 @@ templ buttonFrame(componentSettings ButtonSettings) {
 			{{ buttonTextSize = componentSettings.TextSizeClass }}
 		}
 		{{ buttonGap := sizeTokens.Gap }}
-		if componentSettings.Label != "" {
+		if componentSettings.hasVisibleLabel() {
 			switch componentSettings.Size {
 				case ButtonSizeXs:
 					{{ buttonPadding += " py-1.5" }}
@@ -234,7 +404,27 @@ templ buttonFrame(componentSettings ButtonSettings) {
 		if componentSettings.IconSizeClass != "" {
 			{{ iconSize = componentSettings.IconSizeClass }}
 		}
-		{{ buttonClasses := buttonWidth + " " + backgroundClasses + " " + textColor + " " + textColorHover + " " + radiusRoundness + " " + ringClasses + sizeConstraintClasses + " justify-center items-center text-center font-bold flex flex-row leading-none transition-all" }}
+		{{
+			hasTopIcon := componentSettings.IconTop != "" ||
+				componentSettings.IconTopOneWayStatePath != ""
+		}}
+		{{ buttonLayout := "flex flex-row" }}
+		if hasTopIcon {
+			{{ buttonLayout = "flex flex-col" }}
+		}
+		{{
+			hasStaticRowContent := componentSettings.IconLeft != "" ||
+				componentSettings.IconLeftOneWayStatePath != "" ||
+				componentSettings.hasVisibleLabel() ||
+				componentSettings.IconRight != "" ||
+				componentSettings.IconRightOneWayStatePath != ""
+		}}
+		{{ hasRowContent := hasStaticRowContent || actionExpressions.IsDisplayed }}
+		{{ rowVisibilityExpression := "" }}
+		if !hasStaticRowContent && actionExpressions.IsDisplayed {
+			{{ rowVisibilityExpression = actionExpressions.IconExpression + " !== ''" }}
+		}
+		{{ buttonClasses := buttonWidth + " " + backgroundClasses + " " + textColor + " " + textColorHover + " " + radiusRoundness + " " + ringClasses + sizeConstraintClasses + " justify-center items-center text-center font-bold " + buttonLayout + " leading-none transition-all" }}
 		if textCaseClass != "" {
 			{{ buttonClasses += " " + textCaseClass }}
 		}
@@ -248,6 +438,9 @@ templ buttonFrame(componentSettings ButtonSettings) {
 		}
 		<button
 			type={ buttonType }
+			if componentSettings.FormId != "" {
+				form={ componentSettings.FormId }
+			}
 			if hasTooltip {
 				x-ref="trigger"
 				aria-describedby={ tooltipId }
@@ -288,45 +481,30 @@ templ buttonFrame(componentSettings ButtonSettings) {
 				:class={ "(" + disabledExpression + ") && '" + disabledClasses + "'" }
 			}
 		>
-			if actionExpressions.IsDisplayed {
-				<i
-					class={ "ph-bold " + iconSize }
-					:class={ actionExpressions.IconExpression }
-					x-show={ actionExpressions.IconExpression + " !== ''" }
-					style="display: none"
-					aria-hidden="true"
-				></i>
+			if hasTopIcon {
+				if componentSettings.IconTop != "" {
+					<i class={ "ph-bold " + componentSettings.IconTop + " " + iconSize } aria-hidden="true"></i>
+				}
+				if componentSettings.IconTopOneWayStatePath != "" {
+					<i
+						class={ "ph-bold " + iconSize }
+						:class={ componentSettings.IconTopOneWayStatePath }
+						aria-hidden="true"
+					></i>
+				}
+				if hasRowContent {
+					<span
+						class={ "flex flex-row items-center justify-center " + buttonGap }
+						if rowVisibilityExpression != "" {
+							x-show={ rowVisibilityExpression }
+						}
+					>
+						@buttonContent(componentSettings, actionExpressions, countdownLabelExpression, iconSize)
+					</span>
+				}
 			}
-			if componentSettings.IconLeft != "" {
-				<i
-					class={ "ph-bold " + componentSettings.IconLeft + " " + iconSize }
-					if actionExpressions.IsDisplayed {
-						x-show={ actionExpressions.IconLeftVisibility }
-					}
-				></i>
-			}
-			if componentSettings.IconLeftOneWayStatePath != "" {
-				<i
-					class={ "ph-bold " + iconSize }
-					:class={ componentSettings.IconLeftOneWayStatePath }
-					if actionExpressions.IsDisplayed {
-						x-show={ actionExpressions.IconLeftVisibility }
-					}
-				></i>
-			}
-			if componentSettings.Label != "" && actionExpressions.IsDisplayed {
-				<span x-text={ actionExpressions.LabelExpression }>
-					{ componentSettings.Label }
-				</span>
-			}
-			if componentSettings.Label != "" && !actionExpressions.IsDisplayed {
-				{ componentSettings.Label }
-			}
-			if componentSettings.IconRight != "" {
-				<i class={ "ph-bold " + componentSettings.IconRight + " " + iconSize }></i>
-			}
-			if componentSettings.IconRightOneWayStatePath != "" {
-				<i class={ "ph-bold " + iconSize } :class={ componentSettings.IconRightOneWayStatePath }></i>
+			if !hasTopIcon {
+				@buttonContent(componentSettings, actionExpressions, countdownLabelExpression, iconSize)
 			}
 		</button>
 		if hasTooltip {
@@ -367,32 +545,6 @@ templ buttonFrame(componentSettings ButtonSettings) {
 	</div>
 }
 
-type buttonActionLabels struct {
-	Idle      string `json:"idle"`
-	Pending   string `json:"pending"`
-	Succeeded string `json:"succeeded"`
-	Failed    string `json:"failed"`
-}
-
-func (componentSettings ButtonSettings) actionLabelsResolver() buttonActionLabels {
-	actionLabels := buttonActionLabels{
-		Idle:      componentSettings.Label,
-		Pending:   componentSettings.Label,
-		Succeeded: componentSettings.Label,
-		Failed:    componentSettings.Label,
-	}
-	if componentSettings.PendingLabel != "" {
-		actionLabels.Pending = componentSettings.PendingLabel
-	}
-	if componentSettings.SucceededLabel != "" {
-		actionLabels.Succeeded = componentSettings.SucceededLabel
-	}
-	if componentSettings.FailedLabel != "" {
-		actionLabels.Failed = componentSettings.FailedLabel
-	}
-	return actionLabels
-}
-
 type buttonActionIcons struct {
 	Idle      string `json:"idle"`
 	Pending   string `json:"pending"`
@@ -431,11 +583,17 @@ func (componentSettings ButtonSettings) isFormAction() bool {
 
 templ Button(componentSettings ButtonSettings) {
 	<!-- Button -->
-	if componentSettings.hasActionDisplay() {
-		@buttonActionAlpineStateOnce.Once()
+	if componentSettings.hasActionDisplay() || componentSettings.hasCountdown() {
+		@buttonAlpineStateOnce.Once()
 		<div
 			class="contents"
-			x-data={ templ.JSFuncCall("buttonAction", componentSettings.actionLabelsResolver(), componentSettings.actionIconsResolver(), componentSettings.isFormAction()) }
+			x-data={ templ.JSFuncCall("buttonState", componentSettings.actionIconsResolver(), componentSettings.isFormAction(), componentSettings.CountdownSeconds) }
+			if componentSettings.CountdownTriggerOneWayStatePath != "" {
+				x-effect={ "restartCountdownOnTrigger(" + componentSettings.CountdownTriggerOneWayStatePath + ")" }
+			}
+			if componentSettings.hasCountdown() && componentSettings.CountdownTriggerOneWayStatePath == "" {
+				x-init="startCountdown()"
+			}
 		>
 			@buttonFrame(componentSettings)
 		</div>

@@ -82,10 +82,11 @@ templ ButtonShapesExample() {
 templ ButtonIconsExample() {
 	{{
 		iconsUsage := `@uiControl.Button(uiControl.ButtonSettings{
-	Label: "Info",
+	Label:   "Upload",
+	IconTop: "ph-cloud-arrow-up",
 
 	// OptionalFields
-	IconLeft:                 "ph-info",
+	IconLeft:                 "ph-folder",
 	IconLeftOneWayStatePath:  "leftIconClass",
 	IconRight:                "ph-arrow-right",
 	IconRightOneWayStatePath: "rightIconClass",
@@ -93,26 +94,53 @@ templ ButtonIconsExample() {
 	}}
 	@DemoExampleCard(
 		"Icons",
-		"IconLeft and IconRight flank the label with Phosphor icons. IconLeftOneWayStatePath and IconRightOneWayStatePath bind the icon class to Alpine state.",
+		"IconLeft and IconRight flank the label with Phosphor icons. IconTop renders above the label and combines with both side icons. The state paths bind each icon class to Alpine state.",
 		"/control/button.templ", iconsUsage,
 	) {
 		<div
-			class="flex flex-col gap-2"
+			class="flex flex-col gap-3"
 			x-data="{leftIconClass: 'ph-lightning', rightIconClass: 'ph-check-circle'}"
 		>
-			@uiControl.Button(uiControl.ButtonSettings{
-				Label:    "Info",
-				IconLeft: "ph-info",
-			})
-			@uiControl.Button(uiControl.ButtonSettings{
-				Label:     "Warning",
-				IconRight: "ph-warning",
-			})
-			@uiControl.Button(uiControl.ButtonSettings{
-				Label:                    "Dynamic Icons",
-				IconLeftOneWayStatePath:  "leftIconClass",
-				IconRightOneWayStatePath: "rightIconClass",
-			})
+			<div class="flex flex-wrap items-center gap-3">
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:    "Info",
+					IconLeft: "ph-info",
+				})
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:     "Warning",
+					IconRight: "ph-warning",
+				})
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:                    "Dynamic Icons",
+					IconLeftOneWayStatePath:  "leftIconClass",
+					IconRightOneWayStatePath: "rightIconClass",
+				})
+			</div>
+			<div class="flex flex-wrap items-center gap-3">
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:     "Upload",
+					IconTop:   "ph-cloud-arrow-up",
+					IconLeft:  "ph-folder",
+					IconRight: "ph-arrow-right",
+				})
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:           "Sync",
+					IconTop:         "ph-arrows-clockwise",
+					BackgroundColor: "primary-600",
+				})
+				@uiControl.Button(uiControl.ButtonSettings{
+					IconTop:   "ph-plus",
+					AriaLabel: "Add",
+					Shape:     uiToolset.ShapeCircular,
+				})
+				@uiControl.Button(uiControl.ButtonSettings{
+					IconTop:           "ph-heart",
+					AriaLabel:         "Favorite",
+					ShouldTrackAction: true,
+					OnClickFunc:       "Promise.resolve()",
+					Shape:             uiToolset.ShapeCircular,
+				})
+			</div>
 		</div>
 	}
 }
@@ -427,7 +455,7 @@ templ ButtonActionStatesExample() {
 	}}
 	@DemoExampleCard(
 		"Action States",
-		"ShouldTrackAction makes the button report the action it starts: the owning form when IsSubmit is set, or the promise OnClickFunc returns. It shows PendingLabel while the action runs, then SucceededLabel or FailedLabel for two seconds. PendingIcon, SucceededIcon, and FailedIcon replace the default icons, and PendingIconAnimation takes a uiToolset.Animation* constant. IsPendingOneWayStatePath shows the pending state from Alpine state.",
+		"ShouldTrackAction makes the button report the action it starts: the owning form when IsSubmit is set, or the promise OnClickFunc returns. It shows PendingLabel while the action runs, then SucceededLabel or FailedLabel for two seconds. The four labels each accept a OneWayStatePath. PendingIcon, SucceededIcon, and FailedIcon replace the default icons, and PendingIconAnimation takes a uiToolset.Animation* constant. IsPendingOneWayStatePath shows the pending state from Alpine state.",
 		"/control/button.templ", actionUsage,
 	) {
 		@uiToolset.MinifierTemplateJs(&buttonDemoAlpineState)
@@ -510,6 +538,36 @@ templ ButtonActionStatesExample() {
 					FailedLabel:       "Sync failed",
 				})
 			</div>
+			<p class="text-xs font-bold text-neutral-400">Dynamic labels</p>
+			<div class="flex flex-row flex-wrap gap-3">
+				@uiControl.Button(uiControl.ButtonSettings{
+					Id:                            "button-demo-dynamic-labels",
+					Label:                         "Static fallback",
+					LabelOneWayStatePath:          "dynamicButtonLabel",
+					IconLeft:                      "ph-tag",
+					OnClickFunc:                   "syncAccounts()",
+					ShouldTrackAction:             true,
+					PendingLabelOneWayStatePath:   "dynamicPendingLabel",
+					SucceededLabelOneWayStatePath: "dynamicSucceededLabel",
+					FailedLabelOneWayStatePath:    "dynamicFailedLabel",
+				})
+				@uiControl.Button(uiControl.ButtonSettings{
+					Id:                            "button-demo-dynamic-failure-labels",
+					Label:                         "Static fallback",
+					LabelOneWayStatePath:          "dynamicButtonLabel",
+					IconLeft:                      "ph-tag",
+					OnClickFunc:                   "syncBrokenMirror()",
+					ShouldTrackAction:             true,
+					PendingLabelOneWayStatePath:   "dynamicPendingLabel",
+					SucceededLabelOneWayStatePath: "dynamicSucceededLabel",
+					FailedLabelOneWayStatePath:    "dynamicFailedLabel",
+				})
+				@uiControl.Button(uiControl.ButtonSettings{
+					Id:                   "button-demo-dynamic-idle-label",
+					Label:                "Static fallback",
+					LabelOneWayStatePath: "dynamicButtonLabel",
+				})
+			</div>
 			<p class="text-xs font-bold text-neutral-400">Shared pending state</p>
 			<div class="flex flex-row flex-wrap gap-3">
 				@uiControl.Button(uiControl.ButtonSettings{
@@ -525,6 +583,57 @@ templ ButtonActionStatesExample() {
 					IsPendingOneWayStatePath: "isSyncing",
 					PendingLabel:             "Wait for the sync",
 				})
+			</div>
+		</div>
+	}
+}
+
+templ ButtonCountdownExample() {
+	{{
+		countdownUsage := `@uiControl.Button(uiControl.ButtonSettings{
+	Label:                           "Delete",
+	CountdownSeconds:                5,
+
+	// OptionalFields
+	CountdownTriggerOneWayStatePath: "retryCount",
+})`
+	}}
+	@DemoExampleCard(
+		"Countdown",
+		"CountdownSeconds disables the button and shows the remaining seconds in the label. The countdown starts on mount. CountdownTriggerOneWayStatePath restarts it when an Alpine value changes, so a failed attempt can start it again.",
+		"/control/button.templ", countdownUsage,
+	) {
+		<div class="flex flex-col gap-3" x-data="{retryCount: 0}">
+			<div class="flex flex-wrap items-center gap-3">
+				@uiControl.Button(uiControl.ButtonSettings{
+					Id:               "button-demo-countdown",
+					Label:            "Delete",
+					IconLeft:         "ph-trash",
+					CountdownSeconds: 5,
+					BackgroundColor:  "red-500/20",
+					TextColor:        "red-200",
+				})
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:           "Restart countdown",
+					IconLeft:        "ph-arrow-counter-clockwise",
+					OnClickFunc:     "retryCount++",
+					Size:            uiControl.ButtonSizeSm,
+					BackgroundColor: "neutral-50/10",
+				})
+			</div>
+			<div class="flex flex-wrap items-center gap-3">
+				@uiControl.Button(uiControl.ButtonSettings{
+					Id:                              "button-demo-triggered-countdown",
+					Label:                           "Delete after retry",
+					IconLeft:                        "ph-trash",
+					CountdownSeconds:                2,
+					CountdownTriggerOneWayStatePath: "retryCount",
+					BackgroundColor:                 "red-500/20",
+					TextColor:                       "red-200",
+				})
+				<p class={ DemoLiveStateInlineClasses }>
+					Failed attempts: <span x-text="retryCount"></span>
+				</p>
 			</div>
 		</div>
 	}
@@ -610,6 +719,7 @@ templ ButtonDemo() {
 			{Title: "Disabled Binding", Icon: "ph-prohibit", Content: ButtonDisabledBindingExample()},
 			{Title: "Full-Width & Submit", Icon: "ph-arrows-out", Content: ButtonFullWidthSubmitExample()},
 			{Title: "Action States", Icon: "ph-spinner", Content: ButtonActionStatesExample()},
+			{Title: "Countdown", Icon: "ph-timer", Content: ButtonCountdownExample()},
 			{Title: "Text Case", Icon: "ph-text-t", Content: ButtonTextCaseExample()},
 		})
 	</div>

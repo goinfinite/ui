@@ -15,6 +15,10 @@ UiToolset.RegisterAlpineState(() => {
 
   Alpine.data("buttonDemoActions", () => ({
     isSyncing: false,
+    dynamicButtonLabel: "Dynamic idle",
+    dynamicPendingLabel: "Dynamic pending",
+    dynamicSucceededLabel: "Dynamic succeeded",
+    dynamicFailedLabel: "Dynamic failed",
 
     syncAccounts() {
       return demoActionPromiseBuilder(true);

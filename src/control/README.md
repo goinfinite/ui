@@ -14,23 +14,26 @@ A button with an optional label, icons, tooltip, ring, and shape.
 })
 ```
 
+- `LabelOneWayStatePath` binds the visible label to Alpine state. The action labels have matching `PendingLabelOneWayStatePath`, `SucceededLabelOneWayStatePath`, and `FailedLabelOneWayStatePath` fields.
 - `Size` takes a `uiControl.ButtonSize*` constant.
 - `PaddingSize` takes a `uiToolset.PaddingSize*` constant and replaces the padding from `Size`. For a fixed square button, use `uiToolset.PaddingSizeNone` with `MinWidthClass` and `MinHeightClass`.
 - `MinWidthClass`, `MaxWidthClass`, `MinHeightClass`, and `MaxHeightClass` take Tailwind classes that limit the button box.
 - `Shape` takes `uiToolset.ShapeCircular`, `uiToolset.ShapeRounded`, or `uiToolset.ShapeSquare`. The default is `rounded-md`.
 - The icons use the `ph-bold` weight. Give the icon name only, for example `"ph-floppy-disk"`.
+- `IconTop` renders an icon above the label with the same size as `IconLeft` and `IconRight`. It combines with both side icons. An icon-only button with `IconTop` centers the icon. `IconTopOneWayStatePath` binds the icon class to Alpine state.
 - `IconSizeClass` and `TextSizeClass` take a Tailwind text size class and size the icons and the label on their own, replacing the `Size` tokens.
 - `AriaLabel` sets a static accessible name. `AriaLabelOneWayStatePath` binds the name to Alpine state. `AriaExpandedOneWayStatePath` binds `aria-expanded`, for a button that opens a controlled region.
 - `IsDisabled` disables the button. `IsDisabledOneWayStatePath` disables and dims it while the path is truthy.
 - `IsVisibleOneWayStatePath` hides the button while the path is falsy.
 - Every button has a `type`. The default is `button`, so a button in a form does not submit it. `IsSubmit` sets `type="submit"`.
+- `FormId` sets the HTML `form` attribute, so a submit button outside the form submits the form with that id. Use it for a save button in `Modal.FooterContent` when the form renders in `Modal.MiddleContent`.
 - `TooltipContent` shows a text tooltip. `TooltipContentHtml` takes a component, and `TooltipContentOneWayStatePath` binds live text. `TooltipPosition` takes a `uiToolset.TooltipPosition*` constant. The `Tooltip*WidthClass` and `Tooltip*HeightClass` fields limit the size. The tooltip renders on the document body, so a scroll container cannot clip it.
 - `BackgroundColor`, `TextColor`, and `RingColor` take Tailwind color tokens, for example `"red-500/20"`. The `*Hover` fields set the hover colors. `BackgroundColorActive` sets the pressed color.
 - `TextCase` takes a `uiToolset.TextCase*` value for the label.
 
 ### Action states
 
-`ShouldTrackAction` makes the button follow the action it starts. While the action runs, the button shows a spinner and `PendingLabel`, disables itself, and sets `aria-busy`. When the action ends, the button shows `SucceededLabel` or `FailedLabel` for two seconds. Each label defaults to `Label`.
+`ShouldTrackAction` makes the button follow the action it starts. While the action runs, the button shows a spinner and `PendingLabel`, disables itself, and sets `aria-busy`. When the action ends, the button shows `SucceededLabel` or `FailedLabel` for two seconds. Each label defaults to `Label` and accepts its own one-way state path.
 
 `PendingIcon`, `SucceededIcon`, and `FailedIcon` replace the action icons. They default to `ph-spinner`, `ph-check-circle`, and `ph-warning-circle`. `PendingIconAnimation` takes a `uiToolset.Animation*` constant and defaults to `AnimationSpin`. `AnimationNone` drops the animation. Any other value passes through as-is, so a custom animation must include its full class name, for example `"animate-wiggle"`.
 
@@ -41,7 +44,7 @@ Without `IsSubmit`, the action is the promise that `OnClickFunc` returns. No for
 - `OnClickFunc` must be one expression, because the button reads its result. Use `"saveProfile()"`, not `"isOpen = false; saveProfile()"`.
 - A result that is not a promise does not change the state.
 
-With `IsSubmit`, the action is the form that holds the button.
+With `IsSubmit`, the action is the form that holds the button, or the form named by `FormId`. A tracked button outside the form resolves the form by its `form` attribute, so the pending state and the double-submit guard still apply. The named form may mount after the button; the state watches the document until it appears.
 
 - The button refuses a second submit while pending. This includes the Enter key.
 - An HTMX request shows the result. A native POST shows no result, because the page navigates away.
@@ -52,6 +55,21 @@ With `IsSubmit`, the action is the form that holds the button.
 - HTMX requests from other elements in the form do not change the button.
 
 `IsPendingOneWayStatePath` shows the pending state while the path is truthy, on any button. Use it when one request blocks several buttons.
+
+### Countdown
+
+`CountdownSeconds` keeps the button disabled for that many seconds. While the countdown runs, the label shows the remaining time, for example `Delete (15s)`. At zero, the button enables and the normal label returns.
+
+```go
+@uiControl.Button(uiControl.ButtonSettings{
+    Label:            "Delete",
+    CountdownSeconds: 15,
+})
+```
+
+- The countdown starts on mount.
+- `CountdownTriggerOneWayStatePath` watches an Alpine path and restarts the countdown when the value changes. Use a counter that increments after a failed attempt.
+- `IsDisabledOneWayStatePath` and the action pending state combine with the countdown. The button stays disabled while any of them is truthy.
 
 ## RangeSlider
 
@@ -76,10 +94,10 @@ A slider with one or two thumbs, value bubbles, tick marks, and gradient tracks.
 
 - `ThumbValueTwoWayStatePath` binds the thumb. `ThumbValue` places it without a binding.
 - `TrackStartValue`, `TrackEndValue`, and `TrackSteps` set the track. `TrackStartValueOneWayStatePath` and `TrackEndValueOneWayStatePath` read the bounds from Alpine state instead.
-- `Thumb` holds every thumb appearance field: `Shape`, `BackgroundColor`, `TextColor`, `Label`, `LabelIcon`, `LabelOneWayStatePath`, `AriaLabel`, and the `ValueBubble*` fields.
+- `Thumb` holds every thumb appearance field: `Shape`, `BackgroundColor`, `TextColor`, `Label`, `LabelIcon`, `LabelOneWayStatePath`, `AriaLabel`, `AriaLabelOneWayStatePath`, and the `ValueBubble*` fields.
 - `Thumb.ValueBubbleEnabled` shows the value above the thumb. `ValueBubbleDisplayMode` takes `RangeSliderThumbValueBubbleDisplayModeAlways` (the default) or `RangeSliderThumbValueBubbleDisplayModeHover`. The other `ValueBubble*` fields style it.
 - `Track` holds every track appearance field: the `BackgroundColor*` and `FillColor*` colors, the `StartValueLabel*` and `EndValueLabel*` bounds labels, the `TicksEnabled` and `TickStep` marks, and the `Tooltip*` preview.
 - `Track.TooltipEnabled` shows the value under the pointer. The value snaps to `TrackSteps` and stays inside the track. `TooltipPosition` takes `RangeSliderTrackTooltipPositionTop` or `RangeSliderTrackTooltipPositionBottom`.
 - `ThumbDualValueModeEnabled` adds a second thumb, bound with `ThumbUpperValueTwoWayStatePath`. `ThumbUpper` takes the same fields as `Thumb`.
-- A thumb without an `AriaLabel` uses its visible label, then a default name.
+- `AriaLabelOneWayStatePath` binds the thumb accessible name to Alpine state and falls back to `AriaLabel`. A thumb without an `AriaLabel` uses its visible label, then a default name.
 - At init and on each change, the slider moves an out-of-bounds value back inside the track. In dual mode, the thumbs stay one step apart.
