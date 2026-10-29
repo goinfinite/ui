@@ -53,6 +53,7 @@ Shared parts for hover tooltips. The component sets `x-data` to the `tooltip` Al
 The JavaScript files live in `src/import/toolset/`. Include them with `@uiImport.HeadTagsFullJs()` or `@uiImport.HeadTagsToolset()`. Call the utilities through the `UiToolset` object.
 
 - `UiToolset.CreateRandomPassword(options)` returns a random password. `options` takes `length` (default 16), `minLength` (default 6), `maxLength` (default 64), and one `include*` flag for each character class.
+- `UiToolset.UnixTimestamp.ToIsoDate(unixSeconds)` returns the UTC date as `YYYY-MM-DD`. `UiToolset.UnixTimestamp.ToRfc1123(unixSeconds)` returns the UTC string in RFC 1123 form, for example `Fri, 01 Jan 2021 00:00:00 GMT`. Both take seconds, not milliseconds, and both throw `InvalidUnixTimestamp` on a non-number or a year outside 0000-9999.
 - `UiToolset.ResolveApiResponseDisplay(apiResponse, httpStatusCode)` returns the message and the outcome (`success`, `partialSuccess`, or `error`) of an Infinite API response.
 - `UiToolset.ToggleLoadingOverlay()` shows or hides the element with the id `loading-overlay`.
 - `UiToolset.JsonAjax(method, url, payload, toast)` sends a JSON request. It shows the loading overlay and can show a toast from the response. It returns a promise that rejects on failure.
