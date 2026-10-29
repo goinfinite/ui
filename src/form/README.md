@@ -145,7 +145,7 @@ A drop zone that also opens a file picker. It lists each file with a type icon, 
 
 ## MultiColumnRepeatableFieldset
 
-A repeatable list of rows built from column definitions. Each cell renders through the matching input component: text and number cells through `InputField`, select cells through `SelectInput`, and checkbox cells through `CheckboxInput`. The user adds, duplicates, moves, and removes rows. The list writes itself to a state path as JSON.
+A repeatable list of rows built from column definitions. Each cell renders through the matching input component: text and number cells through `InputField`, select cells through `SelectInput`, and checkbox cells through `CheckboxInput`. The user adds, duplicates, moves, and removes rows, or switches to a bulk textarea. The list writes itself to a state path as JSON.
 
 ```go
 @uiForm.MultiColumnRepeatableFieldset(uiForm.MultiColumnRepeatableFieldsetSettings{
@@ -172,8 +172,10 @@ A repeatable list of rows built from column definitions. Each cell renders throu
 - `IsRequired` marks the cell required: the field carries the required and aria-invalid wiring and paints a red border while empty. It does not block the row actions.
 - `Size` takes an `InputFieldSize*` constant and applies to every cell. `TextCase` changes the cell label case.
 - Each cell type carries a style group. `Dropdown` takes `BackgroundColor`, `BorderColor`, and `BorderRadius` for the select option list. `Select` takes `SelectedIconColor` and a `Trigger` surface of `BackgroundColor`, `BorderColor`, `BorderRadius`, and `TextColor`. `Checkbox` takes `CheckedColor`, `UncheckedColor`, `FocusRingColor`, and `Shape`.
-- `NewRowFunc` names a JavaScript expression that returns a new row object. The Add row action merges the returned values into the column defaults, so each added row can carry distinct values. Invalid or unknown entries fall back to the column defaults and log `MultiColumnRepeatableFieldsetNewRowFuncFailed`. Give the expression from code, never from request data; the component evaluates it in the browser.
-- The move-up and move-down buttons disable on the edge rows. `AddRowLabel` replaces the add button text, and `EmptyStateLabel` replaces the empty-state text.
+- `NewRowFunc` names a JavaScript expression that returns a new row object. The add row action merges the returned values into the column defaults, so each added row can carry distinct values. Invalid or unknown entries fall back to the column defaults and log `MultiColumnRepeatableFieldsetNewRowFuncFailed`. Give the expression from code, never from request data; the component evaluates it in the browser.
+- `BulkEdit.IsEnabled` adds a button that switches the table to one textarea line per row and back. `Delimiter` defaults to `=` for two columns and `|` for three or more columns, and every textarea edit writes the bound array, so a pasted block submits with the form. Each line splits on the first `len(Columns)-1` delimiters, so the last column keeps any remaining delimiter text, and each part is trimmed. Blank lines are ignored, and a text-only row with every cell empty is skipped when the textarea opens. Checkbox cells read `true`, `1`, `yes`, or `on` as checked; select cells take the option value. `ButtonLabel`, `TableButtonLabel`, `ButtonIcon`, `TableButtonIcon`, `TextAreaLabel`, and `HintValue` replace the default texts and icons. The default button labels are lowercase.
+- `AddRowButton` and `BulkEditButton` style the action buttons. Each takes `BackgroundColor`, `BackgroundColorHover`, `Shape`, `TextColor`, and `TextColorHover`; `AddRowButton` also takes `IconLeft` and `IconRight`. `AddRowLabel` replaces the add button text.
+- The move-up and move-down buttons disable on the edge rows. `EmptyStateLabel` replaces the empty-state text.
 - `InputName` adds a hidden input that submits the rows as JSON with the form.
 - The rows read and write through `TwoWayStatePath`. Each edit writes the whole array back. An empty array shows the empty state.
 - Give the state paths from code, never from request data. The component puts them into client-side expressions.
