@@ -3,6 +3,7 @@ package main
 import (
 	uiControl "github.com/goinfinite/ui/src/control"
 	uiDisplay "github.com/goinfinite/ui/src/display"
+	uiForm "github.com/goinfinite/ui/src/form"
 	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
@@ -214,6 +215,123 @@ templ ModalHeaderFooterExample() {
 				FooterContent:            ModalDemoFooter(),
 				InitialSize:              uiDisplay.ModalSizeMd,
 				IsVisibleTwoWayStatePath: "isSlotsModalVisible",
+			})
+		</div>
+	}
+}
+
+templ ModalFooterFormContent() {
+	<form
+		id="modal-footer-form-demo"
+		class="flex flex-col gap-3 pb-1 pt-2"
+		hx-get="assets/ui-logo.svg"
+		hx-swap="none"
+		@htmx:after-request="if ($event.detail.successful) { isFooterFormModalVisible = false }"
+	>
+		@uiForm.InputField(uiForm.InputFieldSettings{
+			InputType:       uiForm.InputTypeText,
+			InputName:       "fullName",
+			Label:           "Full name",
+			TwoWayStatePath: "profileName",
+		})
+		@uiForm.InputField(uiForm.InputFieldSettings{
+			InputType:       uiForm.InputTypeEmail,
+			InputName:       "email",
+			Label:           "Email",
+			TwoWayStatePath: "profileEmail",
+		})
+		@uiForm.InputField(uiForm.InputFieldSettings{
+			InputType:       uiForm.InputTypeText,
+			InputName:       "team",
+			Label:           "Team",
+			TwoWayStatePath: "profileTeam",
+		})
+		@uiForm.InputField(uiForm.InputFieldSettings{
+			InputType:       uiForm.InputTypeText,
+			InputName:       "location",
+			Label:           "Location",
+			TwoWayStatePath: "profileLocation",
+		})
+		@uiForm.InputField(uiForm.InputFieldSettings{
+			InputType:       uiForm.InputTypeText,
+			InputName:       "timezone",
+			Label:           "Timezone",
+			TwoWayStatePath: "profileTimezone",
+		})
+	</form>
+}
+
+templ ModalFooterFormActions() {
+	<div class="flex justify-end gap-2 border-t border-neutral-50/10 pt-3">
+		@uiControl.Button(uiControl.ButtonSettings{
+			Label:           "Cancel",
+			IconLeft:        "ph-x",
+			OnClickFunc:     "isFooterFormModalVisible = false",
+			BackgroundColor: "neutral-50/10",
+		})
+		@uiControl.Button(uiControl.ButtonSettings{
+			Label:             "Save",
+			IconLeft:          "ph-check",
+			IsSubmit:          true,
+			FormId:            "modal-footer-form-demo",
+			ShouldTrackAction: true,
+			PendingLabel:      "Saving",
+			SucceededLabel:    "Saved",
+			FailedLabel:       "Save failed",
+			BackgroundColor:   "emerald-500",
+		})
+	</div>
+}
+
+templ ModalFooterFormExample() {
+	{{
+		footerFormUsage := `@uiDisplay.Modal(uiDisplay.ModalSettings{
+	MiddleContent: ModalFooterFormContent(),
+	FooterContent: ModalFooterFormActions(),
+	Title:         "Edit Profile",
+
+	// OptionalFields
+	ShouldHeightMatchContent: true,
+	MaxHeightPercent:         50,
+	IsVisibleTwoWayStatePath: "isFooterFormModalVisible",
+})
+
+@uiControl.Button(uiControl.ButtonSettings{
+	Label:             "Save",
+	IsSubmit:          true,
+	FormId:            "modal-footer-form-demo",
+	ShouldTrackAction: true,
+})`
+	}}
+	@DemoExampleCardStacked(
+		"Footer Form Submit",
+		"The form renders in MiddleContent. The save button sits in FooterContent, stays visible while the form scrolls, and submits the form through FormId.",
+		"/display/modal.templ", footerFormUsage,
+	) {
+		<div
+			class="flex flex-col gap-3"
+			x-data="{
+				isFooterFormModalVisible: false,
+				profileName: 'Ada Lovelace',
+				profileEmail: 'ada@example.com',
+				profileTeam: 'Platform',
+				profileLocation: 'London',
+				profileTimezone: 'UTC',
+			}"
+		>
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "Open form modal",
+				IconLeft:        "ph-pencil-simple",
+				OnClickFunc:     "isFooterFormModalVisible = true",
+				BackgroundColor: "primary-600",
+			})
+			@uiDisplay.Modal(uiDisplay.ModalSettings{
+				MiddleContent:            ModalFooterFormContent(),
+				FooterContent:            ModalFooterFormActions(),
+				Title:                    "Edit Profile",
+				ShouldHeightMatchContent: true,
+				MaxHeightPercent:         50,
+				IsVisibleTwoWayStatePath: "isFooterFormModalVisible",
 			})
 		</div>
 	}
@@ -711,6 +829,7 @@ templ ModalDemo() {
 			{Title: "Uncloseable", Icon: "ph-lock", Content: ModalUncloseableExample()},
 			{Title: "Unresizable & OnResize", Icon: "ph-arrows-out", Content: ModalUnresizableExample()},
 			{Title: "Header & Footer Slots", Icon: "ph-columns", Content: ModalHeaderFooterExample()},
+			{Title: "Footer Form Submit", Icon: "ph-floppy-disk", Content: ModalFooterFormExample()},
 			{Title: "Appearance", Icon: "ph-palette", Content: ModalAppearanceExample()},
 			{Title: "Near-Full Size", Icon: "ph-terminal", Content: ModalNearFullSizeExample()},
 			{Title: "Custom Dimensions", Icon: "ph-arrows-out", Content: ModalCustomDimensionsExample()},

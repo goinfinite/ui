@@ -361,6 +361,7 @@ A window dialog with header, middle, and footer slots.
 - `CurrentSizeTwoWayStatePath` binds the live size. When the field is empty and the panel can resize, the modal makes its own path.
 - Enlarge moves one size up, and reduce moves one size down. Reduce hides at the initial size, and enlarge hides at the largest size.
 - `ShouldHeightMatchContent` sets the height to the content, up to 85%.
+- `FooterContent` renders below the scrollable middle content, so it stays visible. The save pattern puts the form in `MiddleContent` and a submit `uiControl.Button` in `FooterContent` with `FormId` set to the form id.
 - `IsMiddleContentScrollDisabled` stops the middle scroll, so the content controls its overflow. Use it for a full-bleed panel such as a terminal.
 - `IsUnresizable` and `IsUncloseable` remove those buttons. The resize buttons also hide when fewer than two sizes are available.
 - The close button and a backdrop click set the visibility path to false and run `OnCloseFunc`. `IsUncloseable` stops both, so the app must close the modal.
