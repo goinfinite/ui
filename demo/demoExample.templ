@@ -1,8 +1,6 @@
 package main
 
-import (
-	uiDisplay "github.com/goinfinite/ui/src/display"
-)
+import uiDisplay "github.com/goinfinite/ui/src/display"
 
 const (
 	DemoPreCodeClasses         string = "rounded-md bg-neutral-800 p-4 text-xs text-wrap break-words tab-2"
@@ -114,7 +112,7 @@ templ DemoComponentSection(settings DemoComponentSectionSettings) {
 				<h3 class="text-xl font-bold">
 					{ settings.Title }
 					if settings.TitleNote != "" {
-						<i class="text-sm text-neutral-500">{ settings.TitleNote }</i>
+						<i class="text-sm text-neutral-400">{ settings.TitleNote }</i>
 					}
 				</h3>
 				<p class="text-sm text-neutral-400">{ settings.Description }</p>
