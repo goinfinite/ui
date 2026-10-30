@@ -10,7 +10,7 @@ Infinite UI is a set of reusable Go components. It uses [a-h/templ](https://gith
 
 ## Installation
 
-Infinite UI requires Go 1.27.1 or later:
+Infinite UI requires Go 1.27.3 or later:
 
 ```bash
 go get github.com/goinfinite/ui@latest
