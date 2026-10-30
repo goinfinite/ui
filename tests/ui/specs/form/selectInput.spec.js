@@ -83,6 +83,9 @@ test.describe("SelectInput", () => {
     await expect(selectedDisplay).toHaveText("0");
     await expect(selectedDisplay).toBeVisible();
     await expect(placeholder).toBeHidden();
+    await expect(
+      panel.locator('fieldset:has(input[name="role"]) legend'),
+    ).toBeVisible();
 
     const selectedRole = await panel.evaluate((panelElement) => {
       const stateRoot = panelElement.querySelector(

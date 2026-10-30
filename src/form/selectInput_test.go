@@ -78,6 +78,41 @@ func TestSelectInputSizeClassesResolver(t *testing.T) {
 	}
 }
 
+func TestSelectInputEmptyStateCheckExpressionBuilder(t *testing.T) {
+	testCases := []struct {
+		name          string
+		statePath     string
+		isMultiSelect bool
+		expected      string
+	}{
+		{
+			name:      "single select checks explicit empty values",
+			statePath: "selectedRole",
+			expected:  "(selectedRole === null || selectedRole === undefined || selectedRole === '')",
+		},
+		{
+			name:          "multi select checks its length",
+			statePath:     "selectedRoles",
+			isMultiSelect: true,
+			expected:      "!(selectedRoles.length)",
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			actualExpression := selectInputEmptyStateCheckExpressionBuilder(
+				testCase.statePath, testCase.isMultiSelect,
+			)
+			if actualExpression != testCase.expected {
+				t.Errorf(
+					"EmptyStateCheckExpressionMismatch(%q): got %q, want %q",
+					testCase.statePath, actualExpression, testCase.expected,
+				)
+			}
+		})
+	}
+}
+
 func TestSelectInputOptionIconExpressionBuilder(t *testing.T) {
 	actualExpression := selectInputOptionIconExpressionBuilder(
 		"selectedValue", `"admin"`,
@@ -218,7 +253,7 @@ func TestSelectInputRendersInvalidStateBinding(t *testing.T) {
 	}
 	renderedHtml := buffer.String()
 	expectedFragments := []string{
-		`:class="{&#39;mt-0&#39;: !(roleValue), &#39;!border-red-500&#39;: roleIsInvalid}"`,
+		`:class="{&#39;mt-0&#39;: (roleValue === null || roleValue === undefined || roleValue === &#39;&#39;), &#39;!border-red-500&#39;: roleIsInvalid}"`,
 		`:aria-invalid="roleIsInvalid"`,
 	}
 	for _, expectedFragment := range expectedFragments {

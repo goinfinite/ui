@@ -114,7 +114,7 @@ func selectInputEmptyStateCheckExpressionBuilder(
 	if isMultiSelect {
 		return "!(" + statePath + ".length)"
 	}
-	return "!(" + statePath + ")"
+	return "(" + statePath + " === null || " + statePath + " === undefined || " + statePath + " === '')"
 }
 
 func selectInputOptionCheckboxBox() templ.Component {

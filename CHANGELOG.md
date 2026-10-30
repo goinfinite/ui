@@ -7,7 +7,8 @@ fix: let the MultiColumnRepeatableFieldset bulk edit round-trip delimiters, newl
 fix: keep the PasswordInput Caps Lock hint to key events from its input, show unmatched dynamic multi-select values as their selected value, keep a dynamic single-select option's value type, and floor negative fractional Unix timestamps before the date conversion
 fix: let SelectInput single-select change events bubble to parent listeners, so delegated validation and autosave see dynamic and static picks alike
 fix: keep the SelectInput dynamic option loop variable distinct from the bound state path, so a TwoWayStatePath named option no longer shadows the caller's state
-test: share the Button render cases and cover the zero dynamic option, the numeric dynamic option, the bubbled single-select change event, the bulk-edit escapes, reconciliation, and unchanged cells, the Caps Lock target filtering, the unmatched multi-select fallback, and the negative fractional timestamp
+fix: keep the SelectInput legend visible when a dynamic single-select holds numeric zero
+test: share the Button render cases and cover the zero dynamic option, the numeric dynamic option, the zero legend, the bubbled single-select change event, the bulk-edit escapes, reconciliation, and unchanged cells, the Caps Lock target filtering, the unmatched multi-select fallback, and the negative fractional timestamp
 docs: update the form readme, context, and feature map, and regenerate the demo page
 feat: add MultiColumnRepeatableFieldset.BulkEdit, a toggle between the row table and a delimiter-separated textarea that parses each edit back into the bound rows, preserves the rows on a no-edit toggle, supports checkbox and select cells, defaults the delimiter to = for two columns and | for more, and adds AddRowButton and BulkEditButton styles with lowercase default labels
 feat: add UiToolset.UnixTimestamp.ToIsoDate and ToRfc1123 for Unix seconds, rejecting timestamps outside UTC years 0000-9999
