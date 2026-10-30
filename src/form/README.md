@@ -306,7 +306,7 @@ A dropdown select. It is not a native `<select>`: hidden radio inputs and an Alp
 
 - `LabelOneWayStatePath` renders the legend and the empty trigger text from an Alpine path. `Label` remains the static fallback.
 - `IsMultiSelect` shows checkbox rows, keeps the list open after each toggle, and binds an array. The trigger joins the selected labels. `InputId` prefixes the checkbox ids.
-- `OptionsOneWayStatePath` replaces the static option lists. The trigger resolves the selected label from the same array, in single and multi mode. A zero-valued option renders as `0` and keeps the legend visible; in multi mode, a selected value with no matching option shows its string form. A single-select writes the option's original value, so a numeric option stays numeric.
+- `OptionsOneWayStatePath` replaces the static option lists. The trigger resolves the selected label from the same array, in single and multi mode. A zero-valued option renders as `0` and keeps the legend visible; in multi mode, a selected value with no matching option shows its string form. Single and multi select write the option's original value, so a numeric option stays numeric.
 - `ShouldIncludeBlankOption` adds a blank entry in single mode. In multi mode, a clear control shows while the array holds a value.
 - `IsDisabledOneWayStatePath` disables the trigger while the path is truthy. `IsInvalidOneWayStatePath` paints the field border red and sets `aria-invalid` on the trigger while the path is truthy.
 - `OnChangeFunc` runs after a change, a toggle, or a clear.

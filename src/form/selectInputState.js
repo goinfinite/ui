@@ -24,6 +24,26 @@ UiToolset.RegisterAlpineState(() => {
       return matchedOption;
     },
 
+    selectedOptionValueIsPresent(selectedItems, optionValue) {
+      if (!Array.isArray(selectedItems)) {
+        return false;
+      }
+      return selectedItems.some(
+        (selectedValue) => String(selectedValue) === String(optionValue),
+      );
+    },
+
+    toggleSelectedOptionValue(selectedItems, optionValue, isChecked) {
+      const currentItems = Array.isArray(selectedItems) ? selectedItems : [];
+      const itemsWithoutOption = currentItems.filter(
+        (selectedValue) => String(selectedValue) !== String(optionValue),
+      );
+      if (!isChecked) {
+        return itemsWithoutOption;
+      }
+      return [...itemsWithoutOption, optionValue];
+    },
+
     dynamicOptionDisplayLabelResolver(options, optionValue) {
       const optionLabel = this.dynamicOptionLabelResolver(options, optionValue);
       if (optionLabel !== "") {

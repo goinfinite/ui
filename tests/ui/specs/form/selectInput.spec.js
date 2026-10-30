@@ -133,6 +133,20 @@ test.describe("SelectInput", () => {
       labelValuePanel.locator("input[type=checkbox][name=roles]").nth(1),
     ).toBeChecked();
     await expect(labelValueTrigger).toContainText("Administrator, Editor");
+
+    await labelValuePanel.evaluate((panelElement) => {
+      const stateRoot = panelElement.querySelector('[x-data*="runtimeRoles"]');
+      const state = window.Alpine.$data(stateRoot);
+      state.runtimeOptions = [...state.runtimeOptions, { value: 0 }];
+    });
+    await labelValueOptions.getByText("0", { exact: true }).click();
+    await expect(labelValueTrigger).toContainText("Administrator, Editor, 0");
+
+    const selectedRoles = await labelValuePanel.evaluate((panelElement) => {
+      const stateRoot = panelElement.querySelector('[x-data*="runtimeRoles"]');
+      return window.Alpine.$data(stateRoot).runtimeRoles;
+    });
+    expect(selectedRoles).toEqual(["admin", "editor", 0]);
   });
 
   test("@smoke dynamic multi-select falls back to unmatched selected values", async ({

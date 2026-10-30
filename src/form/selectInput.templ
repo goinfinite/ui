@@ -108,6 +108,13 @@ func selectInputEmptyStateCheckExpressionBuilder(
 	return "(" + statePath + " === null || " + statePath + " === undefined || " + statePath + " === '')"
 }
 
+func selectInputOptionAlias(statePath, alias string) string {
+	for strings.HasPrefix(statePath, alias) {
+		alias += "_"
+	}
+	return alias
+}
+
 templ selectInputOptionCheckboxBox() {
 	<span class="flex h-4 w-4 items-center justify-center rounded border-2 border-neutral-50/20 text-transparent transition-colors peer-enabled:peer-hover:border-secondary-500 peer-checked:border-secondary-500 peer-checked:text-secondary-500 peer-focus-visible:ring-2 peer-focus-visible:ring-secondary-500">
 		<i class="ph-bold ph-check text-[0.625rem]"></i>
@@ -375,13 +382,15 @@ templ SelectInput(componentSettings SelectInputSettings) {
 						</li>
 					}
 					if componentSettings.OptionsOneWayStatePath != "" {
-						{{ dynamicOptionValueExpression := "dynamicOption?.value ?? dynamicOption" }}
-						{{ dynamicOptionLabelExpression := "dynamicOption?.label ?? dynamicOption?.value ?? dynamicOption" }}
+						{{ dynamicOptionAlias := selectInputOptionAlias(selectValueStatePath, "dynamicOption") }}
+						{{ dynamicOptionIndexAlias := selectInputOptionAlias(selectValueStatePath, "optionIndex") }}
+						{{ dynamicOptionValueExpression := dynamicOptionAlias + "?.value ?? " + dynamicOptionAlias }}
+						{{ dynamicOptionLabelExpression := dynamicOptionAlias + "?.label ?? " + dynamicOptionAlias + "?.value ?? " + dynamicOptionAlias }}
 						{{ dynamicSelectedCheckExpression := "String(" + selectValueStatePath + ") === String(" + dynamicOptionValueExpression + ")" }}
 						{{ dynamicOptionIconExpression := selectInputOptionIconExpressionBuilder(selectValueStatePath, dynamicOptionValueExpression) }}
 						<template
-							x-for={ "(dynamicOption, optionIndex) in " + componentSettings.OptionsOneWayStatePath }
-							:key={ "String(dynamicOption?.value ?? dynamicOption) + '-' + optionIndex" }
+							x-for={ "(" + dynamicOptionAlias + ", " + dynamicOptionIndexAlias + ") in " + componentSettings.OptionsOneWayStatePath }
+							:key={ "String(" + dynamicOptionValueExpression + ") + '-' + " + dynamicOptionIndexAlias }
 						>
 							<li class={ dropdownClasses + " " + dropdownSelectedClasses }>
 								<label class={ optionLabelClasses }>
@@ -391,16 +400,14 @@ templ SelectInput(componentSettings SelectInputSettings) {
 											<input
 												type="checkbox"
 												if componentSettings.InputId != "" {
-													:id={ strconv.Quote(componentSettings.InputId+"-") + " + optionIndex" }
+													:id={ strconv.Quote(componentSettings.InputId+"-") + " + " + dynamicOptionIndexAlias }
 												}
 												if componentSettings.InputName != "" {
 													name={ componentSettings.InputName }
 												}
 												:value={ dynamicOptionValueExpression }
-												x-model={ selectValueStatePath }
-												if componentSettings.OnChangeFunc != "" {
-													@change={ componentSettings.OnChangeFunc }
-												}
+												:checked={ "selectedOptionValueIsPresent(" + selectValueStatePath + ", " + dynamicOptionValueExpression + ")" }
+												@change={ selectValueStatePath + " = toggleSelectedOptionValue(" + selectValueStatePath + ", " + dynamicOptionValueExpression + ", $event.target.checked)" + onChangeFuncSuffix }
 												class="peer absolute inset-0 h-full w-full cursor-pointer opacity-0"
 											/>
 											@selectInputOptionCheckboxBox()
