@@ -117,8 +117,8 @@ func selectInputEmptyStateCheckExpressionBuilder(
 	return "(" + statePath + " === null || " + statePath + " === undefined || " + statePath + " === '')"
 }
 
-func selectInputOptionAlias(statePath, alias string) string {
-	for strings.HasPrefix(statePath, alias) {
+func selectInputOptionAlias(statePath, onChangeFunc, alias string) string {
+	for strings.HasPrefix(statePath, alias) || strings.Contains(onChangeFunc, alias) {
 		alias += "_"
 	}
 	return alias
@@ -1278,8 +1278,8 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 			}
 		}
 		if componentSettings.OptionsOneWayStatePath != "" {
-			dynamicOptionAlias := selectInputOptionAlias(selectValueStatePath, "dynamicOption")
-			dynamicOptionIndexAlias := selectInputOptionAlias(selectValueStatePath, "optionIndex")
+			dynamicOptionAlias := selectInputOptionAlias(selectValueStatePath, componentSettings.OnChangeFunc, "dynamicOption")
+			dynamicOptionIndexAlias := selectInputOptionAlias(selectValueStatePath, componentSettings.OnChangeFunc, "optionIndex")
 			dynamicOptionValueExpression := dynamicOptionAlias + "?.value ?? " + dynamicOptionAlias
 			dynamicOptionLabelExpression := dynamicOptionAlias + "?.label ?? " + dynamicOptionAlias + "?.value ?? " + dynamicOptionAlias
 			dynamicSelectedCheckExpression := selectValueStatePath + " === (" + dynamicOptionValueExpression + ")"

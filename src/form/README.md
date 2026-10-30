@@ -309,7 +309,7 @@ A dropdown select. It is not a native `<select>`: hidden radio inputs and an Alp
 - `OptionsOneWayStatePath` replaces the static option lists. The trigger resolves the selected label from the same array, in single and multi mode. A zero-valued option renders as `0` and keeps the legend visible; in multi mode, a selected value with no matching option shows its string form. Single- and multi-select write the option's original value, so a numeric option stays numeric. Dynamic options match by strict value identity, so numeric `0` and string `"0"` stay distinct.
 - `ShouldIncludeBlankOption` adds a blank entry in single mode. In multi mode, a clear control shows while the array holds a value.
 - `IsDisabledOneWayStatePath` disables the trigger while the path is truthy. `IsInvalidOneWayStatePath` paints the field border red and sets `aria-invalid` on the trigger while the path is truthy.
-- `OnChangeFunc` runs after a change, a toggle, or a clear.
+- `OnChangeFunc` runs after a change, a toggle, or a clear. Dynamic option loop aliases avoid the bound state path and the callback text, so a callback can read caller state named `dynamicOption` or `optionIndex`.
 - `Size` takes a `SelectInputSize*` constant (default `md`).
 - The trigger opens on click, Enter, Space, or ArrowDown; the checked row takes focus, Enter commits, and Escape closes with focus return. A pick in single mode closes the dropdown.
 - `DropdownMinHeightClass` and `DropdownMaxHeightClass` limit the list height (default `max-h-60`). `MaxVisibleOptions` sets a row count and replaces both.

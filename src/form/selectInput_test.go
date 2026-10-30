@@ -115,10 +115,11 @@ func TestSelectInputEmptyStateCheckExpressionBuilder(t *testing.T) {
 
 func TestSelectInputOptionAlias(t *testing.T) {
 	testCases := []struct {
-		name      string
-		statePath string
-		alias     string
-		expected  string
+		name         string
+		statePath    string
+		onChangeFunc string
+		alias        string
+		expected     string
 	}{
 		{
 			name:      "matching alias stays unchanged",
@@ -150,15 +151,32 @@ func TestSelectInputOptionAlias(t *testing.T) {
 			alias:     "optionIndex",
 			expected:  "optionIndex_",
 		},
+		{
+			name:         "index alias yields to the callback",
+			statePath:    "selected",
+			onChangeFunc: "lastIndex = optionIndex",
+			alias:        "optionIndex",
+			expected:     "optionIndex_",
+		},
+		{
+			name:         "option alias yields to the callback",
+			statePath:    "selected",
+			onChangeFunc: "lastOption = dynamicOption",
+			alias:        "dynamicOption",
+			expected:     "dynamicOption_",
+		},
 	}
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			actualAlias := selectInputOptionAlias(testCase.statePath, testCase.alias)
+			actualAlias := selectInputOptionAlias(
+				testCase.statePath, testCase.onChangeFunc, testCase.alias,
+			)
 			if actualAlias != testCase.expected {
 				t.Errorf(
-					"OptionAliasMismatch(%q, %q): got %q, want %q",
-					testCase.statePath, testCase.alias, actualAlias, testCase.expected,
+					"OptionAliasMismatch(%q, %q, %q): got %q, want %q",
+					testCase.statePath, testCase.onChangeFunc, testCase.alias,
+					actualAlias, testCase.expected,
 				)
 			}
 		})
@@ -294,6 +312,53 @@ func TestSelectInputMultiSelectOptionIndexAlias(t *testing.T) {
 		if !strings.Contains(renderedHtml, expectedFragment) {
 			t.Errorf("RenderedHtmlMissingFragment: %q", expectedFragment)
 		}
+	}
+}
+
+func TestSelectInputOnChangeFuncAliasDoesNotShadowStatePath(t *testing.T) {
+	testCases := []struct {
+		name              string
+		onChangeFunc      string
+		expectedFragments []string
+	}{
+		{
+			name:         "option index callback",
+			onChangeFunc: "lastIndex = optionIndex",
+			expectedFragments: []string{
+				`x-for="(dynamicOption, optionIndex_) in dynamicOptions"`,
+				`@change="selected = dynamicOption?.value ?? dynamicOption; lastIndex = optionIndex"`,
+			},
+		},
+		{
+			name:         "dynamic option callback",
+			onChangeFunc: "lastOption = dynamicOption",
+			expectedFragments: []string{
+				`x-for="(dynamicOption_, optionIndex) in dynamicOptions"`,
+				`@change="selected = dynamicOption_?.value ?? dynamicOption_; lastOption = dynamicOption"`,
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			var buffer bytes.Buffer
+			renderErr := SelectInput(SelectInputSettings{
+				InputName:              "status",
+				Label:                  "Status",
+				OptionsOneWayStatePath: "dynamicOptions",
+				TwoWayStatePath:        "selected",
+				OnChangeFunc:           testCase.onChangeFunc,
+			}).Render(context.Background(), &buffer)
+			if renderErr != nil {
+				t.Fatalf("SelectInputRenderFailed: %v", renderErr)
+			}
+			renderedHtml := buffer.String()
+			for _, expectedFragment := range testCase.expectedFragments {
+				if !strings.Contains(renderedHtml, expectedFragment) {
+					t.Errorf("RenderedHtmlMissingFragment: %q", expectedFragment)
+				}
+			}
+		})
 	}
 }
 
