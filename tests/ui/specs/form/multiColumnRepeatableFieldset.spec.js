@@ -365,6 +365,38 @@ test.describe("MultiColumnRepeatableFieldset", () => {
     );
   });
 
+  test("@smoke bulk edit keeps row order when an edit creates a duplicate", async ({
+    page,
+  }) => {
+    const wrapper = page.locator(mainWrapperSelector);
+    const readout = wrapper.locator(readoutSelector);
+    const hiddenInput = wrapper.locator('input[name="teamMembers"]');
+    const initialRows = [
+      { id: "member-1", name: "Ana", role: "owner", age: "38", active: true },
+      { id: "member-2", name: "Bob", role: "member", age: "24", active: false },
+    ];
+
+    await wrapper.evaluate((wrapperElement, rows) => {
+      const wrapperState = window.Alpine.$data(wrapperElement);
+      wrapperState.teamMemberRows = rows;
+    }, initialRows);
+    await expect(readout).toHaveText(JSON.stringify(initialRows));
+
+    await wrapper.getByRole("button", { name: "bulk edit" }).click();
+    const textarea = wrapper.locator("textarea");
+    await expect(textarea).toHaveValue(
+      "Ana|owner|38|true\nBob|member|24|false",
+    );
+
+    await textarea.fill("Bob|member|24|false\nBob|member|24|false");
+    const expectedRows = [
+      { id: "member-1", name: "Bob", role: "member", age: "24", active: false },
+      { id: "member-2", name: "Bob", role: "member", age: "24", active: false },
+    ];
+    await expect(readout).toHaveText(JSON.stringify(expectedRows));
+    await expect(hiddenInput).toHaveValue(JSON.stringify(expectedRows));
+  });
+
   test("@smoke bulk edit defaults to | for four columns", async ({ page }) => {
     const panel = await openExamplePanel(page, fieldsetSection, "Delimiters");
     const wrapper = panel.locator("[x-data*=portBindingRows]");

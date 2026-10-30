@@ -152,6 +152,13 @@ func selectInputOptionIconExpressionBuilder(
 		optionValueExpression + `) ? "ph-check-circle" : "ph-circle"`
 }
 
+func selectInputDynamicOptionIconExpressionBuilder(
+	selectedValueStatePath, optionValueExpression string,
+) string {
+	return selectedValueStatePath + " === (" + optionValueExpression +
+		`) ? "ph-check-circle" : "ph-circle"`
+}
+
 templ selectInputOptionIcon(selectedIconColor, iconClassExpression string) {
 	<i
 		class={ "ph-duotone text-lg text-neutral-400 peer-checked:text-" + selectedIconColor + " peer-focus-visible:ring-2 peer-focus-visible:ring-" + selectedIconColor }
@@ -386,8 +393,8 @@ templ SelectInput(componentSettings SelectInputSettings) {
 						{{ dynamicOptionIndexAlias := selectInputOptionAlias(selectValueStatePath, "optionIndex") }}
 						{{ dynamicOptionValueExpression := dynamicOptionAlias + "?.value ?? " + dynamicOptionAlias }}
 						{{ dynamicOptionLabelExpression := dynamicOptionAlias + "?.label ?? " + dynamicOptionAlias + "?.value ?? " + dynamicOptionAlias }}
-						{{ dynamicSelectedCheckExpression := "String(" + selectValueStatePath + ") === String(" + dynamicOptionValueExpression + ")" }}
-						{{ dynamicOptionIconExpression := selectInputOptionIconExpressionBuilder(selectValueStatePath, dynamicOptionValueExpression) }}
+						{{ dynamicSelectedCheckExpression := selectValueStatePath + " === (" + dynamicOptionValueExpression + ")" }}
+						{{ dynamicOptionIconExpression := selectInputDynamicOptionIconExpressionBuilder(selectValueStatePath, dynamicOptionValueExpression) }}
 						<template
 							x-for={ "(" + dynamicOptionAlias + ", " + dynamicOptionIndexAlias + ") in " + componentSettings.OptionsOneWayStatePath }
 							:key={ "String(" + dynamicOptionValueExpression + ") + '-' + " + dynamicOptionIndexAlias }

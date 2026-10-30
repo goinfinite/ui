@@ -283,6 +283,29 @@ UiToolset.RegisterAlpineState(() => {
           parsedRowIndex < parsedRows.length;
           parsedRowIndex += 1
         ) {
+          if (parsedRowIndex >= rows.length) {
+            continue;
+          }
+          const parsedRowText = this.serializeBulkEditRows([
+            parsedRows[parsedRowIndex],
+          ]);
+          const currentRowText = this.serializeBulkEditRows([
+            rows[parsedRowIndex],
+          ]);
+          if (parsedRowText !== currentRowText) {
+            continue;
+          }
+          matchedRowIndexesByParsedIndex[parsedRowIndex] = parsedRowIndex;
+          usedRowIndexes.add(parsedRowIndex);
+        }
+        for (
+          let parsedRowIndex = 0;
+          parsedRowIndex < parsedRows.length;
+          parsedRowIndex += 1
+        ) {
+          if (matchedRowIndexesByParsedIndex[parsedRowIndex] !== undefined) {
+            continue;
+          }
           const parsedRowText = this.serializeBulkEditRows([
             parsedRows[parsedRowIndex],
           ]);

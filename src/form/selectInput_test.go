@@ -178,6 +178,19 @@ func TestSelectInputOptionIconExpressionBuilder(t *testing.T) {
 	}
 }
 
+func TestSelectInputDynamicOptionIconExpressionBuilder(t *testing.T) {
+	actualExpression := selectInputDynamicOptionIconExpressionBuilder(
+		"selectedValue", "dynamicOption?.value ?? dynamicOption",
+	)
+	expectedExpression := `selectedValue === (dynamicOption?.value ?? dynamicOption) ? "ph-check-circle" : "ph-circle"`
+	if actualExpression != expectedExpression {
+		t.Errorf(
+			"DynamicIconExpressionMismatch: got %q, want %q",
+			actualExpression, expectedExpression,
+		)
+	}
+}
+
 func TestSelectInputRendersDynamicOptionsStatePath(t *testing.T) {
 	var buffer bytes.Buffer
 	renderErr := SelectInput(SelectInputSettings{
@@ -214,7 +227,7 @@ func TestSelectInputDynamicOptionDoesNotShadowStatePath(t *testing.T) {
 			expectedFragments: []string{
 				`x-for="(dynamicOption, optionIndex) in dynamicOptions"`,
 				`@change="option = dynamicOption?.value ?? dynamicOption"`,
-				`String(option) === String(dynamicOption?.value ?? dynamicOption)`,
+				`option === (dynamicOption?.value ?? dynamicOption)`,
 			},
 		},
 		{
@@ -223,7 +236,7 @@ func TestSelectInputDynamicOptionDoesNotShadowStatePath(t *testing.T) {
 			expectedFragments: []string{
 				`x-for="(dynamicOption_, optionIndex) in dynamicOptions"`,
 				`@change="dynamicOption = dynamicOption_?.value ?? dynamicOption_"`,
-				`String(dynamicOption) === String(dynamicOption_?.value ?? dynamicOption_)`,
+				`dynamicOption === (dynamicOption_?.value ?? dynamicOption_)`,
 			},
 		},
 		{
@@ -232,7 +245,7 @@ func TestSelectInputDynamicOptionDoesNotShadowStatePath(t *testing.T) {
 			expectedFragments: []string{
 				`x-for="(dynamicOption, optionIndex_) in dynamicOptions"`,
 				`@change="optionIndex = dynamicOption?.value ?? dynamicOption"`,
-				`String(optionIndex) === String(dynamicOption?.value ?? dynamicOption)`,
+				`optionIndex === (dynamicOption?.value ?? dynamicOption)`,
 			},
 		},
 	}

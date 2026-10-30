@@ -149,6 +149,46 @@ test.describe("SelectInput", () => {
     expect(selectedRoles).toEqual(["admin", "editor", 0]);
   });
 
+  test("@smoke dynamic multi-select keeps numeric and string options distinct", async ({
+    page,
+  }) => {
+    const panel = await openExamplePanel(
+      page,
+      selectSection,
+      "Multi-Select LabelValueOptions",
+    );
+    await panel.evaluate((panelElement) => {
+      const stateRoot = panelElement.querySelector('[x-data*="runtimeRoles"]');
+      const state = window.Alpine.$data(stateRoot);
+      state.runtimeRoles = [];
+      state.runtimeOptions = [
+        { value: 0, label: "Numeric zero" },
+        { value: "0", label: "String zero" },
+      ];
+    });
+
+    const trigger = panel.locator("[role=button]").nth(1);
+    await trigger.click();
+    const options = panel.locator("ul").nth(1);
+    await options.getByText("Numeric zero", { exact: true }).click();
+    await options.getByText("String zero", { exact: true }).click();
+    await expect(trigger).toContainText("Numeric zero, String zero");
+
+    const selectedRoles = await panel.evaluate((panelElement) => {
+      const stateRoot = panelElement.querySelector('[x-data*="runtimeRoles"]');
+      return window.Alpine.$data(stateRoot).runtimeRoles;
+    });
+    expect(selectedRoles).toEqual([0, "0"]);
+
+    await options.getByText("Numeric zero", { exact: true }).click();
+    await expect(trigger).toContainText("String zero");
+    const selectedRolesAfterRemoval = await panel.evaluate((panelElement) => {
+      const stateRoot = panelElement.querySelector('[x-data*="runtimeRoles"]');
+      return window.Alpine.$data(stateRoot).runtimeRoles;
+    });
+    expect(selectedRolesAfterRemoval).toEqual(["0"]);
+  });
+
   test("@smoke dynamic multi-select falls back to unmatched selected values", async ({
     page,
   }) => {

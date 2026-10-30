@@ -13,7 +13,7 @@ UiToolset.RegisterAlpineState(() => {
       }
 
       const matchedOption = options.find(
-        (option) => String(option?.value ?? option) === String(optionValue),
+        (option) => (option?.value ?? option) === optionValue,
       );
       if (matchedOption === undefined) {
         return "";
@@ -29,14 +29,14 @@ UiToolset.RegisterAlpineState(() => {
         return false;
       }
       return selectedItems.some(
-        (selectedValue) => String(selectedValue) === String(optionValue),
+        (selectedValue) => selectedValue === optionValue,
       );
     },
 
     toggleSelectedOptionValue(selectedItems, optionValue, isChecked) {
       const currentItems = Array.isArray(selectedItems) ? selectedItems : [];
       const itemsWithoutOption = currentItems.filter(
-        (selectedValue) => String(selectedValue) !== String(optionValue),
+        (selectedValue) => selectedValue !== optionValue,
       );
       if (!isChecked) {
         return itemsWithoutOption;
