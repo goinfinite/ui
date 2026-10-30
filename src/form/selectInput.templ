@@ -375,13 +375,13 @@ templ SelectInput(componentSettings SelectInputSettings) {
 						</li>
 					}
 					if componentSettings.OptionsOneWayStatePath != "" {
-						{{ dynamicOptionValueExpression := "option?.value ?? option" }}
-						{{ dynamicOptionLabelExpression := "option?.label ?? option?.value ?? option" }}
+						{{ dynamicOptionValueExpression := "dynamicOption?.value ?? dynamicOption" }}
+						{{ dynamicOptionLabelExpression := "dynamicOption?.label ?? dynamicOption?.value ?? dynamicOption" }}
 						{{ dynamicSelectedCheckExpression := "String(" + selectValueStatePath + ") === String(" + dynamicOptionValueExpression + ")" }}
 						{{ dynamicOptionIconExpression := selectInputOptionIconExpressionBuilder(selectValueStatePath, dynamicOptionValueExpression) }}
 						<template
-							x-for={ "(option, optionIndex) in " + componentSettings.OptionsOneWayStatePath }
-							:key={ "String(option?.value ?? option) + '-' + optionIndex" }
+							x-for={ "(dynamicOption, optionIndex) in " + componentSettings.OptionsOneWayStatePath }
+							:key={ "String(dynamicOption?.value ?? dynamicOption) + '-' + optionIndex" }
 						>
 							<li class={ dropdownClasses + " " + dropdownSelectedClasses }>
 								<label class={ optionLabelClasses }>

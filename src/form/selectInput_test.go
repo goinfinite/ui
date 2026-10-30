@@ -104,10 +104,33 @@ func TestSelectInputRendersDynamicOptionsStatePath(t *testing.T) {
 	}
 	renderedHtml := buffer.String()
 	for _, expectedFragment := range []string{
-		`x-for="(option, optionIndex) in dynamicOptions"`,
+		`x-for="(dynamicOption, optionIndex) in dynamicOptions"`,
 		`dynamicOptionsDisplayResolver(dynamicOptions, selectedStatus)`,
-		`:value="option?.value ?? option"`,
-		`x-text="option?.label ?? option?.value ?? option"`,
+		`:value="dynamicOption?.value ?? dynamicOption"`,
+		`x-text="dynamicOption?.label ?? dynamicOption?.value ?? dynamicOption"`,
+	} {
+		if !strings.Contains(renderedHtml, expectedFragment) {
+			t.Errorf("RenderedHtmlMissingFragment: %q", expectedFragment)
+		}
+	}
+}
+
+func TestSelectInputDynamicOptionDoesNotShadowOptionStatePath(t *testing.T) {
+	var buffer bytes.Buffer
+	renderErr := SelectInput(SelectInputSettings{
+		InputName:              "status",
+		Label:                  "Status",
+		OptionsOneWayStatePath: "dynamicOptions",
+		TwoWayStatePath:        "option",
+	}).Render(context.Background(), &buffer)
+	if renderErr != nil {
+		t.Fatalf("SelectInputRenderFailed: %v", renderErr)
+	}
+	renderedHtml := buffer.String()
+	for _, expectedFragment := range []string{
+		`x-for="(dynamicOption, optionIndex) in dynamicOptions"`,
+		`@change="option = dynamicOption?.value ?? dynamicOption"`,
+		`String(option) === String(dynamicOption?.value ?? dynamicOption)`,
 	} {
 		if !strings.Contains(renderedHtml, expectedFragment) {
 			t.Errorf("RenderedHtmlMissingFragment: %q", expectedFragment)

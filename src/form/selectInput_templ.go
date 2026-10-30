@@ -1264,8 +1264,8 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 			}
 		}
 		if componentSettings.OptionsOneWayStatePath != "" {
-			dynamicOptionValueExpression := "option?.value ?? option"
-			dynamicOptionLabelExpression := "option?.label ?? option?.value ?? option"
+			dynamicOptionValueExpression := "dynamicOption?.value ?? dynamicOption"
+			dynamicOptionLabelExpression := "dynamicOption?.label ?? dynamicOption?.value ?? dynamicOption"
 			dynamicSelectedCheckExpression := "String(" + selectValueStatePath + ") === String(" + dynamicOptionValueExpression + ")"
 			dynamicOptionIconExpression := selectInputOptionIconExpressionBuilder(selectValueStatePath, dynamicOptionValueExpression)
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 93, "<template x-for=\"")
@@ -1273,9 +1273,9 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var54 string
-			templ_7745c5c3_Var54, templ_7745c5c3_Err = templruntime.NewAttributeExpression("(option, optionIndex) in " + componentSettings.OptionsOneWayStatePath).Resolve(ctx)
+			templ_7745c5c3_Var54, templ_7745c5c3_Err = templruntime.NewAttributeExpression("(dynamicOption, optionIndex) in " + componentSettings.OptionsOneWayStatePath).Resolve(ctx)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 383, Col: 85}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 383, Col: 92}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var54)
 			if templ_7745c5c3_Err != nil {
@@ -1286,9 +1286,9 @@ func SelectInput(componentSettings SelectInputSettings) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var55 string
-			templ_7745c5c3_Var55, templ_7745c5c3_Err = templruntime.NewAttributeExpression("String(option?.value ?? option) + '-' + optionIndex").Resolve(ctx)
+			templ_7745c5c3_Var55, templ_7745c5c3_Err = templruntime.NewAttributeExpression("String(dynamicOption?.value ?? dynamicOption) + '-' + optionIndex").Resolve(ctx)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 384, Col: 67}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/form/selectInput.templ`, Line: 384, Col: 81}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var55)
 			if templ_7745c5c3_Err != nil {
