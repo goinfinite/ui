@@ -121,21 +121,23 @@ type FileUploadRejectedSettings struct {
 }
 
 type FileUploadInputSettings struct {
-	InputName string
-	Label     string
+	InputName            string
+	Label                string
+	LabelOneWayStatePath string
 
 	// OptionalFields
-	AcceptedTypes    []string
-	Description      string
-	InputId          string
-	IsRequired       bool
-	MaxFileCount     uint
-	MaxFileSizeBytes uint64
-	Progress         FileUploadProgressSettings
-	Rejected         FileUploadRejectedSettings
-	Row              FileUploadRowSettings
-	Size             string
-	Zone             FileUploadZoneSettings
+	AcceptedTypes              []string
+	Description                string
+	DescriptionOneWayStatePath string
+	InputId                    string
+	IsRequired                 bool
+	MaxFileCount               uint
+	MaxFileSizeBytes           uint64
+	Progress                   FileUploadProgressSettings
+	Rejected                   FileUploadRejectedSettings
+	Row                        FileUploadRowSettings
+	Size                       string
+	Zone                       FileUploadZoneSettings
 }
 
 type fileUploadLimits struct {
@@ -185,7 +187,7 @@ templ FileUploadInput(componentSettings FileUploadInputSettings) {
 		zone := componentSettings.Zone
 		zoneIcon := "ph-tray-arrow-up"
 		if zone.Icon != "" {
-			{{ zoneIcon = zone.Icon }}
+			zoneIcon = zone.Icon
 		}
 		row := componentSettings.Row
 		progress := componentSettings.Progress
@@ -205,13 +207,15 @@ templ FileUploadInput(componentSettings FileUploadInputSettings) {
 		>
 			<i class={ "ph-bold " + zoneIcon + " " + sizeTokens.IconSize + " " + uiToolset.TextColorClassResolver(zone.IconColor, "text-neutral-400") } aria-hidden="true"></i>
 			<span class={ "font-bold " + sizeTokens.LabelTextSize + " " + uiToolset.TextColorClassResolver(zone.LabelColor, "text-neutral-50") }>
-				{ componentSettings.Label }
+				@statePathBoundLabelText(componentSettings.Label, componentSettings.LabelOneWayStatePath)
 				if componentSettings.IsRequired {
 					<span class="text-red-700">*</span>
 				}
 			</span>
-			if componentSettings.Description != "" {
-				<span class={ sizeTokens.DescriptionTextSize + " " + uiToolset.TextColorClassResolver(zone.DescriptionColor, "text-neutral-400") }>{ componentSettings.Description }</span>
+			if componentSettings.Description != "" || componentSettings.DescriptionOneWayStatePath != "" {
+				<span class={ sizeTokens.DescriptionTextSize + " " + uiToolset.TextColorClassResolver(zone.DescriptionColor, "text-neutral-400") }>
+					@statePathBoundLabelText(componentSettings.Description, componentSettings.DescriptionOneWayStatePath)
+				</span>
 			}
 			<input
 				type="file"

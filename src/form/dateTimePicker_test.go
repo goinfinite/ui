@@ -311,8 +311,8 @@ func TestDateTimePickerRenderDateMode(t *testing.T) {
 		}
 	}
 	unexpectedFragments := []string{
-		`>Hour </legend>`,
-		`>Minute </legend>`,
+		`>Hour</legend>`,
+		`>Minute</legend>`,
 		`aria-label="Booking window end"`,
 		`name="booking-end"`,
 	}
@@ -367,8 +367,8 @@ func TestDateTimePickerRenderTimeMode(t *testing.T) {
 	expectedFragments := []string{
 		`, &#34;&#34;, &#34;&#34;, &#34;America/Sao_Paulo&#34;)`,
 		`placeholder="HH:MM"`,
-		`>Hour </legend>`,
-		`>Minute </legend>`,
+		`>Hour</legend>`,
+		`>Minute</legend>`,
 		`x-ref="selectTrigger"`,
 		`String(timeHour) === $el.value`,
 		`String(timeMinute) === $el.value`,
@@ -386,7 +386,7 @@ func TestDateTimePickerRenderTimeMode(t *testing.T) {
 	if strings.Contains(renderedHtml, "timePartIsDisabled") {
 		t.Error("rendered html still contains the native select disabled expression")
 	}
-	if strings.Contains(renderedHtml, ">Timezone </legend>") {
+	if strings.Contains(renderedHtml, ">Timezone</legend>") {
 		t.Error("rendered html unexpectedly contains the timezone select in time mode")
 	}
 }
@@ -399,7 +399,7 @@ func TestDateTimePickerRenderDateTimeMode(t *testing.T) {
 	if !strings.Contains(renderedHtml, `x-text="monthYearLabel"`) {
 		t.Error("rendered html missing the calendar")
 	}
-	if !strings.Contains(renderedHtml, `>Hour </legend>`) {
+	if !strings.Contains(renderedHtml, `>Hour</legend>`) {
 		t.Error("rendered html missing the time selects")
 	}
 	if !strings.Contains(renderedHtml, `placeholder="yyyy-mm-ddTHH:MM"`) {
@@ -427,7 +427,7 @@ func TestDateTimePickerRenderCustomizations(t *testing.T) {
 	expectedFragments := []string{
 		`&#34;timezone&#34;:&#34;America/Sao_Paulo&#34;`,
 		`, visitTimezone)`,
-		`>Timezone </legend>`,
+		`>Timezone</legend>`,
 		`ph-calendar-check text-sm`,
 		`ph-seal-check`,
 		` Apply <`,
@@ -447,6 +447,83 @@ func TestDateTimePickerRenderCustomizations(t *testing.T) {
 	for _, expectedFragment := range expectedFragments {
 		if !strings.Contains(renderedHtml, expectedFragment) {
 			t.Errorf("rendered html missing fragment %s", expectedFragment)
+		}
+	}
+}
+
+func TestDateTimePickerRendersLabelStatePath(testingHandle *testing.T) {
+	renderedHtml := renderDateTimePicker(testingHandle, DateTimePickerSettings{
+		Label:                "Booking date",
+		LabelOneWayStatePath: "bookingLabel",
+		InputName:            "booking",
+		TwoWayStatePath:      "bookingDate",
+	})
+	for _, expectedFragment := range []string{
+		`x-text="bookingLabel"`,
+		`:aria-label="(bookingLabel) || &#34;Booking date&#34;"`,
+		"Booking date",
+	} {
+		if !strings.Contains(renderedHtml, expectedFragment) {
+			testingHandle.Errorf("rendered html missing fragment %s", expectedFragment)
+		}
+	}
+}
+
+func TestDateTimePickerRangeAriaLabelExpressionBuilder(testingHandle *testing.T) {
+	testCases := []struct {
+		name          string
+		settings      DateTimePickerSettings
+		sideLabel     string
+		staticLabel   string
+		expectedValue string
+	}{
+		{
+			name:          "empty path yields no expression",
+			settings:      DateTimePickerSettings{Label: "Booking date"},
+			sideLabel:     "start",
+			staticLabel:   "Booking date start",
+			expectedValue: "",
+		},
+		{
+			name:          "path falls back to the static aria label",
+			settings:      DateTimePickerSettings{LabelOneWayStatePath: "bookingLabel"},
+			sideLabel:     "end",
+			staticLabel:   "Booking date end",
+			expectedValue: `(bookingLabel ? (bookingLabel) + " end" : "Booking date end")`,
+		},
+	}
+	for _, testCase := range testCases {
+		testingHandle.Run(testCase.name, func(subtestHandle *testing.T) {
+			actualValue := testCase.settings.rangeAriaLabelExpressionBuilder(
+				testCase.sideLabel, testCase.staticLabel,
+			)
+			if actualValue != testCase.expectedValue {
+				subtestHandle.Errorf(
+					"RangeAriaLabelExpressionMismatch: got %q, want %q",
+					actualValue, testCase.expectedValue,
+				)
+			}
+		})
+	}
+}
+
+func TestDateTimePickerRendersRangeLabelStatePath(testingHandle *testing.T) {
+	renderedHtml := renderDateTimePicker(testingHandle, DateTimePickerSettings{
+		Label:                   "Booking date",
+		LabelOneWayStatePath:    "bookingLabel",
+		IsRange:                 true,
+		InputName:               "booking",
+		TwoWayStatePath:         "bookingStartDate",
+		RangeEndTwoWayStatePath: "bookingEndDate",
+	})
+	for _, expectedFragment := range []string{
+		`aria-label="Booking date start"`,
+		`aria-label="Booking date end"`,
+		`:aria-label="(bookingLabel ? (bookingLabel) + &#34; start&#34; : &#34;Booking date start&#34;)"`,
+		`:aria-label="(bookingLabel ? (bookingLabel) + &#34; end&#34; : &#34;Booking date end&#34;)"`,
+	} {
+		if !strings.Contains(renderedHtml, expectedFragment) {
+			testingHandle.Errorf("rendered html missing fragment %s", expectedFragment)
 		}
 	}
 }

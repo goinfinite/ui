@@ -1,4 +1,5 @@
 import { writeFileSync } from "node:fs";
+import { openExamplePanel } from "../../examplePanel.js";
 import { expect, test } from "../../fixture.js";
 
 const resultsPath = new URL(
@@ -87,7 +88,7 @@ async function measureSearchableFilterLatency(page) {
           ),
         ];
         const canadaRow = optionRows.find(
-          (optionRow) => optionRow.innerText.trim() === "Canada",
+          (optionRow) => optionRow.textContent.trim() === "Canada",
         );
         if (canadaRow && canadaRow.offsetParent !== null) resolve();
         else requestAnimationFrame(poll);
@@ -99,6 +100,45 @@ async function measureSearchableFilterLatency(page) {
     combobox.dispatchEvent(new Event("input", { bubbles: true }));
     document.body.click();
     return elapsed;
+  });
+}
+
+async function measureButtonActionLatency(page) {
+  return page.evaluate(async () => {
+    const button = document.querySelector("#button-demo-sync");
+    const start = performance.now();
+    button.click();
+    await new Promise((resolve) => {
+      const poll = () => {
+        if (button.getAttribute("aria-busy") === "true") resolve();
+        else requestAnimationFrame(poll);
+      };
+      poll();
+    });
+    return performance.now() - start;
+  });
+}
+
+async function measureSliderDragLatency(page) {
+  return page.evaluate(async () => {
+    const rangeInput = document.querySelector(
+      "#number-range-input-field-demo input[type=range]",
+    );
+    const numberInput = document.querySelector(
+      "#number-range-input-field-demo input[type=number]",
+    );
+    const targetValue = rangeInput.value === "250" ? "150" : "250";
+    const start = performance.now();
+    rangeInput.value = targetValue;
+    rangeInput.dispatchEvent(new Event("input", { bubbles: true }));
+    await new Promise((resolve) => {
+      const poll = () => {
+        if (numberInput.value === targetValue) resolve();
+        else requestAnimationFrame(poll);
+      };
+      poll();
+    });
+    return performance.now() - start;
   });
 }
 
@@ -120,6 +160,8 @@ test("@browser @perf interaction latencies are measured and reported", async ({
     return window.Alpine && fieldset.classList.contains("mt-0");
   });
 
+  await openExamplePanel(page, "#button-demo", "Action States");
+
   const lcpMs = Math.round(await page.evaluate(() => window.__lcpMs));
   const expandMs = await measureSamples(() => measureExpandLatency(page));
   const dropdownMs = await measureSamples(() =>
@@ -128,11 +170,28 @@ test("@browser @perf interaction latencies are measured and reported", async ({
   const searchableFilterMs = await measureSamples(() =>
     measureSearchableFilterLatency(page),
   );
+  const sliderDragMs = await measureSamples(() =>
+    measureSliderDragLatency(page),
+  );
+  const buttonActionMs = await measureSamples(async () => {
+    const elapsed = await measureButtonActionLatency(page);
+    await page.waitForFunction(() => {
+      const button = document.querySelector("#button-demo-sync");
+      return (
+        button !== null &&
+        !button.disabled &&
+        button.textContent.trim() === "Sync"
+      );
+    });
+    return elapsed;
+  });
 
   expect(lcpMs).toBeGreaterThan(0);
   expect(expandMs).toBeGreaterThan(0);
   expect(dropdownMs).toBeGreaterThan(0);
   expect(searchableFilterMs).toBeGreaterThan(0);
+  expect(sliderDragMs).toBeGreaterThan(0);
+  expect(buttonActionMs).toBeGreaterThan(0);
 
   writeFileSync(
     resultsPath,
@@ -142,6 +201,8 @@ test("@browser @perf interaction latencies are measured and reported", async ({
         "form.textarea-expand": expandMs,
         "form.select-dropdown-open": dropdownMs,
         "form.searchable-select-filter": searchableFilterMs,
+        "form.number-range-slider-drag": sliderDragMs,
+        "control.button-action-state": buttonActionMs,
       },
       null,
       2,

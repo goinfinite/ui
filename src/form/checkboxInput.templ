@@ -18,6 +18,7 @@ const checkboxInputDefaultValue string = "on"
 type CheckboxInputSettings struct {
 	// OptionalFields
 	AriaLabel                    string
+	AriaLabelOneWayStatePath     string
 	CheckedColor                 string
 	ErrorColor                   string
 	ErrorMessage                 string
@@ -35,6 +36,7 @@ type CheckboxInputSettings struct {
 	IsInvalidOneWayStatePath     string
 	IsRequired                   bool
 	Label                        string
+	LabelOneWayStatePath         string
 	LabelPosition                string
 	OnChangeFunc                 string
 	Shape                        string
@@ -169,6 +171,9 @@ templ CheckboxInput(componentSettings CheckboxInputSettings) {
 				if componentSettings.AriaLabel != "" {
 					aria-label={ componentSettings.AriaLabel }
 				}
+				if componentSettings.AriaLabelOneWayStatePath != "" {
+					:aria-label={ statePathFallbackExpressionBuilder(componentSettings.AriaLabelOneWayStatePath, componentSettings.AriaLabel) }
+				}
 				if componentSettings.InputId != "" && hasErrorMessage {
 					aria-describedby={ componentSettings.InputId + "-error" }
 				}
@@ -215,9 +220,9 @@ templ CheckboxInput(componentSettings CheckboxInputSettings) {
 					<i class={ "ph-bold ph-check " + iconSizeClasses }></i>
 				}
 			</span>
-			if componentSettings.Label != "" {
+			if componentSettings.Label != "" || componentSettings.LabelOneWayStatePath != "" {
 				<span class={ labelSizeClasses + " " + textColor + " " + textCaseClass }>
-					{ componentSettings.Label }
+					@statePathBoundLabelText(componentSettings.Label, componentSettings.LabelOneWayStatePath)
 					if componentSettings.IsRequired {
 						<span class="text-red-700">*</span>
 					}

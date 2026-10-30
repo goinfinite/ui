@@ -92,9 +92,10 @@ func inputFieldSizeTokensResolver(size string) inputFieldSizeTokens {
 }
 
 type InputFieldSettings struct {
-	InputType string
-	InputName string
-	Label     string
+	InputType            string
+	InputName            string
+	Label                string
+	LabelOneWayStatePath string
 
 	// OptionalFields
 	TwoWayStatePath                   string
@@ -144,6 +145,7 @@ templ InputField(componentSettings InputFieldSettings) {
 	<!-- InputField -->
 	{{ sizeTokens := inputFieldSizeTokensResolver(componentSettings.Size) }}
 	{{ textCaseClass := uiToolset.TextCaseClassResolver(componentSettings.TextCase) }}
+	{{ labelAccessibleNameExpression := statePathFallbackExpressionBuilder(componentSettings.LabelOneWayStatePath, componentSettings.Label) }}
 	{{ legendClasses := "ml-1 select-none px-1 font-bold leading-none text-neutral-50/80 " + sizeTokens.LegendTextSize }}
 	if textCaseClass != "" {
 		{{ legendClasses += " " + textCaseClass }}
@@ -156,7 +158,8 @@ templ InputField(componentSettings InputFieldSettings) {
 		{{ fieldsetClassEntries = append(fieldsetClassEntries, "'!border-red-500': "+componentSettings.IsInvalidOneWayStatePath) }}
 	}
 	{{ actionOverlapExpression := "" }}
-	if componentSettings.Label != "" || componentSettings.IsRequired {
+	if componentSettings.Label != "" || componentSettings.LabelOneWayStatePath != "" ||
+		componentSettings.IsRequired {
 		{{ actionOverlapExpression = strconv.Quote(notchedFieldActionOverlapClassesResolver(sizeTokens.LegendTextSize)) }}
 		if componentSettings.TwoWayStatePath != "" {
 			{{ actionOverlapExpression = componentSettings.TwoWayStatePath + " && " + actionOverlapExpression }}
@@ -176,7 +179,7 @@ templ InputField(componentSettings InputFieldSettings) {
 					:class={ `!` + componentSettings.TwoWayStatePath + ` && 'hidden'` }
 				}
 			>
-				{ componentSettings.Label }
+				@statePathBoundLabelText(componentSettings.Label, componentSettings.LabelOneWayStatePath)
 				if componentSettings.IsRequired {
 					<span class="text-red-700">*</span>
 				}
@@ -235,6 +238,9 @@ templ InputField(componentSettings InputFieldSettings) {
 					if componentSettings.Label != "" {
 						aria-label={ componentSettings.Label }
 					}
+					if labelAccessibleNameExpression != "" {
+						:aria-label={ labelAccessibleNameExpression }
+					}
 					if componentSettings.IsInvalidOneWayStatePath != "" {
 						:aria-invalid={ componentSettings.IsInvalidOneWayStatePath }
 					}
@@ -261,6 +267,9 @@ templ InputField(componentSettings InputFieldSettings) {
 					}
 					if componentSettings.Label != "" {
 						placeholder={ componentSettings.Label }
+					}
+					if labelAccessibleNameExpression != "" {
+						:placeholder={ labelAccessibleNameExpression }
 					}
 					if componentSettings.IsRequired {
 						required

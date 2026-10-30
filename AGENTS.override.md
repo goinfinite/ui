@@ -20,6 +20,10 @@ templ generate && go run ./demo/*.go
 
 `docs/index.html` is the rendered demo served at ui.demo.goinfinite.net. Without this step, the documentation is stale.
 
+## Demo Sections
+
+Add a new advanced example section only when the variation earns its own place. A small addition, or a variation that largely overlaps an existing example, MUST go inside that existing example. Keep related variations together under one section title that names their shared concern.
+
 ## Visual Component Inspection
 
 Inspect every touched component in a rendering browser after frontend work, before you deliver. Follow `.agents/skills/browser-usage/SKILL.md`. A passing Playwright suite is not visual evidence: the suite asserts behavior, not appearance. Capture a screenshot of each touched component in its rendered state, read the image, and fix what looks wrong: alignment, spacing, overlap, clipping, and contrast.

@@ -42,6 +42,67 @@ test.describe("Button", () => {
     await expect(submitPanel.locator("button[type=submit]")).toHaveCount(1);
   });
 
+  test("@control icon top renders above the label and combines with side icons", async ({
+    page,
+  }) => {
+    const iconTopPanel = await openExamplePanel(page, buttonSection, "Icons");
+    const iconTopButton = iconTopPanel
+      .locator("button")
+      .filter({ hasText: "Upload" })
+      .first();
+
+    await expect(iconTopButton).toHaveClass(/flex-col/);
+    await expect(iconTopButton.locator("i.ph-cloud-arrow-up")).toHaveCount(1);
+    await expect(iconTopButton.locator("i.ph-folder")).toHaveCount(1);
+    await expect(iconTopButton.locator("i.ph-arrow-right")).toHaveCount(1);
+
+    const iconOnlyButton = iconTopPanel
+      .getByRole("button", { name: "Add" })
+      .first();
+    await expect(iconOnlyButton).toHaveClass(/flex-col/);
+    await expect(iconOnlyButton.locator("i.ph-plus")).toHaveCount(1);
+    await expect(iconOnlyButton.locator("span")).toHaveCount(0);
+
+    const actionOnlyButton = iconTopPanel.getByRole("button", {
+      name: "Favorite",
+    });
+    await expect(actionOnlyButton).toHaveClass(/flex-col/);
+    await expect(actionOnlyButton.locator("span.flex.flex-row")).toBeHidden();
+  });
+
+  test("@control countdown disables the button until zero and restores the label", async ({
+    page,
+  }) => {
+    const countdownPanel = await openExamplePanel(
+      page,
+      buttonSection,
+      "Countdown",
+    );
+    const countdownButton = countdownPanel.locator("#button-demo-countdown");
+
+    await expect(countdownButton).toBeDisabled();
+    await expect(countdownButton).toContainText("Delete (");
+    await expect(countdownButton).toBeEnabled({ timeout: 8000 });
+    await expect(countdownButton).toHaveText("Delete");
+  });
+
+  test("@control a trigger path restarts the countdown", async ({ page }) => {
+    const countdownPanel = await openExamplePanel(
+      page,
+      buttonSection,
+      "Countdown",
+    );
+    const triggeredButton = countdownPanel.locator(
+      "#button-demo-triggered-countdown",
+    );
+
+    await expect(triggeredButton).toBeEnabled({ timeout: 6000 });
+    await countdownPanel
+      .getByRole("button", { name: "Restart countdown" })
+      .click();
+    await expect(triggeredButton).toBeDisabled();
+  });
+
   test("@control re-embedding the tooltip state script does not throw", async ({
     page,
   }) => {
@@ -126,6 +187,94 @@ test.describe("Button", () => {
     await expect(brokenSyncButton).toHaveText("Sync failed", { timeout: 4000 });
     await expect(syncButton).toHaveText("Sync", { timeout: 4000 });
     await expect(syncButton).toBeEnabled();
+  });
+
+  test("@control dynamic labels follow the action state", async ({ page }) => {
+    await openExamplePanel(page, buttonSection, "Action States");
+    const successButton = page.locator("#button-demo-dynamic-labels");
+    const failureButton = page.locator("#button-demo-dynamic-failure-labels");
+    const idleLabelButton = page.locator("#button-demo-dynamic-idle-label");
+
+    await expect(successButton).toHaveText("Dynamic idle");
+    await expect(idleLabelButton).toHaveText("Dynamic idle");
+
+    await page.evaluate(() => {
+      const actionScope = document.querySelector(
+        "#button-demo [x-data='buttonDemoActions']",
+      );
+      Alpine.$data(actionScope).dynamicButtonLabel = "Dynamic idle updated";
+    });
+    await expect(successButton).toHaveText("Dynamic idle updated");
+    await expect(idleLabelButton).toHaveText("Dynamic idle updated");
+
+    await successButton.click();
+    await expect(successButton).toHaveText("Dynamic pending");
+    await expect(successButton).toHaveText("Dynamic succeeded", {
+      timeout: 4000,
+    });
+
+    await failureButton.click();
+    await expect(failureButton).toHaveText("Dynamic pending");
+    await expect(failureButton).toHaveText("Dynamic failed", {
+      timeout: 4000,
+    });
+  });
+
+  test("@browser @control a FormId form mounted after init attaches the submit tracking", async ({
+    page,
+  }) => {
+    const trackingResult = await page.evaluate(async () => {
+      const container = document.createElement("div");
+      container.innerHTML = `
+        <div x-data='buttonState({"idle":"","pending":"ph-spinner","succeeded":"ph-check-circle","failed":"ph-warning-circle"}, true, 0)'>
+          <button type="submit" form="lazy-tracking-form" id="lazy-tracking-button">Save</button>
+        </div>
+      `;
+      document.body.appendChild(container);
+      window.Alpine.initTree(container);
+      const state = window.Alpine.$data(container.firstElementChild);
+
+      const form = document.createElement("form");
+      form.id = "lazy-tracking-form";
+      form.innerHTML = '<input name="value" value="x">';
+      document.body.appendChild(form);
+
+      const deadline = performance.now() + 1000;
+      while (state.submittedForm === null && performance.now() < deadline) {
+        await new Promise((resolve) => setTimeout(resolve, 10));
+      }
+      if (state.submittedForm === null) {
+        return {
+          submittedFormId: "",
+          isPending: false,
+          isSecondSubmitBlocked: false,
+        };
+      }
+
+      form.dispatchEvent(
+        new Event("submit", { bubbles: true, cancelable: true }),
+      );
+      await new Promise((resolve) => setTimeout(resolve, 10));
+      const isPending = state.actionStatus === "pending";
+
+      const secondSubmitEvent = new Event("submit", {
+        bubbles: true,
+        cancelable: true,
+      });
+      form.dispatchEvent(secondSubmitEvent);
+
+      return {
+        submittedFormId: state.submittedForm.id,
+        isPending,
+        isSecondSubmitBlocked: secondSubmitEvent.defaultPrevented,
+      };
+    });
+
+    expect(trackingResult).toEqual({
+      submittedFormId: "lazy-tracking-form",
+      isPending: true,
+      isSecondSubmitBlocked: true,
+    });
   });
 
   test("@control the pending path disables every bound button", async ({

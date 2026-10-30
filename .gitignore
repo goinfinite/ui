@@ -5,9 +5,11 @@ TODO.md
 demo/demo
 demo/*_templ.go
 demo.html
+
+# Ignore AI Framework files
+.agents
 .agents/
 .memory/
 AGENTS.md
-opencode.json
-.claude/
 .ignore
+opencode.json

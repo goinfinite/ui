@@ -237,3 +237,40 @@ func TestInlineCheckboxGroupRendersCheckboxesAndOrientation(t *testing.T) {
 		}
 	}
 }
+
+func TestInlineGroupsRenderLabelStatePath(testingHandle *testing.T) {
+	checkboxBuffer := bytes.Buffer{}
+	checkboxRenderErr := InlineCheckboxGroup(InlineCheckboxGroupSettings{
+		Label:                "Fruits",
+		LabelOneWayStatePath: "fruitGroupLabel",
+		InputSettings: []CheckboxInputSettings{
+			{Label: "Apple", Value: "apple", TwoWayStatePath: "selectedFruits"},
+		},
+	}).Render(context.Background(), &checkboxBuffer)
+	if checkboxRenderErr != nil {
+		testingHandle.Fatalf("InlineCheckboxGroupRenderFailed: %v", checkboxRenderErr)
+	}
+	radioBuffer := bytes.Buffer{}
+	radioRenderErr := InlineRadioGroup(InlineRadioGroupSettings{
+		Label:                "Billing cycle",
+		LabelOneWayStatePath: "billingGroupLabel",
+		InputSettings: []RadioInputSettings{
+			{Label: "Monthly", StateValue: "monthly", TwoWayStatePath: "billingCycle"},
+		},
+		TwoWayStatePath: "billingCycle",
+	}).Render(context.Background(), &radioBuffer)
+	if radioRenderErr != nil {
+		testingHandle.Fatalf("InlineRadioGroupRenderFailed: %v", radioRenderErr)
+	}
+	renderedHtml := checkboxBuffer.String() + radioBuffer.String()
+	for _, expectedText := range []string{
+		`x-text="fruitGroupLabel"`,
+		`x-text="billingGroupLabel"`,
+		"Fruits",
+		"Billing cycle",
+	} {
+		if !strings.Contains(renderedHtml, expectedText) {
+			testingHandle.Errorf("RenderedHtmlMissing(%q)", expectedText)
+		}
+	}
+}

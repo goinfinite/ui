@@ -1,6 +1,7 @@
 package main
 
 import (
+	uiControl "github.com/goinfinite/ui/src/control"
 	uiDisplay "github.com/goinfinite/ui/src/display"
 	uiForm "github.com/goinfinite/ui/src/form"
 	uiToolset "github.com/goinfinite/ui/src/toolset"
@@ -196,24 +197,35 @@ templ InputFieldSizesExample() {
 	}
 }
 
-templ InputFieldLabelCaseExample() {
+templ InputFieldLabelsExample() {
 	{{
-		labelCaseUsage := `@uiForm.InputField(uiForm.InputFieldSettings{
-	InputType: uiForm.InputTypeText,
-	InputName: "name",
-	Label:     "Network Interface",
+		labelsUsage := `@uiForm.InputField(uiForm.InputFieldSettings{
+	InputType:            uiForm.InputTypeText,
+	InputName:            "runtimeField",
+	Label:                "Admin Username",
 
 	// OptionalFields
-	TextCase: uiToolset.TextCaseUpper,
+	LabelOneWayStatePath: "fieldLabel",
+	TextCase:             uiToolset.TextCaseUpper,
 })`
 	}}
 	@DemoExampleCard(
-		"Label Case",
-		"TextCase transforms the floating label and the placeholder. It accepts uiToolset.TextCaseNone (the default, as typed), TextCaseLower, TextCaseUpper, or TextCaseCapitalize.",
+		"Labels",
+		"LabelOneWayStatePath renders the floating label from Alpine state. TextCase transforms the label and the placeholder. It accepts uiToolset.TextCaseNone (the default, as typed), TextCaseLower, TextCaseUpper, or TextCaseCapitalize.",
 		"/form/inputField.templ",
-		labelCaseUsage,
+		labelsUsage,
 	) {
-		<div class="flex flex-col gap-3 lg:*:max-w-50" x-data="{none: '', lower: '', upper: '', capitalize: ''}">
+		<div
+			class="flex flex-col gap-3 lg:*:max-w-50"
+			x-data="{
+				none: '',
+				lower: '',
+				upper: '',
+				capitalize: '',
+				fieldLabel: 'Admin Username',
+				fieldValue: '',
+			}"
+		>
 			for _, textCase := range []string{
 				uiToolset.TextCaseNone,
 				uiToolset.TextCaseLower,
@@ -228,6 +240,20 @@ templ InputFieldLabelCaseExample() {
 					TextCase:        textCase,
 				})
 			}
+			@uiForm.InputField(uiForm.InputFieldSettings{
+				InputType:            uiForm.InputTypeText,
+				InputName:            "runtimeField",
+				Label:                "Admin Username",
+				LabelOneWayStatePath: "fieldLabel",
+				TwoWayStatePath:      "fieldValue",
+			})
+			@uiControl.Button(uiControl.ButtonSettings{
+				Label:           "Use the password label",
+				IconLeft:        "ph-password",
+				OnClickFunc:     "fieldLabel = 'Admin Password'",
+				Size:            uiControl.ButtonSizeSm,
+				BackgroundColor: "neutral-50/10",
+			})
 		</div>
 	}
 }
@@ -404,7 +430,7 @@ templ InputFieldDemo() {
 			{Title: "Icon Left", Icon: "ph-magnifying-glass", Content: InputFieldIconExample()},
 			{Title: "Affix Width", Icon: "ph-arrows-horizontal", Content: InputFieldAffixWidthExample()},
 			{Title: "Sizes", Icon: "ph-ruler", Content: InputFieldSizesExample()},
-			{Title: "Label Case", Icon: "ph-text-t", Content: InputFieldLabelCaseExample()},
+			{Title: "Labels", Icon: "ph-text-t", Content: InputFieldLabelsExample()},
 			{Title: "Hints", Icon: "ph-info", Content: InputFieldHintsExample()},
 			{Title: "Hint Icon Styles", Icon: "ph-question", Content: InputFieldHintIconStyleExample()},
 		})

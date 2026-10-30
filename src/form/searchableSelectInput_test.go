@@ -255,3 +255,28 @@ func TestSearchableSelectInputRendersOpaqueDropdownAboveStickyHeaders(t *testing
 		t.Errorf("RenderedHtmlKeepsDefaultDropdownBackground")
 	}
 }
+
+func TestSearchableSelectInputRendersLabelStatePath(testingHandle *testing.T) {
+	var buffer bytes.Buffer
+	renderErr := SearchableSelectInput(SearchableSelectInputSettings{
+		InputName:            "country",
+		Label:                "Country",
+		LabelOneWayStatePath: "countryLabel",
+		FlatOptions:          []string{"Brazil", "Chile"},
+		TwoWayStatePath:      "countryValue",
+	}).Render(context.Background(), &buffer)
+	if renderErr != nil {
+		testingHandle.Fatalf("SearchableSelectInputRenderFailed: %v", renderErr)
+	}
+	renderedHtml := buffer.String()
+	for _, expectedFragment := range []string{
+		`x-text="countryLabel"`,
+		`:aria-label="(countryLabel) || &#34;Country&#34;"`,
+		`(countryLabel) || &#34;Country&#34;`,
+		"Country",
+	} {
+		if !strings.Contains(renderedHtml, expectedFragment) {
+			testingHandle.Errorf("RenderedHtmlMissingFragment: %q", expectedFragment)
+		}
+	}
+}

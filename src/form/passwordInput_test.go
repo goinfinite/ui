@@ -5,6 +5,8 @@ import (
 	"context"
 	"strings"
 	"testing"
+
+	uiToolset "github.com/goinfinite/ui/src/toolset"
 )
 
 func TestPasswordInputRulesResolver(t *testing.T) {
@@ -133,27 +135,81 @@ func TestPasswordStrengthCriteriaItemsResolver(t *testing.T) {
 	}
 }
 
-func TestPasswordInputRendersActionsAndStrengthMeter(t *testing.T) {
+func TestPasswordInputRendersActionsAndStrengthMeter(testingHandle *testing.T) {
 	var buffer bytes.Buffer
 	renderErr := PasswordInput(PasswordInputSettings{
 		InputName:                "password",
 		Label:                    "Password",
+		LabelOneWayStatePath:     "passwordLabel",
 		TwoWayStatePath:          "password",
 		ShouldShowGenerateButton: true,
 		ShouldShowStrengthMeter:  true,
 	}).Render(context.Background(), &buffer)
 	if renderErr != nil {
-		t.Fatalf("PasswordInputRenderFailed: %v", renderErr)
+		testingHandle.Fatalf("PasswordInputRenderFailed: %v", renderErr)
 	}
 	renderedHtml := buffer.String()
 	for _, expectedText := range []string{
 		"Show password", "Generate random password",
 		"passwordStrengthPercentage", "Between 6 and 64 characters",
 		"show/hide the password", "generate random password",
-		`role="tooltip"`,
+		`role="tooltip"`, "Caps Lock is on", `@keydown="updateCapsLockState($event)"`,
+		`x-text="passwordLabel"`, `placeholder="Password"`,
+	} {
+		if !strings.Contains(renderedHtml, expectedText) {
+			testingHandle.Errorf("RenderedHtmlMissing(%q)", expectedText)
+		}
+	}
+}
+
+func TestPasswordInputRendersCapsLockWarningSettings(t *testing.T) {
+	var buffer bytes.Buffer
+	renderErr := PasswordInput(PasswordInputSettings{
+		InputName:                          "password",
+		Label:                              "Password",
+		TwoWayStatePath:                    "password",
+		CapsLockWarningText:                "Watch the modifier",
+		CapsLockWarningTextCase:            uiToolset.TextCaseUpper,
+		CapsLockWarningTextColor:           "red-400",
+		CapsLockWarningTextOneWayStatePath: "capsLockWarningText",
+	}).Render(context.Background(), &buffer)
+	if renderErr != nil {
+		t.Fatalf("PasswordInputRenderFailed: %v", renderErr)
+	}
+	renderedHtml := buffer.String()
+	for _, expectedText := range []string{
+		`role="status"`,
+		`x-text="capsLockWarningText"`,
+		"Watch the modifier",
+		"text-red-400",
+		"uppercase",
+		`@keydown="updateCapsLockState($event)"`,
 	} {
 		if !strings.Contains(renderedHtml, expectedText) {
 			t.Errorf("RenderedHtmlMissing(%q)", expectedText)
+		}
+	}
+}
+
+func TestPasswordInputHidesCapsLockWarning(t *testing.T) {
+	var buffer bytes.Buffer
+	renderErr := PasswordInput(PasswordInputSettings{
+		InputName:                 "password",
+		Label:                     "Password",
+		TwoWayStatePath:           "password",
+		ShouldHideCapsLockWarning: true,
+	}).Render(context.Background(), &buffer)
+	if renderErr != nil {
+		t.Fatalf("PasswordInputRenderFailed: %v", renderErr)
+	}
+	renderedHtml := buffer.String()
+	for _, absentText := range []string{
+		`role="status"`,
+		"Caps Lock is on",
+		`@keydown="updateCapsLockState($event)"`,
+	} {
+		if strings.Contains(renderedHtml, absentText) {
+			t.Errorf("RenderedHtmlHasUnexpected(%q)", absentText)
 		}
 	}
 }

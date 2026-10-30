@@ -30,6 +30,191 @@ test.describe("SelectInput", () => {
     await expect(checkedRadioOf(page, "country")).toHaveValue("Argentina");
   });
 
+  test("@smoke dynamic label and value options follow Alpine state", async ({
+    page,
+  }) => {
+    const panel = await openExamplePanel(
+      page,
+      selectSection,
+      "LabelValueOptions",
+    );
+    const trigger = panel.locator("[role=button]").nth(1);
+    await expect(trigger).toContainText("Administrator");
+
+    const labelField = panel.locator(
+      'fieldset:has(input[name="runtimeLabelField"]) legend',
+    );
+    await expect(labelField).toHaveText("Runtime Role");
+    await panel.getByRole("button", { name: "Rename field" }).click();
+    await expect(labelField).toHaveText("Account Role");
+
+    await trigger.click();
+    const options = panel.locator("ul").nth(1);
+    await expect(options).toBeVisible();
+    await options.getByText("Editor", { exact: true }).click();
+    await expect(trigger).toContainText("Editor");
+
+    await panel.getByRole("button", { name: "Add auditor" }).click();
+    await trigger.click();
+    await expect(options.getByText("Auditor", { exact: true })).toBeVisible();
+  });
+
+  test("@smoke a zero dynamic option renders in the trigger", async ({
+    page,
+  }) => {
+    const panel = await openExamplePanel(
+      page,
+      selectSection,
+      "LabelValueOptions",
+    );
+    const trigger = panel.locator("[role=button]").nth(1);
+    await trigger.click();
+    const options = panel.locator("ul").nth(1);
+    await panel.evaluate((panelElement) => {
+      window.__selectChangeEvents = [];
+      panelElement.addEventListener("change", (event) => {
+        window.__selectChangeEvents.push(event.target.name);
+      });
+    });
+    await options.getByText("0", { exact: true }).click();
+
+    const selectedDisplay = trigger.locator("span").first();
+    const placeholder = trigger.locator("span").nth(1);
+    await expect(selectedDisplay).toHaveText("0");
+    await expect(selectedDisplay).toBeVisible();
+    await expect(placeholder).toBeHidden();
+    await expect(
+      panel.locator('fieldset:has(input[name="role"]) legend'),
+    ).toBeVisible();
+
+    const selectedRole = await panel.evaluate((panelElement) => {
+      const stateRoot = panelElement.querySelector(
+        '[x-data*="runtimeOptions"]',
+      );
+      return window.Alpine.$data(stateRoot).runtimeRole;
+    });
+    expect(selectedRole).toBe(0);
+
+    const changeEvents = await panel.evaluate(
+      () => window.__selectChangeEvents,
+    );
+    expect(changeEvents).toContain("role");
+  });
+
+  test("@smoke dynamic plain values and label values work in multi-select", async ({
+    page,
+  }) => {
+    const plainPanel = await openExamplePanel(
+      page,
+      selectSection,
+      "Multi-Select",
+    );
+    const plainMultiTrigger = plainPanel.locator("[role=button]").nth(1);
+    await expect(plainMultiTrigger).toContainText("us-east");
+    await plainMultiTrigger.click();
+    const plainMultiOptions = plainPanel.locator("ul").nth(1);
+    await plainMultiOptions.getByText("eu-west", { exact: true }).click();
+    await expect(
+      plainPanel.locator("input[type=checkbox][name=regionTags]").nth(1),
+    ).toBeChecked();
+    await expect(plainMultiTrigger).toContainText("us-east, eu-west");
+
+    const labelValuePanel = await openExamplePanel(
+      page,
+      selectSection,
+      "Multi-Select LabelValueOptions",
+    );
+    const labelValueTrigger = labelValuePanel.locator("[role=button]").nth(1);
+    await expect(labelValueTrigger).toContainText("Administrator");
+    await labelValueTrigger.click();
+    const labelValueOptions = labelValuePanel.locator("ul").nth(1);
+    await labelValueOptions.getByText("Editor", { exact: true }).click();
+    await expect(
+      labelValuePanel.locator("input[type=checkbox][name=roles]").nth(1),
+    ).toBeChecked();
+    await expect(labelValueTrigger).toContainText("Administrator, Editor");
+
+    await labelValuePanel.evaluate((panelElement) => {
+      const stateRoot = panelElement.querySelector('[x-data*="runtimeRoles"]');
+      const state = window.Alpine.$data(stateRoot);
+      state.runtimeOptions = [...state.runtimeOptions, { value: 0 }];
+    });
+    await labelValueOptions.getByText("0", { exact: true }).click();
+    await expect(labelValueTrigger).toContainText("Administrator, Editor, 0");
+
+    const selectedRoles = await labelValuePanel.evaluate((panelElement) => {
+      const stateRoot = panelElement.querySelector('[x-data*="runtimeRoles"]');
+      return window.Alpine.$data(stateRoot).runtimeRoles;
+    });
+    expect(selectedRoles).toEqual(["admin", "editor", 0]);
+  });
+
+  test("@smoke dynamic multi-select keeps numeric and string options distinct", async ({
+    page,
+  }) => {
+    const panel = await openExamplePanel(
+      page,
+      selectSection,
+      "Multi-Select LabelValueOptions",
+    );
+    await panel.evaluate((panelElement) => {
+      const stateRoot = panelElement.querySelector('[x-data*="runtimeRoles"]');
+      const state = window.Alpine.$data(stateRoot);
+      state.runtimeRoles = [];
+      state.runtimeOptions = [
+        { value: 0, label: "Numeric zero" },
+        { value: "0", label: "String zero" },
+      ];
+    });
+
+    const trigger = panel.locator("[role=button]").nth(1);
+    await trigger.click();
+    const options = panel.locator("ul").nth(1);
+    await options.getByText("Numeric zero", { exact: true }).click();
+    await options.getByText("String zero", { exact: true }).click();
+    await expect(trigger).toContainText("Numeric zero, String zero");
+
+    const selectedRoles = await panel.evaluate((panelElement) => {
+      const stateRoot = panelElement.querySelector('[x-data*="runtimeRoles"]');
+      return window.Alpine.$data(stateRoot).runtimeRoles;
+    });
+    expect(selectedRoles).toEqual([0, "0"]);
+
+    await options.getByText("Numeric zero", { exact: true }).click();
+    await expect(trigger).toContainText("String zero");
+    const selectedRolesAfterRemoval = await panel.evaluate((panelElement) => {
+      const stateRoot = panelElement.querySelector('[x-data*="runtimeRoles"]');
+      return window.Alpine.$data(stateRoot).runtimeRoles;
+    });
+    expect(selectedRolesAfterRemoval).toEqual(["0"]);
+  });
+
+  test("@smoke dynamic multi-select falls back to unmatched selected values", async ({
+    page,
+  }) => {
+    const panel = await openExamplePanel(
+      page,
+      selectSection,
+      "Multi-Select LabelValueOptions",
+    );
+    const trigger = panel.locator("[role=button]").nth(1);
+    await expect(trigger).toContainText("Administrator");
+
+    await panel.evaluate((panelElement) => {
+      const stateRoot = panelElement.querySelector('[x-data*="runtimeRoles"]');
+      const selectState = window.Alpine.$data(stateRoot);
+      selectState.runtimeRoles = ["admin", "ghost"];
+    });
+    await expect(trigger).toContainText("Administrator, ghost");
+
+    await panel.evaluate((panelElement) => {
+      const stateRoot = panelElement.querySelector('[x-data*="runtimeRoles"]');
+      const selectState = window.Alpine.$data(stateRoot);
+      selectState.runtimeRoles = ["ghost"];
+    });
+    await expect(trigger.locator("span").first()).toHaveText("ghost");
+  });
+
   test("@smoke clear button empties the selection", async ({ page }) => {
     await page.locator(`${selectSection} .ph-x-circle`).first().click();
     await expect(
@@ -212,7 +397,9 @@ test.describe("SelectInput", () => {
 
     await trigger.locator(".ph-x-circle").click();
 
-    await expect(panel.locator("input[type=checkbox]:checked")).toHaveCount(0);
+    await expect(
+      panel.locator('input[type=checkbox][name="countries"]:checked'),
+    ).toHaveCount(0);
     await expect(trigger).toContainText("Countries");
   });
 

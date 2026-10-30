@@ -114,31 +114,42 @@ templ TextAreaHintStatePathExample() {
 	Label:     "Description",
 
 	// OptionalFields
-	TwoWayStatePath: "description",
-	HintStatePath:   "hintText",
-	HintDisplay:     uiForm.InputHintDisplayTooltip,
+	LabelOneWayStatePath: "fieldLabel",
+	TwoWayStatePath:      "description",
+	HintStatePath:        "hintText",
+	HintDisplay:          uiForm.InputHintDisplayTooltip,
 })`
 	}}
 	@DemoExampleCard(
-		"Hint State Path",
-		"HintStatePath reads the hint text from Alpine state, so the hint updates as the state changes.",
+		"State Paths",
+		"LabelOneWayStatePath reads the label, placeholder, and accessible name from Alpine state. HintStatePath reads the hint text there too, so both update together.",
 		"/form/textArea.templ", hintStateUsage,
 	) {
-		<div x-data="{description: '', hintText: 'First hint text.'}" class="flex flex-col gap-3">
+		<div x-data="{description: '', fieldLabel: 'Description', hintText: 'First hint text.'}" class="flex flex-col gap-3">
 			@uiForm.TextArea(uiForm.TextAreaSettings{
-				InputName:       "description",
-				Label:           "Description",
-				TwoWayStatePath: "description",
-				HintStatePath:   "hintText",
-				HintDisplay:     uiForm.InputHintDisplayTooltip,
+				InputName:            "description",
+				Label:                "Description",
+				LabelOneWayStatePath: "fieldLabel",
+				TwoWayStatePath:      "description",
+				HintStatePath:        "hintText",
+				HintDisplay:          uiForm.InputHintDisplayTooltip,
 			})
-			@uiControl.Button(uiControl.ButtonSettings{
-				Label:           "Change Hint Text",
-				IconLeft:        "ph-pencil-simple",
-				OnClickFunc:     "hintText = hintText === 'First hint text.' ? 'Second hint text.' : 'First hint text.'",
-				Size:            uiControl.ButtonSizeSm,
-				BackgroundColor: "neutral-700",
-			})
+			<div class="flex gap-2">
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:           "Change Label",
+					IconLeft:        "ph-text-t",
+					OnClickFunc:     "fieldLabel = fieldLabel === 'Description' ? 'Message' : 'Description'",
+					Size:            uiControl.ButtonSizeSm,
+					BackgroundColor: "neutral-700",
+				})
+				@uiControl.Button(uiControl.ButtonSettings{
+					Label:           "Change Hint Text",
+					IconLeft:        "ph-pencil-simple",
+					OnClickFunc:     "hintText = hintText === 'First hint text.' ? 'Second hint text.' : 'First hint text.'",
+					Size:            uiControl.ButtonSizeSm,
+					BackgroundColor: "neutral-700",
+				})
+			</div>
 		</div>
 	}
 }
@@ -336,7 +347,7 @@ templ TextAreaDemo() {
 			{Title: "Value & Read-Only", Icon: "ph-lock", Content: TextAreaReadOnlyExample()},
 			{Title: "Code Mode", Icon: "ph-code", Content: TextAreaCodeExample()},
 			{Title: "Hints", Icon: "ph-info", Content: TextAreaHintsExample()},
-			{Title: "Hint State Path", Icon: "ph-arrows-clockwise", Content: TextAreaHintStatePathExample()},
+			{Title: "State Paths", Icon: "ph-arrows-clockwise", Content: TextAreaHintStatePathExample()},
 			{Title: "Sizes", Icon: "ph-ruler", Content: TextAreaSizesExample()},
 			{Title: "Text Case", Icon: "ph-text-t", Content: TextAreaTextCaseExample()},
 			{Title: "Required", Icon: "ph-asterisk", Content: TextAreaRequiredExample()},

@@ -8,8 +8,9 @@ const (
 )
 
 type InlineCheckboxGroupSettings struct {
-	Label         string
-	InputSettings []CheckboxInputSettings
+	Label                string
+	LabelOneWayStatePath string
+	InputSettings        []CheckboxInputSettings
 
 	// OptionalFields
 	Orientation               string
@@ -38,7 +39,7 @@ templ InlineCheckboxGroup(componentSettings InlineCheckboxGroupSettings) {
 	<div class="flex w-full flex-col">
 		<fieldset class="group/checkboxGroup bg-neutral-50/7.5 relative -mt-1.5 w-full rounded border border-neutral-50/5 transition-colors focus-within:border-neutral-50/30 hover:border-neutral-50/30">
 			<legend class={ legendClasses }>
-				{ componentSettings.Label }
+				@statePathBoundLabelText(componentSettings.Label, componentSettings.LabelOneWayStatePath)
 			</legend>
 			<div
 				class={ contentClasses }

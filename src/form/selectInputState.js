@@ -7,6 +7,73 @@ UiToolset.RegisterAlpineState(() => {
     selectedValue: "",
     selectedItems: [],
 
+    dynamicOptionLabelResolver(options, optionValue) {
+      if (!Array.isArray(options) || optionValue === undefined) {
+        return "";
+      }
+
+      const matchedOption = options.find(
+        (option) => (option?.value ?? option) === optionValue,
+      );
+      if (matchedOption === undefined) {
+        return "";
+      }
+      if (typeof matchedOption === "object" && matchedOption !== null) {
+        return matchedOption.label ?? matchedOption.value ?? "";
+      }
+      return matchedOption;
+    },
+
+    selectedOptionValueIsPresent(selectedItems, optionValue) {
+      if (!Array.isArray(selectedItems)) {
+        return false;
+      }
+      return selectedItems.some(
+        (selectedValue) => selectedValue === optionValue,
+      );
+    },
+
+    toggleSelectedOptionValue(selectedItems, optionValue, isChecked) {
+      const currentItems = Array.isArray(selectedItems) ? selectedItems : [];
+      const itemsWithoutOption = currentItems.filter(
+        (selectedValue) => selectedValue !== optionValue,
+      );
+      if (!isChecked) {
+        return itemsWithoutOption;
+      }
+      return [...itemsWithoutOption, optionValue];
+    },
+
+    dynamicOptionDisplayLabelResolver(options, optionValue) {
+      const optionLabel = this.dynamicOptionLabelResolver(options, optionValue);
+      if (optionLabel !== "") {
+        return optionLabel;
+      }
+      if (optionValue === undefined || optionValue === null) {
+        return "";
+      }
+      return String(optionValue);
+    },
+
+    dynamicOptionsDisplayResolver(options, selectedValue) {
+      if (!Array.isArray(selectedValue)) {
+        return this.dynamicOptionLabelResolver(options, selectedValue);
+      }
+      if (selectedValue.length === 0) {
+        return null;
+      }
+
+      const selectedLabels = selectedValue
+        .map((optionValue) =>
+          this.dynamicOptionDisplayLabelResolver(options, optionValue),
+        )
+        .filter((optionLabel) => optionLabel !== "");
+      if (selectedLabels.length === 0) {
+        return null;
+      }
+      return selectedLabels.join(", ");
+    },
+
     selectedItemsDisplayFormatter(items) {
       if (!items || items.length === 0) {
         return null;

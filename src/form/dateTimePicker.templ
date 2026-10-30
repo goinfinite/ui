@@ -74,7 +74,8 @@ type DateTimePickerStyle struct {
 }
 
 type DateTimePickerSettings struct {
-	Label string
+	Label                string
+	LabelOneWayStatePath string
 
 	// OptionalFields
 	CalendarButtonStyle               string
@@ -487,8 +488,19 @@ templ dateTimePickerCalendar() {
 	</div>
 }
 
+func (componentSettings DateTimePickerSettings) rangeAriaLabelExpressionBuilder(
+	sideLabel, staticAriaLabel string,
+) string {
+	if componentSettings.LabelOneWayStatePath == "" {
+		return ""
+	}
+	return "(" + componentSettings.LabelOneWayStatePath + " ? (" +
+		componentSettings.LabelOneWayStatePath + ") + \" " + sideLabel + "\" : " +
+		strconv.Quote(staticAriaLabel) + ")"
+}
+
 templ dateTimePickerRangeSide(
-	side, ariaLabel, caption, placeholder, inputClasses, captionClasses, sidePaddingClasses string,
+	side, ariaLabel, ariaLabelExpression, caption, placeholder, inputClasses, captionClasses, sidePaddingClasses string,
 ) {
 	<div
 		class={ "flex min-w-0 flex-1 flex-col gap-0.5 " + sidePaddingClasses }
@@ -507,6 +519,9 @@ templ dateTimePickerRangeSide(
 			placeholder={ placeholder }
 			autocomplete="off"
 			aria-label={ ariaLabel }
+			if ariaLabelExpression != "" {
+				:aria-label={ ariaLabelExpression }
+			}
 			class={ inputClasses }
 		/>
 	</div>
@@ -528,6 +543,7 @@ templ DateTimePicker(componentSettings DateTimePickerSettings) {
 	{{ textColorClass := uiToolset.TextColorClassResolver(componentSettings.Style.TextColor, "text-neutral-100") }}
 	{{ placeholderColorClass := "placeholder:" + uiToolset.TextColorClassResolver(componentSettings.Style.PlaceholderColor, "text-neutral-50/60") }}
 	{{ textCaseClass := uiToolset.TextCaseClassResolver(componentSettings.TextCase) }}
+	{{ labelAccessibleNameExpression := statePathFallbackExpressionBuilder(componentSettings.LabelOneWayStatePath, componentSettings.Label) }}
 	{{ inputClasses := "w-full min-w-0 flex-1 bg-transparent outline-none focus:outline-none " + sizeTokens.InputPadding + " " + textColorClass + " " + placeholderColorClass }}
 	{{ rangeInputClasses := "w-full min-w-0 flex-1 bg-transparent outline-none focus:outline-none " + textColorClass + " " + placeholderColorClass }}
 	if textCaseClass != "" {
@@ -558,6 +574,8 @@ templ DateTimePicker(componentSettings DateTimePickerSettings) {
 		{{ rangeStartAriaLabel = componentSettings.Label + " start" }}
 		{{ rangeEndAriaLabel = componentSettings.Label + " end" }}
 	}
+	{{ rangeStartAriaLabelExpression := componentSettings.rangeAriaLabelExpressionBuilder("start", rangeStartAriaLabel) }}
+	{{ rangeEndAriaLabelExpression := componentSettings.rangeAriaLabelExpressionBuilder("end", rangeEndAriaLabel) }}
 	<div
 		class="relative w-full"
 		x-data={ templ.JSExpression(dataExpression) }
@@ -576,14 +594,14 @@ templ DateTimePicker(componentSettings DateTimePickerSettings) {
 					class={ legendClasses }
 					:class="!hasValue && 'opacity-0 !p-0 w-0 h-0'"
 				>
-					{ componentSettings.Label }
+					@statePathBoundLabelText(componentSettings.Label, componentSettings.LabelOneWayStatePath)
 				</legend>
 				<div class={ inputRowClasses }>
 					if componentSettings.IsRange {
 						<div class="flex min-w-0 flex-1 items-stretch">
-							@dateTimePickerRangeSide("start", rangeStartAriaLabel, rangeStartLabel, inputPlaceholder, rangeInputClasses, rangeLabelClass, rangeSidePaddingClasses)
+							@dateTimePickerRangeSide("start", rangeStartAriaLabel, rangeStartAriaLabelExpression, rangeStartLabel, inputPlaceholder, rangeInputClasses, rangeLabelClass, rangeSidePaddingClasses)
 							<span class={ "my-1.5 w-px shrink-0 " + rangeDividerClass } aria-hidden="true"></span>
-							@dateTimePickerRangeSide("end", rangeEndAriaLabel, rangeEndLabel, inputPlaceholder, rangeInputClasses, rangeLabelClass, rangeSidePaddingClasses)
+							@dateTimePickerRangeSide("end", rangeEndAriaLabel, rangeEndAriaLabelExpression, rangeEndLabel, inputPlaceholder, rangeInputClasses, rangeLabelClass, rangeSidePaddingClasses)
 						</div>
 					} else {
 						<input
@@ -599,6 +617,9 @@ templ DateTimePicker(componentSettings DateTimePickerSettings) {
 							placeholder={ inputPlaceholder }
 							autocomplete="off"
 							aria-label={ componentSettings.Label }
+							if labelAccessibleNameExpression != "" {
+								:aria-label={ labelAccessibleNameExpression }
+							}
 							class={ inputClasses }
 							:class={ "!hasValue && '" + emptyInputPaddingClass + "'" }
 						/>

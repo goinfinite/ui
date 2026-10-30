@@ -18,9 +18,10 @@ type RadioInputStyle struct {
 }
 
 type RadioInputSettings struct {
-	Label           string
-	StateValue      string
-	TwoWayStatePath string
+	Label                string
+	LabelOneWayStatePath string
+	StateValue           string
+	TwoWayStatePath      string
 
 	// OptionalFields
 	InputId   string
@@ -100,7 +101,7 @@ templ RadioInput(componentSettings RadioInputSettings) {
 				class={ "ph-duotone rounded-full peer-focus-visible:ring-2 peer-focus-visible:ring-" + focusRingColor + " " + iconSize }
 				:class={ `String(` + componentSettings.TwoWayStatePath + `) == "` + componentSettings.StateValue + `" ? "ph-check-circle" : "ph-circle"` }
 			></i>
-			{ componentSettings.Label }
+			@statePathBoundLabelText(componentSettings.Label, componentSettings.LabelOneWayStatePath)
 		</label>
 	</div>
 }

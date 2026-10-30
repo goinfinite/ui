@@ -110,7 +110,7 @@ test.describe("InputHint", () => {
     const statePathPanel = await openExamplePanel(
       page,
       textAreaSection,
-      "Hint State Path",
+      "State Paths",
     );
     const trigger = statePathPanel.locator("[role=note]").first();
     const tooltip = await tooltipFor(trigger);

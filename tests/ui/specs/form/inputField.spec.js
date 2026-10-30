@@ -30,10 +30,24 @@ test.describe("InputField", () => {
     expect(suffixScroll.scrollWidth).toBeGreaterThan(suffixScroll.clientWidth);
   });
 
+  test("@browser @smoke a state path drives the legend label", async ({
+    page,
+  }) => {
+    const panel = await openExamplePanel(page, inputFieldSection, "Labels");
+    const dynamicField = panel.locator(
+      'fieldset:has(input[name="runtimeField"])',
+    );
+    const legend = dynamicField.locator("legend");
+    await expect(legend).toHaveText("Admin Username");
+
+    await panel.getByRole("button", { name: "Use the password label" }).click();
+    await expect(legend).toHaveText("Admin Password");
+  });
+
   test("@browser @smoke text case transforms the floating label", async ({
     page,
   }) => {
-    const panel = await openExamplePanel(page, inputFieldSection, "Label Case");
+    const panel = await openExamplePanel(page, inputFieldSection, "Labels");
     const fields = panel.locator("fieldset");
     const cases = [
       ["none", "none"],

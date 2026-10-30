@@ -1,0 +1,10 @@
+package uiForm
+
+templ statePathBoundLabelText(label, statePath string) {
+	if statePath != "" {
+		<span x-text={ statePath }>{ label }</span>
+	}
+	if statePath == "" {
+		{ label }
+	}
+}

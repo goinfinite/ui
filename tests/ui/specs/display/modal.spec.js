@@ -29,6 +29,67 @@ test.describe("Modal", () => {
     await expect(modal).toBeVisible();
   });
 
+  test("@smoke a footer submit button submits the form in the middle content", async ({
+    page,
+  }) => {
+    const footerFormPanel = await openExamplePanel(
+      page,
+      modalSection,
+      "Footer Form Submit",
+    );
+    await footerFormPanel
+      .getByRole("button", { name: "Open form modal" })
+      .click();
+    const modal = backdropWith(page, "Edit Profile");
+    await expect(modal).toBeVisible();
+
+    const saveButton = modal.getByRole("button", { name: "Save" });
+    await expect(saveButton).toHaveAttribute("form", "modal-footer-form-demo");
+    await expect(modal.locator("form#modal-footer-form-demo")).toBeVisible();
+    await saveButton.click();
+    await expect(modal).toBeHidden();
+  });
+
+  test("@smoke a tracked footer submit follows the form named by FormId", async ({
+    page,
+  }) => {
+    const footerFormPanel = await openExamplePanel(
+      page,
+      modalSection,
+      "Footer Form Submit",
+    );
+    let releaseSaveRequest = () => {};
+    const saveRequestReleased = new Promise((resolve) => {
+      releaseSaveRequest = resolve;
+    });
+    await page.route(/ui-logo\.svg/, async (route) => {
+      await saveRequestReleased;
+      await route.continue();
+    });
+    await footerFormPanel
+      .getByRole("button", { name: "Open form modal" })
+      .click();
+    const modal = backdropWith(page, "Edit Profile");
+    await expect(modal).toBeVisible();
+    const saveButton = page.locator('button[form="modal-footer-form-demo"]');
+
+    await page.waitForFunction(() => {
+      const saveButton = document.querySelector(
+        "button[form=modal-footer-form-demo]",
+      );
+      if (!saveButton) {
+        return false;
+      }
+      const actionData = window.Alpine?.$data(saveButton.closest("[x-data]"));
+      return actionData?.submittedForm !== null;
+    });
+    await saveButton.evaluate((button) => button.click());
+    await expect(saveButton).toBeDisabled();
+    await expect(saveButton).toHaveAttribute("aria-busy", "true");
+    releaseSaveRequest();
+    await expect(modal).toBeHidden({ timeout: 5000 });
+  });
+
   test("@smoke uncloseable modal closes from an in-modal button", async ({
     page,
   }) => {

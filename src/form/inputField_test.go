@@ -75,6 +75,31 @@ func TestInputFieldRendersInvalidStateBinding(t *testing.T) {
 	}
 }
 
+func TestInputFieldRendersLabelStatePath(testingHandle *testing.T) {
+	var buffer bytes.Buffer
+	renderErr := InputField(InputFieldSettings{
+		InputType:            InputTypeText,
+		InputName:            "name",
+		Label:                "Name",
+		LabelOneWayStatePath: "fieldLabel",
+	}).Render(context.Background(), &buffer)
+	if renderErr != nil {
+		testingHandle.Fatalf("InputFieldRenderFailed: %v", renderErr)
+	}
+	renderedHtml := buffer.String()
+	for _, expectedFragment := range []string{
+		`x-text="fieldLabel"`,
+		`aria-label="Name"`,
+		`:aria-label="(fieldLabel) || &#34;Name&#34;"`,
+		`placeholder="Name"`,
+		`:placeholder="(fieldLabel) || &#34;Name&#34;"`,
+	} {
+		if !strings.Contains(renderedHtml, expectedFragment) {
+			testingHandle.Errorf("RenderedHtmlMissingFragment: %q", expectedFragment)
+		}
+	}
+}
+
 func TestInputFieldSizeTokensResolver(t *testing.T) {
 	testCases := []struct {
 		name           string

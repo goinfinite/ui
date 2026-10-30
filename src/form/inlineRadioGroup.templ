@@ -8,8 +8,9 @@ const (
 )
 
 type InlineRadioGroupSettings struct {
-	Label         string
-	InputSettings []RadioInputSettings
+	Label                string
+	LabelOneWayStatePath string
+	InputSettings        []RadioInputSettings
 
 	// OptionalFields
 	Orientation       string
@@ -28,7 +29,7 @@ templ InlineRadioGroup(componentSettings InlineRadioGroupSettings) {
 	<div class="flex w-full flex-col">
 		<fieldset class="bg-neutral-50/7.5 relative -mt-1.5 w-full rounded border border-neutral-50/5 transition-colors focus-within:border-neutral-50/30 hover:border-neutral-50/30">
 			<legend class={ legendClasses }>
-				{ componentSettings.Label }
+				@statePathBoundLabelText(componentSettings.Label, componentSettings.LabelOneWayStatePath)
 			</legend>
 			if componentSettings.InputName != "" && componentSettings.TwoWayStatePath != "" {
 				<input
@@ -44,7 +45,12 @@ templ InlineRadioGroup(componentSettings InlineRadioGroupSettings) {
 					}
 				/>
 			}
-			<div class={ contentClasses } if maxVisibleOptionsStyle != "" { style={ maxVisibleOptionsStyle } }>
+			<div
+				class={ contentClasses }
+				if maxVisibleOptionsStyle != "" {
+					style={ maxVisibleOptionsStyle }
+				}
+			>
 				for _, inputSettings := range componentSettings.InputSettings {
 					@RadioInput(inputSettings)
 				}

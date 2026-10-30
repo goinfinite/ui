@@ -6,6 +6,10 @@ window.UiToolset = {
     openUpwardResolver: selectDropdownOpenUpwardResolver,
   },
   ToggleLoadingOverlay: toggleLoadingOverlay,
+  UnixTimestamp: {
+    ToIsoDate: toIsoDate,
+    ToRfc1123: toRfc1123,
+  },
   RegisterAlpineState: registerAlpineState,
 };
 

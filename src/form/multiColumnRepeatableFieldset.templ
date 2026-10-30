@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"log/slog"
 	"strconv"
+	"strings"
+	"unicode/utf8"
 
 	uiControl "github.com/goinfinite/ui/src/control"
 	uiToolset "github.com/goinfinite/ui/src/toolset"
@@ -46,9 +48,10 @@ type MultiColumnRepeatableFieldsetSelectStyle struct {
 }
 
 type MultiColumnRepeatableFieldsetColumn struct {
-	Id        string
-	Label     string
-	InputType string
+	Id                   string
+	Label                string
+	LabelOneWayStatePath string
+	InputType            string
 
 	// OptionalFields
 	IsRequired bool
@@ -58,12 +61,47 @@ type MultiColumnRepeatableFieldsetColumn struct {
 	Step       string
 }
 
+type MultiColumnRepeatableFieldsetBulkEditSettings struct {
+	// OptionalFields
+	ButtonIcon       string
+	ButtonLabel      string
+	Delimiter        string
+	HintValue        string
+	IsEnabled        bool
+	TableButtonIcon  string
+	TableButtonLabel string
+	TextAreaLabel    string
+}
+
+type MultiColumnRepeatableFieldsetAddRowButtonStyle struct {
+	// OptionalFields
+	BackgroundColor      string
+	BackgroundColorHover string
+	IconLeft             string
+	IconRight            string
+	Shape                string
+	TextColor            string
+	TextColorHover       string
+}
+
+type MultiColumnRepeatableFieldsetBulkEditButtonStyle struct {
+	// OptionalFields
+	BackgroundColor      string
+	BackgroundColorHover string
+	Shape                string
+	TextColor            string
+	TextColorHover       string
+}
+
 type MultiColumnRepeatableFieldsetSettings struct {
 	Columns         []MultiColumnRepeatableFieldsetColumn
 	TwoWayStatePath string
 
 	// OptionalFields
+	AddRowButton    MultiColumnRepeatableFieldsetAddRowButtonStyle
 	AddRowLabel     string
+	BulkEdit        MultiColumnRepeatableFieldsetBulkEditSettings
+	BulkEditButton  MultiColumnRepeatableFieldsetBulkEditButtonStyle
 	Checkbox        MultiColumnRepeatableFieldsetCheckboxStyle
 	Dropdown        MultiColumnRepeatableFieldsetDropdownStyle
 	EmptyStateLabel string
@@ -95,11 +133,20 @@ func multiColumnRepeatableFieldsetColumnMetadataJsonBuilder(
 	if marshalErr != nil {
 		slog.Debug(
 			"MultiColumnRepeatableFieldsetMetadataMarshalFailure",
-			slog.String("err", marshalErr.Error()),
+			slog.String("error", marshalErr.Error()),
 		)
 		return "[]"
 	}
 	return string(encodedMetadata)
+}
+
+func multiColumnRepeatableFieldsetAddRowIconResolver(
+	componentSettings MultiColumnRepeatableFieldsetSettings,
+) string {
+	if componentSettings.AddRowButton.IconLeft != "" {
+		return componentSettings.AddRowButton.IconLeft
+	}
+	return "ph-plus"
 }
 
 func multiColumnRepeatableFieldsetAddRowLabelResolver(
@@ -108,7 +155,7 @@ func multiColumnRepeatableFieldsetAddRowLabelResolver(
 	if componentSettings.AddRowLabel != "" {
 		return componentSettings.AddRowLabel
 	}
-	return "Add row"
+	return "add row"
 }
 
 func multiColumnRepeatableFieldsetEmptyStateLabelResolver(
@@ -129,6 +176,109 @@ func multiColumnRepeatableFieldsetInputTypeResolver(
 	return MultiColumnRepeatableFieldsetColumnTypeText
 }
 
+func multiColumnRepeatableFieldsetBulkEditDelimiterIsValid(
+	delimiter string,
+) bool {
+	if utf8.RuneCountInString(delimiter) != 1 {
+		return false
+	}
+	if strings.HasPrefix(delimiter, "n") || strings.HasPrefix(delimiter, "\\") {
+		return false
+	}
+	return !strings.ContainsAny(delimiter, "\r\n")
+}
+
+func multiColumnRepeatableFieldsetBulkEditDelimiterResolver(
+	componentSettings MultiColumnRepeatableFieldsetSettings,
+) string {
+	configuredDelimiter := componentSettings.BulkEdit.Delimiter
+	if configuredDelimiter != "" &&
+		multiColumnRepeatableFieldsetBulkEditDelimiterIsValid(configuredDelimiter) {
+		return configuredDelimiter
+	}
+	if len(componentSettings.Columns) > 2 {
+		return "|"
+	}
+	return "="
+}
+
+func multiColumnRepeatableFieldsetBulkEditButtonLabelResolver(
+	componentSettings MultiColumnRepeatableFieldsetSettings,
+) string {
+	if componentSettings.BulkEdit.ButtonLabel != "" {
+		return componentSettings.BulkEdit.ButtonLabel
+	}
+	return "bulk edit"
+}
+
+func multiColumnRepeatableFieldsetBulkEditTableButtonLabelResolver(
+	componentSettings MultiColumnRepeatableFieldsetSettings,
+) string {
+	if componentSettings.BulkEdit.TableButtonLabel != "" {
+		return componentSettings.BulkEdit.TableButtonLabel
+	}
+	return "table view"
+}
+
+func multiColumnRepeatableFieldsetBulkEditTextAreaLabelResolver(
+	componentSettings MultiColumnRepeatableFieldsetSettings,
+) string {
+	if componentSettings.BulkEdit.TextAreaLabel != "" {
+		return componentSettings.BulkEdit.TextAreaLabel
+	}
+	return "Bulk edit"
+}
+
+func multiColumnRepeatableFieldsetBulkEditHintValueResolver(
+	componentSettings MultiColumnRepeatableFieldsetSettings,
+) string {
+	if componentSettings.BulkEdit.HintValue != "" {
+		return componentSettings.BulkEdit.HintValue
+	}
+	if len(componentSettings.Columns) < 2 {
+		return "One row per line. Blank lines are ignored."
+	}
+	return "One row per line. Separate the columns with \"" +
+		multiColumnRepeatableFieldsetBulkEditDelimiterResolver(componentSettings) +
+		"\". Blank lines are ignored."
+}
+
+type multiColumnRepeatableFieldsetBulkEditMetadata struct {
+	Delimiter        string `json:"delimiter"`
+	ButtonLabel      string `json:"buttonLabel"`
+	TableButtonLabel string `json:"tableButtonLabel"`
+	ButtonIcon       string `json:"buttonIcon"`
+	TableButtonIcon  string `json:"tableButtonIcon"`
+}
+
+func multiColumnRepeatableFieldsetBulkEditMetadataJsonBuilder(
+	componentSettings MultiColumnRepeatableFieldsetSettings,
+) string {
+	delimiter := multiColumnRepeatableFieldsetBulkEditDelimiterResolver(componentSettings)
+	buttonLabel := multiColumnRepeatableFieldsetBulkEditButtonLabelResolver(componentSettings)
+	tableButtonLabel := multiColumnRepeatableFieldsetBulkEditTableButtonLabelResolver(componentSettings)
+	metadata := multiColumnRepeatableFieldsetBulkEditMetadata{
+		Delimiter:        delimiter,
+		ButtonLabel:      buttonLabel,
+		TableButtonLabel: tableButtonLabel,
+		ButtonIcon:       componentSettings.BulkEdit.ButtonIcon,
+		TableButtonIcon:  componentSettings.BulkEdit.TableButtonIcon,
+	}
+	encodedMetadata, marshalErr := json.Marshal(metadata)
+	if marshalErr != nil {
+		slog.Debug(
+			"MultiColumnRepeatableFieldsetBulkEditMetadataMarshalFailure",
+			slog.String("error", marshalErr.Error()),
+		)
+		return `{"delimiter":` + strconv.Quote(delimiter) +
+			`,"buttonLabel":` + strconv.Quote(buttonLabel) +
+			`,"tableButtonLabel":` + strconv.Quote(tableButtonLabel) +
+			`,"buttonIcon":` + strconv.Quote(componentSettings.BulkEdit.ButtonIcon) +
+			`,"tableButtonIcon":` + strconv.Quote(componentSettings.BulkEdit.TableButtonIcon) + `}`
+	}
+	return string(encodedMetadata)
+}
+
 templ multiColumnRepeatableFieldsetCell(
 	column MultiColumnRepeatableFieldsetColumn,
 	componentSettings MultiColumnRepeatableFieldsetSettings,
@@ -139,6 +289,7 @@ templ multiColumnRepeatableFieldsetCell(
 		case MultiColumnRepeatableFieldsetColumnTypeCheckbox:
 			@CheckboxInput(CheckboxInputSettings{
 				AriaLabel:                column.Label,
+				AriaLabelOneWayStatePath: column.LabelOneWayStatePath,
 				CheckedColor:             componentSettings.Checkbox.CheckedColor,
 				FocusRingColor:           componentSettings.Checkbox.FocusRingColor,
 				IsInvalidOneWayStatePath: invalidExpression,
@@ -151,6 +302,7 @@ templ multiColumnRepeatableFieldsetCell(
 		case MultiColumnRepeatableFieldsetColumnTypeSelect:
 			@SelectInput(SelectInputSettings{
 				Label:                    column.Label,
+				LabelOneWayStatePath:     column.LabelOneWayStatePath,
 				LabelValueOptions:        column.Options,
 				ShouldIncludeBlankOption: true,
 				IsInvalidOneWayStatePath: invalidExpression,
@@ -168,6 +320,7 @@ templ multiColumnRepeatableFieldsetCell(
 			@InputField(InputFieldSettings{
 				InputType:                multiColumnRepeatableFieldsetInputTypeResolver(column),
 				Label:                    column.Label,
+				LabelOneWayStatePath:     column.LabelOneWayStatePath,
 				InputNumberMax:           column.Max,
 				InputNumberMin:           column.Min,
 				InputNumberStep:          column.Step,
@@ -183,19 +336,31 @@ templ multiColumnRepeatableFieldsetCell(
 templ MultiColumnRepeatableFieldset(componentSettings MultiColumnRepeatableFieldsetSettings) {
 	{{ statePath := componentSettings.TwoWayStatePath }}
 	{{ columnMetadataJson := multiColumnRepeatableFieldsetColumnMetadataJsonBuilder(componentSettings.Columns) }}
+	{{ addRowIcon := multiColumnRepeatableFieldsetAddRowIconResolver(componentSettings) }}
 	{{ addRowLabel := multiColumnRepeatableFieldsetAddRowLabelResolver(componentSettings) }}
 	{{ emptyStateLabel := multiColumnRepeatableFieldsetEmptyStateLabelResolver(componentSettings) }}
+	{{ isBulkEditEnabled := componentSettings.BulkEdit.IsEnabled }}
+	{{ bulkEditMetadataJson := multiColumnRepeatableFieldsetBulkEditMetadataJsonBuilder(componentSettings) }}
+	{{ bulkEditTextAreaLabel := multiColumnRepeatableFieldsetBulkEditTextAreaLabelResolver(componentSettings) }}
+	{{ bulkEditHintValue := multiColumnRepeatableFieldsetBulkEditHintValueResolver(componentSettings) }}
 	@multiColumnRepeatableFieldsetAlpineStateOnce.Once()
 	<!-- MultiColumnRepeatableFieldset -->
 	<div
 		class="w-full"
-		x-data={ templ.JSFuncCall("multiColumnRepeatableFieldset", templ.JSExpression(columnMetadataJson), componentSettings.NewRowFunc) }
+		x-data={ templ.JSFuncCall("multiColumnRepeatableFieldset", templ.JSExpression(columnMetadataJson), componentSettings.NewRowFunc, templ.JSExpression(bulkEditMetadataJson)) }
 	>
-		<table class="w-full border-collapse text-sm">
+		<table
+			class="w-full border-collapse text-sm"
+			if isBulkEditEnabled {
+				x-show="!isBulkEditing"
+			}
+		>
 			<thead>
 				<tr class="border-b border-neutral-50/10 text-left text-xs text-neutral-400">
 					for _, column := range componentSettings.Columns {
-						<th scope="col" class="px-2 py-2 font-medium">{ column.Label }</th>
+						<th scope="col" class="px-2 py-2 font-medium">
+							@statePathBoundLabelText(column.Label, column.LabelOneWayStatePath)
+						</th>
 					}
 					<th scope="col" class="w-0 px-2 py-2">
 						<span class="sr-only">Row actions</span>
@@ -255,13 +420,56 @@ templ MultiColumnRepeatableFieldset(componentSettings MultiColumnRepeatableField
 				</tr>
 			</tbody>
 		</table>
-		<div class="mt-3">
-			@uiControl.Button(uiControl.ButtonSettings{
-				IconLeft:    "ph-plus",
-				Label:       addRowLabel,
-				OnClickFunc: "appendRow(" + statePath + ")",
-				Size:        uiControl.ButtonSizeSm,
-			})
+		if isBulkEditEnabled {
+			<div
+				x-show="isBulkEditing"
+				style="display: none"
+				@input={ "replaceRowsFromBulkText(" + statePath + ", $event.target.value)" }
+				@click={ "reconcileRowsFromBulkText(" + statePath + ")" }
+			>
+				@TextArea(TextAreaSettings{
+					Label:           bulkEditTextAreaLabel,
+					TwoWayStatePath: "bulkEditText",
+					Size:            componentSettings.Size,
+					TextCase:        componentSettings.TextCase,
+					HintValue:       bulkEditHintValue,
+					HintDisplay:     InputHintDisplayDescription,
+					IsCode:          true,
+				})
+			</div>
+		}
+		<div class="mt-3 flex flex-wrap items-center gap-2">
+			<div
+				if isBulkEditEnabled {
+					x-show="!isBulkEditing"
+				}
+			>
+				@uiControl.Button(uiControl.ButtonSettings{
+					BackgroundColor:      componentSettings.AddRowButton.BackgroundColor,
+					BackgroundColorHover: componentSettings.AddRowButton.BackgroundColorHover,
+					IconLeft:             addRowIcon,
+					IconRight:            componentSettings.AddRowButton.IconRight,
+					Label:                addRowLabel,
+					OnClickFunc:          "appendRow(" + statePath + ")",
+					Shape:                componentSettings.AddRowButton.Shape,
+					Size:                 uiControl.ButtonSizeSm,
+					TextColor:            componentSettings.AddRowButton.TextColor,
+					TextColorHover:       componentSettings.AddRowButton.TextColorHover,
+				})
+			</div>
+			if isBulkEditEnabled {
+				@uiControl.Button(uiControl.ButtonSettings{
+					BackgroundColor:         componentSettings.BulkEditButton.BackgroundColor,
+					BackgroundColorHover:    componentSettings.BulkEditButton.BackgroundColorHover,
+					IconLeftOneWayStatePath: "bulkEditToggleIconResolver",
+					LabelOneWayStatePath:    "bulkEditToggleLabelResolver",
+					OnClickFunc:             "toggleBulkEdit(" + statePath + ")",
+					Shape:                   componentSettings.BulkEditButton.Shape,
+					Size:                    uiControl.ButtonSizeSm,
+					TextColor:               componentSettings.BulkEditButton.TextColor,
+					TextColorHover:          componentSettings.BulkEditButton.TextColorHover,
+				})
+			}
 		</div>
 		if componentSettings.InputName != "" {
 			<input type="hidden" name={ componentSettings.InputName } :value={ "JSON.stringify(" + statePath + ")" }/>

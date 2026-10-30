@@ -55,9 +55,6 @@ test.describe("PasswordInput", () => {
 
     const generatedValue = await mainPasswordInput(page).inputValue();
     expect(generatedValue.length).toBe(16);
-    await expect(page.locator(`${section} p.font-mono`).first()).toContainText(
-      generatedValue,
-    );
 
     const meterWidth = await page
       .locator(`${section} .bg-secondary-500`)
@@ -84,6 +81,76 @@ test.describe("PasswordInput", () => {
       .first()
       .evaluate((element) => element.style.width);
     expect(meterWidth).toBe("20%");
+  });
+
+  test("caps lock shows a hint while typing and clears on focusout", async ({
+    page,
+  }) => {
+    const capsLockHint = page.locator(`${section} p[role=status]`).first();
+    await expect(capsLockHint).toBeHidden();
+
+    await mainPasswordInput(page).evaluate((inputElement) => {
+      const keyboardEvent = new KeyboardEvent("keydown", {
+        key: "a",
+        bubbles: true,
+      });
+      Object.defineProperty(keyboardEvent, "getModifierState", {
+        value: () => true,
+      });
+      inputElement.dispatchEvent(keyboardEvent);
+    });
+    await expect(capsLockHint).toBeVisible();
+
+    await mainPasswordInput(page).evaluate((inputElement) => {
+      inputElement.dispatchEvent(new FocusEvent("focusout", { bubbles: true }));
+    });
+    await expect(capsLockHint).toBeHidden();
+
+    const generateButton = page
+      .getByRole("button", { name: "Generate random password" })
+      .first();
+    await generateButton.focus();
+    await generateButton.evaluate((buttonElement) => {
+      const keyboardEvent = new KeyboardEvent("keydown", {
+        key: "a",
+        bubbles: true,
+      });
+      Object.defineProperty(keyboardEvent, "getModifierState", {
+        value: () => true,
+      });
+      buttonElement.dispatchEvent(keyboardEvent);
+    });
+    await expect(capsLockHint).toBeHidden();
+  });
+
+  test("@browser caps lock warning accepts custom text, color, case, and hiding", async ({
+    page,
+  }) => {
+    const panel = await openExamplePanel(page, section, "Hints");
+    const customField = panel.locator('input[name="capsLockPassword"]');
+    const customHint = panel.locator(
+      'div[x-data^="passwordInput"]:has(input[name="capsLockPassword"]) p[role=status]',
+    );
+    const hiddenHint = panel.locator(
+      'div[x-data^="passwordInput"]:has(input[name="hiddenCapsLockPassword"]) p[role=status]',
+    );
+
+    await customField.evaluate((inputElement) => {
+      const keyboardEvent = new KeyboardEvent("keydown", {
+        key: "a",
+        bubbles: true,
+      });
+      Object.defineProperty(keyboardEvent, "getModifierState", {
+        value: () => true,
+      });
+      inputElement.dispatchEvent(keyboardEvent);
+    });
+
+    await expect(customHint).toBeVisible();
+    await expect(customHint).toHaveText("Caps Lock is active");
+    await expect(customHint).toHaveClass(/text-red-400/);
+    await expect(customHint).toHaveCSS("text-transform", "uppercase");
+    await expect(hiddenHint).toHaveCount(0);
   });
 
   test("custom rules drive the generator and the criteria list", async ({

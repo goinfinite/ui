@@ -37,6 +37,7 @@ const (
 type RangeSliderThumbSettings struct {
 	// OptionalFields
 	AriaLabel                  string
+	AriaLabelOneWayStatePath   string
 	BackgroundColor            string
 	Label                      string
 	LabelIcon                  string
@@ -286,8 +287,8 @@ templ Thumb(componentSettings RangeSliderSettings, thumbSettings RangeSliderThum
 	</div>
 }
 
-func resolveRangeSliderThumbAriaLabel(
-	componentSettings RangeSliderSettings, thumbSettings RangeSliderThumbSettings, isUpper bool,
+func (componentSettings RangeSliderSettings) resolveThumbAriaLabel(
+	thumbSettings RangeSliderThumbSettings, isUpper bool,
 ) string {
 	if thumbSettings.AriaLabel != "" {
 		return thumbSettings.AriaLabel
@@ -305,6 +306,16 @@ func resolveRangeSliderThumbAriaLabel(
 		return "Lower value"
 	}
 	return "Value"
+}
+
+func (componentSettings RangeSliderSettings) resolveThumbAriaLabelExpression(
+	thumbSettings RangeSliderThumbSettings, isUpper bool,
+) string {
+	if thumbSettings.AriaLabelOneWayStatePath == "" {
+		return ""
+	}
+	fallbackAriaLabel := componentSettings.resolveThumbAriaLabel(thumbSettings, isUpper)
+	return "(" + thumbSettings.AriaLabelOneWayStatePath + ") || " + strconv.Quote(fallbackAriaLabel)
 }
 
 func resolveRangeSliderThumbPathClamp(statePath string) string {
@@ -541,10 +552,14 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 					if componentSettings.ThumbValueTwoWayStatePath != "" {
 						{{ inputEvent += componentSettings.ThumbValueTwoWayStatePath + " = thumbValue" }}
 					}
+					{{ lowerAriaLabelExpression := componentSettings.resolveThumbAriaLabelExpression(componentSettings.Thumb, false) }}
 					<input
 						type="range"
 						class={ rangeInputClasses }
-						aria-label={ resolveRangeSliderThumbAriaLabel(componentSettings, componentSettings.Thumb, false) }
+						aria-label={ componentSettings.resolveThumbAriaLabel(componentSettings.Thumb, false) }
+						if lowerAriaLabelExpression != "" {
+							:aria-label={ lowerAriaLabelExpression }
+						}
 						:min="trackStartValue"
 						:max="trackEndValue"
 						:step="trackSteps"
@@ -567,10 +582,14 @@ templ RangeSlider(componentSettings RangeSliderSettings) {
 						if componentSettings.ThumbUpperValueTwoWayStatePath != "" {
 							{{ inputEvent += componentSettings.ThumbUpperValueTwoWayStatePath + " = thumbUpperValue" }}
 						}
+						{{ upperAriaLabelExpression := componentSettings.resolveThumbAriaLabelExpression(componentSettings.ThumbUpper, true) }}
 						<input
 							type="range"
 							class={ rangeInputClasses }
-							aria-label={ resolveRangeSliderThumbAriaLabel(componentSettings, componentSettings.ThumbUpper, true) }
+							aria-label={ componentSettings.resolveThumbAriaLabel(componentSettings.ThumbUpper, true) }
+							if upperAriaLabelExpression != "" {
+								:aria-label={ upperAriaLabelExpression }
+							}
 							:min="trackStartValue"
 							:max="trackEndValue"
 							:step="trackSteps"

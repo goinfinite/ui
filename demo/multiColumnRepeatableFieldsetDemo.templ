@@ -104,6 +104,240 @@ templ MultiColumnRepeatableFieldsetEmptyStateExample() {
 	}
 }
 
+templ multiColumnRepeatableFieldsetBulkEditEnvExample() {
+	{{
+		bulkEditUsage := `@uiForm.MultiColumnRepeatableFieldset(uiForm.MultiColumnRepeatableFieldsetSettings{
+	Columns: []uiForm.MultiColumnRepeatableFieldsetColumn{
+		{Id: "name", Label: "Name", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeText, IsRequired: true},
+		{Id: "value", Label: "Value", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeText},
+	},
+	TwoWayStatePath: "envVarRows",
+
+	// OptionalFields
+	BulkEdit: uiForm.MultiColumnRepeatableFieldsetBulkEditSettings{
+		IsEnabled:     true,
+		TextAreaLabel: "Environment variables",
+		HintValue:     "One variable per line, in NAME=value form. Blank lines are ignored.",
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Environment Variables",
+		"Bulk edit turns the rows into one textarea line per row, so a whole block can be pasted at once. For two columns the default delimiter is =, and blank lines are ignored. A text-only row with every cell empty is skipped.",
+		"/form/multiColumnRepeatableFieldset.templ", bulkEditUsage,
+	) {
+		<div
+			class="flex flex-col gap-3"
+			x-data="{envVarRows: [{name: 'APP_ENV', value: 'production'}, {name: 'LOG_LEVEL', value: 'info'}]}"
+		>
+			@uiForm.MultiColumnRepeatableFieldset(uiForm.MultiColumnRepeatableFieldsetSettings{
+				Columns: []uiForm.MultiColumnRepeatableFieldsetColumn{
+					{
+						Id: "name", Label: "Name", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeText,
+						IsRequired: true,
+					},
+					{
+						Id: "value", Label: "Value", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeText,
+					},
+				},
+				TwoWayStatePath: "envVarRows",
+				BulkEdit: uiForm.MultiColumnRepeatableFieldsetBulkEditSettings{
+					IsEnabled:     true,
+					TextAreaLabel: "Environment variables",
+					HintValue:     "One variable per line, in NAME=value form. Blank lines are ignored.",
+				},
+			})
+			<p class={ DemoLiveStateClasses }>
+				envVarRows: <span x-text="JSON.stringify(envVarRows)"></span>
+			</p>
+		</div>
+	}
+}
+
+templ multiColumnRepeatableFieldsetBulkEditTypedExample() {
+	{{
+		typedBulkEditUsage := `@uiForm.MultiColumnRepeatableFieldset(uiForm.MultiColumnRepeatableFieldsetSettings{
+	Columns: []uiForm.MultiColumnRepeatableFieldsetColumn{
+		{Id: "name", Label: "Name", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeText},
+		{Id: "role", Label: "Role", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeSelect,
+			Options: []uiForm.SelectLabelValueOption{{Label: "Owner", Value: "owner"}, {Label: "Member", Value: "member"}}},
+		{Id: "enabled", Label: "Enabled", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeCheckbox},
+	},
+	TwoWayStatePath: "typedBulkRows",
+	InputName:       "typedBulkRows",
+
+	// OptionalFields
+	BulkEdit: uiForm.MultiColumnRepeatableFieldsetBulkEditSettings{
+		IsEnabled:     true,
+		TextAreaLabel: "Typed rows",
+		HintValue:     "One row per line, in name|role|enabled form.",
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Typed Columns",
+		"The default | delimiter and the checkbox and select cells round-trip through the same textarea. The hidden input carries the parsed rows as JSON.",
+		"/form/multiColumnRepeatableFieldset.templ", typedBulkEditUsage,
+	) {
+		<div
+			class="flex flex-col gap-3"
+			x-data="{typedBulkRows: [{name: 'Ana', role: 'owner', enabled: true}]}"
+		>
+			@uiForm.MultiColumnRepeatableFieldset(uiForm.MultiColumnRepeatableFieldsetSettings{
+				Columns: []uiForm.MultiColumnRepeatableFieldsetColumn{
+					{Id: "name", Label: "Name", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeText},
+					{
+						Id: "role", Label: "Role", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeSelect,
+						Options: []uiForm.SelectLabelValueOption{
+							{Label: "Owner", Value: "owner"},
+							{Label: "Member", Value: "member"},
+						},
+					},
+					{Id: "enabled", Label: "Enabled", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeCheckbox},
+				},
+				TwoWayStatePath: "typedBulkRows",
+				InputName:       "typedBulkRows",
+				BulkEdit: uiForm.MultiColumnRepeatableFieldsetBulkEditSettings{
+					IsEnabled:     true,
+					TextAreaLabel: "Typed rows",
+					HintValue:     "One row per line, in name|role|enabled form.",
+				},
+			})
+			<p class={ DemoLiveStateClasses }>
+				typedBulkRows: <span x-text="JSON.stringify(typedBulkRows)"></span>
+			</p>
+		</div>
+	}
+}
+
+templ multiColumnRepeatableFieldsetBulkEditPortBindingExample() {
+	{{
+		portBindingBulkEditUsage := `@uiForm.MultiColumnRepeatableFieldset(uiForm.MultiColumnRepeatableFieldsetSettings{
+	Columns: []uiForm.MultiColumnRepeatableFieldsetColumn{
+		{Id: "serviceName", Label: "Service Name", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeSelect,
+			Options: []uiForm.SelectLabelValueOption{{Label: "Web", Value: "web"}, {Label: "Custom", Value: "custom"}}},
+		{Id: "publicPort", Label: "Public Port", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeText},
+		{Id: "containerPort", Label: "Container Port", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeText},
+		{Id: "protocol", Label: "Protocol", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeSelect,
+			Options: []uiForm.SelectLabelValueOption{{Label: "TCP", Value: "tcp"}, {Label: "UDP", Value: "udp"}}},
+	},
+	TwoWayStatePath: "portBindingRows",
+	InputName:       "portBindingRows",
+
+	// OptionalFields
+	BulkEdit: uiForm.MultiColumnRepeatableFieldsetBulkEditSettings{
+		IsEnabled:     true,
+		TextAreaLabel: "Port bindings",
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Port Bindings",
+		"Four columns default to the | delimiter, so a block of service|publicPort|containerPort|protocol lines can be pasted at once. The hidden input carries the parsed rows as JSON.",
+		"/form/multiColumnRepeatableFieldset.templ", portBindingBulkEditUsage,
+	) {
+		<div
+			class="flex flex-col gap-3"
+			x-data="{portBindingRows: [{serviceName: 'web', publicPort: '8080', containerPort: '80', protocol: 'tcp'}]}"
+		>
+			@uiForm.MultiColumnRepeatableFieldset(uiForm.MultiColumnRepeatableFieldsetSettings{
+				Columns: []uiForm.MultiColumnRepeatableFieldsetColumn{
+					{
+						Id: "serviceName", Label: "Service Name", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeSelect,
+						Options: []uiForm.SelectLabelValueOption{
+							{Label: "Web", Value: "web"},
+							{Label: "Custom", Value: "custom"},
+						},
+					},
+					{Id: "publicPort", Label: "Public Port", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeText},
+					{Id: "containerPort", Label: "Container Port", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeText},
+					{
+						Id: "protocol", Label: "Protocol", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeSelect,
+						Options: []uiForm.SelectLabelValueOption{
+							{Label: "TCP", Value: "tcp"},
+							{Label: "UDP", Value: "udp"},
+						},
+					},
+				},
+				TwoWayStatePath: "portBindingRows",
+				InputName:       "portBindingRows",
+				BulkEdit: uiForm.MultiColumnRepeatableFieldsetBulkEditSettings{
+					IsEnabled:     true,
+					TextAreaLabel: "Port bindings",
+				},
+			})
+			<p class={ DemoLiveStateClasses + " break-all" }>
+				portBindingRows: <span x-text="JSON.stringify(portBindingRows)"></span>
+			</p>
+		</div>
+	}
+}
+
+templ multiColumnRepeatableFieldsetBulkEditCustomDelimiterExample() {
+	{{
+		customDelimiterUsage := `@uiForm.MultiColumnRepeatableFieldset(uiForm.MultiColumnRepeatableFieldsetSettings{
+	Columns: []uiForm.MultiColumnRepeatableFieldsetColumn{
+		{Id: "name", Label: "Name", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeText},
+		{Id: "role", Label: "Role", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeSelect,
+			Options: []uiForm.SelectLabelValueOption{{Label: "Owner", Value: "owner"}, {Label: "Member", Value: "member"}}},
+		{Id: "enabled", Label: "Enabled", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeCheckbox},
+	},
+	TwoWayStatePath: "customDelimiterRows",
+	InputName:       "customDelimiterRows",
+
+	// OptionalFields
+	BulkEdit: uiForm.MultiColumnRepeatableFieldsetBulkEditSettings{
+		IsEnabled:     true,
+		Delimiter:     ";",
+		TextAreaLabel: "Contact rows",
+	},
+})`
+	}}
+	@DemoExampleCard(
+		"Custom Delimiter",
+		"Set Delimiter to override the default. This three-column example uses ; and still parses checkbox and select cells. The hidden input carries the parsed rows as JSON.",
+		"/form/multiColumnRepeatableFieldset.templ", customDelimiterUsage,
+	) {
+		<div
+			class="flex flex-col gap-3"
+			x-data="{customDelimiterRows: [{name: 'Ana', role: 'owner', enabled: true}]}"
+		>
+			@uiForm.MultiColumnRepeatableFieldset(uiForm.MultiColumnRepeatableFieldsetSettings{
+				Columns: []uiForm.MultiColumnRepeatableFieldsetColumn{
+					{Id: "name", Label: "Name", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeText},
+					{
+						Id: "role", Label: "Role", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeSelect,
+						Options: []uiForm.SelectLabelValueOption{
+							{Label: "Owner", Value: "owner"},
+							{Label: "Member", Value: "member"},
+						},
+					},
+					{Id: "enabled", Label: "Enabled", InputType: uiForm.MultiColumnRepeatableFieldsetColumnTypeCheckbox},
+				},
+				TwoWayStatePath: "customDelimiterRows",
+				InputName:       "customDelimiterRows",
+				BulkEdit: uiForm.MultiColumnRepeatableFieldsetBulkEditSettings{
+					IsEnabled:     true,
+					Delimiter:     ";",
+					TextAreaLabel: "Contact rows",
+				},
+			})
+			<p class={ DemoLiveStateClasses }>
+				customDelimiterRows: <span x-text="JSON.stringify(customDelimiterRows)"></span>
+			</p>
+		</div>
+	}
+}
+
+templ MultiColumnRepeatableFieldsetDelimiterExample() {
+	<div class="flex flex-col gap-6">
+		@multiColumnRepeatableFieldsetBulkEditEnvExample()
+		@multiColumnRepeatableFieldsetBulkEditTypedExample()
+		@multiColumnRepeatableFieldsetBulkEditPortBindingExample()
+		@multiColumnRepeatableFieldsetBulkEditCustomDelimiterExample()
+	</div>
+}
+
 templ MultiColumnRepeatableFieldsetSizesExample() {
 	{{
 		sizesUsage := `@uiForm.MultiColumnRepeatableFieldset(uiForm.MultiColumnRepeatableFieldsetSettings{
@@ -155,6 +389,29 @@ templ MultiColumnRepeatableFieldsetAppearanceExample() {
 	TwoWayStatePath: "endpointRows",
 
 	// OptionalFields
+	AddRowButton: uiForm.MultiColumnRepeatableFieldsetAddRowButtonStyle{
+		BackgroundColor:      "emerald-500",
+		BackgroundColorHover: "emerald-400",
+		IconLeft:             "ph-plus-circle",
+		Shape:                uiToolset.ShapeCircular,
+		TextColor:            "neutral-950",
+		TextColorHover:       "neutral-950",
+	},
+	AddRowLabel: "Add endpoint",
+	BulkEdit: uiForm.MultiColumnRepeatableFieldsetBulkEditSettings{
+		IsEnabled:       true,
+		ButtonIcon:      "ph-clipboard-text",
+		ButtonLabel:     "Paste endpoints",
+		TableButtonIcon: "ph-table",
+		TableButtonLabel: "Show endpoints",
+	},
+	BulkEditButton: uiForm.MultiColumnRepeatableFieldsetBulkEditButtonStyle{
+		BackgroundColor:      "neutral-50/5",
+		BackgroundColorHover: "neutral-50/10",
+		Shape:                uiToolset.ShapeSquare,
+		TextColor:            "emerald-400",
+		TextColorHover:       "emerald-300",
+	},
 	Checkbox: uiForm.MultiColumnRepeatableFieldsetCheckboxStyle{
 		CheckedColor: "emerald-500",
 		Shape:        uiToolset.ShapeCircular,
@@ -174,7 +431,7 @@ templ MultiColumnRepeatableFieldsetAppearanceExample() {
 	}}
 	@DemoExampleCard(
 		"Appearance",
-		"Each cell type carries its own style group. Checkbox sets the checked and unchecked colors, the focus ring, and the shape. Select sets the trigger surface and the checked-option icon color, and Dropdown paints the option list.",
+		"Each cell type carries its own style group. Checkbox sets the checked and unchecked colors, the focus ring, and the shape. Select sets the trigger surface and the checked-option icon color, and Dropdown paints the option list. AddRowButton and BulkEditButton set the action button label, icon, color, and shape.",
 		"/form/multiColumnRepeatableFieldset.templ", appearanceUsage,
 	) {
 		<div x-data="{endpointRows: [{host: 'api.internal', protocol: 'https', enabled: true}]}">
@@ -195,6 +452,29 @@ templ MultiColumnRepeatableFieldsetAppearanceExample() {
 					},
 				},
 				TwoWayStatePath: "endpointRows",
+				AddRowButton: uiForm.MultiColumnRepeatableFieldsetAddRowButtonStyle{
+					BackgroundColor:      "emerald-500",
+					BackgroundColorHover: "emerald-400",
+					IconLeft:             "ph-plus-circle",
+					Shape:                uiToolset.ShapeCircular,
+					TextColor:            "neutral-950",
+					TextColorHover:       "neutral-950",
+				},
+				AddRowLabel: "Add endpoint",
+				BulkEdit: uiForm.MultiColumnRepeatableFieldsetBulkEditSettings{
+					IsEnabled:        true,
+					ButtonIcon:       "ph-clipboard-text",
+					ButtonLabel:      "Paste endpoints",
+					TableButtonIcon:  "ph-table",
+					TableButtonLabel: "Show endpoints",
+				},
+				BulkEditButton: uiForm.MultiColumnRepeatableFieldsetBulkEditButtonStyle{
+					BackgroundColor:      "neutral-50/5",
+					BackgroundColorHover: "neutral-50/10",
+					Shape:                uiToolset.ShapeSquare,
+					TextColor:            "emerald-400",
+					TextColorHover:       "emerald-300",
+				},
 				Checkbox: uiForm.MultiColumnRepeatableFieldsetCheckboxStyle{
 					CheckedColor: "emerald-500",
 					Shape:        uiToolset.ShapeCircular,
@@ -227,6 +507,9 @@ templ MultiColumnRepeatableFieldsetDemo() {
 	TwoWayStatePath: "teamMemberRows",
 
 	// OptionalFields
+	BulkEdit: uiForm.MultiColumnRepeatableFieldsetBulkEditSettings{
+		IsEnabled: true,
+	},
 	InputName:  "teamMembers",
 	NewRowFunc: "multiColumnRepeatableFieldsetDemoRandomRow()",
 })`
@@ -235,7 +518,7 @@ templ MultiColumnRepeatableFieldsetDemo() {
 		@DemoComponentSection(DemoComponentSectionSettings{
 			ComponentPath:          "/form/multiColumnRepeatableFieldset.templ",
 			Description:            "A repeatable fieldset renders one editable row per item, each cell rendered through the matching input component: InputField, SelectInput, or CheckboxInput. Rows live in an Alpine array path: add, duplicate, move, and remove actions operate on that path. NewRowFunc names the expression that fills a new row, so different rows stay tellable apart.",
-			LiveExampleDescription: "A team member table bound to teamMemberRows. Add row appends a random member, so moving a row up or down is visible. The bound array is shown live.",
+			LiveExampleDescription: "A team member table bound to teamMemberRows. Add row appends a random member, so moving a row up or down is visible. Bulk edit is enabled, so the same rows can be pasted as one line per member. The bound array is shown live.",
 			Title:                  ".MultiColumnRepeatableFieldset",
 			UsageCode:              demoUsage,
 		}) {
@@ -244,8 +527,11 @@ templ MultiColumnRepeatableFieldsetDemo() {
 				@uiForm.MultiColumnRepeatableFieldset(uiForm.MultiColumnRepeatableFieldsetSettings{
 					Columns:         multiColumnRepeatableFieldsetDemoColumns(),
 					TwoWayStatePath: "teamMemberRows",
-					InputName:       "teamMembers",
-					NewRowFunc:      "multiColumnRepeatableFieldsetDemoRandomRow()",
+					BulkEdit: uiForm.MultiColumnRepeatableFieldsetBulkEditSettings{
+						IsEnabled: true,
+					},
+					InputName:  "teamMembers",
+					NewRowFunc: "multiColumnRepeatableFieldsetDemoRandomRow()",
 				})
 				<p class={ DemoLiveStateClasses }>
 					teamMemberRows: <span x-text="JSON.stringify(teamMemberRows)"></span>
@@ -255,6 +541,7 @@ templ MultiColumnRepeatableFieldsetDemo() {
 		@DemoAdvancedExamples("multi-column-repeatable-fieldset-demo", []uiDisplay.AccordionItemSettings{
 			{Title: "Per-Row Validation", Icon: "ph-warning-circle", Content: MultiColumnRepeatableFieldsetValidationExample()},
 			{Title: "Empty State", Icon: "ph-empty", Content: MultiColumnRepeatableFieldsetEmptyStateExample()},
+			{Title: "Delimiters", Icon: "ph-text-align-left", Content: MultiColumnRepeatableFieldsetDelimiterExample()},
 			{Title: "Sizes", Icon: "ph-ruler", Content: MultiColumnRepeatableFieldsetSizesExample()},
 			{Title: "Appearance", Icon: "ph-palette", Content: MultiColumnRepeatableFieldsetAppearanceExample()},
 		})

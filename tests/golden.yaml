@@ -25,3 +25,16 @@ form.searchable-select-filter:
   warn_ms: 150
   fatal_ms: 100
   relative_warn_percent: 50
+
+form.number-range-slider-drag:
+  baseline_p50_ms: 129
+  info_ms: 150
+  warn_ms: 180
+  fatal_ms: 300
+  relative_warn_percent: 50
+
+control.button-action-state:
+  baseline_p50_ms: 3
+  info_ms: 8
+  warn_ms: 20
+  fatal_ms: 50

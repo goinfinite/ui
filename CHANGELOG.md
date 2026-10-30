@@ -1,6 +1,32 @@
 # Changelog
 
 ```log
+0.3.3 - 2026/10/28
+fix: remove the plaintext password readouts from the demo, make the modal save-request test deterministic, move the countdown restart control beside the triggered countdown, and show a zero dynamic SelectInput value in the trigger
+fix: let the MultiColumnRepeatableFieldset bulk edit round-trip delimiters, newlines, and literal backslashes, reject conflicting delimiters, keep properties outside the columns on the bound rows, and leave unchanged cells with their original value and type
+fix: keep the PasswordInput Caps Lock hint to key events from its input, show unmatched dynamic multi-select values as their selected value, keep a dynamic single-select option's value type, and floor negative fractional Unix timestamps before the date conversion
+fix: let SelectInput single-select change events bubble to parent listeners, so delegated validation and autosave see dynamic and static picks alike
+fix: derive the SelectInput dynamic option and index aliases from the bound state path and OnChangeFunc, so a state path or callback named option, dynamicOption, or optionIndex cannot be shadowed
+fix: store the original option value in the SelectInput dynamic multi-select state, so a numeric option stays numeric
+fix: match SelectInput dynamic options by strict value identity, so numeric zero and string zero are distinct options
+fix: keep MultiColumnRepeatableFieldset bulk-edit rows in their current order when an edit duplicates a line
+fix: keep the SelectInput legend visible when a dynamic single-select holds numeric zero
+test: share the Button render cases and cover the zero dynamic option, the numeric dynamic option, the zero legend, the numeric multi-select round trip, the typed option identity, the dynamic loop alias collisions, the callback alias collision, the bulk-edit duplicate order, the bubbled single-select change event, the bulk-edit escapes, reconciliation, and unchanged cells, the Caps Lock target filtering, the unmatched multi-select fallback, and the negative fractional timestamp
+docs: update the form readme, context, and feature map, and regenerate the demo page
+feat: add MultiColumnRepeatableFieldset.BulkEdit, a toggle between the row table and a delimiter-separated textarea that parses each edit back into the bound rows, preserves the rows on a no-edit toggle, supports checkbox and select cells, defaults the delimiter to = for two columns and | for more, and adds AddRowButton and BulkEditButton styles with lowercase default labels
+feat: add UiToolset.UnixTimestamp.ToIsoDate and ToRfc1123 for Unix seconds, rejecting timestamps outside UTC years 0000-9999
+feat: add FormId to ButtonSettings and make tracked submits follow the named form, including one mounted after init, so the pending state and double-submit guard still apply
+feat: add IconTop, CountdownSeconds, and one-way state paths for the Button label and action labels; merge the action and countdown data into one buttonState scope
+feat: add a Caps Lock hint to PasswordInput with custom text, one-way text path, color, case, and a hide setting
+feat: add LabelOneWayStatePath to the label-bearing form components, including the DateTimePicker range Start and End accessible names, OptionsOneWayStatePath to SelectInput, DescriptionOneWayStatePath to FileUploadInput, and AriaLabelOneWayStatePath to CheckboxInput and RangeSlider
+fix: raise the demo metadata label colors to text-neutral-400 and re-record the axe baseline
+fix: keep the modal footer form open after a failed save so the user can retry
+fix: keep the first floating label inside the modal footer form scroll area
+test: cover the FormId tracked submit, dynamic labels and options, the timestamp bound, and the Caps Lock hint, and record golden budgets for the Button action state and NumberRangeInputField slider drag
+test: cover the bulk-edit render, the textarea round trip, the no-edit toggle, the typed cells, the multi-column delimiter default, the custom delimiter, and the button styles
+docs: extend the icon, label, and option examples, add countdown and modal footer form examples, and regenerate the demo page
+docs: add the environment variable, typed, port-binding, and custom-delimiter bulk-edit examples and the button style example, and regenerate the demo page
+
 0.3.2 - 2026/10/17
 feat: center the DateTimePicker time row on SelectInput and add an optional IANA timezone select that sits beside the time when the field is wide enough, wraps below when it is not, and writes the UTC offset into the datetime value
 feat: add DateTimePickerTimeSelectorStyle and TimeSelectorSize, so the time selects take the SelectInput trigger and dropdown surfaces
