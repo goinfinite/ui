@@ -338,6 +338,33 @@ test.describe("MultiColumnRepeatableFieldset", () => {
     );
   });
 
+  test("@smoke bulk edit keeps unchanged cell types and whitespace", async ({
+    page,
+  }) => {
+    const wrapper = page.locator(mainWrapperSelector);
+    const readout = wrapper.locator(readoutSelector);
+    const initialRows = [
+      { name: "  Ana  ", role: "owner", age: 38, active: true },
+    ];
+
+    await wrapper.evaluate((wrapperElement, rows) => {
+      const wrapperState = window.Alpine.$data(wrapperElement);
+      wrapperState.teamMemberRows = rows;
+    }, initialRows);
+    await expect(readout).toHaveText(JSON.stringify(initialRows));
+
+    await wrapper.getByRole("button", { name: "bulk edit" }).click();
+    const textarea = wrapper.locator("textarea");
+    await expect(textarea).toHaveValue("  Ana  |owner|38|true");
+
+    await textarea.fill("  Ana  |member|38|true");
+    await expect(readout).toHaveText(
+      JSON.stringify([
+        { name: "  Ana  ", role: "member", age: 38, active: true },
+      ]),
+    );
+  });
+
   test("@smoke bulk edit defaults to | for four columns", async ({ page }) => {
     const panel = await openExamplePanel(page, fieldsetSection, "Delimiters");
     const wrapper = panel.locator("[x-data*=portBindingRows]");

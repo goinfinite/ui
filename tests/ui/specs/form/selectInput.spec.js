@@ -77,6 +77,14 @@ test.describe("SelectInput", () => {
     await expect(selectedDisplay).toHaveText("0");
     await expect(selectedDisplay).toBeVisible();
     await expect(placeholder).toBeHidden();
+
+    const selectedRole = await panel.evaluate((panelElement) => {
+      const stateRoot = panelElement.querySelector(
+        '[x-data*="runtimeOptions"]',
+      );
+      return window.Alpine.$data(stateRoot).runtimeRole;
+    });
+    expect(selectedRole).toBe(0);
   });
 
   test("@smoke dynamic plain values and label values work in multi-select", async ({
@@ -136,7 +144,7 @@ test.describe("SelectInput", () => {
       const selectState = window.Alpine.$data(stateRoot);
       selectState.runtimeRoles = ["ghost"];
     });
-    await expect(trigger).toContainText("ghost");
+    await expect(trigger.locator("span").first()).toHaveText("ghost");
   });
 
   test("@smoke clear button empties the selection", async ({ page }) => {

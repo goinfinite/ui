@@ -253,7 +253,15 @@ UiToolset.RegisterAlpineState(() => {
 
       mergeBulkEditRow(existingRow, parsedRow) {
         for (const column of this.columns) {
-          existingRow[column.id] = parsedRow[column.id];
+          const parsedValue = parsedRow[column.id];
+          const currentValue = this.parseBulkEditValue(
+            column,
+            this.formatBulkEditValue(column, existingRow),
+          );
+          if (currentValue === parsedValue) {
+            continue;
+          }
+          existingRow[column.id] = parsedValue;
         }
         return existingRow;
       },

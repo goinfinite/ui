@@ -412,6 +412,7 @@ templ SelectInput(componentSettings SelectInputSettings) {
 											name={ componentSettings.InputName }
 											:value={ dynamicOptionValueExpression }
 											:checked={ dynamicSelectedCheckExpression }
+											@change.stop={ selectValueStatePath + " = " + dynamicOptionValueExpression + onChangeFuncSuffix }
 											if isDisabledPath != "" {
 												:disabled={ isDisabledPath }
 											}
