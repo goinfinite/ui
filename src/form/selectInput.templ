@@ -336,7 +336,6 @@ templ SelectInput(componentSettings SelectInputSettings) {
 					@keydown.arrow-up.prevent="focusAdjacentOption(-1)"
 					if !componentSettings.IsMultiSelect {
 						@click="closeWithFocusReturn()"
-						@change={ selectValueStatePath + " = $event.target.value" + onChangeFuncSuffix }
 						@keydown.enter.prevent="commitFocusedOption()"
 					}
 					x-transition
@@ -361,6 +360,7 @@ templ SelectInput(componentSettings SelectInputSettings) {
 									name={ componentSettings.InputName }
 									value=""
 									:checked={ selectedCheckExpression }
+									@change={ selectValueStatePath + " = $event.target.value" + onChangeFuncSuffix }
 									if isDisabledPath != "" {
 										:disabled={ isDisabledPath }
 									}
@@ -412,7 +412,7 @@ templ SelectInput(componentSettings SelectInputSettings) {
 											name={ componentSettings.InputName }
 											:value={ dynamicOptionValueExpression }
 											:checked={ dynamicSelectedCheckExpression }
-											@change.stop={ selectValueStatePath + " = " + dynamicOptionValueExpression + onChangeFuncSuffix }
+											@change={ selectValueStatePath + " = " + dynamicOptionValueExpression + onChangeFuncSuffix }
 											if isDisabledPath != "" {
 												:disabled={ isDisabledPath }
 											}
@@ -448,6 +448,7 @@ templ SelectInput(componentSettings SelectInputSettings) {
 											name={ componentSettings.InputName }
 											value={ option }
 											:checked={ selectedCheckExpression }
+											@change={ selectValueStatePath + " = $event.target.value" + onChangeFuncSuffix }
 											if isDisabledPath != "" {
 												:disabled={ isDisabledPath }
 											}
@@ -486,6 +487,7 @@ templ SelectInput(componentSettings SelectInputSettings) {
 											name={ componentSettings.InputName }
 											value={ option.Value }
 											:checked={ selectedCheckExpression }
+											@change={ selectValueStatePath + " = $event.target.value" + onChangeFuncSuffix }
 											if isDisabledPath != "" {
 												:disabled={ isDisabledPath }
 											}

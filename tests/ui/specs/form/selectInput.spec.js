@@ -70,6 +70,12 @@ test.describe("SelectInput", () => {
     const trigger = panel.locator("[role=button]").nth(1);
     await trigger.click();
     const options = panel.locator("ul").nth(1);
+    await panel.evaluate((panelElement) => {
+      window.__selectChangeEvents = [];
+      panelElement.addEventListener("change", (event) => {
+        window.__selectChangeEvents.push(event.target.name);
+      });
+    });
     await options.getByText("0", { exact: true }).click();
 
     const selectedDisplay = trigger.locator("span").first();
@@ -85,6 +91,11 @@ test.describe("SelectInput", () => {
       return window.Alpine.$data(stateRoot).runtimeRole;
     });
     expect(selectedRole).toBe(0);
+
+    const changeEvents = await panel.evaluate(
+      () => window.__selectChangeEvents,
+    );
+    expect(changeEvents).toContain("role");
   });
 
   test("@smoke dynamic plain values and label values work in multi-select", async ({
